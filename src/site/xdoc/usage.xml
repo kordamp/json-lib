@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+
+	<properties>
+		<title>Json-lib::Usage</title>
+	</properties>
+
+	<body>
+	  <section name="How to use json-lib">
+		 <p>The easiest and recommended way to create <code>JSONObject</code>s and
+		 <code>JSONArray</code>s is through the static factiry methods each class
+		 exposes. The most versatile are <code>JSONObject.fromObject()</code> and
+		 <code>JSONArray.fromObject()</code>. Each methods inspects the type of its
+		 parameter in order to call the appropiate factory method/constructor.</p>
+
+		 <p>Examples:</p>
+		 <source>
+	boolean[] boolArray = new boolean[]{true,false,true};
+	JSONArray jsonArray = JSONArray.fromObject( boolArray );
+	System.out.println( jsonArray );
+	// prints [true,false,true]</source>
+
+		 <source>
+	// when the map is processed it will create a JSONObject
+	Map map = new HashMap();
+	map.put( "name", "json" );
+	List list = new ArrayList();
+	list.add( map );
+	Object[][] complexArray = new Object[][]{ {"json", "is", "really", "easy"},
+		{ new Integer(1), new Integer(2) }, { list } };
+
+	jsonArray = JSONArray.fromObject( complexArray );
+	System.out.println( jsonArray );
+	// prints [["json","is","really","easy"],[1,2],[[{"name":"json"}]]]</source>
+
+		 <source>
+	class MyBean{
+		private String name = "json";
+		private int pojoId = 1;
+		private char[] options = new char[]{'a','f'};
+
+		// getters &amp; setters
+		...
+	}
+
+
+	JSONObject jsonObject = JSONObject.fromObject( new MyBean() );
+	System.out.println( jsonObject );
+	// prints {"name":"json","pojoId":1,"options":["a","f"]}</source>
+
+		 <p><strong><font color="#FF0000">CAUTION:</font></strong> when parsing, neither 
+		 JSONObject nor JSONArray checks for cycles in the hierarchy. It is a task left 
+		 for the user of the library.</p>
+	  </section>
+	</body>
+
+</document>

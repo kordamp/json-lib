@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+
+	<properties>
+		<title>Welcome to Json-lib</title>
+	</properties>
+
+	<body>
+		<section name="Welcome to Json-lib">
+			<p>
+				JSON (JavaScript Object Notation) is a lightweight
+				data-interchange format. It is easy for humans to read
+				and write. It is easy for machines to parse and
+				generate. It is based on a subset of the JavaScript
+				Programming Language, Standard ECMA-262 3rd Edition -
+				December 1999. JSON is a text format that is completely
+				language independent but uses conventions that are
+				familiar to programmers of the C-family of languages,
+				including C, C++, C#, Java, JavaScript, Perl, Python,
+				and many others.
+				<br />
+				These properties make JSON an ideal data-interchange
+				language.
+			</p>
+			<p>
+				This library is based on the work by Douglas Crockford
+				in<a href="http://www.json.org/java">http://www.json.org/java</a>
+				, adding support for java arrays and object graphs. With
+				this library it is possible to transform the following
+				java structures to JSON: java beans, java arrays,
+				collections, maps; composites of the 4 previous types.
+				<br />
+				The main driver for this library is to provide the means
+				to transform data between a server and an AJAX enabled
+				application.
+			</p>
+		</section>
+	</body>
+</document>
