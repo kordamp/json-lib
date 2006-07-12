@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+	<properties>
+		<title>JsTester</title>
+		<author email="aalmiray@users.sourceforge.net">
+			Andres Almiray
+		</author>
+	</properties>
+	<body>
+		<release version="0.4" date="2006-07-11"
+			desc="Current work version">
+			<action dev="Andres Almiray" type="add">
+				Added test suites for each package and for full project
+			</action>
+			<action dev="Andres Almiray" type="fix" issue="1516306">
+				Support js functions as type
+			</action>
+			<action dev="Andres Almiray" type="update">
+				Moved common methods of JSONObject, JSONArray to
+				JSONUtils
+			</action>
+			<action dev="Andres Almiray" type="update">
+				Renamed XML to XMLSerializer. Now uses XOM to parse
+				documents
+			</action>
+			<action dev="Andres Almiray" type="update">
+				Moved common assertion methods to Assertions (tests)
+			</action>
+			<action dev="Andres Almiray" type="delete">
+				Deleted HTTP related classes
+			</action>
+		</release>
+
+		<release version="0.2" date="2006-07-01"
+			desc="First public release">
+			<action dev="Andres Almiray" type="add">
+				First release
+			</action>
+		</release>
+	</body>
+</document>

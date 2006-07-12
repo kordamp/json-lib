@@ -16,22 +16,28 @@
 package net.sf.json;
 
 /*
- * Copyright (c) 2002 JSON.org Permission is hereby granted, free of charge, to
- * any person obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to permit
- * persons to whom the Software is furnished to do so, subject to the following
- * conditions: The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software. The Software
- * shall be used for Good, not Evil. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT
- * WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
- * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+Copyright (c) 2002 JSON.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+The Software shall be used for Good, not Evil.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 
 import java.io.IOException;
 import java.io.Writer;
@@ -40,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -244,6 +251,12 @@ public class JSONArray
             Object element = elements.next();
             if( JSONUtils.isArray( element ) ){
                this.myArrayList.add( fromObject( element ) );
+            }else if( JSONUtils.isFunction( element ) ){
+               if( element instanceof String ){
+                  this.myArrayList.add( JSONFunction.parse( (String) element ) );
+               }else{
+                  this.myArrayList.add( element );
+               }
             }else if( JSONUtils.isObject( element ) ){
                this.myArrayList.add( JSONObject.fromObject( element ) );
             }else{
@@ -308,7 +321,43 @@ public class JSONArray
             this.myArrayList.add( null );
          }else{
             x.back();
-            this.myArrayList.add( x.nextValue() );
+            Object v = x.nextValue();
+            if( !JSONUtils.isFunctionHeader( v ) ){
+               this.myArrayList.add( v );
+            }else{
+               // read params if any
+               Matcher matcher = JSONUtils.FUNCTION_PARAMS_PATTERN.matcher( (String) v );
+               matcher.matches();
+               String params = matcher.group( 1 );
+               // read function text
+               int i = 0;
+               StringBuffer sb = new StringBuffer();
+               for( ;; ){
+                  char ch = x.next();
+                  if( ch == 0 ){
+                     break;
+                  }
+                  if( ch == '{' ){
+                     i++;
+                  }
+                  if( ch == '}' ){
+                     i--;
+                  }
+                  sb.append( ch );
+                  if( i == 0 ){
+                     break;
+                  }
+               }
+               if( i != 0 ){
+                  throw x.syntaxError( "Unbalanced '{' or '}' on prop: " + v );
+               }
+               // trim '{' at start and '}' at end
+               String text = sb.toString();
+               text = text.substring( 1, text.length() - 1 )
+                     .trim();
+               this.myArrayList.add( new JSONFunction( (params != null) ? params.split( "," )
+                     : null, text ) );
+            }
          }
          switch( x.nextClean() )
          {
@@ -371,7 +420,7 @@ public class JSONArray
    }
 
    /**
-    * Construct a JSONArray from a source sJSON text.
+    * Construct a JSONArray from a source JSON text.
     * 
     * @param string A string that begins with <code>[</code>&nbsp;<small>(left
     *        bracket)</small> and ends with <code>]</code>&nbsp;<small>(right
@@ -516,17 +565,6 @@ public class JSONArray
    }
 
    /**
-    * Determine if the value is null.
-    * 
-    * @param index The index must be between 0 and length() - 1.
-    * @return true if the value at the index is null, or if there is no value.
-    */
-   public boolean isNull( int index )
-   {
-      return JSONObject.NULL.equals( opt( index ) );
-   }
-
-   /**
     * Make a string from the contents of this JSONArray. The
     * <code>separator</code> string is inserted between each element. Warning:
     * This method assumes that the data structure is acyclical.
@@ -544,7 +582,7 @@ public class JSONArray
          if( i > 0 ){
             sb.append( separator );
          }
-         sb.append( JSONObject.valueToString( this.myArrayList.get( i ) ) );
+         sb.append( JSONUtils.valueToString( this.myArrayList.get( i ) ) );
       }
       return sb.toString();
    }
@@ -787,7 +825,7 @@ public class JSONArray
    public JSONArray put( double value ) throws JSONException
    {
       Double d = new Double( value );
-      JSONObject.testValidity( d );
+      JSONUtils.testValidity( d );
       put( d );
       return this;
    }
@@ -916,7 +954,7 @@ public class JSONArray
     */
    public JSONArray put( int index, Object value ) throws JSONException
    {
-      JSONObject.testValidity( value );
+      JSONUtils.testValidity( value );
       if( index < 0 ){
          throw new JSONException( "JSONArray[" + index + "] not found." );
       }
@@ -924,7 +962,7 @@ public class JSONArray
          this.myArrayList.set( index, value );
       }else{
          while( index != length() ){
-            put( JSONObject.NULL );
+            put( JSONNull.getInstance() );
          }
          put( value );
       }
@@ -960,14 +998,22 @@ public class JSONArray
     * Append an object value. This increases the array's length by one.
     * 
     * @param value An object value. The value should be a Boolean, Double,
-    *        Integer, JSONArray, JSONObject, Long, or String, or the
-    *        JSONObject.NULL object.
+    *        Integer, JSONArray, JSONObject, JSONFunction, Long, or String, or
+    *        the JSONObject.NULL object.
     * @return this.
     */
    public JSONArray put( Object value )
    {
       this.myArrayList.add( value );
       return this;
+   }
+
+   /**
+    * Produce an Object[] with the contents of this JSONArray.
+    */
+   public Object[] toArray()
+   {
+      return this.myArrayList.toArray();
    }
 
    /**
@@ -1057,7 +1103,7 @@ public class JSONArray
             }else if( v instanceof JSONArray ){
                ((JSONArray) v).write( writer );
             }else{
-               writer.write( JSONObject.valueToString( v ) );
+               writer.write( JSONUtils.valueToString( v ) );
             }
             b = true;
          }
@@ -1089,7 +1135,7 @@ public class JSONArray
       int i;
       StringBuffer sb = new StringBuffer( "[" );
       if( len == 1 ){
-         sb.append( JSONObject.valueToString( this.myArrayList.get( 0 ), indentFactor, indent ) );
+         sb.append( JSONUtils.valueToString( this.myArrayList.get( 0 ), indentFactor, indent ) );
       }else{
          int newindent = indent + indentFactor;
          sb.append( '\n' );
@@ -1100,7 +1146,7 @@ public class JSONArray
             for( int j = 0; j < newindent; j += 1 ){
                sb.append( ' ' );
             }
-            sb.append( JSONObject.valueToString( this.myArrayList.get( i ), indentFactor, newindent ) );
+            sb.append( JSONUtils.valueToString( this.myArrayList.get( i ), indentFactor, newindent ) );
          }
          sb.append( '\n' );
          for( i = 0; i < indent; i += 1 ){

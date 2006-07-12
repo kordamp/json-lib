@@ -13,33 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.sf.json;
 
-/*
- Copyright (c) 2002 JSON.org
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- The Software shall be used for Good, not Evil.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
- */
-
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -47,10 +28,115 @@ import org.apache.commons.lang.ArrayUtils;
  * Provides useful methods on java objects.
  * 
  * @author Andres Almiray
- * @version 1
+ * @version 2
  */
 public class JSONUtils
 {
+   public static final Pattern FUNCTION_HEADER_PATTERN = Pattern.compile( "^function[ ]?\\(.*\\)$" );
+   public static final Pattern FUNCTION_PARAMS_PATTERN = Pattern.compile( "^function[ ]?\\((.*?)\\)$" );
+   public static final Pattern FUNCTION_PATTERN = Pattern.compile( "^function[ ]?\\(.*\\)[ ]?\\{.*\\}$" );
+
+   /**
+    * Produce a string from a double. The string "null" will be returned if the
+    * number is not finite.
+    * 
+    * @param d A double.
+    * @return A String.
+    */
+   public static String doubleToString( double d )
+   {
+      if( Double.isInfinite( d ) || Double.isNaN( d ) ){
+         return "null";
+      }
+
+      // Shave off trailing zeros and decimal point, if possible.
+
+      String s = Double.toString( d );
+      if( s.indexOf( '.' ) > 0 && s.indexOf( 'e' ) < 0 && s.indexOf( 'E' ) < 0 ){
+         while( s.endsWith( "0" ) ){
+            s = s.substring( 0, s.length() - 1 );
+         }
+         if( s.endsWith( "." ) ){
+            s = s.substring( 0, s.length() - 1 );
+         }
+      }
+      return s;
+   }
+
+   /**
+    * Creates a Map with all the properties of the JSONObject.
+    */
+   public static Map getJSONProperties( JSONObject jsonObject )
+   {
+      Map properties = new HashMap();
+      for( Iterator keys = jsonObject.keys(); keys.hasNext(); ){
+         String key = (String) keys.next();
+         properties.put( key, getJSONType( jsonObject.get( key ) ) );
+      }
+      return properties;
+   }
+
+   /**
+    * Returns the JSON type.
+    */
+   public static Object getJSONType( Object obj ) throws JSONException
+   {
+      if( isNull( obj ) ){
+         return JSONTypes.OBJECT;
+      }else if( isArray( obj ) ){
+         return JSONTypes.ARRAY;
+      }else if( isFunction( obj ) ){
+         return JSONTypes.FUNCTION;
+      }else if( isBoolean( obj ) ){
+         return JSONTypes.BOOLEAN;
+      }else if( isNumber( obj ) ){
+         return JSONTypes.NUMBER;
+      }else if( isString( obj ) ){
+         return JSONTypes.STRING;
+      }else if( isObject( obj ) ){
+         return JSONTypes.OBJECT;
+      }else{
+         throw new JSONException( "Unsupported type" );
+      }
+   }
+
+   /**
+    * Creates a Map with all the properties of the JSONObject.
+    */
+   public static Map getProperties( JSONObject jsonObject )
+   {
+      Map properties = new HashMap();
+      for( Iterator keys = jsonObject.keys(); keys.hasNext(); ){
+         String key = (String) keys.next();
+         properties.put( key, getTypeClass( jsonObject.get( key ) ) );
+      }
+      return properties;
+   }
+
+   /**
+    * Returns the JSON type.
+    */
+   public static Class getTypeClass( Object obj ) throws JSONException
+   {
+      if( isNull( obj ) ){
+         return Object.class;
+      }else if( isArray( obj ) ){
+         return Object[].class;
+      }else if( isFunction( obj ) ){
+         return JSONFunction.class;
+      }else if( isBoolean( obj ) ){
+         return Boolean.class;
+      }else if( isNumber( obj ) ){
+         return Double.class;
+      }else if( isString( obj ) ){
+         return String.class;
+      }else if( isObject( obj ) ){
+         return Object.class;
+      }else{
+         throw new JSONException( "Unsupported type" );
+      }
+   }
+
    /**
     * Tests if obj is an array or Collection.
     */
@@ -81,6 +167,50 @@ public class JSONUtils
    }
 
    /**
+    * Tests if obj is javaScript function.<br>
+    * Obj must ba a non-null String and match "^function[ ]?\\(.*\\)[
+    * ]?\\{.*\\}$"
+    */
+   public static boolean isFunction( Object obj )
+   {
+      if( obj instanceof String && obj != null ){
+         String str = (String) obj;
+         return FUNCTION_PATTERN.matcher( str )
+               .matches();
+      }
+      if( obj instanceof JSONFunction && obj != null ){
+         return true;
+      }
+      return false;
+   }
+
+   /**
+    * Tests if obj is javaScript function header.<br>
+    * Obj must ba a non-null String and match "^function[ ]?\\(.*\\)$"
+    */
+   public static boolean isFunctionHeader( Object obj )
+   {
+      if( obj instanceof String && obj != null ){
+         String str = (String) obj;
+         return FUNCTION_HEADER_PATTERN.matcher( str )
+               .matches();
+      }
+      return false;
+   }
+
+   /**
+    * Tests if the obj is a javaScript null.
+    */
+   public static boolean isNull( Object obj )
+   {
+      if( obj instanceof JSONObject ){
+         return ((JSONObject) obj).isNullObject();
+      }
+      return JSONNull.getInstance()
+            .equals( obj );
+   }
+
+   /**
     * Tests if obj is a primitive number or wrapper.<br>
     */
    public static boolean isNumber( Object obj )
@@ -105,7 +235,8 @@ public class JSONUtils
     */
    public static boolean isObject( Object obj )
    {
-      return !isNumber( obj ) && !isString( obj ) && !isBoolean( obj ) && !isArray( obj );
+      return !isNumber( obj ) && !isString( obj ) && !isBoolean( obj ) && !isArray( obj )
+            || isNull( obj );
    }
 
    /**
@@ -126,9 +257,131 @@ public class JSONUtils
    }
 
    /**
+    * Produce a string from a Number.
+    * 
+    * @param n A Number
+    * @return A String.
+    * @throws JSONException If n is a non-finite number.
+    */
+   public static String numberToString( Number n ) throws JSONException
+   {
+      if( n == null ){
+         throw new JSONException( "Null pointer" );
+      }
+      JSONUtils.testValidity( n );
+
+      // Shave off trailing zeros and decimal point, if possible.
+
+      String s = n.toString();
+      if( s.indexOf( '.' ) > 0 && s.indexOf( 'e' ) < 0 && s.indexOf( 'E' ) < 0 ){
+         while( s.endsWith( "0" ) ){
+            s = s.substring( 0, s.length() - 1 );
+         }
+         if( s.endsWith( "." ) ){
+            s = s.substring( 0, s.length() - 1 );
+         }
+      }
+      return s;
+   }
+
+   /**
+    * Produce a string in double quotes with backslash sequences in all the
+    * right places. A backslash will be inserted within </, allowing JSON text
+    * to be delivered in HTML. In JSON text, a string cannot contain a control
+    * character or an unescaped quote or backslash.<br>
+    * <strong>CAUTION:</strong> if <code>string</code> represents a
+    * javascript function, translation of characters will not take place. This
+    * will produce a non-conformant JSON text.
+    * 
+    * @param string A String
+    * @return A String correctly formatted for insertion in a JSON text.
+    */
+   public static String quote( String string )
+   {
+      if( JSONUtils.isFunction( string ) ){
+         return string;
+      }
+      if( string == null || string.length() == 0 ){
+         return "\"\"";
+      }
+
+      char b;
+      char c = 0;
+      int i;
+      int len = string.length();
+      StringBuffer sb = new StringBuffer( len + 4 );
+      String t;
+
+      sb.append( '"' );
+      for( i = 0; i < len; i += 1 ){
+         b = c;
+         c = string.charAt( i );
+         switch( c )
+         {
+            case '\\':
+            case '"':
+               sb.append( '\\' );
+               sb.append( c );
+               break;
+            case '/':
+               if( b == '<' ){
+                  sb.append( '\\' );
+               }
+               sb.append( c );
+               break;
+            case '\b':
+               sb.append( "\\b" );
+               break;
+            case '\t':
+               sb.append( "\\t" );
+               break;
+            case '\n':
+               sb.append( "\\n" );
+               break;
+            case '\f':
+               sb.append( "\\f" );
+               break;
+            case '\r':
+               sb.append( "\\r" );
+               break;
+            default:
+               if( c < ' ' ){
+                  t = "000" + Integer.toHexString( c );
+                  sb.append( "\\u" + t.substring( t.length() - 4 ) );
+               }else{
+                  sb.append( c );
+               }
+         }
+      }
+      sb.append( '"' );
+      return sb.toString();
+   }
+
+   /**
+    * Throw an exception if the object is an NaN or infinite number.
+    * 
+    * @param o The object to test.
+    * @throws JSONException If o is a non-finite number.
+    */
+   public static void testValidity( Object o ) throws JSONException
+   {
+      if( o != null ){
+         if( o instanceof Double ){
+            if( ((Double) o).isInfinite() || ((Double) o).isNaN() ){
+               throw new JSONException( "JSON does not allow non-finite numbers" );
+            }
+         }else if( o instanceof Float ){
+            if( ((Float) o).isInfinite() || ((Float) o).isNaN() ){
+               throw new JSONException( "JSON does not allow non-finite numbers." );
+            }
+         }
+      }
+   }
+
+   /**
     * Converts an array of primitive chars to objects.<br>
     * <p>
-    * <strong>This is method is not in ArrayUtils.</strong>
+    * <strong>This is method is not in ArrayUtils. (commons-lang 2.1)</strong>
     * </p>
     * <p>
     * This method returns <code>null</code> for a <code>null</code> input
@@ -151,6 +404,100 @@ public class JSONUtils
          result[i] = new Character( array[i] );
       }
       return result;
+   }
+
+   /**
+    * Make a JSON text of an Object value. If the object has an
+    * value.toJSONString() method, then that method will be used to produce the
+    * JSON text. The method is required to produce a strictly conforming text.
+    * If the object does not contain a toJSONString method (which is the most
+    * common case), then a text will be produced by the rules.
+    * <p>
+    * Warning: This method assumes that the data structure is acyclical.
+    * 
+    * @param value The value to be serialized.
+    * @return a printable, displayable, transmittable representation of the
+    *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
+    *         and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
+    * @throws JSONException If the value is or contains an invalid number.
+    */
+   public static String valueToString( Object value ) throws JSONException
+   {
+      if( value == null || value.equals( null ) ){
+         return "null";
+      }
+      if( value instanceof JSONFunction ){
+         return ((JSONFunction) value).toString();
+      }
+      if( value instanceof JSONString ){
+         Object o;
+         try{
+            o = ((JSONString) value).toJSONString();
+         }
+         catch( Exception e ){
+            throw new JSONException( e );
+         }
+         if( o instanceof String ){
+            return (String) o;
+         }
+         throw new JSONException( "Bad value from toJSONString: " + o );
+      }
+      if( value instanceof Number ){
+         return numberToString( (Number) value );
+      }
+      if( value instanceof Boolean || value instanceof JSONObject || value instanceof JSONArray ){
+         return value.toString();
+      }
+      return quote( value.toString() );
+   }
+
+   /**
+    * Make a prettyprinted JSON text of an object value.
+    * <p>
+    * Warning: This method assumes that the data structure is acyclical.
+    * 
+    * @param value The value to be serialized.
+    * @param indentFactor The number of spaces to add to each level of
+    *        indentation.
+    * @param indent The indentation of the top level.
+    * @return a printable, displayable, transmittable representation of the
+    *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
+    *         and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
+    * @throws JSONException If the object contains an invalid number.
+    */
+   public static String valueToString( Object value, int indentFactor, int indent )
+         throws JSONException
+   {
+      if( value == null || value.equals( null ) ){
+         return "null";
+      }
+      if( value instanceof JSONFunction ){
+         return ((JSONFunction) value).toString();
+      }
+      try{
+         if( value instanceof JSONString ){
+            Object o = ((JSONString) value).toJSONString();
+            if( o instanceof String ){
+               return (String) o;
+            }
+         }
+      }
+      catch( Exception e ){
+         /* forget about it */
+      }
+      if( value instanceof Number ){
+         return numberToString( (Number) value );
+      }
+      if( value instanceof Boolean ){
+         return value.toString();
+      }
+      if( value instanceof JSONObject ){
+         return ((JSONObject) value).toString( indentFactor, indent );
+      }
+      if( value instanceof JSONArray ){
+         return ((JSONArray) value).toString( indentFactor, indent );
+      }
+      return quote( value.toString() );
    }
 
    private JSONUtils()

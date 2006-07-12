@@ -8,6 +8,50 @@
 	<body>
 		<section name="Welcome to Json-lib">
 			<p>
+            JSON-lib is a java library for transforming beans, maps and XML 
+            to JSON. It is based on the work by Douglas Crockford
+				in <a href="http://www.json.org/java">http://www.json.org/java</a>.
+			</p>
+         <p>
+            The following tables sumarizes the types conversion between java and
+            javascript:<br/>
+            <table>
+   <thead>
+     <th>JSON</th>
+     <th> </th>
+     <th>Java</th>
+   </thead>
+   <tbody>
+      <tr>
+         <td>string</td><td>&lt;=&gt;</td><td>java.lang.String, java.lang.Character, char</td>
+      </tr>
+      <tr>
+         <td>number</td><td>&lt;=&gt;</td><td>java.lang.Number, byte, short, int, long, float, double</td>
+      </tr>
+      <tr>
+         <td>true|false</td><td>&lt;=&gt;</td><td>java.lang.Boolean, boolean</td>
+      </tr>
+      <tr>
+         <td>null</td><td>&lt;=&gt;</td><td>null</td>
+      </tr>
+      <tr>
+         <td>function</td><td>&lt;=&gt;</td><td>net.sf.json.JSONFunction</td>
+      </tr>
+      <tr>
+         <td>array</td><td>&lt;=&gt;</td><td>net.sf.json.JSONArray (object, string, number, boolean, function)</td>
+      </tr>
+      <tr>
+         <td>object</td><td>&lt;=&gt;</td><td>net.sf.json.JSONObject</td>
+      </tr>
+   </tbody>
+   </table>
+   <br/>
+      The <code>function</code> type from javascript is not part of the JSON
+      format "officially" (please refer to <a href="http://www.json.org">http://www.json.org</a>)
+      but it is supported as well.</p>
+		</section>
+		<section name="What is JSON ?">
+			<p>
 				JSON (JavaScript Object Notation) is a lightweight
 				data-interchange format. It is easy for humans to read
 				and write. It is easy for machines to parse and
@@ -22,18 +66,9 @@
 				These properties make JSON an ideal data-interchange
 				language.
 			</p>
-			<p>
-				This library is based on the work by Douglas Crockford
-				in<a href="http://www.json.org/java">http://www.json.org/java</a>
-				, adding support for java arrays and object graphs. With
-				this library it is possible to transform the following
-				java structures to JSON: java beans, java arrays,
-				collections, maps; composites of the 4 previous types.
-				<br />
-				The main driver for this library is to provide the means
-				to transform data between a server and an AJAX enabled
-				application.
-			</p>
+         <p>
+            <a href="http://www.json.org">json.org</a>
+         </p>
 		</section>
 	</body>
 </document>

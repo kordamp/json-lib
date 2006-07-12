@@ -16,9 +16,7 @@
 package net.sf.json;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -35,6 +33,50 @@ public class TestJSONArray extends TestCase
    public TestJSONArray( String testName )
    {
       super( testName );
+   }
+
+   public void testArray_nullObjects()
+   {
+      testJSONArray( new Object[] { null, null }, "[null,null]" );
+   }
+
+   public void testCollection()
+   {
+      List l = new ArrayList();
+      l.add( Boolean.TRUE );
+      l.add( new Integer( 1 ) );
+      l.add( "string" );
+      testJSONArray( l, "[true,1,\"string\"]" );
+   }
+
+   public void testCollection_nullObjects()
+   {
+      List l = new ArrayList();
+      l.add( null );
+      l.add( null );
+      testJSONArray( l, "[null,null]" );
+   }
+
+   public void testFunctionArray_JSONTokener()
+   {
+      testJSONArray( new JSONTokener( "[function(a){ return a; }]" ), "[function(a){ return a; }]" );
+   }
+
+   public void testFunctionArray_ObjectArray()
+   {
+      testJSONArray( new JSONFunction[] { new JSONFunction( new String[] { "a" }, "return a;" ) },
+            "[function(a){ return a; }]" );
+   }
+
+   public void testFunctionArray_String()
+   {
+      testJSONArray( "[function(a){ return a; }]", "[function(a){ return a; }]" );
+   }
+
+   public void testMultiFunctionArray_String()
+   {
+      testJSONArray( "[function(a){ return a; },[function(b){ return b; }]]",
+            "[function(a){ return a; },[function(b){ return b; }]]" );
    }
 
    public void testPrimitiveBooleanArray()
@@ -75,15 +117,6 @@ public class TestJSONArray extends TestCase
    public void testPrimitiveShortArray()
    {
       testJSONArray( new short[] { 1, 2, 3 }, "[1,2,3]" );
-   }
-
-   public void testCollection()
-   {
-      List l = new ArrayList();
-      l.add( Boolean.TRUE );
-      l.add( new Integer( 1 ) );
-      l.add( "string" );
-      testJSONArray( l, "[true,1,\"string\"]" );
    }
 
    private void testJSONArray( Object array, String expected )

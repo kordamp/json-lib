@@ -16,28 +16,29 @@
 package net.sf.json;
 
 /*
- Copyright (c) 2002 JSON.org
+Copyright (c) 2002 JSON.org
 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
- The Software shall be used for Good, not Evil.
+The Software shall be used for Good, not Evil.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
- */
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 
 /**
  * A JSONTokener takes a source string and extracts characters and tokens from
@@ -45,10 +46,31 @@ package net.sf.json;
  * source strings.
  * 
  * @author JSON.org
- * @version 2
+ * @version 3
  */
 public class JSONTokener
 {
+
+   /**
+    * Get the hex value of a character (base16).
+    * 
+    * @param c A character between '0' and '9' or between 'A' and 'F' or between
+    *        'a' and 'f'.
+    * @return An int between 0 and 15, or -1 if c was not a hex digit.
+    */
+   public static int dehexchar( char c )
+   {
+      if( c >= '0' && c <= '9' ){
+         return c - '0';
+      }
+      if( c >= 'A' && c <= 'F' ){
+         return c - ('A' - 10);
+      }
+      if( c >= 'a' && c <= 'f' ){
+         return c - ('a' - 10);
+      }
+      return -1;
+   }
 
    /**
     * The index of the next character.
@@ -83,25 +105,18 @@ public class JSONTokener
       }
    }
 
-   /**
-    * Get the hex value of a character (base16).
-    * 
-    * @param c A character between '0' and '9' or between 'A' and 'F' or between
-    *        'a' and 'f'.
-    * @return An int between 0 and 15, or -1 if c was not a hex digit.
-    */
-   public static int dehexchar( char c )
+   public int length()
    {
-      if( c >= '0' && c <= '9' ){
-         return c - '0';
+      if( this.mySource == null ){
+         return 0;
       }
-      if( c >= 'A' && c <= 'F' ){
-         return c - ('A' - 10);
-      }
-      if( c >= 'a' && c <= 'f' ){
-         return c - ('a' - 10);
-      }
-      return -1;
+      return this.mySource.length();
+   }
+
+   public boolean matches( String pattern )
+   {
+      String str = this.mySource.substring( this.myIndex );
+      return str.matches( pattern );
    }
 
    /**
@@ -376,7 +391,7 @@ public class JSONTokener
          return Boolean.FALSE;
       }
       if( s.equalsIgnoreCase( "null" ) ){
-         return JSONObject.NULL;
+         return JSONNull.getInstance();
       }
 
       /*
@@ -425,6 +440,27 @@ public class JSONTokener
       return s;
    }
 
+   public void reset()
+   {
+      this.myIndex = 0;
+   }
+
+   /**
+    * Skip characters until past the requested string. If it is not found, we
+    * are left at the end of the source.
+    * 
+    * @param to A string to skip past.
+    */
+   public void skipPast( String to )
+   {
+      this.myIndex = this.mySource.indexOf( to, this.myIndex );
+      if( this.myIndex < 0 ){
+         this.myIndex = this.mySource.length();
+      }else{
+         this.myIndex += to.length();
+      }
+   }
+
    /**
     * Skip characters until the next character is the requested character. If
     * the requested character is not found, no characters are skipped.
@@ -446,22 +482,6 @@ public class JSONTokener
       }while( c != to );
       back();
       return c;
-   }
-
-   /**
-    * Skip characters until past the requested string. If it is not found, we
-    * are left at the end of the source.
-    * 
-    * @param to A string to skip past.
-    */
-   public void skipPast( String to )
-   {
-      this.myIndex = this.mySource.indexOf( to, this.myIndex );
-      if( this.myIndex < 0 ){
-         this.myIndex = this.mySource.length();
-      }else{
-         this.myIndex += to.length();
-      }
    }
 
    /**

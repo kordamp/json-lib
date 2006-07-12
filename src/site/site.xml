@@ -2,11 +2,14 @@
 <project name="Maven">
   <bannerLeft>
     <name>Json-lib</name>
-	 <!--
-    <src>http://json.org/img/json160.gif</src>
-	 -->
+	 <src>/images/json-lib.png</src>
     <href>http://json-lib.sf.net/</href>
   </bannerLeft>
+  <bannerRight>
+    <name>Sourceforge.net</name>
+	 <src>http://sflogo.sourceforge.net/sflogo.php?group_id=171425&amp;type=2</src>
+    <href>http://sourceforge.net/</href>
+  </bannerRight>
   <body>
     <links>
       <item name="Json.org" href="http://www.json.org/" />

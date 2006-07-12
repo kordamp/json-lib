@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.sf.json;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.sf.json.sample.BeanA;
+import net.sf.json.sample.BeanB;
+import net.sf.json.sample.BeanC;
+import net.sf.json.sample.BeanWithFunc;
 
 /**
  * @author Andres Almiray
  */
 public class TestJSONObject extends TestCase
 {
-
    public static void main( String[] args )
    {
       junit.textui.TestRunner.run( TestJSONObject.class );
@@ -34,6 +38,20 @@ public class TestJSONObject extends TestCase
    public TestJSONObject( String testName )
    {
       super( testName );
+   }
+
+   public void testBeanWithFunc()
+   {
+      try{
+         JSONObject json = JSONObject.fromObject( new BeanWithFunc( "return a;" ) );
+         assertNotNull( json.get( "function" ) );
+         assertTrue( JSONUtils.isFunction( json.get( "function" ) ) );
+         assertEquals( "function(){ return a; }", json.get( "function" )
+               .toString() );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
    }
 
    public void testExtendedBean()
@@ -79,6 +97,61 @@ public class TestJSONObject extends TestCase
       }
    }
 
+   public void testNestedNullObject()
+   {
+      Map map = new HashMap();
+      map.put( "nested", null );
+      map.put( "string", "json" );
+      try{
+         JSONObject json = JSONObject.fromMap( map );
+         assertEquals( "json", json.getString( "string" ) );
+         Object nested = json.get( "nested" );
+         assertTrue( JSONUtils.isNull( nested ) );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testNullBean()
+   {
+      try{
+         JSONObject json = JSONObject.fromBean( null );
+         assertTrue( json.isNullObject() );
+         assertEquals( JSONNull.getInstance()
+               .toString(), json.toString() );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testNullMap()
+   {
+      try{
+         JSONObject json = JSONObject.fromMap( null );
+         assertTrue( json.isNullObject() );
+         assertEquals( JSONNull.getInstance()
+               .toString(), json.toString() );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testNullString()
+   {
+      try{
+         JSONObject json = JSONObject.fromString( null );
+         assertTrue( json.isNullObject() );
+         assertEquals( JSONNull.getInstance()
+               .toString(), json.toString() );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
    public void testSimpleBean()
    {
       try{
@@ -89,84 +162,6 @@ public class TestJSONObject extends TestCase
       }
       catch( JSONException jsone ){
          fail( jsone.getMessage() );
-      }
-   }
-
-   public class BeanA
-   {
-      private boolean bool = true;
-      private int integer = 42;
-      private String string = "json";
-
-      public int getInteger()
-      {
-         return integer;
-      }
-
-      public String getString()
-      {
-         return string;
-      }
-
-      public boolean isBool()
-      {
-         return bool;
-      }
-
-      public void setBool( boolean bool )
-      {
-         this.bool = bool;
-      }
-
-      public void setInteger( int integer )
-      {
-         this.integer = integer;
-      }
-
-      public void setString( String string )
-      {
-         this.string = string;
-      }
-   }
-
-   public class BeanB extends BeanA
-   {
-      private int[] intarray = new int[] { 1, 2, 3 };
-
-      public int[] getIntarray()
-      {
-         return intarray;
-      }
-
-      public void setIntarray( int[] intarray )
-      {
-         this.intarray = intarray;
-      }
-   }
-
-   public class BeanC
-   {
-      private BeanA beanA = new BeanA();
-      private BeanB beanB = new BeanB();
-
-      public BeanA getBeanA()
-      {
-         return beanA;
-      }
-
-      public BeanB getBeanB()
-      {
-         return beanB;
-      }
-
-      public void setBeanA( BeanA beanA )
-      {
-         this.beanA = beanA;
-      }
-
-      public void setBeanB( BeanB beanB )
-      {
-         this.beanB = beanB;
       }
    }
 }

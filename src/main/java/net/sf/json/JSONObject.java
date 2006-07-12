@@ -16,22 +16,29 @@
 package net.sf.json;
 
 /*
- * Copyright (c) 2002 JSON.org Permission is hereby granted, free of charge, to
- * any person obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to permit
- * persons to whom the Software is furnished to do so, subject to the following
- * conditions: The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software. The Software
- * shall be used for Good, not Evil. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT
- * WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
- * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+Copyright (c) 2002 JSON.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+The Software shall be used for Good, not Evil.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
@@ -40,6 +47,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -104,42 +112,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class JSONObject
 {
-   /**
-    * It is sometimes more convenient and less ambiguous to have a
-    * <code>NULL</code> object than to use Java's <code>null</code> value.
-    * <code>JSONObject.NULL.equals(null)</code> returns <code>true</code>.
-    * <code>JSONObject.NULL.toString()</code> returns <code>"null"</code>.
-    */
-   public static final Object NULL = new Null();
-
    private static final Log log = LogFactory.getLog( JSONObject.class );
-
-   /**
-    * Produce a string from a double. The string "null" will be returned if the
-    * number is not finite.
-    * 
-    * @param d A double.
-    * @return A String.
-    */
-   static public String doubleToString( double d )
-   {
-      if( Double.isInfinite( d ) || Double.isNaN( d ) ){
-         return "null";
-      }
-
-      // Shave off trailing zeros and decimal point, if possible.
-
-      String s = Double.toString( d );
-      if( s.indexOf( '.' ) > 0 && s.indexOf( 'e' ) < 0 && s.indexOf( 'E' ) < 0 ){
-         while( s.endsWith( "0" ) ){
-            s = s.substring( 0, s.length() - 1 );
-         }
-         if( s.endsWith( "." ) ){
-            s = s.substring( 0, s.length() - 1 );
-         }
-      }
-      return s;
-   }
 
    /**
     * Creates a JSONObject from a POJO.<br>
@@ -149,6 +122,9 @@ public class JSONObject
     */
    public static JSONObject fromBean( Object bean ) throws JSONException
    {
+      if( bean == null ){
+         return new JSONObject( true );
+      }
       JSONObject jsonObject = new JSONObject();
       if( bean != null ){
          if( JSONUtils.isArray( bean ) ){
@@ -171,6 +147,8 @@ public class JSONObject
                      jsonObject.put( key, (value == null) ? "" : value );
                   }else if( JSONUtils.isArray( value ) ){
                      jsonObject.put( key, JSONArray.fromObject( value ) );
+                  }else if( JSONUtils.isFunction( value ) ){
+                     jsonObject.put( key, value );
                   }else if( JSONUtils.isObject( value ) ){
                      jsonObject.put( key, fromObject( value ) );
                   }else{
@@ -216,6 +194,9 @@ public class JSONObject
     */
    public static JSONObject fromObject( Object object ) throws JSONException
    {
+      if( JSONUtils.isNull( object ) ){
+         return new JSONObject( true );
+      }
       if( object instanceof JSONTokener ){
          return fromJSONTokener( (JSONTokener) object );
       }else if( object instanceof Map ){
@@ -234,210 +215,10 @@ public class JSONObject
     */
    public static JSONObject fromString( String str ) throws JSONException
    {
+      if( str == null || "null".compareToIgnoreCase( str ) == 0 ){
+         return new JSONObject( true );
+      }
       return new JSONObject( str );
-   }
-
-   /**
-    * Produce a string from a Number.
-    * 
-    * @param n A Number
-    * @return A String.
-    * @throws JSONException If n is a non-finite number.
-    */
-   static public String numberToString( Number n ) throws JSONException
-   {
-      if( n == null ){
-         throw new JSONException( "Null pointer" );
-      }
-      testValidity( n );
-
-      // Shave off trailing zeros and decimal point, if possible.
-
-      String s = n.toString();
-      if( s.indexOf( '.' ) > 0 && s.indexOf( 'e' ) < 0 && s.indexOf( 'E' ) < 0 ){
-         while( s.endsWith( "0" ) ){
-            s = s.substring( 0, s.length() - 1 );
-         }
-         if( s.endsWith( "." ) ){
-            s = s.substring( 0, s.length() - 1 );
-         }
-      }
-      return s;
-   }
-
-   /**
-    * Produce a string in double quotes with backslash sequences in all the
-    * right places. A backslash will be inserted within </, allowing JSON text
-    * to be delivered in HTML. In JSON text, a string cannot contain a control
-    * character or an unescaped quote or backslash.
-    * 
-    * @param string A String
-    * @return A String correctly formatted for insertion in a JSON text.
-    */
-   public static String quote( String string )
-   {
-      if( string == null || string.length() == 0 ){
-         return "\"\"";
-      }
-
-      char b;
-      char c = 0;
-      int i;
-      int len = string.length();
-      StringBuffer sb = new StringBuffer( len + 4 );
-      String t;
-
-      sb.append( '"' );
-      for( i = 0; i < len; i += 1 ){
-         b = c;
-         c = string.charAt( i );
-         switch( c )
-         {
-            case '\\':
-            case '"':
-               sb.append( '\\' );
-               sb.append( c );
-               break;
-            case '/':
-               if( b == '<' ){
-                  sb.append( '\\' );
-               }
-               sb.append( c );
-               break;
-            case '\b':
-               sb.append( "\\b" );
-               break;
-            case '\t':
-               sb.append( "\\t" );
-               break;
-            case '\n':
-               sb.append( "\\n" );
-               break;
-            case '\f':
-               sb.append( "\\f" );
-               break;
-            case '\r':
-               sb.append( "\\r" );
-               break;
-            default:
-               if( c < ' ' ){
-                  t = "000" + Integer.toHexString( c );
-                  sb.append( "\\u" + t.substring( t.length() - 4 ) );
-               }else{
-                  sb.append( c );
-               }
-         }
-      }
-      sb.append( '"' );
-      return sb.toString();
-   }
-
-   /**
-    * Throw an exception if the object is an NaN or infinite number.
-    * 
-    * @param o The object to test.
-    * @throws JSONException If o is a non-finite number.
-    */
-   static void testValidity( Object o ) throws JSONException
-   {
-      if( o != null ){
-         if( o instanceof Double ){
-            if( ((Double) o).isInfinite() || ((Double) o).isNaN() ){
-               throw new JSONException( "JSON does not allow non-finite numbers" );
-            }
-         }else if( o instanceof Float ){
-            if( ((Float) o).isInfinite() || ((Float) o).isNaN() ){
-               throw new JSONException( "JSON does not allow non-finite numbers." );
-            }
-         }
-      }
-   }
-
-   /**
-    * Make a JSON text of an Object value. If the object has an
-    * value.toJSONString() method, then that method will be used to produce the
-    * JSON text. The method is required to produce a strictly conforming text.
-    * If the object does not contain a toJSONString method (which is the most
-    * common case), then a text will be produced by the rules.
-    * <p>
-    * Warning: This method assumes that the data structure is acyclical.
-    * 
-    * @param value The value to be serialized.
-    * @return a printable, displayable, transmittable representation of the
-    *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
-    *         and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
-    * @throws JSONException If the value is or contains an invalid number.
-    */
-   static String valueToString( Object value ) throws JSONException
-   {
-      if( value == null || value.equals( null ) ){
-         return "null";
-      }
-      if( value instanceof JSONString ){
-         Object o;
-         try{
-            o = ((JSONString) value).toJSONString();
-         }
-         catch( Exception e ){
-            throw new JSONException( e );
-         }
-         if( o instanceof String ){
-            return (String) o;
-         }
-         throw new JSONException( "Bad value from toJSONString: " + o );
-      }
-      if( value instanceof Number ){
-         return numberToString( (Number) value );
-      }
-      if( value instanceof Boolean || value instanceof JSONObject || value instanceof JSONArray ){
-         return value.toString();
-      }
-      return quote( value.toString() );
-   }
-
-   /**
-    * Make a prettyprinted JSON text of an object value.
-    * <p>
-    * Warning: This method assumes that the data structure is acyclical.
-    * 
-    * @param value The value to be serialized.
-    * @param indentFactor The number of spaces to add to each level of
-    *        indentation.
-    * @param indent The indentation of the top level.
-    * @return a printable, displayable, transmittable representation of the
-    *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
-    *         and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
-    * @throws JSONException If the object contains an invalid number.
-    */
-   static String valueToString( Object value, int indentFactor, int indent ) throws JSONException
-   {
-      if( value == null || value.equals( null ) ){
-         return "null";
-      }
-      try{
-         if( value instanceof JSONString ){
-            Object o = ((JSONString) value).toJSONString();
-            if( o instanceof String ){
-               return (String) o;
-            }
-         }
-      }
-      catch( Exception e ){
-         /* forget about it */
-      }
-      if( value instanceof Number ){
-         return numberToString( (Number) value );
-      }
-      if( value instanceof Boolean ){
-         return value.toString();
-      }
-      if( value instanceof JSONObject ){
-         return ((JSONObject) value).toString( indentFactor, indent );
-      }
-      if( value instanceof JSONArray ){
-         return ((JSONArray) value).toString( indentFactor, indent );
-      }
-      return quote( value.toString() );
    }
 
    /**
@@ -445,12 +226,24 @@ public class JSONObject
     */
    private HashMap myHashMap;
 
+   /** identifies this object as null */
+   private boolean nullObject;
+
    /**
     * Construct an empty JSONObject.
     */
    public JSONObject()
    {
       this.myHashMap = new HashMap();
+   }
+
+   /**
+    * Creates a JSONObject that is null.
+    */
+   public JSONObject( boolean isNull )
+   {
+      this();
+      this.nullObject = isNull;
    }
 
    /**
@@ -482,6 +275,11 @@ public class JSONObject
       char c;
       String key;
 
+      if( x.matches( "null.*" ) ){
+         this.nullObject = true;
+         return;
+      }
+
       if( x.nextClean() != '{' ){
          throw x.syntaxError( "A JSONObject text must begin with '{'" );
       }
@@ -511,7 +309,43 @@ public class JSONObject
          }else if( c != ':' ){
             throw x.syntaxError( "Expected a ':' after a key" );
          }
-         this.myHashMap.put( key, x.nextValue() );
+         Object v = x.nextValue();
+         if( !JSONUtils.isFunctionHeader( v ) ){
+            this.myHashMap.put( key, v );
+         }else{
+            // read params if any
+            Matcher matcher = JSONUtils.FUNCTION_PARAMS_PATTERN.matcher( (String) v );
+            matcher.matches();
+            String params = matcher.group( 1 );
+            // read function text
+            int i = 0;
+            StringBuffer sb = new StringBuffer();
+            for( ;; ){
+               char ch = x.next();
+               if( ch == 0 ){
+                  break;
+               }
+               if( ch == '{' ){
+                  i++;
+               }
+               if( ch == '}' ){
+                  i--;
+               }
+               sb.append( ch );
+               if( i == 0 ){
+                  break;
+               }
+            }
+            if( i != 0 ){
+               throw x.syntaxError( "Unbalanced '{' or '}' on prop: " + v );
+            }
+            // trim '{' at start and '}' at end
+            String text = sb.toString();
+            text = text.substring( 1, text.length() - 1 )
+                  .trim();
+            this.myHashMap.put( key, new JSONFunction( (params != null) ? params.split( "," )
+                  : null, text ) );
+         }
 
          /*
           * Pairs are separated by ','. We will also tolerate ';'.
@@ -543,6 +377,11 @@ public class JSONObject
     */
    public JSONObject( Map map ) throws JSONException
    {
+      if( map == null ){
+         this.nullObject = true;
+         return;
+      }
+
       this.myHashMap = new HashMap();
       if( map != null ){
          for( Iterator entries = map.entrySet()
@@ -554,6 +393,8 @@ public class JSONObject
 
             if( JSONUtils.isArray( value ) ){
                this.put( key, JSONArray.fromObject( value ) );
+            }else if( JSONUtils.isFunction( value ) ){
+               this.put( key, value );
             }else if( JSONUtils.isObject( value ) ){
                this.put( key, fromObject( value ) );
             }else if( JSONUtils.isString( value ) ){
@@ -581,6 +422,10 @@ public class JSONObject
    public JSONObject( Object object, String names[] ) throws JSONException
    {
       this();
+      if( object == null ){
+         this.nullObject = true;
+         return;
+      }
 
       try{
          PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors( object );
@@ -594,6 +439,8 @@ public class JSONObject
             Object value = PropertyUtils.getProperty( object, key );
             if( String.class.isAssignableFrom( type ) ){
                this.put( key, (value == null) ? "" : value );
+            }else if( JSONUtils.isFunction( value ) ){
+               this.put( key, value );
             }else if( JSONUtils.isArray( value ) ){
                this.put( key, JSONArray.fromObject( value ) );
             }else if( JSONUtils.isObject( value ) ){
@@ -637,7 +484,11 @@ public class JSONObject
     */
    public JSONObject accumulate( String key, Object value ) throws JSONException
    {
-      testValidity( value );
+      if( isNullObject() ){
+         throw new JSONException( "Can't accumulate on null object" );
+      }
+
+      JSONUtils.testValidity( value );
       Object o = opt( key );
       if( o == null ){
          put( key, value );
@@ -647,6 +498,7 @@ public class JSONObject
          put( key, new JSONArray().put( o )
                .put( value ) );
       }
+
       return this;
    }
 
@@ -664,7 +516,10 @@ public class JSONObject
     */
    public JSONObject append( String key, Object value ) throws JSONException
    {
-      testValidity( value );
+      if( isNullObject() ){
+         throw new JSONException( "Can't append on null object" );
+      }
+      JSONUtils.testValidity( value );
       Object o = opt( key );
       if( o == null ){
          put( key, new JSONArray().put( value ) );
@@ -674,6 +529,7 @@ public class JSONObject
          put( key, new JSONArray().put( o )
                .put( value ) );
       }
+
       return this;
    }
 
@@ -686,9 +542,10 @@ public class JSONObject
     */
    public Object get( String key ) throws JSONException
    {
+      verifyIsNull();
       Object o = opt( key );
       if( o == null ){
-         throw new JSONException( "JSONObject[" + quote( key ) + "] not found." );
+         throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] not found." );
       }
       return o;
    }
@@ -703,6 +560,7 @@ public class JSONObject
     */
    public boolean getBoolean( String key ) throws JSONException
    {
+      verifyIsNull();
       Object o = get( key );
       if( o.equals( Boolean.FALSE )
             || (o instanceof String && ((String) o).equalsIgnoreCase( "false" )) ){
@@ -711,7 +569,7 @@ public class JSONObject
             || (o instanceof String && ((String) o).equalsIgnoreCase( "true" )) ){
          return true;
       }
-      throw new JSONException( "JSONObject[" + quote( key ) + "] is not a Boolean." );
+      throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a Boolean." );
    }
 
    /**
@@ -724,12 +582,13 @@ public class JSONObject
     */
    public double getDouble( String key ) throws JSONException
    {
+      verifyIsNull();
       Object o = get( key );
       try{
          return o instanceof Number ? ((Number) o).doubleValue() : Double.parseDouble( (String) o );
       }
       catch( Exception e ){
-         throw new JSONException( "JSONObject[" + quote( key ) + "] is not a number." );
+         throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a number." );
       }
    }
 
@@ -744,6 +603,7 @@ public class JSONObject
     */
    public int getInt( String key ) throws JSONException
    {
+      verifyIsNull();
       Object o = get( key );
       return o instanceof Number ? ((Number) o).intValue() : (int) getDouble( key );
    }
@@ -758,11 +618,12 @@ public class JSONObject
     */
    public JSONArray getJSONArray( String key ) throws JSONException
    {
+      verifyIsNull();
       Object o = get( key );
       if( o instanceof JSONArray ){
          return (JSONArray) o;
       }
-      throw new JSONException( "JSONObject[" + quote( key ) + "] is not a JSONArray." );
+      throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a JSONArray." );
    }
 
    /**
@@ -775,11 +636,12 @@ public class JSONObject
     */
    public JSONObject getJSONObject( String key ) throws JSONException
    {
+      verifyIsNull();
       Object o = get( key );
       if( o instanceof JSONObject ){
          return (JSONObject) o;
       }
-      throw new JSONException( "JSONObject[" + quote( key ) + "] is not a JSONObject." );
+      throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a JSONObject." );
    }
 
    /**
@@ -793,6 +655,7 @@ public class JSONObject
     */
    public long getLong( String key ) throws JSONException
    {
+      verifyIsNull();
       Object o = get( key );
       return o instanceof Number ? ((Number) o).longValue() : (long) getDouble( key );
    }
@@ -806,6 +669,7 @@ public class JSONObject
     */
    public String getString( String key ) throws JSONException
    {
+      verifyIsNull();
       return get( key ).toString();
    }
 
@@ -817,20 +681,16 @@ public class JSONObject
     */
    public boolean has( String key )
    {
+      verifyIsNull();
       return this.myHashMap.containsKey( key );
    }
 
    /**
-    * Determine if the value associated with the key is null or if there is no
-    * value.
-    * 
-    * @param key A key string.
-    * @return true if there is no value associated with the key or if the value
-    *         is the JSONObject.NULL object.
+    * Returs if this object is a null JSONObject.
     */
-   public boolean isNull( String key )
+   public boolean isNullObject()
    {
-      return JSONObject.NULL.equals( opt( key ) );
+      return nullObject;
    }
 
    /**
@@ -840,6 +700,7 @@ public class JSONObject
     */
    public Iterator keys()
    {
+      verifyIsNull();
       return this.myHashMap.keySet()
             .iterator();
    }
@@ -851,6 +712,7 @@ public class JSONObject
     */
    public int length()
    {
+      verifyIsNull();
       return this.myHashMap.size();
    }
 
@@ -863,6 +725,7 @@ public class JSONObject
     */
    public JSONArray names()
    {
+      verifyIsNull();
       JSONArray ja = new JSONArray();
       Iterator keys = keys();
       while( keys.hasNext() ){
@@ -879,6 +742,7 @@ public class JSONObject
     */
    public Object opt( String key )
    {
+      verifyIsNull();
       return key == null ? null : this.myHashMap.get( key );
    }
 
@@ -891,6 +755,7 @@ public class JSONObject
     */
    public boolean optBoolean( String key )
    {
+      verifyIsNull();
       return optBoolean( key, false );
    }
 
@@ -905,6 +770,7 @@ public class JSONObject
     */
    public boolean optBoolean( String key, boolean defaultValue )
    {
+      verifyIsNull();
       try{
          return getBoolean( key );
       }
@@ -923,6 +789,7 @@ public class JSONObject
     */
    public double optDouble( String key )
    {
+      verifyIsNull();
       return optDouble( key, Double.NaN );
    }
 
@@ -937,6 +804,7 @@ public class JSONObject
     */
    public double optDouble( String key, double defaultValue )
    {
+      verifyIsNull();
       try{
          Object o = opt( key );
          return o instanceof Number ? ((Number) o).doubleValue()
@@ -957,6 +825,7 @@ public class JSONObject
     */
    public int optInt( String key )
    {
+      verifyIsNull();
       return optInt( key, 0 );
    }
 
@@ -971,6 +840,7 @@ public class JSONObject
     */
    public int optInt( String key, int defaultValue )
    {
+      verifyIsNull();
       try{
          return getInt( key );
       }
@@ -988,6 +858,7 @@ public class JSONObject
     */
    public JSONArray optJSONArray( String key )
    {
+      verifyIsNull();
       Object o = opt( key );
       return o instanceof JSONArray ? (JSONArray) o : null;
    }
@@ -1001,6 +872,7 @@ public class JSONObject
     */
    public JSONObject optJSONObject( String key )
    {
+      verifyIsNull();
       Object o = opt( key );
       return o instanceof JSONObject ? (JSONObject) o : null;
    }
@@ -1015,6 +887,7 @@ public class JSONObject
     */
    public long optLong( String key )
    {
+      verifyIsNull();
       return optLong( key, 0 );
    }
 
@@ -1029,6 +902,7 @@ public class JSONObject
     */
    public long optLong( String key, long defaultValue )
    {
+      verifyIsNull();
       try{
          return getLong( key );
       }
@@ -1047,6 +921,7 @@ public class JSONObject
     */
    public String optString( String key )
    {
+      verifyIsNull();
       return optString( key, "" );
    }
 
@@ -1060,6 +935,7 @@ public class JSONObject
     */
    public String optString( String key, String defaultValue )
    {
+      verifyIsNull();
       Object o = opt( key );
       return o != null ? o.toString() : defaultValue;
    }
@@ -1074,6 +950,7 @@ public class JSONObject
     */
    public JSONObject put( String key, boolean value ) throws JSONException
    {
+      verifyIsNull();
       put( key, value ? Boolean.TRUE : Boolean.FALSE );
       return this;
    }
@@ -1089,6 +966,7 @@ public class JSONObject
     */
    public JSONObject put( String key, Collection value ) throws JSONException
    {
+      verifyIsNull();
       put( key, new JSONArray( value ) );
       return this;
    }
@@ -1103,6 +981,7 @@ public class JSONObject
     */
    public JSONObject put( String key, double value ) throws JSONException
    {
+      verifyIsNull();
       put( key, new Double( value ) );
       return this;
    }
@@ -1117,6 +996,7 @@ public class JSONObject
     */
    public JSONObject put( String key, int value ) throws JSONException
    {
+      verifyIsNull();
       put( key, new Integer( value ) );
       return this;
    }
@@ -1131,6 +1011,7 @@ public class JSONObject
     */
    public JSONObject put( String key, long value ) throws JSONException
    {
+      verifyIsNull();
       put( key, new Long( value ) );
       return this;
    }
@@ -1146,6 +1027,7 @@ public class JSONObject
     */
    public JSONObject put( String key, Map value ) throws JSONException
    {
+      verifyIsNull();
       put( key, new JSONObject( value ) );
       return this;
    }
@@ -1164,11 +1046,12 @@ public class JSONObject
     */
    public JSONObject put( String key, Object value ) throws JSONException
    {
+      verifyIsNull();
       if( key == null ){
          throw new JSONException( "Null key." );
       }
       if( value != null ){
-         testValidity( value );
+         JSONUtils.testValidity( value );
          this.myHashMap.put( key, value );
       }else{
          remove( key );
@@ -1189,6 +1072,7 @@ public class JSONObject
     */
    public JSONObject putOpt( String key, Object value ) throws JSONException
    {
+      verifyIsNull();
       if( key != null && value != null ){
          put( key, value );
       }
@@ -1204,6 +1088,7 @@ public class JSONObject
     */
    public Object remove( String key )
    {
+      verifyIsNull();
       return this.myHashMap.remove( key );
    }
 
@@ -1218,6 +1103,7 @@ public class JSONObject
     */
    public JSONArray toJSONArray( JSONArray names ) throws JSONException
    {
+      verifyIsNull();
       if( names == null || names.length() == 0 ){
          return null;
       }
@@ -1242,6 +1128,10 @@ public class JSONObject
     */
    public String toString()
    {
+      if( isNullObject() ){
+         return JSONNull.getInstance()
+               .toString();
+      }
       try{
          Iterator keys = keys();
          StringBuffer sb = new StringBuffer( "{" );
@@ -1251,9 +1141,9 @@ public class JSONObject
                sb.append( ',' );
             }
             Object o = keys.next();
-            sb.append( quote( o.toString() ) );
+            sb.append( JSONUtils.quote( o.toString() ) );
             sb.append( ':' );
-            sb.append( valueToString( this.myHashMap.get( o ) ) );
+            sb.append( JSONUtils.valueToString( this.myHashMap.get( o ) ) );
          }
          sb.append( '}' );
          return sb.toString();
@@ -1278,48 +1168,11 @@ public class JSONObject
     */
    public String toString( int indentFactor ) throws JSONException
    {
+      if( isNullObject() ){
+         return JSONNull.getInstance()
+               .toString();
+      }
       return toString( indentFactor, 0 );
-   }
-
-   /**
-    * Write the contents of the JSONObject as JSON text to a writer. For
-    * compactness, no whitespace is added.
-    * <p>
-    * Warning: This method assumes that the data structure is acyclical.
-    * 
-    * @return The writer.
-    * @throws JSONException
-    */
-   public Writer write( Writer writer ) throws JSONException
-   {
-      try{
-         boolean b = false;
-         Iterator keys = keys();
-         writer.write( '{' );
-
-         while( keys.hasNext() ){
-            if( b ){
-               writer.write( ',' );
-            }
-            Object k = keys.next();
-            writer.write( quote( k.toString() ) );
-            writer.write( ':' );
-            Object v = this.myHashMap.get( k );
-            if( v instanceof JSONObject ){
-               ((JSONObject) v).write( writer );
-            }else if( v instanceof JSONArray ){
-               ((JSONArray) v).write( writer );
-            }else{
-               writer.write( valueToString( v ) );
-            }
-            b = true;
-         }
-         writer.write( '}' );
-         return writer;
-      }
-      catch( IOException e ){
-         throw new JSONException( e );
-      }
    }
 
    /**
@@ -1335,8 +1188,12 @@ public class JSONObject
     *         and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
     * @throws JSONException If the object contains an invalid number.
     */
-   String toString( int indentFactor, int indent ) throws JSONException
+   public String toString( int indentFactor, int indent ) throws JSONException
    {
+      if( isNullObject() ){
+         return JSONNull.getInstance()
+               .toString();
+      }
       int i;
       int n = length();
       if( n == 0 ){
@@ -1348,9 +1205,9 @@ public class JSONObject
       Object o;
       if( n == 1 ){
          o = keys.next();
-         sb.append( quote( o.toString() ) );
+         sb.append( JSONUtils.quote( o.toString() ) );
          sb.append( ": " );
-         sb.append( valueToString( this.myHashMap.get( o ), indentFactor, indent ) );
+         sb.append( JSONUtils.valueToString( this.myHashMap.get( o ), indentFactor, indent ) );
       }else{
          while( keys.hasNext() ){
             o = keys.next();
@@ -1362,9 +1219,9 @@ public class JSONObject
             for( i = 0; i < newindent; i += 1 ){
                sb.append( ' ' );
             }
-            sb.append( quote( o.toString() ) );
+            sb.append( JSONUtils.quote( o.toString() ) );
             sb.append( ": " );
-            sb.append( valueToString( this.myHashMap.get( o ), indentFactor, newindent ) );
+            sb.append( JSONUtils.valueToString( this.myHashMap.get( o ), indentFactor, newindent ) );
          }
          if( sb.length() > 1 ){
             sb.append( '\n' );
@@ -1378,44 +1235,56 @@ public class JSONObject
    }
 
    /**
-    * JSONObject.NULL is equivalent to the value that JavaScript calls null,
-    * whilst Java's null is equivalent to the value that JavaScript calls
-    * undefined.
+    * Write the contents of the JSONObject as JSON text to a writer. For
+    * compactness, no whitespace is added.
+    * <p>
+    * Warning: This method assumes that the data structure is acyclical.
+    * 
+    * @return The writer.
+    * @throws JSONException
     */
-   private static final class Null
+   public Writer write( Writer writer ) throws JSONException
    {
+      try{
+         if( isNullObject() ){
+            writer.write( JSONNull.getInstance()
+                  .toString() );
+            return writer;
+         }
 
-      /**
-       * A Null object is equal to the null value and to itself.
-       * 
-       * @param object An object to test for nullness.
-       * @return true if the object parameter is the JSONObject.NULL object or
-       *         null.
-       */
-      public boolean equals( Object object )
-      {
-         return object == null || object == this;
+         boolean b = false;
+         Iterator keys = keys();
+         writer.write( '{' );
+
+         while( keys.hasNext() ){
+            if( b ){
+               writer.write( ',' );
+            }
+            Object k = keys.next();
+            writer.write( JSONUtils.quote( k.toString() ) );
+            writer.write( ':' );
+            Object v = this.myHashMap.get( k );
+            if( v instanceof JSONObject ){
+               ((JSONObject) v).write( writer );
+            }else if( v instanceof JSONArray ){
+               ((JSONArray) v).write( writer );
+            }else{
+               writer.write( JSONUtils.valueToString( v ) );
+            }
+            b = true;
+         }
+         writer.write( '}' );
+         return writer;
       }
-
-      /**
-       * Get the "null" string value.
-       * 
-       * @return The string "null".
-       */
-      public String toString()
-      {
-         return "null";
+      catch( IOException e ){
+         throw new JSONException( e );
       }
+   }
 
-      /**
-       * There is only intended to be a single instance of the NULL object, so
-       * the clone method returns itself.
-       * 
-       * @return NULL.
-       */
-      protected final Object clone()
-      {
-         return this;
+   private void verifyIsNull() throws JSONException
+   {
+      if( isNullObject() ){
+         throw new JSONException( "null object" );
       }
    }
 }
