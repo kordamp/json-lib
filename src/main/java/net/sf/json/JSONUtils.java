@@ -19,6 +19,7 @@ package net.sf.json;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -26,7 +27,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Provides useful methods on java objects.
- * 
+ *
  * @author Andres Almiray
  * @version 2
  */
@@ -39,7 +40,7 @@ public class JSONUtils
    /**
     * Produce a string from a double. The string "null" will be returned if the
     * number is not finite.
-    * 
+    *
     * @param d A double.
     * @return A String.
     */
@@ -63,6 +64,23 @@ public class JSONUtils
       return s;
    }
 
+   public static int getDimensions( Class arrayClass )
+   {
+      if( arrayClass == null || !arrayClass.isArray() ){
+         return 0;
+      }
+
+      return 1 + getDimensions( arrayClass.getComponentType() );
+   }
+
+   public static Class getInnerComponentType( Class type )
+   {
+      if( !type.isArray() ){
+         return type;
+      }
+      return getInnerComponentType( type.getComponentType() );
+   }
+
    /**
     * Creates a Map with all the properties of the JSONObject.
     */
@@ -79,7 +97,7 @@ public class JSONUtils
    /**
     * Returns the JSON type.
     */
-   public static Object getJSONType( Object obj ) throws JSONException
+   public static Object getJSONType( Object obj )
    {
       if( isNull( obj ) ){
          return JSONTypes.OBJECT;
@@ -116,12 +134,12 @@ public class JSONUtils
    /**
     * Returns the JSON type.
     */
-   public static Class getTypeClass( Object obj ) throws JSONException
+   public static Class getTypeClass( Object obj )
    {
       if( isNull( obj ) ){
          return Object.class;
       }else if( isArray( obj ) ){
-         return Object[].class;
+         return List.class;
       }else if( isFunction( obj ) ){
          return JSONFunction.class;
       }else if( isBoolean( obj ) ){
@@ -258,12 +276,12 @@ public class JSONUtils
 
    /**
     * Produce a string from a Number.
-    * 
+    *
     * @param n A Number
     * @return A String.
     * @throws JSONException If n is a non-finite number.
     */
-   public static String numberToString( Number n ) throws JSONException
+   public static String numberToString( Number n )
    {
       if( n == null ){
          throw new JSONException( "Null pointer" );
@@ -292,7 +310,7 @@ public class JSONUtils
     * <strong>CAUTION:</strong> if <code>string</code> represents a
     * javascript function, translation of characters will not take place. This
     * will produce a non-conformant JSON text.
-    * 
+    *
     * @param string A String
     * @return A String correctly formatted for insertion in a JSON text.
     */
@@ -359,11 +377,11 @@ public class JSONUtils
 
    /**
     * Throw an exception if the object is an NaN or infinite number.
-    * 
+    *
     * @param o The object to test.
     * @throws JSONException If o is a non-finite number.
     */
-   public static void testValidity( Object o ) throws JSONException
+   public static void testValidity( Object o )
    {
       if( o != null ){
          if( o instanceof Double ){
@@ -387,7 +405,7 @@ public class JSONUtils
     * This method returns <code>null</code> for a <code>null</code> input
     * array.
     * </p>
-    * 
+    *
     * @param array a <code>char</code> array
     * @return a <code>Character</code> array, <code>null</code> if null
     *         array input
@@ -414,14 +432,14 @@ public class JSONUtils
     * common case), then a text will be produced by the rules.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    * 
+    *
     * @param value The value to be serialized.
     * @return a printable, displayable, transmittable representation of the
     *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
     *         and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
     * @throws JSONException If the value is or contains an invalid number.
     */
-   public static String valueToString( Object value ) throws JSONException
+   public static String valueToString( Object value )
    {
       if( value == null || value.equals( null ) ){
          return "null";
@@ -455,7 +473,7 @@ public class JSONUtils
     * Make a prettyprinted JSON text of an object value.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    * 
+    *
     * @param value The value to be serialized.
     * @param indentFactor The number of spaces to add to each level of
     *        indentation.
@@ -466,7 +484,6 @@ public class JSONUtils
     * @throws JSONException If the object contains an invalid number.
     */
    public static String valueToString( Object value, int indentFactor, int indent )
-         throws JSONException
    {
       if( value == null || value.equals( null ) ){
          return "null";

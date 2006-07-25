@@ -30,6 +30,7 @@ public class AllTests extends TestSuite
       suite.addTest( new TestSuite( TestJSONObject.class ) );
       suite.addTest( new TestSuite( TestJSONBuilder.class ) );
       suite.addTest( new TestSuite( TestJSONFunction.class ) );
+      suite.addTest( net.sf.json.converter.AllTests.suite() );
       suite.addTest( net.sf.json.xml.AllTests.suite() );
 
       return suite;

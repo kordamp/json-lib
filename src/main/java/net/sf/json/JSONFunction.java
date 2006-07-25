@@ -21,7 +21,7 @@ import java.util.regex.Matcher;
 
 /**
  * JSONFunction represents a javaScript function's text.
- * 
+ *
  * @author Andres Almiray
  * @version 1
  */
@@ -35,7 +35,7 @@ public class JSONFunction implements Serializable
    /**
     * Constructs a JSONFunction from a text representation
     */
-   public static JSONFunction parse( JSONTokener x ) throws JSONException
+   public static JSONFunction parse( JSONTokener x )
    {
       Object v = x.nextValue();
       if( !JSONUtils.isFunctionHeader( v ) ){
@@ -78,7 +78,7 @@ public class JSONFunction implements Serializable
    /**
     * Constructs a JSONFunction from a text representation
     */
-   public static JSONFunction parse( String str ) throws JSONException
+   public static JSONFunction parse( String str )
    {
       return parse( new JSONTokener( str ) );
    }
@@ -91,7 +91,7 @@ public class JSONFunction implements Serializable
 
    /**
     * Constructs a JSONFunction with no parameters.
-    * 
+    *
     * @param text The text of the function
     */
    public JSONFunction( String text )
@@ -101,7 +101,7 @@ public class JSONFunction implements Serializable
 
    /**
     * Constructs a JSONFunction with parameters.
-    * 
+    *
     * @param params The parameters of the function
     * @param text The text of the function
     */

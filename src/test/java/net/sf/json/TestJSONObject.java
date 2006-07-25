@@ -17,6 +17,7 @@
 package net.sf.json;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -24,6 +25,8 @@ import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.BeanWithFunc;
+
+import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  * @author Andres Almiray
@@ -163,5 +166,63 @@ public class TestJSONObject extends TestCase
       catch( JSONException jsone ){
          fail( jsone.getMessage() );
       }
+   }
+
+   public void testToBean() throws Exception
+   {
+      String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
+      JSONObject jsonObject = new JSONObject( json );
+      Object bean = JSONObject.toBean( jsonObject );
+      assertEquals( jsonObject.get( "name" ), PropertyUtils.getProperty( bean, "name" ) );
+      assertEquals( jsonObject.get( "bool" ), PropertyUtils.getProperty( bean, "bool" ) );
+      assertEquals( jsonObject.get( "int" ), PropertyUtils.getProperty( bean, "int" ) );
+      assertEquals( jsonObject.get( "double" ), PropertyUtils.getProperty( bean, "double" ) );
+      assertEquals( jsonObject.get( "func" ), PropertyUtils.getProperty( bean, "func" ) );
+      List expected = JSONArray.toList( jsonObject.getJSONArray( "array" ) );
+      Assertions.assertListEquals( expected, (List) PropertyUtils.getProperty( bean, "array" ) );
+   }
+
+   public void testToBean_BeanA()
+   {
+      String json = "{bool:true,integer:1,string:\"json\"}";
+      JSONObject jsonObject = new JSONObject( json );
+      BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
+      assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
+      assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
+      assertEquals( jsonObject.get( "string" ), bean.getString() );
+   }
+
+   public void testToBean_BeanB()
+   {
+      String json = "{bool:true,integer:1,string:\"json\",intarray:[4,5,6]}";
+      JSONObject jsonObject = new JSONObject( json );
+      BeanB bean = (BeanB) JSONObject.toBean( jsonObject, BeanB.class );
+      assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
+      assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
+      assertEquals( jsonObject.get( "string" ), bean.getString() );
+      Assertions.assertEquals( bean.getIntarray(),
+            JSONArray.toArray( jsonObject.getJSONArray( "intarray" ) ) );
+   }
+
+   public void testToBean_nested() throws Exception
+   {
+      String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },nested:{nested:true}}";
+      JSONObject jsonObject = new JSONObject( json );
+      Object bean = JSONObject.toBean( jsonObject );
+      assertEquals( jsonObject.get( "name" ), PropertyUtils.getProperty( bean, "name" ) );
+      assertEquals( jsonObject.get( "bool" ), PropertyUtils.getProperty( bean, "bool" ) );
+      assertEquals( jsonObject.get( "int" ), PropertyUtils.getProperty( bean, "int" ) );
+      assertEquals( jsonObject.get( "double" ), PropertyUtils.getProperty( bean, "double" ) );
+      assertEquals( jsonObject.get( "func" ), PropertyUtils.getProperty( bean, "func" ) );
+      JSONObject nestedJson = jsonObject.getJSONObject( "nested" );
+      Object nestedBean = PropertyUtils.getProperty( bean, "nested" );
+      assertEquals( nestedJson.get( "nested" ), PropertyUtils.getProperty( nestedBean, "nested" ) );
+   }
+
+   public void testToBean_null()
+   {
+      JSONObject jsonObject = new JSONObject( true );
+      BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
+      assertNull( bean );
    }
 }

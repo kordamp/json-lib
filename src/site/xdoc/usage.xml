@@ -7,50 +7,154 @@
 
 	<body>
 	  <section name="How to use json-lib">
-		 <p>The easiest and recommended way to create <code>JSONObject</code>s and
-		 <code>JSONArray</code>s is through the static factiry methods each class
-		 exposes. The most versatile are <code>JSONObject.fromObject()</code> and
-		 <code>JSONArray.fromObject()</code>. Each methods inspects the type of its
-		 parameter in order to call the appropiate factory method/constructor.</p>
+       <a href="#arrays">Working with arrays and collections</a><br/>
+       <a href="#objects">Working with objects</a><br/>
+       <a href="#xml">Working with XML</a><br/>
 
-		 <p>Examples:</p>
+       <a name="arrays"/>
+       <subsection name="Working with arrays and collections">
+         <p>The easiest way to create a <code>JSONArray</code> from a java array or collection
+         is through the static factory methods from <code>JSONArray</code>.<code>JSONArray.fromObject()</code>
+         will inspect its parameter and call the correct factory or constructor.</p>
+         <p>Examples:</p>
 		 <source>
-	boolean[] boolArray = new boolean[]{true,false,true};
-	JSONArray jsonArray = JSONArray.fromObject( boolArray );
-	System.out.println( jsonArray );
-	// prints [true,false,true]</source>
-
-		 <source>
-	// when the map is processed it will create a JSONObject
-	Map map = new HashMap();
-	map.put( "name", "json" );
-	List list = new ArrayList();
-	list.add( map );
-	Object[][] complexArray = new Object[][]{ {"json", "is", "really", "easy"},
-		{ new Integer(1), new Integer(2) }, { list } };
-
-	jsonArray = JSONArray.fromObject( complexArray );
-	System.out.println( jsonArray );
-	// prints [["json","is","really","easy"],[1,2],[[{"name":"json"}]]]</source>
+   boolean[] boolArray = new boolean[]{true,false,true};
+   JSONArray jsonArray = JSONArray.fromObject( boolArray );
+   System.out.println( jsonArray );
+   // prints [true,false,true]</source>
 
 		 <source>
-	class MyBean{
-		private String name = "json";
-		private int pojoId = 1;
-		private char[] options = new char[]{'a','f'};
+   List list = new ArrayList();
+   list.add( "first" );
+   list.add( "second" );
+   JSONArray jsonArray = JSONArray.fromObject( list );
+   System.out.println( jsonArray );
+   // prints ["first","second"]</source>
 
-		// getters &amp; setters
-		...
-	}
+		 <source>
+   JSONArray jsonArray = JSONArray.fromObject( "['json','is','easy']" );
+   System.out.println( jsonArray );
+   // prints ["json","is","easy"]</source>
+       </subsection>
 
+       <a name="objects"/>
+       <subsection name="Working with objects">
+         <subsection name="From Beans &amp; Maps to JSON">
+         <p>The easiest way to create a <code>JSONObject</code> from a bean or <code>Map</code>
+         is through the static factory methods from <code>JSONObject</code>.<code>JSONObject.fromObject()</code>
+         will inspect its parameter and call the correct factory or constructor.</p>
+         <p>Examples:</p>
+		 <source>
+   Map map = new HashMap();
+   map.put( "name", "json" );
+   map.put( "bool", Boolean.TRUE );
+   map.put( "int", new Integer(1) );
+   map.put( "arr", new String[]{"a","b"} );
+   map.put( "func", "function(i){ return this.arr[i]; }" );
 
-	JSONObject jsonObject = JSONObject.fromObject( new MyBean() );
-	System.out.println( jsonObject );
-	// prints {"name":"json","pojoId":1,"options":["a","f"]}</source>
+   JSONObject json = JSONObject.fromObject( map );
+   System.out.println( jsonObject );
+   // prints ["name":"json","bool":true,"int":1,"arr":["a","b"],"func":function(i){ return this.arr[i]; }]</source>
 
-		 <p><strong><font color="#FF0000">CAUTION:</font></strong> when parsing, neither 
-		 JSONObject nor JSONArray checks for cycles in the hierarchy. It is a task left 
-		 for the user of the library.</p>
+		 <source>
+   class MyBean{
+      private String name = "json";
+      private int pojoId = 1;
+      private char[] options = new char[]{'a','f'};
+      private String func1 = "function(i){ return this.options[i]; }";
+      private JSONFunction func2 = new JSONFunction(new String[]{"i"},"return this.options[i]");
+
+      // getters &amp; setters
+      ...
+   }
+
+   JSONObject jsonObject = JSONObject.fromObject( new MyBean() );
+   System.out.println( jsonObject );
+   // prints {"name":"json","pojoId":1,"options":["a","f"],
+         "func1":function(i){ return this.options[i];},
+         "func2":function(i){ return this.options[i];}}</source>
+       </subsection>
+
+       <subsection name="From JSON to Beans">
+       <p>Json-lib can transform JSONObjects to either a DynaBean or an specific bean class.<br/>
+       When using DynaBean all arrays are converted to Lists, when using an speciic bean class
+       the transformation will use type conversion if necessary on array properties.</p>
+       <p>Convert to DynaBean:</p>
+	<source>
+   String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
+   JSONObject jsonObject = new JSONObject( json );
+   Object bean = JSONObject.toBean( jsonObject );
+   assertEquals( jsonObject.get( "name" ), PropertyUtils.getProperty( bean, "name" ) );
+   assertEquals( jsonObject.get( "bool" ), PropertyUtils.getProperty( bean, "bool" ) );
+   assertEquals( jsonObject.get( "int" ), PropertyUtils.getProperty( bean, "int" ) );
+   assertEquals( jsonObject.get( "double" ), PropertyUtils.getProperty( bean, "double" ) );
+   assertEquals( jsonObject.get( "func" ), PropertyUtils.getProperty( bean, "func" ) );
+   List expected = JSONArray.toList( jsonObject.getJSONArray( "array" ) );
+   Assertions.assertListEquals( expected, (List) PropertyUtils.getProperty( bean, "array" ) );</source>
+
+          <p>Convert to Bean:</p>
+	<source>
+   String json = "{bool:true,integer:1,string:\"json\"}";
+   JSONObject jsonObject = new JSONObject( json );
+   BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
+   assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
+   assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
+   assertEquals( jsonObject.get( "string" ), bean.getString() );</source>
+       </subsection>
+       </subsection>
+
+		 <p><img src="images/icon_warning_lrg.png"/><strong><font color="#FF0000">CAUTION:</font></strong>
+		 when parsing, neither JSONObject nor JSONArray checks for cycles in the hierarchy.
+		 It is a task left for the user of the library.</p>
+
+       <a name="xml"/>
+       <subsection name="Working with XML">
+          <subsection name="From JSON to XML">
+            <p>Transforming JSONObjects and JSONArrays to XML is as simple as a call to <code>XMLSerializer.write()</code>.<br/>
+            XMLSerializer will append special attributes to each xml element for easing the transformation back to JSON.</p>
+   <source>
+   JSONObject json = JSONObject.fromObject( true );
+   String xml = XMLSerializer.write( json );
+   System.out.println( xml );
+   // prints
+   <xmp><o class="object" null="true"/></xmp></source>
+   <source>
+   JSONObject json = JSONObject.fromObject("{\"name\":\"json\",\"bool\":true,\"int\":1}");
+   String xml = XMLSerializer.write( json );
+   System.out.println( xml );
+   // prints
+   <xmp><o class="object">
+      <name type="string">json</name>
+      <bool type="boolean">true</bool>
+      <int type="number">1</int>
+   </o></xmp></source>
+   <source>
+   JSONArray json = JSONArray.fromObject("[1,2,3]");
+   String xml = XMLSerializer.write( json );
+   System.out.println( xml );
+   // prints
+   <xmp><a class="array">
+      <e type="number">1</e>
+      <e type="number">2</e>
+      <e type="number">3</e>
+   </a></xmp></source>
+          </subsection>
+          <subsection name="From XML to JSON">
+             <p>XMLSerializer treats each element as a <code>string</code> unless a type parameter is specified.<br/>
+             JSONFunction needs an additional parameter that specifies that function's params.</p>
+     <source><xmp>
+   <a class="array">
+     <e type="function" params="i,j">
+         return matrix[i][j];
+     </e>
+   </a>
+     </xmp>
+   JSONArray json = XMLSerializer.read( xml );
+   System.out.println( json );
+   // prints [function(i,j){ return matrix[i][j]; }]
+     </source>
+          </subsection>
+       </subsection>
 	  </section>
 	</body>
 

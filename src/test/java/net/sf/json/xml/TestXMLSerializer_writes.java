@@ -39,7 +39,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    public void testWriteBooleanArray() throws Exception
    {
       JSONArray jsonArray = new JSONArray( "[true,false]" );
-      String expected = "<r><e type=\"boolean\">true</e><e type=\"boolean\">false</e></r>";
+      String expected = "<a><e type=\"boolean\">true</e><e type=\"boolean\">false</e></a>";
       String xml = XMLSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
@@ -47,7 +47,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    public void testWriteMultiBooleanArray() throws Exception
    {
       JSONArray jsonArray = new JSONArray( "[true,false,[true,false]]" );
-      String expected = "<r><e type=\"boolean\">true</e><e type=\"boolean\">false</e><e class=\"array\"><e type=\"boolean\">true</e><e type=\"boolean\">false</e></e></r>";
+      String expected = "<a><e type=\"boolean\">true</e><e type=\"boolean\">false</e><e class=\"array\"><e type=\"boolean\">true</e><e type=\"boolean\">false</e></e></a>";
       String xml = XMLSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
@@ -55,7 +55,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    public void testWriteMultiNumberArray() throws Exception
    {
       JSONArray jsonArray = new JSONArray( "[1.1,2,[3,4.4]]" );
-      String expected = "<r><e type=\"number\">1.1</e><e type=\"number\">2</e><e class=\"array\"><e type=\"number\">3</e><e type=\"number\">4.4</e></e></r>";
+      String expected = "<a><e type=\"number\">1.1</e><e type=\"number\">2</e><e class=\"array\"><e type=\"number\">3</e><e type=\"number\">4.4</e></e></a>";
       String xml = XMLSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
@@ -63,7 +63,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    public void testWriteMultiStringArray() throws Exception
    {
       JSONArray jsonArray = new JSONArray( "['1.1','2',['3','4.4']]" );
-      String expected = "<r><e type=\"string\">1.1</e><e type=\"string\">2</e><e class=\"array\"><e type=\"string\">3</e><e type=\"string\">4.4</e></e></r>";
+      String expected = "<a><e type=\"string\">1.1</e><e type=\"string\">2</e><e class=\"array\"><e type=\"string\">3</e><e type=\"string\">4.4</e></e></a>";
       String xml = XMLSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
@@ -71,7 +71,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    public void testWriteNullObject() throws Exception
    {
       JSONObject jsonObject = new JSONObject( true );
-      String expected = "<r null=\"true\"/>";
+      String expected = "<o null=\"true\"/>";
       String xml = XMLSerializer.write( jsonObject );
       assertXMLEqual( expected, xml );
    }
@@ -79,7 +79,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    public void testWriteNullObjectArray() throws Exception
    {
       JSONArray jsonArray = new JSONArray( "[null,null]" );
-      String expected = "<r><e class=\"object\" null=\"true\"/><e class=\"object\" null=\"true\"/></r>";
+      String expected = "<a><e class=\"object\" null=\"true\"/><e class=\"object\" null=\"true\"/></a>";
       String xml = XMLSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
@@ -87,7 +87,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    public void testWriteNumberArray() throws Exception
    {
       JSONArray jsonArray = new JSONArray( "[1.1,2]" );
-      String expected = "<r><e type=\"number\">1.1</e><e type=\"number\">2</e></r>";
+      String expected = "<a><e type=\"number\">1.1</e><e type=\"number\">2</e></a>";
       String xml = XMLSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
@@ -95,7 +95,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    public void testWriteObject() throws Exception
    {
       JSONObject jsonObject = new JSONObject( "{\"name\":\"json\"}" );
-      String expected = "<r><name type=\"string\">json</name></r>";
+      String expected = "<o><name type=\"string\">json</name></o>";
       String xml = XMLSerializer.write( jsonObject );
       assertXMLEqual( expected, xml );
    }
@@ -103,7 +103,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    public void testWriteObjectArray() throws Exception
    {
       JSONArray jsonArray = new JSONArray( "[{\"name\":\"json\"}]" );
-      String expected = "<r><e class=\"object\"><name type=\"string\">json</name></e></r>";
+      String expected = "<a><e class=\"object\"><name type=\"string\">json</name></e></a>";
       String xml = XMLSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
@@ -111,7 +111,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    public void testWriteStringArray() throws Exception
    {
       JSONArray jsonArray = new JSONArray( "['1','2']" );
-      String expected = "<r><e type=\"string\">1</e><e type=\"string\">2</e></r>";
+      String expected = "<a><e type=\"string\">1</e><e type=\"string\">2</e></a>";
       String xml = XMLSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }

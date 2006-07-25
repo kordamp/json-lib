@@ -1,18 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.json</groupId>
 	<artifactId>json-lib</artifactId>
 	<packaging>jar</packaging>
-	<version>0.4</version>
+	<version>0.6</version>
 	<name>json-lib</name>
 
-	<url>http://json-lib.sf.net</url>
+	<url>http://json-lib.sourceforge.net</url>
 
 	<description>
-      Java library for transforming beans, maps and XML to JSON.
+		Java library for transforming beans, maps and XML to JSON.
 	</description>
 
 	<inceptionYear>2006</inceptionYear>
@@ -29,9 +29,13 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:cvs:pserver:anonymous@json-lib.cvs.sourceforge.net:/cvsroot/json-lib:json-lib</connection>
+		<connection>
+			scm:cvs:pserver:anonymous@json-lib.cvs.sourceforge.net:/cvsroot/json-lib:json-lib
+		</connection>
 		<url>http://json-lib.cvs.sourceforge.net/json-lib</url>
-		<developerConnection>scm:cvs:ext:${maven.username}@json-lib.cvs.sourceforge.net:/cvsroot/json-lib:json-lib</developerConnection>
+		<developerConnection>
+			scm:cvs:ext:${maven.username}@json-lib.cvs.sourceforge.net:/cvsroot/json-lib:json-lib
+		</developerConnection>
 	</scm>
 	<issueManagement>
 		<system>SourceForge</system>
@@ -41,9 +45,15 @@
 	<mailingLists>
 		<mailingList>
 			<name>Json-lib User List</name>
-			<subscribe>http://lists.sourceforge.net/lists/listinfo/json-lib-user</subscribe>
-			<unsubscribe>http://lists.sourceforge.net/lists/listinfo/json-lib-user</unsubscribe>
-			<archive>http://sourceforge.net/mailarchive/forum.php?forum=json-lib-user</archive>
+			<subscribe>
+				http://lists.sourceforge.net/lists/listinfo/json-lib-user
+			</subscribe>
+			<unsubscribe>
+				http://lists.sourceforge.net/lists/listinfo/json-lib-user
+			</unsubscribe>
+			<archive>
+				http://sourceforge.net/mailarchive/forum.php?forum=json-lib-user
+			</archive>
 		</mailingList>
 	</mailingLists>
 
@@ -51,6 +61,7 @@
 		<developer>
 			<name>Douglas Crockford</name>
 			<email>json at JSON.org</email>
+			<organization>JSON.org</organization>
 			<roles>
 				<role>Original source code developer</role>
 			</roles>
@@ -134,6 +145,20 @@
 			<plugin>
 				<artifactId>maven-site-plugin</artifactId>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/Abstract*.java</exclude>
+						<exclude>**/AllTests.java</exclude>
+					</excludes>
+					<includes>
+						<include>**/Test*.java</include>
+					</includes>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -141,7 +166,9 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<artifactId>
+					maven-project-info-reports-plugin
+				</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -177,11 +204,15 @@
 		<snapshotRepository>
 			<id>sf_snapshots</id>
 			<name>SourceForge Snapshot</name>
-			<url>scpexe://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo</url>
+			<url>
+				scpexe://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo
+			</url>
 		</snapshotRepository>
 		<site>
 			<id>sf_website</id>
-			<url>scpexe://ssh.sf.net/home/groups/j/js/json-lib/htdocs</url>
+			<url>
+				scpexe://ssh.sf.net/home/groups/j/js/json-lib/htdocs
+			</url>
 		</site>
 	</distributionManagement>
 

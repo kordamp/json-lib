@@ -41,7 +41,7 @@ public class XMLSerializer
 {
    private static final Log log = LogFactory.getLog( XMLSerializer.class );
 
-   public static JSONArray readArray( String string ) throws JSONException
+   public static JSONArray readArray( String string )
    {
       JSONArray jsonArray = new JSONArray();
       try{
@@ -56,7 +56,7 @@ public class XMLSerializer
       return jsonArray;
    }
 
-   public static JSONObject readObject( String string ) throws JSONException
+   public static JSONObject readObject( String string )
    {
       JSONObject jsonObject = new JSONObject();
       try{
@@ -71,22 +71,22 @@ public class XMLSerializer
       return jsonObject;
    }
 
-   public static String write( JSONArray jsonArray ) throws JSONException
+   public static String write( JSONArray jsonArray )
    {
       Object[] array = jsonArray.toArray();
-      Element root = processJSONArray( new Element( "r" ), array );
+      Element root = processJSONArray( new Element( "a" ), array );
       Document doc = new Document( root );
       return doc.toXML();
    }
 
-   public static String write( JSONObject jsonObject ) throws JSONException
+   public static String write( JSONObject jsonObject )
    {
       Element root = null;
       if( jsonObject.isNullObject() ){
-         root = new Element( "r" );
+         root = new Element( "o" );
          root.addAttribute( new Attribute( "null", "true" ) );
       }else{
-         root = processJSONObject( jsonObject, new Element( "r" ) );
+         root = processJSONObject( jsonObject, new Element( "o" ) );
       }
       Document doc = new Document( root );
       return doc.toXML();

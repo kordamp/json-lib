@@ -9,7 +9,8 @@
 		<section name="Welcome to Json-lib">
 			<p>
             JSON-lib is a java library for transforming beans, maps and XML 
-            to JSON. It is based on the work by Douglas Crockford
+				to JSON and back again to beans and DynaBeans.<br/> 
+				It is based on the work by Douglas Crockford
 				in <a href="http://www.json.org/java">http://www.json.org/java</a>.
 			</p>
          <p>

@@ -37,7 +37,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testNullObjectArray()
    {
-      String xml = "<r><e class=\"object\" null=\"true\"/><e class=\"object\" null=\"true\"/></r>";
+      String xml = "<a><e class=\"object\" null=\"true\"/><e class=\"object\" null=\"true\"/></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[null,null]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -45,7 +45,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadBooleanArray_withDefaultType()
    {
-      String xml = "<r type=\"boolean\"><e>true</e><e>false</e></r>";
+      String xml = "<a type=\"boolean\"><e>true</e><e>false</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[true,false]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -53,7 +53,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadBooleanArray_withoutDefaultType()
    {
-      String xml = "<r><e type=\"boolean\">true</e><e type=\"boolean\">false</e></r>";
+      String xml = "<a><e type=\"boolean\">true</e><e type=\"boolean\">false</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[true,false]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -61,7 +61,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadFloatArray_withDefaultType()
    {
-      String xml = "<r type=\"float\"><e>1.1</e><e>2.2</e><e>3.3</e></r>";
+      String xml = "<a type=\"float\"><e>1.1</e><e>2.2</e><e>3.3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1.1,2.2,3.3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -69,7 +69,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadFloatArray_withoutDefaultType()
    {
-      String xml = "<r><e type=\"float\">1.1</e><e type=\"float\">2.2</e><e type=\"float\">3.3</e></r>";
+      String xml = "<a><e type=\"float\">1.1</e><e type=\"float\">2.2</e><e type=\"float\">3.3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1.1,2.2,3.3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -77,7 +77,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadFunctionArray_withDefaultType()
    {
-      String xml = "<r type=\"function\"><e params=\"a\"><![CDATA[return a;]]></e></r>";
+      String xml = "<a type=\"function\"><e params=\"a\"><![CDATA[return a;]]></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[function(a){ return a; }]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -85,7 +85,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadFunctionArray_withoutDefaultType()
    {
-      String xml = "<r><e params=\"a\" type=\"function\"><![CDATA[return a;]]></e></r>";
+      String xml = "<a><e params=\"a\" type=\"function\"><![CDATA[return a;]]></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[function(a){ return a; }]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -93,7 +93,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadFunctionObject()
    {
-      String xml = "<r><func params=\"a\" ><![CDATA[return a;]]></func></r>";
+      String xml = "<o><func params=\"a\" ><![CDATA[return a;]]></func></o>";
       JSONObject xmlObject = XMLSerializer.readObject( xml );
       JSONObject expected = new JSONObject( "{func:function(a){ return a; }}" );
       assertEquals( expected.toString(), xmlObject.toString() );
@@ -101,7 +101,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadIntegerArray_withDefaultType()
    {
-      String xml = "<r type=\"integer\"><e>1</e><e>2</e><e>3</e></r>";
+      String xml = "<a type=\"integer\"><e>1</e><e>2</e><e>3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1,2,3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -109,7 +109,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadIntegerArray_withoutDefaultType()
    {
-      String xml = "<r><e type=\"integer\">1</e><e type=\"integer\">2</e><e type=\"integer\">3</e></r>";
+      String xml = "<a><e type=\"integer\">1</e><e type=\"integer\">2</e><e type=\"integer\">3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1,2,3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -117,7 +117,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMixedArray_withDefaultType()
    {
-      String xml = "<r type=\"string\"><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e>3</e></r>";
+      String xml = "<a type=\"string\"><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e>3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[true,2.2,\"3\"]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -125,7 +125,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMixedArray_withoutDefaultType()
    {
-      String xml = "<r><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e type=\"string\">3</e></r>";
+      String xml = "<a><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e type=\"string\">3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[true,2.2,\"3\"]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -133,7 +133,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMultiBooleanArray_withDefaultType()
    {
-      String xml = "<r type=\"boolean\"><e>true</e><e>false</e><e class=\"array\"><e>false</e><e>true</e></e></r>";
+      String xml = "<a type=\"boolean\"><e>true</e><e>false</e><e class=\"array\"><e>false</e><e>true</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[true,false,[false,true]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -141,7 +141,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMultiBooleanArray_withoutDefaultType()
    {
-      String xml = "<r><e type=\"boolean\">true</e><e type=\"boolean\">false</e><e class=\"array\"><e type=\"boolean\">false</e><e type=\"boolean\">true</e></e></r>";
+      String xml = "<a><e type=\"boolean\">true</e><e type=\"boolean\">false</e><e class=\"array\"><e type=\"boolean\">false</e><e type=\"boolean\">true</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[true,false,[false,true]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -149,7 +149,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMultiFloatArray_withDefaultType()
    {
-      String xml = "<r type=\"float\"><e>1.1</e><e>2.2</e><e>3.3</e><e class=\"array\"><e>1.1</e><e>2.2</e><e>3.3</e></e></r>";
+      String xml = "<a type=\"float\"><e>1.1</e><e>2.2</e><e>3.3</e><e class=\"array\"><e>1.1</e><e>2.2</e><e>3.3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1.1,2.2,3.3,[1.1,2.2,3.3]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -157,7 +157,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMultiFloatArray_withoutDefaultType()
    {
-      String xml = "<r><e type=\"float\">1.1</e><e type=\"float\">2.2</e><e type=\"float\">3.3</e><e class=\"array\"><e type=\"float\">1.1</e><e type=\"float\">2.2</e><e type=\"float\">3.3</e></e></r>";
+      String xml = "<a><e type=\"float\">1.1</e><e type=\"float\">2.2</e><e type=\"float\">3.3</e><e class=\"array\"><e type=\"float\">1.1</e><e type=\"float\">2.2</e><e type=\"float\">3.3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1.1,2.2,3.3,[1.1,2.2,3.3]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -165,7 +165,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMultiIntegerArray_withDefaultType()
    {
-      String xml = "<r type=\"integer\"><e>1</e><e>2</e><e>3</e><e class=\"array\"><e>1</e><e>2</e><e>3</e></e></r>";
+      String xml = "<a type=\"integer\"><e>1</e><e>2</e><e>3</e><e class=\"array\"><e>1</e><e>2</e><e>3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1,2,3,[1,2,3]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -173,7 +173,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMultiIntegerArray_withoutDefaultType()
    {
-      String xml = "<r><e type=\"integer\">1</e><e type=\"integer\">2</e><e type=\"integer\">3</e><e class=\"array\"><e type=\"integer\">1</e><e type=\"integer\">2</e><e type=\"integer\">3</e></e></r>";
+      String xml = "<a><e type=\"integer\">1</e><e type=\"integer\">2</e><e type=\"integer\">3</e><e class=\"array\"><e type=\"integer\">1</e><e type=\"integer\">2</e><e type=\"integer\">3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1,2,3,[1,2,3]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -181,7 +181,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMultiMixedArray_withDefaultType()
    {
-      String xml = "<r type=\"string\"><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e>3</e><e class=\"array\"><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e>3</e></e></r>";
+      String xml = "<a type=\"string\"><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e>3</e><e class=\"array\"><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e>3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[true,2.2,\"3\",[true,2.2,\"3\"]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -189,7 +189,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMultiMixedArray_withoutDefaultType()
    {
-      String xml = "<r><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e type=\"string\">3</e><e class=\"array\"><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e type=\"string\">3</e></e></r>";
+      String xml = "<a><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e type=\"string\">3</e><e class=\"array\"><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e type=\"string\">3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[true,2.2,\"3\",[true,2.2,\"3\"]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -197,7 +197,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMultiNumberArray_withDefaultType()
    {
-      String xml = "<r type=\"number\"><e>1.1</e><e>2.2</e><e>3</e><e class=\"array\"><e>1.1</e><e>2.2</e><e>3</e></e></r>";
+      String xml = "<a type=\"number\"><e>1.1</e><e>2.2</e><e>3</e><e class=\"array\"><e>1.1</e><e>2.2</e><e>3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1.1,2.2,3,[1.1,2.2,3]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -205,7 +205,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMultiNumberArray_withoutDefaultType()
    {
-      String xml = "<r><e type=\"number\">1.1</e><e type=\"number\">2.2</e><e type=\"number\">3</e><e class=\"array\"><e type=\"number\">1.1</e><e type=\"number\">2.2</e><e type=\"number\">3</e></e></r>";
+      String xml = "<a><e type=\"number\">1.1</e><e type=\"number\">2.2</e><e type=\"number\">3</e><e class=\"array\"><e type=\"number\">1.1</e><e type=\"number\">2.2</e><e type=\"number\">3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1.1,2.2,3,[1.1,2.2,3]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -213,7 +213,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMultiStringArray_withDefaultType()
    {
-      String xml = "<r type=\"string\"><e>1.1</e><e>2.2</e><e>3</e><e class=\"array\"><e>1.1</e><e>2.2</e><e>3</e></e></r>";
+      String xml = "<a type=\"string\"><e>1.1</e><e>2.2</e><e>3</e><e class=\"array\"><e>1.1</e><e>2.2</e><e>3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[\"1.1\",\"2.2\",\"3\",[\"1.1\",\"2.2\",\"3\"]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -221,7 +221,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadMultiStringArray_withoutDefaultType()
    {
-      String xml = "<r><e type=\"string\">1.1</e><e type=\"string\">2.2</e><e type=\"string\">3</e><e class=\"array\"><e type=\"string\">1.1</e><e type=\"string\">2.2</e><e type=\"string\">3</e></e></r>";
+      String xml = "<a><e type=\"string\">1.1</e><e type=\"string\">2.2</e><e type=\"string\">3</e><e class=\"array\"><e type=\"string\">1.1</e><e type=\"string\">2.2</e><e type=\"string\">3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[\"1.1\",\"2.2\",\"3\",[\"1.1\",\"2.2\",\"3\"]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -229,7 +229,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadNestedObject()
    {
-      String xml = "<r><name>json</name><nested class=\"object\"><id type=\"number\">1</id></nested></r>";
+      String xml = "<o><name>json</name><nested class=\"object\"><id type=\"number\">1</id></nested></o>";
       JSONObject xmlObject = XMLSerializer.readObject( xml );
       JSONObject expected = JSONObject.fromString( "{name:\"json\",nested:{id:1}}" );
       assertEquals( expected.get( "name" ), xmlObject.get( "name" ) );
@@ -238,16 +238,16 @@ public class TestXMLSerializer_reads extends TestCase
             .toString() );
    }
 
-   public void testreadnullObject()
+   public void testReadNullObject()
    {
-      String xml = "<r null=\"true\"/>";
+      String xml = "<o null=\"true\"/>";
       JSONObject xmlObject = XMLSerializer.readObject( xml );
       assertTrue( xmlObject.isNullObject() );
    }
 
    public void testReadNumberArray_withDefaultType()
    {
-      String xml = "<r type=\"number\"><e>1.1</e><e>2.2</e><e>3</e></r>";
+      String xml = "<a type=\"number\"><e>1.1</e><e>2.2</e><e>3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1.1,2.2,3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -255,7 +255,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadNumberArray_withoutDefaultType()
    {
-      String xml = "<r><e type=\"number\">1.1</e><e type=\"number\">2.2</e><e type=\"number\">3</e></r>";
+      String xml = "<a><e type=\"number\">1.1</e><e type=\"number\">2.2</e><e type=\"number\">3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1.1,2.2,3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -263,7 +263,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadSimpleObject_withDefaultType()
    {
-      String xml = "<r type=\"number\"><bool type=\"boolean\">true</bool><int>1</int><double>2.2</double><string type=\"string\">json</string><numbers class=\"array\"><e>4.44</e><e>5</e></numbers></r>";
+      String xml = "<o type=\"number\"><bool type=\"boolean\">true</bool><int>1</int><double>2.2</double><string type=\"string\">json</string><numbers class=\"array\"><e>4.44</e><e>5</e></numbers></o>";
       JSONObject xmlObject = XMLSerializer.readObject( xml );
       JSONObject expected = JSONObject.fromString( "{bool:true,int:1,double:2.2,string:'json',numbers:[4.44,5]}" );
       assertEquals( expected.get( "bool" ), xmlObject.get( "bool" ) );
@@ -277,7 +277,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadStringArray_withDefaultType()
    {
-      String xml = "<r type=\"string\"><e>1.1</e><e>2.2</e><e>3</e></r>";
+      String xml = "<a type=\"string\"><e>1.1</e><e>2.2</e><e>3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[\"1.1\",\"2.2\",\"3\"]" );
       assertEquals( expected.toString(), xmlArray.toString() );
@@ -285,7 +285,7 @@ public class TestXMLSerializer_reads extends TestCase
 
    public void testReadStringArray_withoutDefaultType()
    {
-      String xml = "<r><e type=\"string\">1.1</e><e type=\"string\">2.2</e><e type=\"string\">3</e></r>";
+      String xml = "<a><e type=\"string\">1.1</e><e type=\"string\">2.2</e><e type=\"string\">3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[\"1.1\",\"2.2\",\"3\"]" );
       assertEquals( expected.toString(), xmlArray.toString() );
