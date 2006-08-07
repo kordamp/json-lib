@@ -17,20 +17,19 @@
 package net.sf.json;
 
 import java.io.Serializable;
-import java.util.regex.Matcher;
 
 /**
  * JSONFunction represents a javaScript function's text.
  *
  * @author Andres Almiray
- * @version 1
+ * @version 2
  */
 public class JSONFunction implements Serializable
 {
    /** constant array for empty parameters */
    private static final String[] EMPTY_PARAM_ARRAY = new String[0];
 
-   private static final long serialVersionUID = 1L;
+   private static final long serialVersionUID = -2521877630166248865L;
 
    /**
     * Constructs a JSONFunction from a text representation
@@ -42,9 +41,7 @@ public class JSONFunction implements Serializable
          throw new JSONException( "String is not a function. " + v );
       }else{
          // read params if any
-         Matcher matcher = JSONUtils.FUNCTION_PARAMS_PATTERN.matcher( (String) v );
-         matcher.matches();
-         String params = matcher.group( 1 );
+         String params = JSONUtils.getFunctionParams( (String) v );
          // read function text
          int i = 0;
          StringBuffer sb = new StringBuffer();

@@ -50,6 +50,14 @@ public class TestJSONUtils extends TestCase
       assertEquals( "200", JSONUtils.doubleToString( 200.00000 ) );
    }
 
+   public void testGetFunctionParams()
+   {
+      assertEquals( "", JSONUtils.getFunctionParams( "function()" ) );
+      assertEquals( "a", JSONUtils.getFunctionParams( "function(a)" ) );
+      assertEquals( "a,b", JSONUtils.getFunctionParams( "function(a,b)" ) );
+      assertEquals( "", JSONUtils.getFunctionParams( "notAFunction" ) );
+   }
+
    public void testIsArray()
    {
       assertTrue( JSONUtils.isArray( new Object[0] ) );

@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -29,13 +28,32 @@ import org.apache.commons.lang.ArrayUtils;
  * Provides useful methods on java objects.
  *
  * @author Andres Almiray
- * @version 2
+ * @version 3
  */
-public class JSONUtils
+public final class JSONUtils
 {
-   public static final Pattern FUNCTION_HEADER_PATTERN = Pattern.compile( "^function[ ]?\\(.*\\)$" );
-   public static final Pattern FUNCTION_PARAMS_PATTERN = Pattern.compile( "^function[ ]?\\((.*?)\\)$" );
-   public static final Pattern FUNCTION_PATTERN = Pattern.compile( "^function[ ]?\\(.*\\)[ ]?\\{.*\\}$" );
+   private static RegexpMatcher FUNCTION_HEADER_MATCHER = null;
+   private static final String FUNCTION_HEADER_PATTERN = "^function[ ]?\\(.*\\)$";
+   private static RegexpMatcher FUNCTION_MACTHER = null;
+   private static RegexpMatcher FUNCTION_PARAMS_MATCHER = null;
+   private static final String FUNCTION_PARAMS_PATTERN = "^function[ ]?\\((.*?)\\)$";
+   private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*\\)[ ]?\\{.*\\}$";
+
+   private static String javaVersion = "1.3.1";
+
+   static{
+      javaVersion = System.getProperty( "java.version" );
+
+      if( isJDK13() ){
+         FUNCTION_HEADER_MATCHER = new Perl5RegexpMatcher( FUNCTION_HEADER_PATTERN );
+         FUNCTION_PARAMS_MATCHER = new Perl5RegexpMatcher( FUNCTION_PARAMS_PATTERN );
+         FUNCTION_MACTHER = new Perl5RegexpMatcher( FUNCTION_PATTERN );
+      }else{
+         FUNCTION_HEADER_MATCHER = new JdkRegexpMatcher( FUNCTION_HEADER_PATTERN );
+         FUNCTION_PARAMS_MATCHER = new JdkRegexpMatcher( FUNCTION_PARAMS_PATTERN );
+         FUNCTION_MACTHER = new JdkRegexpMatcher( FUNCTION_PATTERN );
+      }
+   }
 
    /**
     * Produce a string from a double. The string "null" will be returned if the
@@ -71,6 +89,14 @@ public class JSONUtils
       }
 
       return 1 + getDimensions( arrayClass.getComponentType() );
+   }
+
+   /**
+    * Returns the params of a function literal.
+    */
+   public static String getFunctionParams( String function )
+   {
+      return FUNCTION_PARAMS_MATCHER.getGroupIfMatches( function, 1 );
    }
 
    public static Class getInnerComponentType( Class type )
@@ -186,15 +212,14 @@ public class JSONUtils
 
    /**
     * Tests if obj is javaScript function.<br>
-    * Obj must ba a non-null String and match "^function[ ]?\\(.*\\)[
-    * ]?\\{.*\\}$"
+    * Obj must ba a non-null String and match <nowrap>"^function[ ]?\\(.*\\)[
+    * ]?\\{.*\\}$"</nowrap>
     */
    public static boolean isFunction( Object obj )
    {
       if( obj instanceof String && obj != null ){
          String str = (String) obj;
-         return FUNCTION_PATTERN.matcher( str )
-               .matches();
+         return FUNCTION_MACTHER.matches( str );
       }
       if( obj instanceof JSONFunction && obj != null ){
          return true;
@@ -210,10 +235,14 @@ public class JSONUtils
    {
       if( obj instanceof String && obj != null ){
          String str = (String) obj;
-         return FUNCTION_HEADER_PATTERN.matcher( str )
-               .matches();
+         return FUNCTION_HEADER_MATCHER.matches( str );
       }
       return false;
+   }
+
+   public static boolean isJDK13()
+   {
+      return javaVersion.indexOf( "1.3" ) != -1;
    }
 
    /**
@@ -399,7 +428,7 @@ public class JSONUtils
    /**
     * Converts an array of primitive chars to objects.<br>
     * <p>
-    * <strong>This is method is not in ArrayUtils. (commons-lang 2.1)</strong>
+    * <strong>This method is not in ArrayUtils. (commons-lang 2.1)</strong>
     * </p>
     * <p>
     * This method returns <code>null</code> for a <code>null</code> input

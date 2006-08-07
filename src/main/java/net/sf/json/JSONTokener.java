@@ -15,6 +15,7 @@
  */
 package net.sf.json;
 
+
 /*
 Copyright (c) 2002 JSON.org
 
@@ -39,7 +40,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 /**
  * A JSONTokener takes a source string and extracts characters and tokens from
  * it. It is used by the JSONObject and JSONArray constructors to parse JSON
@@ -50,7 +50,6 @@ SOFTWARE.
  */
 public class JSONTokener
 {
-
    /**
     * Get the hex value of a character (base16).
     *
@@ -104,7 +103,6 @@ public class JSONTokener
          this.myIndex -= 1;
       }
    }
-
    public int length()
    {
       if( this.mySource == null ){
@@ -116,7 +114,11 @@ public class JSONTokener
    public boolean matches( String pattern )
    {
       String str = this.mySource.substring( this.myIndex );
-      return str.matches( pattern );
+      if( JSONUtils.isJDK13() ){
+         return new Perl5RegexpMatcher(pattern).matches( str );
+      }else{
+         return new JdkRegexpMatcher(pattern).matches( str );
+      }
    }
 
    /**
@@ -359,7 +361,7 @@ public class JSONTokener
             back();
             return new JSONArray( this );
          default:
-               //empty
+            // empty
       }
 
       /*

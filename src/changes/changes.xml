@@ -7,6 +7,12 @@
 		</author>
 	</properties>
 	<body>
+		<release version="0.7" date="2006-08-07"
+			desc="Fourth public release">
+			<action dev="Andres Almiray" type="fix" issue="1529946">
+				Make Json-lib JDK 1.3.1 compatible
+			</action>
+		</release>
 		<release version="0.6" date="2006-07-24"
 			desc="Third public release">
 			<action dev="Andres Almiray" type="add">
