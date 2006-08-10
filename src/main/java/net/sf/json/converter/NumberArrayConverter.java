@@ -23,7 +23,7 @@ import org.apache.commons.beanutils.MethodUtils;
 /**
  * Converts an array to an array of subclass of Number.
  *
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class NumberArrayConverter implements Converter
 {

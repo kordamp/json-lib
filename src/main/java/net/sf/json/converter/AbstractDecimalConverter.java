@@ -18,7 +18,7 @@ package net.sf.json.converter;
 /**
  * Base class for primitive decimal conversion.
  *
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class AbstractDecimalConverter extends AbstractPrimitiveConverter
 {

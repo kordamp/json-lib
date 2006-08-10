@@ -17,7 +17,7 @@
 package net.sf.json;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public interface JSONTypes
 {

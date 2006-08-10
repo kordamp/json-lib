@@ -29,7 +29,7 @@ import net.sf.json.sample.BeanWithFunc;
 import org.apache.commons.beanutils.PropertyUtils;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONObject extends TestCase
 {
@@ -43,7 +43,82 @@ public class TestJSONObject extends TestCase
       super( testName );
    }
 
-   public void testBeanWithFunc()
+   public void testFromBean_null_bean()
+   {
+      try{
+         JSONObject json = JSONObject.fromBean( null );
+         assertTrue( json.isNullObject() );
+         assertEquals( JSONNull.getInstance()
+               .toString(), json.toString() );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testFromBean_use_wrappers()
+   {
+      JSONObject json = JSONObject.fromBean( Boolean.TRUE );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromBean( new Byte( Byte.MIN_VALUE ) );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromBean( new Short( Short.MIN_VALUE ) );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromBean( new Integer( Integer.MIN_VALUE ) );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromBean( new Long( Long.MIN_VALUE ) );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromBean( new Float( Float.MIN_VALUE ) );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromBean( new Double( Double.MIN_VALUE ) );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromBean( new Character( 'A' ) );
+      assertTrue( json.isEmpty() );
+   }
+
+   public void testFromMap_nested_null_object()
+   {
+      Map map = new HashMap();
+      map.put( "nested", null );
+      map.put( "string", "json" );
+      try{
+         JSONObject json = JSONObject.fromMap( map );
+         assertEquals( "json", json.getString( "string" ) );
+         Object nested = json.get( "nested" );
+         assertTrue( JSONUtils.isNull( nested ) );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testFromMap_null_Map()
+   {
+      try{
+         JSONObject json = JSONObject.fromMap( null );
+         assertTrue( json.isNullObject() );
+         assertEquals( JSONNull.getInstance()
+               .toString(), json.toString() );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testFromObject_BeanA()
+   {
+      try{
+         JSONObject json = JSONObject.fromObject( new BeanA() );
+         assertEquals( true, json.getBoolean( "bool" ) );
+         assertEquals( 42, json.getInt( "integer" ) );
+         assertEquals( "json", json.getString( "string" ) );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testFromObject_BeanWithFunc()
    {
       try{
          JSONObject json = JSONObject.fromObject( new BeanWithFunc( "return a;" ) );
@@ -57,7 +132,7 @@ public class TestJSONObject extends TestCase
       }
    }
 
-   public void testExtendedBean()
+   public void testFromObject_ExtendedBean()
    {
       try{
          JSONObject json = JSONObject.fromObject( new BeanB() );
@@ -71,7 +146,7 @@ public class TestJSONObject extends TestCase
       }
    }
 
-   public void testMap()
+   public void testFromObject_Map()
    {
       Map map = new HashMap();
       map.put( "bool", Boolean.TRUE );
@@ -88,7 +163,7 @@ public class TestJSONObject extends TestCase
       }
    }
 
-   public void testNestedBean()
+   public void testFromObject_nested_bean()
    {
       try{
          JSONObject json = JSONObject.fromObject( new BeanC() );
@@ -100,68 +175,33 @@ public class TestJSONObject extends TestCase
       }
    }
 
-   public void testNestedNullObject()
+   public void testFromObject_use_wrappers()
    {
-      Map map = new HashMap();
-      map.put( "nested", null );
-      map.put( "string", "json" );
-      try{
-         JSONObject json = JSONObject.fromMap( map );
-         assertEquals( "json", json.getString( "string" ) );
-         Object nested = json.get( "nested" );
-         assertTrue( JSONUtils.isNull( nested ) );
-      }
-      catch( JSONException jsone ){
-         fail( jsone.getMessage() );
-      }
+      JSONObject json = JSONObject.fromObject( Boolean.TRUE );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromObject( new Byte( Byte.MIN_VALUE ) );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromObject( new Short( Short.MIN_VALUE ) );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromObject( new Integer( Integer.MIN_VALUE ) );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromObject( new Long( Long.MIN_VALUE ) );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromObject( new Float( Float.MIN_VALUE ) );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromObject( new Double( Double.MIN_VALUE ) );
+      assertTrue( json.isEmpty() );
+      json = JSONObject.fromObject( new Character( 'A' ) );
+      assertTrue( json.isEmpty() );
    }
 
-   public void testNullBean()
-   {
-      try{
-         JSONObject json = JSONObject.fromBean( null );
-         assertTrue( json.isNullObject() );
-         assertEquals( JSONNull.getInstance()
-               .toString(), json.toString() );
-      }
-      catch( JSONException jsone ){
-         fail( jsone.getMessage() );
-      }
-   }
-
-   public void testNullMap()
-   {
-      try{
-         JSONObject json = JSONObject.fromMap( null );
-         assertTrue( json.isNullObject() );
-         assertEquals( JSONNull.getInstance()
-               .toString(), json.toString() );
-      }
-      catch( JSONException jsone ){
-         fail( jsone.getMessage() );
-      }
-   }
-
-   public void testNullString()
+   public void testFromString_null_String()
    {
       try{
          JSONObject json = JSONObject.fromString( null );
          assertTrue( json.isNullObject() );
          assertEquals( JSONNull.getInstance()
                .toString(), json.toString() );
-      }
-      catch( JSONException jsone ){
-         fail( jsone.getMessage() );
-      }
-   }
-
-   public void testSimpleBean()
-   {
-      try{
-         JSONObject json = JSONObject.fromObject( new BeanA() );
-         assertEquals( true, json.getBoolean( "bool" ) );
-         assertEquals( 42, json.getInt( "integer" ) );
-         assertEquals( "json", json.getString( "string" ) );
       }
       catch( JSONException jsone ){
          fail( jsone.getMessage() );

@@ -23,7 +23,7 @@ import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  * @version 1
  */
 public class Perl5RegexpMatcher implements RegexpMatcher

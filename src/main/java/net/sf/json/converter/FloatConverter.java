@@ -16,7 +16,7 @@
 package net.sf.json.converter;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class FloatConverter extends AbstractDecimalConverter
 {

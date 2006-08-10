@@ -17,7 +17,7 @@
 package net.sf.json;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  * @version 1
  */
 public interface RegexpMatcher

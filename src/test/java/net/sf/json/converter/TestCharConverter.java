@@ -19,7 +19,7 @@ package net.sf.json.converter;
 import junit.framework.TestCase;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestCharConverter extends TestCase
 {

@@ -21,7 +21,7 @@ import java.io.StringWriter;
 import junit.framework.TestCase;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONBuilder extends TestCase
 {

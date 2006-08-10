@@ -22,7 +22,7 @@ import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.XMLTestCase;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestXMLSerializer_writes extends XMLTestCase
 {
@@ -40,6 +40,22 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONArray jsonArray = new JSONArray( "[true,false]" );
       String expected = "<a><e type=\"boolean\">true</e><e type=\"boolean\">false</e></a>";
+      String xml = XMLSerializer.write( jsonArray );
+      assertXMLEqual( expected, xml );
+   }
+
+   public void testWriteEmptyObject() throws Exception
+   {
+      JSONObject jsonObject = new JSONObject();
+      String expected = "<o/>";
+      String xml = XMLSerializer.write( jsonObject );
+      assertXMLEqual( expected, xml );
+   }
+
+   public void testWriteFunctionArray() throws Exception
+   {
+      JSONArray jsonArray = new JSONArray( "[function(a){ return a; }]" );
+      String expected = "<a><e type=\"function\" params=\"a\"><![CDATA[return a;]]></e></a>";
       String xml = XMLSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
@@ -96,6 +112,20 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONObject jsonObject = new JSONObject( "{\"name\":\"json\"}" );
       String expected = "<o><name type=\"string\">json</name></o>";
+      String xml = XMLSerializer.write( jsonObject );
+      assertXMLEqual( expected, xml );
+   }
+
+   public void testWriteObject_full_types() throws Exception
+   {
+      JSONObject jsonObject = new JSONObject(
+            "{\"string\":\"json\",\"int\":1,\"bool\":true,\"array\":[1.1,2],\"nested_null\":null,\"nested\":{\"name\":\"json\"},\"func\":function(a){ return a; }}" );
+      String expected = "<o><string type=\"string\">json</string>" + "<int type=\"number\">1</int>"
+            + "<bool type=\"boolean\">true</bool>"
+            + "<array class=\"array\"><e type=\"number\">1.1</e><e type=\"number\">2</e></array>"
+            + "<nested_null class=\"object\" null=\"true\"/>"
+            + "<nested class=\"object\"><name type=\"string\">json</name></nested>"
+            + "<func type=\"function\" params=\"a\"><![CDATA[return a;]]></func>" + "</o>";
       String xml = XMLSerializer.write( jsonObject );
       assertXMLEqual( expected, xml );
    }

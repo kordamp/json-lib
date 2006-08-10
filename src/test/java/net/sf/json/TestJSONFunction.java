@@ -19,7 +19,7 @@ package net.sf.json;
 import junit.framework.TestCase;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONFunction extends TestCase
 {

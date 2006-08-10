@@ -27,7 +27,7 @@ import org.apache.commons.beanutils.DynaProperty;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JSONDynaClass implements DynaClass, Serializable
 {

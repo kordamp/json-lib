@@ -21,7 +21,7 @@ import java.lang.reflect.Array;
 /**
  * Converts an array to a byte[].
  *
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class ByteArrayConverter extends AbstractArrayConverter
 {

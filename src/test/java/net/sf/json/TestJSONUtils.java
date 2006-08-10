@@ -21,7 +21,7 @@ import java.util.Collections;
 import junit.framework.TestCase;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONUtils extends TestCase
 {

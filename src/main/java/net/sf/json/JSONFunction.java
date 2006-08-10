@@ -21,7 +21,7 @@ import java.io.Serializable;
 /**
  * JSONFunction represents a javaScript function's text.
  *
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  * @version 2
  */
 public class JSONFunction implements Serializable

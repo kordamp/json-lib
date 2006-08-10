@@ -17,7 +17,7 @@
 package net.sf.json.sample;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class BeanA
 {

@@ -21,7 +21,7 @@ import java.lang.reflect.Array;
 /**
  * Converts an array to a int[].
  *
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class IntArrayConverter extends AbstractArrayConverter
 {

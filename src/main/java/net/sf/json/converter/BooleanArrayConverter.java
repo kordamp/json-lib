@@ -21,7 +21,7 @@ import java.lang.reflect.Array;
 /**
  * Converts an array to a boolean[].
  *
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class BooleanArrayConverter extends AbstractArrayConverter
 {

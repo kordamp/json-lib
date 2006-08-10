@@ -18,7 +18,7 @@ package net.sf.json.converter;
 /**
  * Base class por primitive integer conversion.
  *
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class AbstractIntegerConverter extends AbstractPrimitiveConverter
 {

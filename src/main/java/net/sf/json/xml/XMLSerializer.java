@@ -16,6 +16,9 @@
 
 package net.sf.json.xml;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.Arrays;
 
@@ -30,12 +33,14 @@ import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
+import nu.xom.Serializer;
+import nu.xom.Text;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class XMLSerializer
 {
@@ -76,7 +81,7 @@ public class XMLSerializer
       Object[] array = jsonArray.toArray();
       Element root = processJSONArray( new Element( "a" ), array );
       Document doc = new Document( root );
-      return doc.toXML();
+      return writeDocument( doc );
    }
 
    public static String write( JSONObject jsonObject )
@@ -89,7 +94,7 @@ public class XMLSerializer
          root = processJSONObject( jsonObject, new Element( "o" ) );
       }
       Document doc = new Document( root );
-      return doc.toXML();
+      return writeDocument( doc );
    }
 
    private static String getClass( Element element )
@@ -171,8 +176,11 @@ public class XMLSerializer
          }else if( JSONUtils.isFunction( el ) ){
             JSONFunction func = (JSONFunction) el;
             element.addAttribute( new Attribute( "type", JSONTypes.FUNCTION ) );
-            element.addAttribute( new Attribute( "params", Arrays.toString( func.getParams() ) ) );
-            element.appendChild( "<![CDATA[" + func.getText() + "]]" );
+            String params = Arrays.toString( func.getParams() );
+            params = params.substring( 1 );
+            params = params.substring( 0, params.length() - 1 );
+            element.addAttribute( new Attribute( "params", params ) );
+            element.appendChild( new Text( "<![CDATA[" + func.getText() + "]]>" ) );
          }else if( JSONUtils.isString( el ) ){
             element.addAttribute( new Attribute( "type", JSONTypes.STRING ) );
             element.appendChild( el.toString() );
@@ -196,6 +204,8 @@ public class XMLSerializer
       if( jsonObject.isNullObject() ){
          root.addAttribute( new Attribute( "null", "true" ) );
          return root;
+      }else if( jsonObject.isEmpty() ){
+         return root;
       }
 
       Object[] names = jsonObject.names()
@@ -213,8 +223,11 @@ public class XMLSerializer
          }else if( JSONUtils.isFunction( el ) ){
             JSONFunction func = (JSONFunction) el;
             element.addAttribute( new Attribute( "type", JSONTypes.FUNCTION ) );
-            element.addAttribute( new Attribute( "params", Arrays.toString( func.getParams() ) ) );
-            element.appendChild( "<![CDATA[" + func.getText() + "]]" );
+            String params = Arrays.toString( func.getParams() );
+            params = params.substring( 1 );
+            params = params.substring( 0, params.length() - 1 );
+            element.addAttribute( new Attribute( "params", params ) );
+            element.appendChild( new Text( "<![CDATA[" + func.getText() + "]]>" ) );
          }else if( JSONUtils.isString( el ) ){
             element.addAttribute( new Attribute( "type", JSONTypes.STRING ) );
             element.appendChild( el.toString() );
@@ -349,5 +362,41 @@ public class XMLSerializer
             }
          }
       }
+   }
+
+   private static String writeDocument( Document doc )
+   {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      XomSerializer serializer = new XomSerializer( baos );
+      try{
+         serializer.write( doc );
+      }
+      catch( IOException ioe ){
+         // TODO manage exception
+      }
+      return baos.toString();
+   }
+
+   private static class XomSerializer extends Serializer
+   {
+      public XomSerializer( OutputStream out )
+      {
+         super( out );
+      }
+
+      protected void write( Text text ) throws IOException
+      {
+         String value = text.getValue();
+         if( value.startsWith( "<![CDATA[" ) && value.endsWith( "]]>" ) ){
+            value = value.substring( 9 );
+            value = value.substring( 0, value.length() - 3 );
+            writeRaw( "<![CDATA[" );
+            writeRaw( value );
+            writeRaw( "]]>" );
+         }else{
+            super.write( text );
+         }
+      }
+
    }
 }

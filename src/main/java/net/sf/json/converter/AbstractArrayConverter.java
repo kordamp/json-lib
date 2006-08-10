@@ -21,7 +21,7 @@ import java.lang.reflect.Array;
 /**
  * Base class for array conversions.
  *
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class AbstractArrayConverter implements Converter
 {

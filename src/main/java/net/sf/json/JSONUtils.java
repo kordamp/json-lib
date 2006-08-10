@@ -27,7 +27,7 @@ import org.apache.commons.lang.ArrayUtils;
 /**
  * Provides useful methods on java objects.
  *
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  * @version 3
  */
 public final class JSONUtils

@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 import net.sf.json.Assertions;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestLongArrayConverter extends TestCase
 {

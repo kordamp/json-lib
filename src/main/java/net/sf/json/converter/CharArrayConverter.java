@@ -21,7 +21,7 @@ import java.lang.reflect.Array;
 /**
  * Converts an array to a char[].
  *
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class CharArrayConverter extends AbstractArrayConverter
 {

@@ -62,7 +62,7 @@
       private int pojoId = 1;
       private char[] options = new char[]{'a','f'};
       private String func1 = "function(i){ return this.options[i]; }";
-      private JSONFunction func2 = new JSONFunction(new String[]{"i"},"return this.options[i]");
+      private JSONFunction func2 = new JSONFunction(new String[]{"i"},"return this.options[i];");
 
       // getters &amp; setters
       ...
@@ -113,7 +113,7 @@
             <p>Transforming JSONObjects and JSONArrays to XML is as simple as a call to <code>XMLSerializer.write()</code>.<br/>
             XMLSerializer will append special attributes to each xml element for easing the transformation back to JSON.</p>
    <source>
-   JSONObject json = JSONObject.fromObject( true );
+   JSONObject json = new JSONObject( true );
    String xml = XMLSerializer.write( json );
    System.out.println( xml );
    // prints

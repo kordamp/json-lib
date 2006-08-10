@@ -19,7 +19,7 @@ package net.sf.json.converter;
 import junit.framework.TestSuite;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class AllTests extends TestSuite
 {

@@ -21,7 +21,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestXMLSerializer_reads extends TestCase
 {
@@ -57,6 +57,13 @@ public class TestXMLSerializer_reads extends TestCase
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[true,false]" );
       assertEquals( expected.toString(), xmlArray.toString() );
+   }
+
+   public void testReadEmptyObject()
+   {
+      String xml = "<o/>";
+      JSONObject xmlObject = XMLSerializer.readObject( xml );
+      assertTrue( xmlObject.isEmpty() );
    }
 
    public void testReadFloatArray_withDefaultType()
@@ -237,7 +244,7 @@ public class TestXMLSerializer_reads extends TestCase
             .toString(), xmlObject.get( "nested" )
             .toString() );
    }
-
+   
    public void testReadNullObject()
    {
       String xml = "<o null=\"true\"/>";

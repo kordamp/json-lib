@@ -21,7 +21,7 @@ package net.sf.json.converter;
  * All implementations must have a <code>convert( Object value)</code> method
  * that returns the appropiate converted value.
  *
- * @author Andres Almiray
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public interface Converter
 {
