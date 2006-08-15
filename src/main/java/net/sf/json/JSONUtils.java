@@ -22,13 +22,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.ezmorph.MorphUtils;
+import net.sf.ezmorph.MorpherRegistry;
+
 import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Provides useful methods on java objects.
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
- * @version 3
+ * @version 4
  */
 public final class JSONUtils
 {
@@ -40,6 +43,7 @@ public final class JSONUtils
    private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*\\)[ ]?\\{.*\\}$";
 
    private static String javaVersion = "1.3.1";
+   private static final MorpherRegistry morpherRegistry = new MorpherRegistry();
 
    static{
       javaVersion = System.getProperty( "java.version" );
@@ -53,6 +57,9 @@ public final class JSONUtils
          FUNCTION_PARAMS_MATCHER = new JdkRegexpMatcher( FUNCTION_PARAMS_PATTERN );
          FUNCTION_MACTHER = new JdkRegexpMatcher( FUNCTION_PATTERN );
       }
+
+      // register standard morphers
+      MorphUtils.registerStandardMorphers( morpherRegistry );
    }
 
    /**
@@ -142,6 +149,11 @@ public final class JSONUtils
       }else{
          throw new JSONException( "Unsupported type" );
       }
+   }
+
+   public static MorpherRegistry getMorpherRegistry()
+   {
+      return morpherRegistry;
    }
 
    /**

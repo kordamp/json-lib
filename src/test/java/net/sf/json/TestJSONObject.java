@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;
+import net.sf.json.sample.BeanFoo;
 import net.sf.json.sample.BeanWithFunc;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -264,5 +265,59 @@ public class TestJSONObject extends TestCase
       JSONObject jsonObject = new JSONObject( true );
       BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
       assertNull( bean );
+   }
+
+   public void testFromObject_toBean_DynaBean()
+   {
+      // bug report 1540137
+
+      String jsondata = "{\"person\":{\"phone\":[\"111-222-3333\",\"777-888-9999\"],"
+            + "\"address\":{\"street\":\"123 somewhere place\",\"zip\":\"30005\",\"city\":\"Alpharetta\"},"
+            + "\"email\":[\"allen@work.com\",\"allen@home.net\"],\"name\":\"Allen\"}}";
+
+      JSONObject jsonobj = JSONObject.fromString( jsondata );
+      Object bean = JSONObject.toBean( jsonobj );
+      // bean is a DynaBean
+      assertTrue( bean instanceof JSONDynaBean );
+      // convert the DynaBean to a JSONObject again
+      JSONObject jsonobj2 = JSONObject.fromBean( bean );
+
+      assertNotNull( jsonobj.getJSONObject( "person" ) );
+      assertFalse( JSONUtils.isNull( jsonobj.getJSONObject( "person" ) ) );
+      assertNotNull( jsonobj2.getJSONObject( "person" ) );
+      assertFalse( JSONUtils.isNull( jsonobj2.getJSONObject( "person" ) ) );
+
+      JSONObject person1 = jsonobj.getJSONObject( "person" );
+      JSONObject person2 = jsonobj2.getJSONObject( "person" );
+      assertEquals( person1.get( "name" ), person2.get( "name" ) );
+      assertEquals( person1.get( "phone" )
+            .toString(), person2.get( "phone" )
+            .toString() );
+      assertEquals( person1.get( "email" )
+            .toString(), person2.get( "email" )
+            .toString() );
+      JSONObject address1 = person1.getJSONObject( "address" );
+      JSONObject address2 = person2.getJSONObject( "address" );
+      assertEquals( address1.get( "street" ), address2.get( "street" ) );
+      assertEquals( address1.get( "zip" ), address2.get( "zip" ) );
+      assertEquals( address1.get( "city" ), address2.get( "city" ) );
+   }
+
+   public void testToBean_null_values()
+   {
+      // bug report 1540196
+
+      String json = "{\"items\":[[\"000\"],[\"010\", \"011\"],[\"020\"]]}";
+      JSONObject jsonObject = JSONObject.fromString( json );
+
+      BeanFoo foo = (BeanFoo) JSONObject.toBean( jsonObject, BeanFoo.class );
+      assertNotNull( foo );
+      assertNotNull( foo.getItems() );
+      String[][] items = foo.getItems();
+      assertEquals( 3, items.length );
+      assertEquals( "000", items[0][0] );
+      assertEquals( "010", items[1][0] );
+      assertEquals( "011", items[1][1] );
+      assertEquals( "020", items[2][0] );
    }
 }

@@ -116,6 +116,11 @@
 			<version>2.0.8</version>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.ezmorph</groupId>
+			<artifactId>ezmorph</artifactId>
+			<version>0.8.1</version>
+		</dependency>
+		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.13</version>
@@ -202,8 +207,31 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jdepend-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</plugin>
 		</plugins>
 	</reporting>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>codehaus-snapshot-plugins</id>
+			<name>codehaus-shapshot-plugins</name>
+			<url>http://snapshots.repository.codehaus.org/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</pluginRepository>
+   </pluginRepositories>
 
 	<distributionManagement>
 		<snapshotRepository>

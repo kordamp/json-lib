@@ -16,25 +16,32 @@
 package net.sf.json;
 
 /*
- * Copyright (c) 2002 JSON.org Permission is hereby granted, free of charge, to
- * any person obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to permit
- * persons to whom the Software is furnished to do so, subject to the following
- * conditions: The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software. The Software
- * shall be used for Good, not Evil. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT
- * WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
- * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+Copyright (c) 2002 JSON.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+The Software shall be used for Good, not Evil.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -187,6 +194,26 @@ public class JSONArray
    // ------------------------------------------------------
 
    /**
+    * Returns the number of dimensions suited for a java array.
+    */
+   public static int[] getDimensions( JSONArray jsonArray )
+   {
+      // short circuit for empty arrays
+      if( jsonArray == null || jsonArray.myArrayList.isEmpty() ){
+         return new int[] { 0 };
+      }
+
+      List dims = new ArrayList();
+      processArrayDimensions( jsonArray, dims, 0 );
+      int[] dimensions = new int[dims.size()];
+      int j = 0;
+      for( Iterator i = dims.iterator(); i.hasNext(); ){
+         dimensions[j++] = ((Integer) i.next()).intValue();
+      }
+      return dimensions;
+   }
+
+   /**
     * Creates a java array from a JSONArray.
     */
    public static Object[] toArray( JSONArray jsonArray )
@@ -199,16 +226,18 @@ public class JSONArray
     */
    public static Object[] toArray( JSONArray jsonArray, Class objectClass )
    {
-      Object[] array = new Object[jsonArray.length()];
+      // TODO handle empty jsonArray
+      int[] dimensions = JSONArray.getDimensions( jsonArray );
+      Object array = Array.newInstance(Object.class, dimensions);
       int size = jsonArray.length();
       for( int i = 0; i < size; i++ ){
          Object value = jsonArray.get( i );
          if( JSONUtils.isNull( value ) ){
-            array[i] = null;
+            Array.set( array, i, null );
          }else{
             Class type = value.getClass();
             if( JSONArray.class.isAssignableFrom( type ) ){
-               array[i] = toArray( (JSONArray) value, objectClass );
+               Array.set( array, i, toArray( (JSONArray) value, objectClass ) );
             }else if( String.class.isAssignableFrom( type )
                   || Boolean.class.isAssignableFrom( type ) || Byte.class.isAssignableFrom( type )
                   || Short.class.isAssignableFrom( type ) || Integer.class.isAssignableFrom( type )
@@ -216,17 +245,17 @@ public class JSONArray
                   || Double.class.isAssignableFrom( type )
                   || Character.class.isAssignableFrom( type )
                   || JSONFunction.class.isAssignableFrom( type ) ){
-               array[i] = value;
+               Array.set( array, i, value );
             }else{
                if( objectClass != null ){
-                  array[i] = JSONObject.toBean( (JSONObject) value, objectClass );
+                  Array.set( array, i, JSONObject.toBean( (JSONObject) value, objectClass ) );
                }else{
-                  array[i] = JSONObject.toBean( (JSONObject) value );
+                  Array.set( array, i, JSONObject.toBean( (JSONObject) value ) );
                }
             }
          }
       }
-      return array;
+      return (Object[])array;
    }
 
    /**
@@ -236,6 +265,8 @@ public class JSONArray
    {
       return toList( jsonArray, null );
    }
+
+   // ------------------------------------------------------
 
    /**
     * Creates a List from a JSONArray.
@@ -272,7 +303,23 @@ public class JSONArray
       return list;
    }
 
-   // ------------------------------------------------------
+   private static void processArrayDimensions( JSONArray jsonArray, List dims, int index )
+   {
+      if( dims.size() <= index ){
+         dims.add( new Integer( jsonArray.length() ) );
+      }else{
+         int i = ((Integer) dims.get( index )).intValue();
+         if( jsonArray.length() > i ){
+            dims.set( index, new Integer( jsonArray.length() ) );
+         }
+      }
+      for( Iterator i = jsonArray.iterator(); i.hasNext(); ){
+         Object item = i.next();
+         if( item instanceof JSONArray ){
+            processArrayDimensions( (JSONArray) item, dims, index + 1 );
+         }
+      }
+   }
 
    /**
     * The arrayList where the JSONArray's properties are kept.
@@ -642,6 +689,14 @@ public class JSONArray
    public String getString( int index )
    {
       return get( index ).toString();
+   }
+
+   /**
+    * Returns an Iterator for this JSONArray
+    */
+   public Iterator iterator()
+   {
+      return this.myArrayList.iterator();
    }
 
    /**
@@ -1157,6 +1212,48 @@ public class JSONArray
    }
 
    /**
+    * Make a prettyprinted JSON text of this JSONArray. Warning: This method
+    * assumes that the data structure is acyclical.
+    *
+    * @param indentFactor The number of spaces to add to each level of
+    *        indentation.
+    * @param indent The indention of the top level.
+    * @return a printable, displayable, transmittable representation of the
+    *         array.
+    * @throws JSONException
+    */
+   public String toString( int indentFactor, int indent )
+   {
+      int len = length();
+      if( len == 0 ){
+         return "[]";
+      }
+      int i;
+      StringBuffer sb = new StringBuffer( "[" );
+      if( len == 1 ){
+         sb.append( JSONUtils.valueToString( this.myArrayList.get( 0 ), indentFactor, indent ) );
+      }else{
+         int newindent = indent + indentFactor;
+         sb.append( '\n' );
+         for( i = 0; i < len; i += 1 ){
+            if( i > 0 ){
+               sb.append( ",\n" );
+            }
+            for( int j = 0; j < newindent; j += 1 ){
+               sb.append( ' ' );
+            }
+            sb.append( JSONUtils.valueToString( this.myArrayList.get( i ), indentFactor, newindent ) );
+         }
+         sb.append( '\n' );
+         for( i = 0; i < indent; i += 1 ){
+            sb.append( ' ' );
+         }
+      }
+      sb.append( ']' );
+      return sb.toString();
+   }
+
+   /**
     * Write the contents of the JSONArray as JSON text to a writer. For
     * compactness, no whitespace is added.
     * <p>
@@ -1193,47 +1290,5 @@ public class JSONArray
       catch( IOException e ){
          throw new JSONException( e );
       }
-   }
-
-   /**
-    * Make a prettyprinted JSON text of this JSONArray. Warning: This method
-    * assumes that the data structure is acyclical.
-    *
-    * @param indentFactor The number of spaces to add to each level of
-    *        indentation.
-    * @param indent The indention of the top level.
-    * @return a printable, displayable, transmittable representation of the
-    *         array.
-    * @throws JSONException
-    */
-   String toString( int indentFactor, int indent )
-   {
-      int len = length();
-      if( len == 0 ){
-         return "[]";
-      }
-      int i;
-      StringBuffer sb = new StringBuffer( "[" );
-      if( len == 1 ){
-         sb.append( JSONUtils.valueToString( this.myArrayList.get( 0 ), indentFactor, indent ) );
-      }else{
-         int newindent = indent + indentFactor;
-         sb.append( '\n' );
-         for( i = 0; i < len; i += 1 ){
-            if( i > 0 ){
-               sb.append( ",\n" );
-            }
-            for( int j = 0; j < newindent; j += 1 ){
-               sb.append( ' ' );
-            }
-            sb.append( JSONUtils.valueToString( this.myArrayList.get( i ), indentFactor, newindent ) );
-         }
-         sb.append( '\n' );
-         for( i = 0; i < indent; i += 1 ){
-            sb.append( ' ' );
-         }
-      }
-      sb.append( ']' );
-      return sb.toString();
    }
 }

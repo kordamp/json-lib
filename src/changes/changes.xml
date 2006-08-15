@@ -7,14 +7,25 @@
 		</author>
 	</properties>
 	<body>
-		<release version="N/A" date="2006-08-10"
+		<release version="N/A" date="2006-08-15"
 			desc="Current working version">
-			<action dev="Andres Almiray" type="fix" issue="1538095">
-				JSONObject.fromObject() does not work properly when passed a
-				boolean as parameter in JVM 1.5+
+			<action dev="Andres Almiray" type="add">
+            Refactored converter package into 
+            EZMorph (http://ezmorph.sourceforge.net)
+			</action>
+			<action dev="Andres Almiray" type="fix" issue="1540196">
+            JSONArray did not cerate multidimensional arrays correctly.
+			</action>
+			<action dev="Andres Almiray" type="fix" issue="1540137">
+            JSONObject's fromObject() and fromBean() did not support
+            DynaBeans properly
 			</action>
 			<action dev="Andres Almiray" type="fix" issue="1538330">
 				XmlSerializer writes wrong JSONFunction data.
+			</action>
+			<action dev="Andres Almiray" type="fix" issue="1538095">
+				JSONObject.fromObject() does not work properly when passed a
+				boolean as parameter in JVM 1.5+
 			</action>
 		</release>
 		<release version="0.7.1" date="2006-08-09"

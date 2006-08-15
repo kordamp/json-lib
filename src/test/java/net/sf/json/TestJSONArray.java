@@ -73,6 +73,62 @@ public class TestJSONArray extends TestCase
       testJSONArray( "[function(a){ return a; }]", "[function(a){ return a; }]" );
    }
 
+   public void testGetDimensions_empty_array()
+   {
+      int[] dims = JSONArray.getDimensions( new JSONArray() );
+      assertEquals( 1, dims.length );
+      assertEquals( 0, dims[0] );
+   }
+
+   public void testGetDimensions_null_array()
+   {
+      int[] dims = JSONArray.getDimensions( null );
+      assertEquals( 1, dims.length );
+      assertEquals( 0, dims[0] );
+   }
+
+   public void testGetDimensions_one_dimension()
+   {
+      int[] dims = JSONArray.getDimensions( new JSONArray( "[1,2,3]" ) );
+      assertEquals( 1, dims.length );
+      assertEquals( 3, dims[0] );
+   }
+
+   public void testGetDimensions_pyramid()
+   {
+      int[] dims = JSONArray.getDimensions( new JSONArray( "[1,[2,[3,[4]]]]" ) );
+      assertEquals( 4, dims.length );
+      assertEquals( 2, dims[0] );
+      assertEquals( 2, dims[1] );
+      assertEquals( 2, dims[2] );
+      assertEquals( 1, dims[3] );
+
+      dims = JSONArray.getDimensions( new JSONArray( "[[[[1],2],3],4]" ) );
+      assertEquals( 4, dims.length );
+      assertEquals( 2, dims[0] );
+      assertEquals( 2, dims[1] );
+      assertEquals( 2, dims[2] );
+      assertEquals( 1, dims[3] );
+   }
+
+   public void testGetDimensions_two_dimension()
+   {
+      int[] dims = JSONArray.getDimensions( new JSONArray( "[[1,2,3],[4,5,6]]" ) );
+      assertEquals( 2, dims.length );
+      assertEquals( 2, dims[0] );
+      assertEquals( 3, dims[1] );
+
+      dims = JSONArray.getDimensions( new JSONArray( "[[1,2],[4,5,6]]" ) );
+      assertEquals( 2, dims.length );
+      assertEquals( 2, dims[0] );
+      assertEquals( 3, dims[1] );
+
+      dims = JSONArray.getDimensions( new JSONArray( "[[1,2,3],[4,5]]" ) );
+      assertEquals( 2, dims.length );
+      assertEquals( 2, dims[0] );
+      assertEquals( 3, dims[1] );
+   }
+
    public void testMultiFunctionArray_String()
    {
       testJSONArray( "[function(a){ return a; },[function(b){ return b; }]]",

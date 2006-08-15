@@ -106,6 +106,8 @@ public class JSONDynaClass implements DynaClass, Serializable
       try{
          Iterator entries = attributes.entrySet()
                .iterator();
+         dynaProperties = new DynaProperty[attributes.size()];
+         int i = 0;
          while( entries.hasNext() ){
             Map.Entry entry = (Map.Entry) entries.next();
             String pname = (String) entry.getKey();
@@ -119,6 +121,7 @@ public class JSONDynaClass implements DynaClass, Serializable
                throw new IllegalArgumentException("Type must be String or Class");
             }
             properties.put( dynaProperty.getName(), dynaProperty );
+            dynaProperties[i++] = dynaProperty;
          }
       }
       catch( ClassNotFoundException cnfe ){
