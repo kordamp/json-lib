@@ -16,32 +16,41 @@
 package net.sf.json;
 
 /*
- * Copyright (c) 2002 JSON.org Permission is hereby granted, free of charge, to
- * any person obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to permit
- * persons to whom the Software is furnished to do so, subject to the following
- * conditions: The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software. The Software
- * shall be used for Good, not Evil. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT
- * WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
- * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+Copyright (c) 2002 JSON.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+The Software shall be used for Good, not Evil.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import net.sf.json.regexp.RegexpUtils;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
@@ -145,16 +154,16 @@ public class JSONObject
 
                Class type = pds[i].getPropertyType();
                Object value = PropertyUtils.getProperty( bean, key );
-               if( String.class.isAssignableFrom( type ) ){
-                  jsonObject.put( key, (value == null) ? "" : value );
+               if( JSONUtils.isFunction( value ) ){
+                  jsonObject.put( key, value );
                }else if( JSONUtils.isArray( value ) ){
                   jsonObject.put( key, JSONArray.fromObject( value ) );
-               }else if( JSONUtils.isFunction( value ) ){
+               }else if( String.class.isAssignableFrom( type ) ){
+                  jsonObject.put( key, (value == null) ? "" : value );
+               }else if( JSONUtils.isNumber( value ) || JSONUtils.isBoolean( value ) ){
                   jsonObject.put( key, value );
-               }else if( JSONUtils.isObject( value ) ){
-                  jsonObject.put( key, fromObject( value ) );
                }else{
-                  jsonObject.put( key, value );
+                  jsonObject.put( key, fromObject( value ) );
                }
             }
          }
@@ -185,16 +194,16 @@ public class JSONObject
          String key = dynaProperty.getName();
          Class type = dynaProperty.getType();
          Object value = bean.get( dynaProperty.getName() );
-         if( String.class.isAssignableFrom( type ) ){
-            jsonObject.put( key, (value == null) ? "" : value );
+         if( JSONUtils.isFunction( value ) ){
+            jsonObject.put( key, value );
          }else if( JSONUtils.isArray( value ) ){
             jsonObject.put( key, JSONArray.fromObject( value ) );
-         }else if( JSONUtils.isFunction( value ) ){
+         }else if( String.class.isAssignableFrom( type ) ){
+            jsonObject.put( key, (value == null) ? "" : value );
+         }else if( JSONUtils.isNumber( value ) || JSONUtils.isBoolean( value ) ){
             jsonObject.put( key, value );
-         }else if( JSONUtils.isObject( value ) ){
-            jsonObject.put( key, fromObject( value ) );
          }else{
-            jsonObject.put( key, value );
+            jsonObject.put( key, fromObject( value ) );
          }
       }
 
@@ -269,7 +278,7 @@ public class JSONObject
     */
    public static Object toBean( JSONObject jsonObject )
    {
-      if( jsonObject.isNullObject() ){
+      if( jsonObject == null || jsonObject.isNullObject() ){
          return null;
       }
 
@@ -321,13 +330,44 @@ public class JSONObject
     */
    public static Object toBean( JSONObject jsonObject, Class beanClass )
    {
-      if( jsonObject.isNullObject() ){
+      return toBean( jsonObject, beanClass, null );
+   }
+
+   /**
+    * Creates a bean from a JSONObject, with a specific target class.<br>
+    * Any attribute is a JSONObject and matches a key in the classMap, it will
+    * be converted to that target class.<br>
+    * The classMap has the following conventions:
+    * <ul>
+    * <li>Every key must be an String.</li>
+    * <li>Every value must be a Class.</li>
+    * <li>A key may be a regular expression.</li>
+    * </ul>
+    */
+   public static Object toBean( JSONObject jsonObject, Class beanClass, Map classMap )
+   {
+      if( jsonObject == null || jsonObject.isNullObject() ){
          return null;
+      }
+
+      if( beanClass == null ){
+         throw new IllegalArgumentException( "beanClass can not be null" );
+      }
+      if( classMap == null ){
+         classMap = Collections.EMPTY_MAP;
       }
 
       Object bean = null;
       try{
-         bean = beanClass.newInstance();
+         if( beanClass.isInterface() ){
+            if( !Map.class.isAssignableFrom( beanClass ) ){
+               throw new IllegalArgumentException( "beanClass is an interface. " + beanClass );
+            }else{
+               bean = new HashMap();
+            }
+         }else{
+            bean = beanClass.newInstance();
+         }
          Map properties = JSONUtils.getProperties( jsonObject );
          for( Iterator entries = properties.entrySet()
                .iterator(); entries.hasNext(); ){
@@ -340,10 +380,10 @@ public class JSONObject
             if( !JSONUtils.isNull( value ) ){
                if( value instanceof JSONArray ){
                   if( List.class.isAssignableFrom( pd.getPropertyType() ) ){
-                     List list = JSONArray.toList( (JSONArray) value, beanClass );
+                     List list = JSONArray.toList( (JSONArray) value, beanClass, classMap );
                      PropertyUtils.setProperty( bean, key, list );
                   }else{
-                     Object array = JSONArray.toArray( (JSONArray) value, beanClass );
+                     Object array = JSONArray.toArray( (JSONArray) value, beanClass, classMap );
                      Class innerType = JSONUtils.getInnerComponentType( pd.getPropertyType() );
                      if( innerType.isPrimitive() || Number.class.isAssignableFrom( innerType )
                            || Boolean.class.isAssignableFrom( innerType )
@@ -353,7 +393,7 @@ public class JSONObject
                               .morph( Array.newInstance( innerType, 0 )
                                     .getClass(), array );
                      }
-                     PropertyUtils.setProperty( bean, key, array );
+                     setProperty( bean, key, array );
                   }
                }else if( String.class.isAssignableFrom( type )
                      || Boolean.class.isAssignableFrom( type )
@@ -363,25 +403,66 @@ public class JSONObject
                      || Double.class.isAssignableFrom( type )
                      || Character.class.isAssignableFrom( type )
                      || JSONFunction.class.isAssignableFrom( type ) ){
-                  PropertyUtils.setProperty( bean, key, value );
+                  setProperty( bean, key, value );
                }else{
-                  PropertyUtils.setProperty( bean, key, toBean( (JSONObject) value,
-                        pd.getPropertyType() ) );
+                  if( pd != null ){
+                     setProperty( bean, key, toBean( (JSONObject) value, pd.getPropertyType(),
+                           classMap ) );
+                  }else{
+                     Class targetClass = findTargetClass( key, classMap );
+                     if( targetClass != null ){
+                        setProperty( bean, key, toBean( (JSONObject) value, targetClass, classMap ) );
+                     }else{
+                        setProperty( bean, key, toBean( (JSONObject) value ) );
+                     }
+                  }
                }
             }else{
-               if( type.isPrimitive() ){
+               if( type.isPrimitive() && !(bean instanceof Map) ){
                   // assume assigned default value
                   log.warn( "Tried to assign null value to " + key + ":" + type.getName() );
+               }else{
+                  ((Map) bean).put( key, null );
                }
             }
          }
       }
       catch( Exception e ){
-         e.printStackTrace();
          throw new JSONException( e );
       }
 
       return bean;
+   }
+
+   private static Class findTargetClass( String key, Map classMap )
+   {
+      // try get first
+      Class targetClass = (Class) classMap.get( key );
+      if( targetClass == null ){
+         // try with regexp
+         // this will hit performance as it must iterate over all the keys
+         // and create a RegexpMatcher for each key
+         for( Iterator i = classMap.entrySet()
+               .iterator(); i.hasNext(); ){
+            Map.Entry entry = (Map.Entry) i.next();
+            if( RegexpUtils.getMatcher( (String) entry.getKey() )
+                  .matches( key ) ){
+               targetClass = (Class) entry.getValue();
+               break;
+            }
+         }
+      }
+
+      return targetClass;
+   }
+
+   private static void setProperty( Object bean, String key, Object value ) throws Exception
+   {
+      if( bean instanceof Map ){
+         ((Map) bean).put( key, value );
+      }else{
+         PropertyUtils.setProperty( bean, key, value );
+      }
    }
 
    // ------------------------------------------------------

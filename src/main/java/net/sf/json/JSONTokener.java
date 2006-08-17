@@ -15,6 +15,8 @@
  */
 package net.sf.json;
 
+import net.sf.json.regexp.RegexpUtils;
+
 
 /*
 Copyright (c) 2002 JSON.org
@@ -114,11 +116,7 @@ public class JSONTokener
    public boolean matches( String pattern )
    {
       String str = this.mySource.substring( this.myIndex );
-      if( JSONUtils.isJDK13() ){
-         return new Perl5RegexpMatcher(pattern).matches( str );
-      }else{
-         return new JdkRegexpMatcher(pattern).matches( str );
-      }
+      return RegexpUtils.getMatcher( pattern ).matches( str );
    }
 
    /**

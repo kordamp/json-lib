@@ -7,14 +7,26 @@
 		</author>
 	</properties>
 	<body>
-		<release version="N/A" date="2006-08-15"
+		<release version="N/A" date="2006-08-17"
 			desc="Current working version">
 			<action dev="Andres Almiray" type="add">
             Refactored converter package into 
-            EZMorph (http://ezmorph.sourceforge.net)
+            EZMorph (http://ezmorph.sourceforge.net).
+			</action>
+			<action dev="Andres Almiray" type="add">
+            Added RegexpUtils for easy regexp handling.
+			</action>
+			<action dev="Andres Almiray" type="update">
+            Moved RegexpMatchers to package net.sf.json.regexp
+			</action>
+			<action dev="Andres Almiray" type="fix" issue="1542104">
+            JSONObject.toBean must handle interfaces.
+			</action>
+			<action dev="Andres Almiray" type="fix" issue="1542092">
+            JSONObject.toBean can not process all nested beans.
 			</action>
 			<action dev="Andres Almiray" type="fix" issue="1540196">
-            JSONArray did not cerate multidimensional arrays correctly.
+            JSONArray did not create multidimensional arrays correctly.
 			</action>
 			<action dev="Andres Almiray" type="fix" issue="1540137">
             JSONObject's fromObject() and fromBean() did not support
@@ -37,7 +49,7 @@
 		<release version="0.7" date="2006-08-07"
 			desc="Fourth public release">
 			<action dev="Andres Almiray" type="fix" issue="1529946">
-				Make Json-lib JDK 1.3.1 compatible
+				Make Json-lib JDK 1.3.1 compatible.
 			</action>
 		</release>
 		<release version="0.6" date="2006-07-24"

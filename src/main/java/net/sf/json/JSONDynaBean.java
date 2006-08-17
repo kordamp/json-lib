@@ -26,6 +26,8 @@ import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.DynaProperty;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -34,7 +36,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class JSONDynaBean implements DynaBean, Serializable
 {
-   private static final long serialVersionUID = -1088560023822108485L;
+   private static final long serialVersionUID = 6291783510602240088L;
    protected JSONDynaClass dynaClass;
    protected Map dynaValues = new HashMap();
 
@@ -52,6 +54,30 @@ public class JSONDynaBean implements DynaBean, Serializable
          throw new IllegalArgumentException( "Non-Mapped property name: " + name + " key: " + key );
       }
       return ((Map) value).containsKey( key );
+   }
+
+   public boolean equals( Object obj )
+   {
+      if( this == obj ){
+         return true;
+      }
+
+      if( obj == null ){
+         return false;
+      }
+
+      if( !(obj instanceof JSONDynaBean) ){
+         return false;
+      }
+
+      JSONDynaBean other = (JSONDynaBean) obj;
+      EqualsBuilder builder = new EqualsBuilder().append( this.dynaClass, other.dynaClass );
+      DynaProperty[] props = dynaClass.getDynaProperties();
+      for( int i = 0; i < props.length; i++ ){
+         DynaProperty prop = props[i];
+         builder.append( dynaValues.get( prop.getName() ), dynaValues.get( prop.getName() ) );
+      }
+      return builder.isEquals();
    }
 
    public Object get( String name )
@@ -123,6 +149,17 @@ public class JSONDynaBean implements DynaBean, Serializable
    public DynaClass getDynaClass()
    {
       return this.dynaClass;
+   }
+
+   public int hashCode()
+   {
+      HashCodeBuilder builder = new HashCodeBuilder().append( dynaClass );
+      DynaProperty[] props = dynaClass.getDynaProperties();
+      for( int i = 0; i < props.length; i++ ){
+         DynaProperty prop = props[i];
+         builder.append( dynaValues.get( prop.getName() ) );
+      }
+      return builder.toHashCode();
    }
 
    public void remove( String name, String key )

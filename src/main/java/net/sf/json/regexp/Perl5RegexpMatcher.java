@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.regexp;
 
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.Pattern;

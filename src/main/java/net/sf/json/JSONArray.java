@@ -218,7 +218,7 @@ public class JSONArray
     */
    public static Object[] toArray( JSONArray jsonArray )
    {
-      return toArray( jsonArray, null );
+      return toArray( jsonArray, null, null );
    }
 
    /**
@@ -226,9 +226,25 @@ public class JSONArray
     */
    public static Object[] toArray( JSONArray jsonArray, Class objectClass )
    {
+      return toArray( jsonArray, objectClass, null );
+   }
+
+   /**
+    * Creates a java array from a JSONArray.<br>
+    * Any attribute is a JSONObject and matches a key in the classMap, it will
+    * be converted to that target class.<br>
+    * The classMap has the following conventions:
+    * <ul>
+    * <li>Every key must be an String.</li>
+    * <li>Every value must be a Class.</li>
+    * <li>A key may be a regular expression.</li>
+    * </ul>
+    */
+   public static Object[] toArray( JSONArray jsonArray, Class objectClass, Map classMap )
+   {
       // TODO handle empty jsonArray
       int[] dimensions = JSONArray.getDimensions( jsonArray );
-      Object array = Array.newInstance(Object.class, dimensions);
+      Object array = Array.newInstance( Object.class, dimensions );
       int size = jsonArray.length();
       for( int i = 0; i < size; i++ ){
          Object value = jsonArray.get( i );
@@ -237,7 +253,7 @@ public class JSONArray
          }else{
             Class type = value.getClass();
             if( JSONArray.class.isAssignableFrom( type ) ){
-               Array.set( array, i, toArray( (JSONArray) value, objectClass ) );
+               Array.set( array, i, toArray( (JSONArray) value, objectClass, classMap ) );
             }else if( String.class.isAssignableFrom( type )
                   || Boolean.class.isAssignableFrom( type ) || Byte.class.isAssignableFrom( type )
                   || Short.class.isAssignableFrom( type ) || Integer.class.isAssignableFrom( type )
@@ -248,14 +264,15 @@ public class JSONArray
                Array.set( array, i, value );
             }else{
                if( objectClass != null ){
-                  Array.set( array, i, JSONObject.toBean( (JSONObject) value, objectClass ) );
+                  Array.set( array, i,
+                        JSONObject.toBean( (JSONObject) value, objectClass, classMap ) );
                }else{
                   Array.set( array, i, JSONObject.toBean( (JSONObject) value ) );
                }
             }
          }
       }
-      return (Object[])array;
+      return (Object[]) array;
    }
 
    /**
@@ -263,15 +280,29 @@ public class JSONArray
     */
    public static List toList( JSONArray jsonArray )
    {
-      return toList( jsonArray, null );
+      return toList( jsonArray, null, null );
    }
-
-   // ------------------------------------------------------
 
    /**
     * Creates a List from a JSONArray.
     */
    public static List toList( JSONArray jsonArray, Class objectClass )
+   {
+      return toList( jsonArray, objectClass, null );
+   }
+
+   /**
+    * Creates a List from a JSONArray.<br>
+    * Any attribute is a JSONObject and matches a key in the classMap, it will
+    * be converted to that target class.<br>
+    * The classMap has the following conventions:
+    * <ul>
+    * <li>Every key must be an String.</li>
+    * <li>Every value must be a Class.</li>
+    * <li>A key may be a regular expression.</li>
+    * </ul>
+    */
+   public static List toList( JSONArray jsonArray, Class objectClass, Map classMap )
    {
       List list = new ArrayList();
       int size = jsonArray.length();
@@ -282,7 +313,7 @@ public class JSONArray
          }else{
             Class type = value.getClass();
             if( JSONArray.class.isAssignableFrom( type ) ){
-               list.add( toList( (JSONArray) value, objectClass ) );
+               list.add( toList( (JSONArray) value, objectClass, classMap ) );
             }else if( String.class.isAssignableFrom( type )
                   || Boolean.class.isAssignableFrom( type ) || Byte.class.isAssignableFrom( type )
                   || Short.class.isAssignableFrom( type ) || Integer.class.isAssignableFrom( type )
@@ -293,7 +324,7 @@ public class JSONArray
                list.add( value );
             }else{
                if( objectClass != null ){
-                  list.add( JSONObject.toBean( (JSONObject) value, objectClass ) );
+                  list.add( JSONObject.toBean( (JSONObject) value, objectClass, classMap ) );
                }else{
                   list.add( JSONObject.toBean( (JSONObject) value ) );
                }
@@ -320,6 +351,8 @@ public class JSONArray
          }
       }
    }
+
+   // ------------------------------------------------------
 
    /**
     * The arrayList where the JSONArray's properties are kept.
@@ -387,7 +420,12 @@ public class JSONArray
                   this.myArrayList.add( element );
                }
             }else if( JSONUtils.isObject( element ) ){
-               this.myArrayList.add( JSONObject.fromObject( element ) );
+               JSONObject jsonObject = JSONObject.fromObject( element );
+               if( jsonObject.isNullObject() ){
+                  this.myArrayList.add( JSONNull.getInstance() );
+               }else{
+                  this.myArrayList.add( jsonObject );
+               }
             }else{
                this.myArrayList.add( element );
             }
@@ -447,7 +485,7 @@ public class JSONArray
       for( ;; ){
          if( x.nextClean() == ',' ){
             x.back();
-            this.myArrayList.add( null );
+            this.myArrayList.add( JSONNull.getInstance() );
          }else{
             x.back();
             Object v = x.nextValue();
@@ -527,8 +565,19 @@ public class JSONArray
          Object element = array[i];
          if( JSONUtils.isArray( element ) ){
             this.myArrayList.add( fromObject( element ) );
+         }else if( JSONUtils.isFunction( element ) ){
+            if( element instanceof String ){
+               this.myArrayList.add( JSONFunction.parse( (String) element ) );
+            }else{
+               this.myArrayList.add( element );
+            }
          }else if( JSONUtils.isObject( element ) ){
-            this.myArrayList.add( JSONObject.fromObject( element ) );
+            JSONObject jsonObject = JSONObject.fromObject( element );
+            if( jsonObject.isNullObject() ){
+               this.myArrayList.add( JSONNull.getInstance() );
+            }else{
+               this.myArrayList.add( jsonObject );
+            }
          }else{
             this.myArrayList.add( element );
          }
@@ -628,7 +677,12 @@ public class JSONArray
    public int getInt( int index )
    {
       Object o = get( index );
-      return o instanceof Number ? ((Number) o).intValue() : (int) getDouble( index );
+      try{
+         return o instanceof Number ? ((Number) o).intValue() : (int) getDouble( index );
+      }
+      catch( Exception e ){
+         throw new JSONException( "JSONArray[" + index + "] is not a number." );
+      }
    }
 
    /**
@@ -676,7 +730,12 @@ public class JSONArray
    public long getLong( int index )
    {
       Object o = get( index );
-      return o instanceof Number ? ((Number) o).longValue() : (long) getDouble( index );
+      try{
+         return o instanceof Number ? ((Number) o).longValue() : (long) getDouble( index );
+      }
+      catch( Exception e ){
+         throw new JSONException( "JSONArray[" + index + "] is not a number." );
+      }
    }
 
    /**

@@ -16,6 +16,9 @@
 
 package net.sf.json.sample;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
@@ -25,6 +28,19 @@ public class BeanA
    private int integer = 42;
    private String string = "json";
 
+   public boolean equals( Object obj ){
+      if( obj == this ){
+         return true;
+      }
+      if( obj == null ){
+         return false;
+      }
+      if( !BeanA.class.isAssignableFrom( obj.getClass() )){
+         return false;
+      }
+      return EqualsBuilder.reflectionEquals(this,obj);
+   }
+
    public int getInteger()
    {
       return integer;
@@ -33,6 +49,10 @@ public class BeanA
    public String getString()
    {
       return string;
+   }
+
+   public int hashCode(){
+    return HashCodeBuilder.reflectionHashCode(this);
    }
 
    public boolean isBool()

@@ -43,7 +43,7 @@ SOFTWARE.
 /**
  * JSONObject.NULL is equivalent to the value that JavaScript calls null, whilst
  * Java's null is equivalent to the value that JavaScript calls undefined.
- * 
+ *
  * @author JSON.org
  * @version 1
  */
@@ -71,14 +71,14 @@ public final class JSONNull
 
    /**
     * A Null object is equal to the null value and to itself.
-    * 
+    *
     * @param object An object to test for nullness.
     * @return true if the object parameter is the JSONObject.NULL object or
     *         null.
     */
    public boolean equals( Object object )
    {
-      return object == null || object == this;
+      return object == null || object == this || object == instance;
    }
 
    public int hashCode()
@@ -88,7 +88,7 @@ public final class JSONNull
 
    /**
     * Get the "null" string value.
-    * 
+    *
     * @return The string "null".
     */
    public String toString()

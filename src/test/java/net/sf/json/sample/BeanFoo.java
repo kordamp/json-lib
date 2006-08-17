@@ -14,36 +14,22 @@
  * limitations under the License.
  */
 
-package net.sf.json;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+package net.sf.json.sample;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
- * @version 1
  */
-public class JdkRegexpMatcher implements RegexpMatcher
+public class BeanFoo
 {
-   private Pattern pattern;
+   private String[][] items;
 
-   public JdkRegexpMatcher( String pattern )
+   public String[][] getItems()
    {
-      this.pattern = Pattern.compile( pattern );
+      return items;
    }
 
-   public String getGroupIfMatches( String str, int group )
+   public void setItems( String[][] items )
    {
-      Matcher matcher = pattern.matcher( str );
-      if( matcher.matches() ){
-         return matcher.group( group );
-      }
-      return "";
-   }
-
-   public boolean matches( String str )
-   {
-      return pattern.matcher( str )
-            .matches();
+      this.items = items;
    }
 }

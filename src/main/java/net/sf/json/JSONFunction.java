@@ -18,18 +18,21 @@ package net.sf.json;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * JSONFunction represents a javaScript function's text.
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
- * @version 2
+ * @version 3
  */
 public class JSONFunction implements Serializable
 {
    /** constant array for empty parameters */
    private static final String[] EMPTY_PARAM_ARRAY = new String[0];
 
-   private static final long serialVersionUID = -2521877630166248865L;
+   private static final long serialVersionUID = 3669044966588851732L;
 
    /**
     * Constructs a JSONFunction from a text representation
@@ -113,6 +116,34 @@ public class JSONFunction implements Serializable
       }
    }
 
+   public boolean equals( Object obj )
+   {
+      if( this == obj ){
+         return true;
+      }
+      if( obj == null ){
+         return false;
+      }
+      if( !(obj instanceof JSONFunction) ){
+         return false;
+      }
+
+      if( obj instanceof String ){
+         return toString().compareTo( (String) obj ) == 0;
+      }
+
+      JSONFunction other = (JSONFunction) obj;
+      if( params.length != other.params.length ){
+         return false;
+      }
+      EqualsBuilder builder = new EqualsBuilder();
+      for( int i = 0; i < params.length; i++ ){
+         builder.append( params[i], other.params[i] );
+      }
+      builder.append( text, other.text );
+      return builder.isEquals();
+   }
+
    /**
     * Returns the parameters of this function.
     */
@@ -127,6 +158,16 @@ public class JSONFunction implements Serializable
    public String getText()
    {
       return text;
+   }
+
+   public int hashCode()
+   {
+      HashCodeBuilder builder = new HashCodeBuilder();
+      for( int i = 0; i < params.length; i++ ){
+         builder.append( params[i] );
+      }
+      builder.append( text );
+      return builder.toHashCode();
    }
 
    /**

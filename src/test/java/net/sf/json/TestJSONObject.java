@@ -16,6 +16,8 @@
 
 package net.sf.json;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,8 @@ import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.BeanFoo;
 import net.sf.json.sample.BeanWithFunc;
+import net.sf.json.sample.MappingBean;
+import net.sf.json.sample.ValueBean;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -44,13 +48,78 @@ public class TestJSONObject extends TestCase
       super( testName );
    }
 
-   public void testFromBean_null_bean()
+   public void testFromBean_array()
+   {
+      try{
+         JSONObject.fromBean( new ArrayList() );
+         fail( "Expected a JSONException" );
+      }
+      catch( IllegalArgumentException expected ){
+         // OK
+      }
+
+      try{
+         JSONObject.fromBean( new String[] { "json" } );
+         fail( "Expected a JSONException" );
+      }
+      catch( IllegalArgumentException expected ){
+         // OK
+      }
+   }
+
+   public void testFromBean_DynaBean() throws Exception
+   {
+      JSONObject json = JSONObject.fromBean( createDynaBean() );
+      assertEquals( "json", json.getString( "name" ) );
+   }
+
+   public void testFromBean_JSONTokener()
+   {
+      try{
+         JSONTokener jsonTokener = new JSONTokener( "{\"string\":\"json\"}" );
+         JSONObject json = JSONObject.fromBean( jsonTokener );
+         assertEquals( "json", json.getString( "string" ) );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testFromBean_Map()
+   {
+      Map map = new HashMap();
+      map.put( "bool", Boolean.TRUE );
+      map.put( "integer", new Integer( 42 ) );
+      map.put( "string", "json" );
+      try{
+         JSONObject json = JSONObject.fromBean( map );
+         assertEquals( true, json.getBoolean( "bool" ) );
+         assertEquals( 42, json.getInt( "integer" ) );
+         assertEquals( "json", json.getString( "string" ) );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testFromBean_null()
    {
       try{
          JSONObject json = JSONObject.fromBean( null );
          assertTrue( json.isNullObject() );
          assertEquals( JSONNull.getInstance()
                .toString(), json.toString() );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testFromBean_String()
+   {
+      try{
+         JSONObject json = JSONObject.fromBean( "{\"string\":\"json\"}" );
+         assertEquals( "json", json.getString( "string" ) );
       }
       catch( JSONException jsone ){
          fail( jsone.getMessage() );
@@ -75,6 +144,47 @@ public class TestJSONObject extends TestCase
       assertTrue( json.isEmpty() );
       json = JSONObject.fromBean( new Character( 'A' ) );
       assertTrue( json.isEmpty() );
+   }
+
+   public void testFromDynaBean_full() throws Exception
+   {
+      Map properties = new HashMap();
+      properties.put( "string", String.class );
+      properties.put( "number", Integer.class );
+      properties.put( "array", Object[].class );
+      properties.put( "list", List.class );
+      properties.put( "func", JSONFunction.class );
+      properties.put( "boolean", Boolean.class );
+      properties.put( "bean", BeanA.class );
+      JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
+      JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
+      dynaBean.setDynamicFormClass( dynaClass );
+      dynaBean.set( "string", "json" );
+      dynaBean.set( "number", new Double( 2 ) );
+      dynaBean.set( "array", new Integer[] { new Integer( 1 ), new Integer( 2 ) } );
+      dynaBean.set( "list", new ArrayList() );
+      dynaBean.set( "func", new JSONFunction( new String[] { "a" }, "return a;" ) );
+      dynaBean.set( "boolean", Boolean.TRUE );
+      dynaBean.set( "bean", new BeanA() );
+
+      JSONObject jsonObject = JSONObject.fromDynaBean( dynaBean );
+      assertEquals( "json", jsonObject.get( "string" ) );
+      assertEquals( new Double( 2 ), jsonObject.get( "number" ) );
+      assertEquals( Boolean.TRUE, jsonObject.get( "boolean" ) );
+      Assertions.assertEquals( "function(a){ return a; }", (JSONFunction) jsonObject.get( "func" ) );
+   }
+
+   public void testFromDynaBean_null()
+   {
+      JSONObject jsonObject = JSONObject.fromDynaBean( null );
+      assertTrue( jsonObject.isNullObject() );
+   }
+
+   public void testFromJSONTokener()
+   {
+      JSONTokener jsonTokener = new JSONTokener( "{\"string\":\"json\"}" );
+      JSONObject json = new JSONObject( jsonTokener );
+      assertEquals( "json", json.getString( "string" ) );
    }
 
    public void testFromMap_nested_null_object()
@@ -106,7 +216,26 @@ public class TestJSONObject extends TestCase
       }
    }
 
-   public void testFromObject_BeanA()
+   public void testFromObject_array()
+   {
+      try{
+         JSONObject.fromObject( new ArrayList() );
+         fail( "Expected a JSONException" );
+      }
+      catch( IllegalArgumentException expected ){
+         // OK
+      }
+
+      try{
+         JSONObject.fromObject( new String[] { "json" } );
+         fail( "Expected a JSONException" );
+      }
+      catch( IllegalArgumentException expected ){
+         // OK
+      }
+   }
+
+   public void testFromObject_Bean()
    {
       try{
          JSONObject json = JSONObject.fromObject( new BeanA() );
@@ -133,6 +262,12 @@ public class TestJSONObject extends TestCase
       }
    }
 
+   public void testFromObject_DynaBean() throws Exception
+   {
+      JSONObject json = JSONObject.fromObject( createDynaBean() );
+      assertEquals( "json", json.getString( "name" ) );
+   }
+
    public void testFromObject_ExtendedBean()
    {
       try{
@@ -141,6 +276,18 @@ public class TestJSONObject extends TestCase
          assertEquals( 42, json.getInt( "integer" ) );
          assertEquals( "json", json.getString( "string" ) );
          assertNotNull( json.get( "intarray" ) );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testFromObject_JSONTokener()
+   {
+      try{
+         JSONTokener jsonTokener = new JSONTokener( "{\"string\":\"json\"}" );
+         JSONObject json = JSONObject.fromObject( jsonTokener );
+         assertEquals( "json", json.getString( "string" ) );
       }
       catch( JSONException jsone ){
          fail( jsone.getMessage() );
@@ -174,6 +321,66 @@ public class TestJSONObject extends TestCase
       catch( JSONException jsone ){
          fail( jsone.getMessage() );
       }
+   }
+
+   public void testFromObject_null()
+   {
+      try{
+         JSONObject json = JSONObject.fromObject( null );
+         assertTrue( json.isNullObject() );
+         assertEquals( JSONNull.getInstance()
+               .toString(), json.toString() );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testFromObject_String()
+   {
+      try{
+         JSONObject json = JSONObject.fromObject( "{\"string\":\"json\"}" );
+         assertEquals( "json", json.getString( "string" ) );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testFromObject_toBean_DynaBean()
+   {
+      // bug report 1540137
+
+      String jsondata = "{\"person\":{\"phone\":[\"111-222-3333\",\"777-888-9999\"],"
+            + "\"address\":{\"street\":\"123 somewhere place\",\"zip\":\"30005\",\"city\":\"Alpharetta\"},"
+            + "\"email\":[\"allen@work.com\",\"allen@home.net\"],\"name\":\"Allen\"}}";
+
+      JSONObject jsonobj = JSONObject.fromString( jsondata );
+      Object bean = JSONObject.toBean( jsonobj );
+      // bean is a DynaBean
+      assertTrue( bean instanceof JSONDynaBean );
+      // convert the DynaBean to a JSONObject again
+      JSONObject jsonobj2 = JSONObject.fromBean( bean );
+
+      assertNotNull( jsonobj.getJSONObject( "person" ) );
+      assertFalse( JSONUtils.isNull( jsonobj.getJSONObject( "person" ) ) );
+      assertNotNull( jsonobj2.getJSONObject( "person" ) );
+      assertFalse( JSONUtils.isNull( jsonobj2.getJSONObject( "person" ) ) );
+
+      JSONObject person1 = jsonobj.getJSONObject( "person" );
+      JSONObject person2 = jsonobj2.getJSONObject( "person" );
+      assertEquals( person1.get( "name" ), person2.get( "name" ) );
+      assertEquals( person1.get( "phone" )
+            .toString(), person2.get( "phone" )
+            .toString() );
+      assertEquals( person1.get( "email" )
+            .toString(), person2.get( "email" )
+            .toString() );
+      JSONObject address1 = person1.getJSONObject( "address" );
+      JSONObject address2 = person2.getJSONObject( "address" );
+      assertEquals( address1.get( "street" ), address2.get( "street" ) );
+      assertEquals( address1.get( "zip" ), address2.get( "zip" ) );
+      assertEquals( address1.get( "city" ), address2.get( "city" ) );
    }
 
    public void testFromObject_use_wrappers()
@@ -220,7 +427,7 @@ public class TestJSONObject extends TestCase
       assertEquals( jsonObject.get( "double" ), PropertyUtils.getProperty( bean, "double" ) );
       assertEquals( jsonObject.get( "func" ), PropertyUtils.getProperty( bean, "func" ) );
       List expected = JSONArray.toList( jsonObject.getJSONArray( "array" ) );
-      Assertions.assertListEquals( expected, (List) PropertyUtils.getProperty( bean, "array" ) );
+      Assertions.assertEquals( expected, (List) PropertyUtils.getProperty( bean, "array" ) );
    }
 
    public void testToBean_BeanA()
@@ -245,6 +452,30 @@ public class TestJSONObject extends TestCase
             JSONArray.toArray( jsonObject.getJSONArray( "intarray" ) ) );
    }
 
+   public void testToBean_interface()
+   {
+      // BUG 1542104
+
+      try{
+         JSONObject.toBean( new JSONObject( "{\"int\":1}" ), Serializable.class );
+         fail( "Expected a JSONException" );
+      }
+      catch( JSONException expected ){
+         // ok
+      }
+   }
+
+   public void testToBean_Map()
+   {
+      // BUG 1542104
+
+      Map map = new HashMap();
+      map.put( "name", "json" );
+      Object obj = JSONObject.toBean( new JSONObject( map ), Map.class );
+      assertTrue( obj instanceof Map );
+      assertEquals( map.get( "name" ), ((Map) obj).get( "name" ) );
+   }
+
    public void testToBean_nested() throws Exception
    {
       String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },nested:{nested:true}}";
@@ -260,47 +491,76 @@ public class TestJSONObject extends TestCase
       assertEquals( nestedJson.get( "nested" ), PropertyUtils.getProperty( nestedBean, "nested" ) );
    }
 
+   public void testToBean_nested_beans_in_map__beans()
+   {
+      // BUG 1542092
+
+      MappingBean mappingBean = new MappingBean();
+
+      ValueBean beanA = new ValueBean();
+      beanA.setValue( 90000 );
+      ValueBean beanB = new ValueBean();
+      beanB.setValue( 91000 );
+
+      mappingBean.addAttribute( "beanA", beanA );
+      mappingBean.addAttribute( "beanB", beanB );
+
+      JSONObject jsonObject = JSONObject.fromObject( mappingBean );
+      Map classMap = new HashMap();
+      classMap.put( "bean.*", ValueBean.class );
+      MappingBean mappingBean2 = (MappingBean) JSONObject.toBean( jsonObject, MappingBean.class,
+            classMap );
+      Object ba = mappingBean2.getAttributes()
+            .get( "beanA" );
+      Object bb = mappingBean2.getAttributes()
+            .get( "beanB" );
+      assertTrue( ba instanceof ValueBean );
+      assertTrue( bb instanceof ValueBean );
+      assertEquals( beanA.getValue(), ((ValueBean) ba).getValue() );
+      assertEquals( beanB.getValue(), ((ValueBean) bb).getValue() );
+   }
+
+   public void testToBean_nested_beans_in_map__DynaBean()
+   {
+      // BUG 1542092
+
+      MappingBean mappingBean = new MappingBean();
+
+      ValueBean beanA = new ValueBean();
+      beanA.setValue( 90000 );
+      ValueBean beanB = new ValueBean();
+      beanB.setValue( 91000 );
+
+      mappingBean.addAttribute( "beanA", beanA );
+      mappingBean.addAttribute( "beanB", beanB );
+
+      JSONObject jsonObject = JSONObject.fromObject( mappingBean );
+      MappingBean mappingBean2 = (MappingBean) JSONObject.toBean( jsonObject, MappingBean.class );
+      Object ba = mappingBean2.getAttributes()
+            .get( "beanA" );
+      Object bb = mappingBean2.getAttributes()
+            .get( "beanB" );
+      assertTrue( ba instanceof JSONDynaBean );
+      assertTrue( bb instanceof JSONDynaBean );
+      assertEquals( new Integer( beanA.getValue() ), ((JSONDynaBean) ba).get( "value" ) );
+      assertEquals( new Integer( beanB.getValue() ), ((JSONDynaBean) bb).get( "value" ) );
+   }
+
    public void testToBean_null()
+   {
+      assertNull( JSONObject.toBean( null ) );
+   }
+
+   public void testToBean_null_2()
+   {
+      assertNull( JSONObject.toBean( null, BeanA.class ) );
+   }
+
+   public void testToBean_null_object()
    {
       JSONObject jsonObject = new JSONObject( true );
       BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
       assertNull( bean );
-   }
-
-   public void testFromObject_toBean_DynaBean()
-   {
-      // bug report 1540137
-
-      String jsondata = "{\"person\":{\"phone\":[\"111-222-3333\",\"777-888-9999\"],"
-            + "\"address\":{\"street\":\"123 somewhere place\",\"zip\":\"30005\",\"city\":\"Alpharetta\"},"
-            + "\"email\":[\"allen@work.com\",\"allen@home.net\"],\"name\":\"Allen\"}}";
-
-      JSONObject jsonobj = JSONObject.fromString( jsondata );
-      Object bean = JSONObject.toBean( jsonobj );
-      // bean is a DynaBean
-      assertTrue( bean instanceof JSONDynaBean );
-      // convert the DynaBean to a JSONObject again
-      JSONObject jsonobj2 = JSONObject.fromBean( bean );
-
-      assertNotNull( jsonobj.getJSONObject( "person" ) );
-      assertFalse( JSONUtils.isNull( jsonobj.getJSONObject( "person" ) ) );
-      assertNotNull( jsonobj2.getJSONObject( "person" ) );
-      assertFalse( JSONUtils.isNull( jsonobj2.getJSONObject( "person" ) ) );
-
-      JSONObject person1 = jsonobj.getJSONObject( "person" );
-      JSONObject person2 = jsonobj2.getJSONObject( "person" );
-      assertEquals( person1.get( "name" ), person2.get( "name" ) );
-      assertEquals( person1.get( "phone" )
-            .toString(), person2.get( "phone" )
-            .toString() );
-      assertEquals( person1.get( "email" )
-            .toString(), person2.get( "email" )
-            .toString() );
-      JSONObject address1 = person1.getJSONObject( "address" );
-      JSONObject address2 = person2.getJSONObject( "address" );
-      assertEquals( address1.get( "street" ), address2.get( "street" ) );
-      assertEquals( address1.get( "zip" ), address2.get( "zip" ) );
-      assertEquals( address1.get( "city" ), address2.get( "city" ) );
    }
 
    public void testToBean_null_values()
@@ -319,5 +579,17 @@ public class TestJSONObject extends TestCase
       assertEquals( "010", items[1][0] );
       assertEquals( "011", items[1][1] );
       assertEquals( "020", items[2][0] );
+   }
+
+   private JSONDynaBean createDynaBean() throws Exception
+   {
+      Map properties = new HashMap();
+      properties.put( "name", String.class );
+      JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
+      JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
+      dynaBean.setDynamicFormClass( dynaClass );
+      dynaBean.set( "name", "json" );
+      // JSON Strings can not be null, only empty
+      return dynaBean;
    }
 }

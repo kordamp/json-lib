@@ -24,6 +24,8 @@ import java.util.Map;
 
 import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.MorpherRegistry;
+import net.sf.json.regexp.RegexpMatcher;
+import net.sf.json.regexp.RegexpUtils;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -42,21 +44,12 @@ public final class JSONUtils
    private static final String FUNCTION_PARAMS_PATTERN = "^function[ ]?\\((.*?)\\)$";
    private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*\\)[ ]?\\{.*\\}$";
 
-   private static String javaVersion = "1.3.1";
    private static final MorpherRegistry morpherRegistry = new MorpherRegistry();
 
    static{
-      javaVersion = System.getProperty( "java.version" );
-
-      if( isJDK13() ){
-         FUNCTION_HEADER_MATCHER = new Perl5RegexpMatcher( FUNCTION_HEADER_PATTERN );
-         FUNCTION_PARAMS_MATCHER = new Perl5RegexpMatcher( FUNCTION_PARAMS_PATTERN );
-         FUNCTION_MACTHER = new Perl5RegexpMatcher( FUNCTION_PATTERN );
-      }else{
-         FUNCTION_HEADER_MATCHER = new JdkRegexpMatcher( FUNCTION_HEADER_PATTERN );
-         FUNCTION_PARAMS_MATCHER = new JdkRegexpMatcher( FUNCTION_PARAMS_PATTERN );
-         FUNCTION_MACTHER = new JdkRegexpMatcher( FUNCTION_PATTERN );
-      }
+      FUNCTION_HEADER_MATCHER = RegexpUtils.getMatcher( FUNCTION_HEADER_PATTERN );
+      FUNCTION_PARAMS_MATCHER = RegexpUtils.getMatcher( FUNCTION_PARAMS_PATTERN );
+      FUNCTION_MACTHER = RegexpUtils.getMatcher( FUNCTION_PATTERN );
 
       // register standard morphers
       MorphUtils.registerStandardMorphers( morpherRegistry );
@@ -250,11 +243,6 @@ public final class JSONUtils
          return FUNCTION_HEADER_MATCHER.matches( str );
       }
       return false;
-   }
-
-   public static boolean isJDK13()
-   {
-      return javaVersion.indexOf( "1.3" ) != -1;
    }
 
    /**
