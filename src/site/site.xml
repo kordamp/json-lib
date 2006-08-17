@@ -19,7 +19,8 @@
     <menu name="Json-lib">
       <item name="Introduction" href="index.html"/>
       <item name="Download" href="https://sourceforge.net/project/showfiles.php?group_id=171425"/>
-      <item name="Usage" href="usage.html"/>
+      <item name="Getting Started" href="usage.html"/>
+      <item name="Changes" href="changes-report.html"/>
     </menu>
 
     ${reports}
