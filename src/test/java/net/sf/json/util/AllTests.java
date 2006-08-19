@@ -14,30 +14,22 @@
  * limitations under the License.
  */
 
-package net.sf.json.sample;
+package net.sf.json.util;
 
-import java.util.HashMap;
-import java.util.Map;
+import junit.framework.TestSuite;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class MappingBean
+public class AllTests extends TestSuite
 {
-   private Map attributes = new HashMap();
-
-   public void addAttribute( Object key, Object value )
+   public static TestSuite suite() throws Exception
    {
-      this.attributes.put( key, value );
-   }
+      TestSuite suite = new TestSuite();
+      suite.setName( "util" );
 
-   public Map getAttributes()
-   {
-      return attributes;
-   }
+      suite.addTest( new TestSuite( TestDynaBeanToBeanMorpher.class ) );
 
-   public void setAttributes( Map attributes )
-   {
-      this.attributes = attributes;
+      return suite;
    }
 }
