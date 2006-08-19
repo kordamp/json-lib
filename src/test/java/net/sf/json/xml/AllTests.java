@@ -18,6 +18,9 @@ package net.sf.json.xml;
 
 import junit.framework.TestSuite;
 
+/**
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ */
 public class AllTests extends TestSuite
 {
    public static TestSuite suite() throws Exception

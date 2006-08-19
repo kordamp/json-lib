@@ -18,7 +18,6 @@ package net.sf.json.regexp;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
- * @version 1
  */
 public interface RegexpMatcher
 {

@@ -24,12 +24,10 @@ import org.apache.oro.text.regex.Perl5Matcher;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
- * @version 1
  */
 public class Perl5RegexpMatcher implements RegexpMatcher
 {
    private static final Perl5Compiler compiler = new Perl5Compiler();
-   private final PatternMatcher matcher = new Perl5Matcher();
    private Pattern pattern;
 
    public Perl5RegexpMatcher( String pattern )
@@ -44,8 +42,9 @@ public class Perl5RegexpMatcher implements RegexpMatcher
 
    public String getGroupIfMatches( String str, int group )
    {
-      if( matches( str ) ){
-         matcher.getMatch()
+      PatternMatcher matcher = new Perl5Matcher();
+      if( matcher.matches( str, pattern ) ){
+         return matcher.getMatch()
                .group( 1 );
       }
       return "";
@@ -53,6 +52,6 @@ public class Perl5RegexpMatcher implements RegexpMatcher
 
    public boolean matches( String str )
    {
-      return matcher.matches( str, pattern );
+      return new Perl5Matcher().matches( str, pattern );
    }
 }

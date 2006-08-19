@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.regexp;
 
 import junit.framework.TestSuite;
 
@@ -26,18 +26,11 @@ public class AllTests extends TestSuite
    public static TestSuite suite() throws Exception
    {
       TestSuite suite = new TestSuite();
-      suite.setName( "json-lib" );
+      suite.setName( "regexp" );
 
-      suite.addTest( new TestSuite( TestJSONUtils.class ) );
-      suite.addTest( new TestSuite( TestJSONFunction.class ) );
-      suite.addTest( new TestSuite( TestJSONArray.class ) );
-      suite.addTest( new TestSuite( TestJSONObject.class ) );
-      suite.addTest( new TestSuite( TestJSONBuilder.class ) );
-      suite.addTest( new TestSuite( TestJSONStringer.class ) );
-      suite.addTest( net.sf.json.regexp.AllTests.suite() );
-      suite.addTest( net.sf.json.util.AllTests.suite() );
-      suite.addTest( net.sf.json.xml.AllTests.suite() );
-      
+      suite.addTest( new TestSuite( TestJdkRegexpMatcher.class ) );
+      suite.addTest( new TestSuite( TestPerl5RegexpMatcher.class ) );
+
       return suite;
    }
 }

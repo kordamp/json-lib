@@ -36,7 +36,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class JSONDynaBean implements DynaBean, Serializable
 {
-   private static final long serialVersionUID = 6291783510602240088L;
+   private static final long serialVersionUID = -3152084265262514977L;
    protected JSONDynaClass dynaClass;
    protected Map dynaValues = new HashMap();
 
@@ -225,6 +225,13 @@ public class JSONDynaBean implements DynaBean, Serializable
       ((Map) prop).put( key, value );
    }
 
+   public void setDynamicFormClass( JSONDynaClass dynaClass )
+   {
+      if( this.dynaClass == null ){
+         this.dynaClass = dynaClass;
+      }
+   }
+
    public String toString()
    {
       return new ToStringBuilder( this, ToStringStyle.MULTI_LINE_STYLE ).append( dynaValues )
@@ -271,11 +278,6 @@ public class JSONDynaBean implements DynaBean, Serializable
       }
 
       return assignable;
-   }
-
-   protected void setDynamicFormClass( JSONDynaClass dynaClass )
-   {
-      this.dynaClass = dynaClass;
    }
 
    private boolean isByte( Class clazz )

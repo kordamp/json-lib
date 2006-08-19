@@ -16,6 +16,7 @@
 
 package net.sf.json;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -82,13 +83,24 @@ public final class JSONUtils
       return s;
    }
 
-   public static int getDimensions( Class arrayClass )
+   /**
+    * Returns the number of dimensions suited for a java array.
+    */
+   public static int[] getDimensions( JSONArray jsonArray )
    {
-      if( arrayClass == null || !arrayClass.isArray() ){
-         return 0;
+      // short circuit for empty arrays
+      if( jsonArray == null || jsonArray.isEmpty() ){
+         return new int[] { 0 };
       }
-
-      return 1 + getDimensions( arrayClass.getComponentType() );
+   
+      List dims = new ArrayList();
+      JSONUtils.processArrayDimensions( jsonArray, dims, 0 );
+      int[] dimensions = new int[dims.size()];
+      int j = 0;
+      for( Iterator i = dims.iterator(); i.hasNext(); ){
+         dimensions[j++] = ((Integer) i.next()).intValue();
+      }
+      return dimensions;
    }
 
    /**
@@ -105,43 +117,6 @@ public final class JSONUtils
          return type;
       }
       return getInnerComponentType( type.getComponentType() );
-   }
-
-   /**
-    * Creates a Map with all the properties of the JSONObject.
-    */
-   public static Map getJSONProperties( JSONObject jsonObject )
-   {
-      Map properties = new HashMap();
-      for( Iterator keys = jsonObject.keys(); keys.hasNext(); ){
-         String key = (String) keys.next();
-         properties.put( key, getJSONType( jsonObject.get( key ) ) );
-      }
-      return properties;
-   }
-
-   /**
-    * Returns the JSON type.
-    */
-   public static Object getJSONType( Object obj )
-   {
-      if( isNull( obj ) ){
-         return JSONTypes.OBJECT;
-      }else if( isArray( obj ) ){
-         return JSONTypes.ARRAY;
-      }else if( isFunction( obj ) ){
-         return JSONTypes.FUNCTION;
-      }else if( isBoolean( obj ) ){
-         return JSONTypes.BOOLEAN;
-      }else if( isNumber( obj ) ){
-         return JSONTypes.NUMBER;
-      }else if( isString( obj ) ){
-         return JSONTypes.STRING;
-      }else if( isObject( obj ) ){
-         return JSONTypes.OBJECT;
-      }else{
-         throw new JSONException( "Unsupported type" );
-      }
    }
 
    public static MorpherRegistry getMorpherRegistry()
@@ -222,11 +197,11 @@ public final class JSONUtils
     */
    public static boolean isFunction( Object obj )
    {
-      if( obj instanceof String && obj != null ){
+      if( obj != null && obj instanceof String  ){
          String str = (String) obj;
          return FUNCTION_MACTHER.matches( str );
       }
-      if( obj instanceof JSONFunction && obj != null ){
+      if( obj != null && obj instanceof JSONFunction  ){
          return true;
       }
       return false;
@@ -238,7 +213,7 @@ public final class JSONUtils
     */
    public static boolean isFunctionHeader( Object obj )
    {
-      if( obj instanceof String && obj != null ){
+      if( obj != null && obj instanceof String ){
          String str = (String) obj;
          return FUNCTION_HEADER_MATCHER.matches( str );
       }
@@ -544,6 +519,24 @@ public final class JSONUtils
          return ((JSONArray) value).toString( indentFactor, indent );
       }
       return quote( value.toString() );
+   }
+
+   static void processArrayDimensions( JSONArray jsonArray, List dims, int index )
+   {
+      if( dims.size() <= index ){
+         dims.add( new Integer( jsonArray.length() ) );
+      }else{
+         int i = ((Integer) dims.get( index )).intValue();
+         if( jsonArray.length() > i ){
+            dims.set( index, new Integer( jsonArray.length() ) );
+         }
+      }
+      for( Iterator i = jsonArray.iterator(); i.hasNext(); ){
+         Object item = i.next();
+         if( item instanceof JSONArray ){
+            processArrayDimensions( (JSONArray) item, dims, index + 1 );
+         }
+      }
    }
 
    private JSONUtils()

@@ -84,6 +84,14 @@ public class TestXMLSerializer_writes extends XMLTestCase
       assertXMLEqual( expected, xml );
    }
 
+   public void testWriteNestedNullObject() throws Exception
+   {
+      JSONObject jsonObject = new JSONObject( "{\"nested\":null}" );
+      String expected = "<o><nested class=\"object\" null=\"true\"/></o>";
+      String xml = XMLSerializer.write( jsonObject );
+      assertXMLEqual( expected, xml );
+   }
+   
    public void testWriteNullObject() throws Exception
    {
       JSONObject jsonObject = new JSONObject( true );

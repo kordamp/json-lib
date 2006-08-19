@@ -96,7 +96,7 @@ import org.apache.commons.lang.ArrayUtils;
  * <li>Comments written in the slashshlash, slashstar, and hash conventions
  * will be ignored.</li>
  * </ul>
- *
+ * 
  * @author JSON.org
  * @version 3
  */
@@ -107,7 +107,7 @@ public class JSONArray
    /**
     * Creates a JSONArray from a java array.<br>
     * The java array can be multidimensional.
-    *
+    * 
     * @param array A Java array
     */
    public static JSONArray fromArray( Object[] array )
@@ -119,7 +119,7 @@ public class JSONArray
     * Creates a JSONArray from a Collection.<br>
     * Its elements can be maps, POJOs, java arrays (primitive & object),
     * collections.
-    *
+    * 
     * @param collection A collection
     */
    public static JSONArray fromCollection( Collection collection )
@@ -129,7 +129,7 @@ public class JSONArray
 
    /**
     * Creates a JSONArray from a JSONTokener.
-    *
+    * 
     * @param tokenern a JSONTokener
     */
    public static JSONArray fromJSONTokener( JSONTokener tokener )
@@ -145,6 +145,8 @@ public class JSONArray
    {
       if( object instanceof Collection ){
          return fromCollection( (Collection) object );
+      }else if( object instanceof JSONArray ){
+         return new JSONArray( (JSONArray) object );
       }else if( object instanceof JSONTokener ){
          return fromJSONTokener( (JSONTokener) object );
       }else if( object instanceof String ){
@@ -183,7 +185,7 @@ public class JSONArray
 
    /**
     * Constructs a JSONArray from a string in JSON format.
-    *
+    * 
     * @param str A string in JSON format
     */
    public static JSONArray fromString( String string )
@@ -192,26 +194,6 @@ public class JSONArray
    }
 
    // ------------------------------------------------------
-
-   /**
-    * Returns the number of dimensions suited for a java array.
-    */
-   public static int[] getDimensions( JSONArray jsonArray )
-   {
-      // short circuit for empty arrays
-      if( jsonArray == null || jsonArray.myArrayList.isEmpty() ){
-         return new int[] { 0 };
-      }
-
-      List dims = new ArrayList();
-      processArrayDimensions( jsonArray, dims, 0 );
-      int[] dimensions = new int[dims.size()];
-      int j = 0;
-      for( Iterator i = dims.iterator(); i.hasNext(); ){
-         dimensions[j++] = ((Integer) i.next()).intValue();
-      }
-      return dimensions;
-   }
 
    /**
     * Creates a java array from a JSONArray.
@@ -243,7 +225,7 @@ public class JSONArray
    public static Object[] toArray( JSONArray jsonArray, Class objectClass, Map classMap )
    {
       // TODO handle empty jsonArray
-      int[] dimensions = JSONArray.getDimensions( jsonArray );
+      int[] dimensions = JSONUtils.getDimensions( jsonArray );
       Object array = Array.newInstance( Object.class, dimensions );
       int size = jsonArray.length();
       for( int i = 0; i < size; i++ ){
@@ -334,100 +316,82 @@ public class JSONArray
       return list;
    }
 
-   private static void processArrayDimensions( JSONArray jsonArray, List dims, int index )
-   {
-      if( dims.size() <= index ){
-         dims.add( new Integer( jsonArray.length() ) );
-      }else{
-         int i = ((Integer) dims.get( index )).intValue();
-         if( jsonArray.length() > i ){
-            dims.set( index, new Integer( jsonArray.length() ) );
-         }
-      }
-      for( Iterator i = jsonArray.iterator(); i.hasNext(); ){
-         Object item = i.next();
-         if( item instanceof JSONArray ){
-            processArrayDimensions( (JSONArray) item, dims, index + 1 );
-         }
-      }
-   }
-
-   // ------------------------------------------------------
-
    /**
-    * The arrayList where the JSONArray's properties are kept.
+    * The List where the JSONArray's properties are kept.
     */
-   private ArrayList myArrayList;
+   private List elements;
 
    /**
     * Construct an empty JSONArray.
     */
    public JSONArray()
    {
-      this.myArrayList = new ArrayList();
+      this.elements = new ArrayList();
    }
 
    /**
     * Construct a JSONArray from an boolean[].<br>
-    *
+    * 
     * @param array An boolean[] array.
     */
    public JSONArray( boolean[] array )
    {
-      this.myArrayList = new ArrayList();
-      this.myArrayList.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      this.elements = new ArrayList();
+      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
    }
 
    /**
     * Construct a JSONArray from an byte[].<br>
-    *
+    * 
     * @param array An byte[] array.
     */
    public JSONArray( byte[] array )
    {
-      this.myArrayList = new ArrayList();
-      this.myArrayList.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      this.elements = new ArrayList();
+      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
    }
 
    /**
     * Construct a JSONArray from an char[].<br>
-    *
+    * 
     * @param array An char[] array.
     */
    public JSONArray( char[] array )
    {
-      this.myArrayList = new ArrayList();
-      this.myArrayList.addAll( Arrays.asList( JSONUtils.toObject( array ) ) );
+      this.elements = new ArrayList();
+      this.elements.addAll( Arrays.asList( JSONUtils.toObject( array ) ) );
    }
 
    /**
     * Construct a JSONArray from a Collection.
-    *
+    * 
     * @param collection A Collection.
     */
    public JSONArray( Collection collection )
    {
-      this.myArrayList = new ArrayList();
+      this.elements = new ArrayList();
       if( collection != null ){
          for( Iterator elements = collection.iterator(); elements.hasNext(); ){
             Object element = elements.next();
             if( JSONUtils.isArray( element ) ){
-               this.myArrayList.add( fromObject( element ) );
+               this.elements.add( fromObject( element ) );
+            }else if( element instanceof JSONArray ){
+               this.elements.add( new JSONArray( (JSONArray) element ) );
             }else if( JSONUtils.isFunction( element ) ){
                if( element instanceof String ){
-                  this.myArrayList.add( JSONFunction.parse( (String) element ) );
+                  this.elements.add( JSONFunction.parse( (String) element ) );
                }else{
-                  this.myArrayList.add( element );
+                  this.elements.add( element );
                }
             }else if( JSONUtils.isObject( element ) ){
                JSONObject jsonObject = JSONObject.fromObject( element );
                if( jsonObject.isNullObject() ){
-                  this.myArrayList.add( JSONNull.getInstance() );
+                  this.elements.add( JSONNull.getInstance() );
                }else{
-                  this.myArrayList.add( jsonObject );
+                  this.elements.add( jsonObject );
                }
             }else{
-               this.myArrayList.add( element );
+               this.elements.add( element );
             }
          }
       }
@@ -435,40 +399,55 @@ public class JSONArray
 
    /**
     * Construct a JSONArray from an double[].<br>
-    *
+    * 
     * @param array An double[] array.
     */
    public JSONArray( double[] array )
    {
-      this.myArrayList = new ArrayList();
-      this.myArrayList.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      this.elements = new ArrayList();
+      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
    }
 
    /**
     * Construct a JSONArray from an float[].<br>
-    *
+    * 
     * @param array An float[] array.
     */
    public JSONArray( float[] array )
    {
-      this.myArrayList = new ArrayList();
-      this.myArrayList.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      this.elements = new ArrayList();
+      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
    }
 
    /**
     * Construct a JSONArray from an int[].<br>
-    *
+    * 
     * @param array An int[] array.
     */
    public JSONArray( int[] array )
    {
-      this.myArrayList = new ArrayList();
-      this.myArrayList.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      this.elements = new ArrayList();
+      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+   }
+
+   /**
+    * Construct a JSONArray from another JSONArray.<br>
+    * This method will return a shallow copy of the input array.
+    * 
+    * @param jsonArray A JSONArray.
+    * @throws JSONException If there is a syntax error.
+    */
+   public JSONArray( JSONArray jsonArray )
+   {
+      this.elements = new ArrayList();
+      if( jsonArray != null ){
+         this.elements.addAll( jsonArray.elements );
+      }
    }
 
    /**
     * Construct a JSONArray from a JSONTokener.
-    *
+    * 
     * @param x A JSONTokener
     * @throws JSONException If there is a syntax error.
     */
@@ -485,12 +464,12 @@ public class JSONArray
       for( ;; ){
          if( x.nextClean() == ',' ){
             x.back();
-            this.myArrayList.add( JSONNull.getInstance() );
+            this.elements.add( JSONNull.getInstance() );
          }else{
             x.back();
             Object v = x.nextValue();
             if( !JSONUtils.isFunctionHeader( v ) ){
-               this.myArrayList.add( v );
+               this.elements.add( v );
             }else{
                // read params if any
                String params = JSONUtils.getFunctionParams( (String) v );
@@ -520,8 +499,8 @@ public class JSONArray
                String text = sb.toString();
                text = text.substring( 1, text.length() - 1 )
                      .trim();
-               this.myArrayList.add( new JSONFunction( (params != null) ? params.split( "," )
-                     : null, text ) );
+               this.elements.add( new JSONFunction( (params != null) ? params.split( "," ) : null,
+                     text ) );
             }
          }
          switch( x.nextClean() )
@@ -543,61 +522,63 @@ public class JSONArray
 
    /**
     * Construct a JSONArray from an long[].<br>
-    *
+    * 
     * @param array An long[] array.
     */
    public JSONArray( long[] array )
    {
-      this.myArrayList = new ArrayList();
-      this.myArrayList.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      this.elements = new ArrayList();
+      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
    }
 
    /**
     * Construct a JSONArray from an Object[].<br>
     * Assumes the object hierarchy is acyclical.
-    *
+    * 
     * @param array An Object[] array.
     */
    public JSONArray( Object[] array )
    {
-      this.myArrayList = new ArrayList();
+      this.elements = new ArrayList();
       for( int i = 0; i < array.length; i++ ){
          Object element = array[i];
          if( JSONUtils.isArray( element ) ){
-            this.myArrayList.add( fromObject( element ) );
+            this.elements.add( fromObject( element ) );
+         }else if( element instanceof JSONArray ){
+            this.elements.add( new JSONArray( (JSONArray) element ) );
          }else if( JSONUtils.isFunction( element ) ){
             if( element instanceof String ){
-               this.myArrayList.add( JSONFunction.parse( (String) element ) );
+               this.elements.add( JSONFunction.parse( (String) element ) );
             }else{
-               this.myArrayList.add( element );
+               this.elements.add( element );
             }
          }else if( JSONUtils.isObject( element ) ){
             JSONObject jsonObject = JSONObject.fromObject( element );
             if( jsonObject.isNullObject() ){
-               this.myArrayList.add( JSONNull.getInstance() );
+               this.elements.add( JSONNull.getInstance() );
             }else{
-               this.myArrayList.add( jsonObject );
+               this.elements.add( jsonObject );
             }
          }else{
-            this.myArrayList.add( element );
+            this.elements.add( element );
          }
       }
    }
 
    /**
     * Construct a JSONArray from an short[].<br>
-    *
+    * 
     * @param array An short[] array.
     */
    public JSONArray( short[] array )
    {
-      this.myArrayList = new ArrayList();
-      this.myArrayList.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      this.elements = new ArrayList();
+      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
    }
 
    /**
     * Construct a JSONArray from a source JSON text.
-    *
+    * 
     * @param string A string that begins with <code>[</code>&nbsp;<small>(left
     *        bracket)</small> and ends with <code>]</code>&nbsp;<small>(right
     *        bracket)</small>.
@@ -610,7 +591,7 @@ public class JSONArray
 
    /**
     * Get the object value associated with an index.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return An object value.
     * @throws JSONException If there is no value for the index.
@@ -627,7 +608,7 @@ public class JSONArray
    /**
     * Get the boolean value associated with an index. The string values "true"
     * and "false" are converted to boolean.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return The truth.
     * @throws JSONException If there is no value for the index or if the value
@@ -648,7 +629,7 @@ public class JSONArray
 
    /**
     * Get the double value associated with an index.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return The value.
     * @throws JSONException If the key is not found or if the value cannot be
@@ -667,7 +648,7 @@ public class JSONArray
 
    /**
     * Get the int value associated with an index.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return The value.
     * @throws JSONException If the key is not found or if the value cannot be
@@ -677,17 +658,12 @@ public class JSONArray
    public int getInt( int index )
    {
       Object o = get( index );
-      try{
-         return o instanceof Number ? ((Number) o).intValue() : (int) getDouble( index );
-      }
-      catch( Exception e ){
-         throw new JSONException( "JSONArray[" + index + "] is not a number." );
-      }
+      return o instanceof Number ? ((Number) o).intValue() : (int) getDouble( index );
    }
 
    /**
     * Get the JSONArray associated with an index.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return A JSONArray value.
     * @throws JSONException If there is no value for the index. or if the value
@@ -704,7 +680,7 @@ public class JSONArray
 
    /**
     * Get the JSONObject associated with an index.
-    *
+    * 
     * @param index subscript
     * @return A JSONObject value.
     * @throws JSONException If there is no value for the index or if the value
@@ -721,7 +697,7 @@ public class JSONArray
 
    /**
     * Get the long value associated with an index.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return The value.
     * @throws JSONException If the key is not found or if the value cannot be
@@ -730,17 +706,12 @@ public class JSONArray
    public long getLong( int index )
    {
       Object o = get( index );
-      try{
-         return o instanceof Number ? ((Number) o).longValue() : (long) getDouble( index );
-      }
-      catch( Exception e ){
-         throw new JSONException( "JSONArray[" + index + "] is not a number." );
-      }
+      return o instanceof Number ? ((Number) o).longValue() : (long) getDouble( index );
    }
 
    /**
     * Get the string associated with an index.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return A string value.
     * @throws JSONException If there is no value for the index.
@@ -750,19 +721,24 @@ public class JSONArray
       return get( index ).toString();
    }
 
+   public boolean isEmpty()
+   {
+      return this.elements.isEmpty();
+   }
+
    /**
     * Returns an Iterator for this JSONArray
     */
    public Iterator iterator()
    {
-      return this.myArrayList.iterator();
+      return this.elements.iterator();
    }
 
    /**
     * Make a string from the contents of this JSONArray. The
     * <code>separator</code> string is inserted between each element. Warning:
     * This method assumes that the data structure is acyclical.
-    *
+    * 
     * @param separator A string that will be inserted between the elements.
     * @return a string.
     * @throws JSONException If the array contains an invalid number.
@@ -776,37 +752,37 @@ public class JSONArray
          if( i > 0 ){
             sb.append( separator );
          }
-         sb.append( JSONUtils.valueToString( this.myArrayList.get( i ) ) );
+         sb.append( JSONUtils.valueToString( this.elements.get( i ) ) );
       }
       return sb.toString();
    }
 
    /**
     * Get the number of elements in the JSONArray, included nulls.
-    *
+    * 
     * @return The length (or size).
     */
    public int length()
    {
-      return this.myArrayList.size();
+      return this.elements.size();
    }
 
    /**
     * Get the optional object value associated with an index.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return An object value, or null if there is no object at that index.
     */
    public Object opt( int index )
    {
-      return (index < 0 || index >= length()) ? null : this.myArrayList.get( index );
+      return (index < 0 || index >= length()) ? null : this.elements.get( index );
    }
 
    /**
     * Get the optional boolean value associated with an index. It returns false
     * if there is no value at that index, or if the value is not Boolean.TRUE or
     * the String "true".
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return The truth.
     */
@@ -819,7 +795,7 @@ public class JSONArray
     * Get the optional boolean value associated with an index. It returns the
     * defaultValue if there is no value at that index or if it is not a Boolean
     * or the String "true" or "false" (case insensitive).
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @param defaultValue A boolean default.
     * @return The truth.
@@ -838,7 +814,7 @@ public class JSONArray
     * Get the optional double value associated with an index. NaN is returned if
     * there is no value for the index, or if the value is not a number and
     * cannot be converted to a number.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return The value.
     */
@@ -851,7 +827,7 @@ public class JSONArray
     * Get the optional double value associated with an index. The defaultValue
     * is returned if there is no value for the index, or if the value is not a
     * number and cannot be converted to a number.
-    *
+    * 
     * @param index subscript
     * @param defaultValue The default value.
     * @return The value.
@@ -870,7 +846,7 @@ public class JSONArray
     * Get the optional int value associated with an index. Zero is returned if
     * there is no value for the index, or if the value is not a number and
     * cannot be converted to a number.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return The value.
     */
@@ -883,7 +859,7 @@ public class JSONArray
     * Get the optional int value associated with an index. The defaultValue is
     * returned if there is no value for the index, or if the value is not a
     * number and cannot be converted to a number.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @param defaultValue The default value.
     * @return The value.
@@ -900,7 +876,7 @@ public class JSONArray
 
    /**
     * Get the optional JSONArray associated with an index.
-    *
+    * 
     * @param index subscript
     * @return A JSONArray value, or null if the index has no value, or if the
     *         value is not a JSONArray.
@@ -915,7 +891,7 @@ public class JSONArray
     * Get the optional JSONObject associated with an index. Null is returned if
     * the key is not found, or null if the index has no value, or if the value
     * is not a JSONObject.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return A JSONObject value.
     */
@@ -929,7 +905,7 @@ public class JSONArray
     * Get the optional long value associated with an index. Zero is returned if
     * there is no value for the index, or if the value is not a number and
     * cannot be converted to a number.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return The value.
     */
@@ -942,7 +918,7 @@ public class JSONArray
     * Get the optional long value associated with an index. The defaultValue is
     * returned if there is no value for the index, or if the value is not a
     * number and cannot be converted to a number.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @param defaultValue The default value.
     * @return The value.
@@ -961,7 +937,7 @@ public class JSONArray
     * Get the optional string value associated with an index. It returns an
     * empty string if there is no value at that index. If the value is not a
     * string and is not null, then it is coverted to a string.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @return A String value.
     */
@@ -973,7 +949,7 @@ public class JSONArray
    /**
     * Get the optional string associated with an index. The defaultValue is
     * returned if the key is not found.
-    *
+    * 
     * @param index The index must be between 0 and length() - 1.
     * @param defaultValue The default value.
     * @return A String value.
@@ -986,7 +962,7 @@ public class JSONArray
 
    /**
     * Append a boolean value. This increases the array's length by one.
-    *
+    * 
     * @param value A boolean value.
     * @return this.
     */
@@ -999,7 +975,7 @@ public class JSONArray
    /**
     * Put a value in the JSONArray, where the value will be a JSONArray which is
     * produced from a Collection.
-    *
+    * 
     * @param value A Collection value.
     * @return this.
     */
@@ -1011,7 +987,7 @@ public class JSONArray
 
    /**
     * Append a double value. This increases the array's length by one.
-    *
+    * 
     * @param value A double value.
     * @throws JSONException if the value is not finite.
     * @return this.
@@ -1026,7 +1002,7 @@ public class JSONArray
 
    /**
     * Append an int value. This increases the array's length by one.
-    *
+    * 
     * @param value An int value.
     * @return this.
     */
@@ -1040,7 +1016,7 @@ public class JSONArray
     * Put or replace a boolean value in the JSONArray. If the index is greater
     * than the length of the JSONArray, then null elements will be added as
     * necessary to pad it out.
-    *
+    * 
     * @param index The subscript.
     * @param value A boolean value.
     * @return this.
@@ -1055,7 +1031,7 @@ public class JSONArray
    /**
     * Put a value in the JSONArray, where the value will be a JSONArray which is
     * produced from a Collection.
-    *
+    * 
     * @param index The subscript.
     * @param value A Collection value.
     * @return this.
@@ -1072,7 +1048,7 @@ public class JSONArray
     * Put or replace a double value. If the index is greater than the length of
     * the JSONArray, then null elements will be added as necessary to pad it
     * out.
-    *
+    * 
     * @param index The subscript.
     * @param value A double value.
     * @return this.
@@ -1089,7 +1065,7 @@ public class JSONArray
     * Put or replace an int value. If the index is greater than the length of
     * the JSONArray, then null elements will be added as necessary to pad it
     * out.
-    *
+    * 
     * @param index The subscript.
     * @param value An int value.
     * @return this.
@@ -1105,7 +1081,7 @@ public class JSONArray
     * Put or replace a long value. If the index is greater than the length of
     * the JSONArray, then null elements will be added as necessary to pad it
     * out.
-    *
+    * 
     * @param index The subscript.
     * @param value A long value.
     * @return this.
@@ -1120,7 +1096,7 @@ public class JSONArray
    /**
     * Put a value in the JSONArray, where the value will be a JSONObject which
     * is produced from a Map.
-    *
+    * 
     * @param index The subscript.
     * @param value The Map value.
     * @return this.
@@ -1137,7 +1113,7 @@ public class JSONArray
     * Put or replace an object value in the JSONArray. If the index is greater
     * than the length of the JSONArray, then null elements will be added as
     * necessary to pad it out.
-    *
+    * 
     * @param index The subscript.
     * @param value The value to put into the array. The value should be a
     *        Boolean, Double, Integer, JSONArray, JSONObject, Long, or String,
@@ -1153,7 +1129,7 @@ public class JSONArray
          throw new JSONException( "JSONArray[" + index + "] not found." );
       }
       if( index < length() ){
-         this.myArrayList.set( index, value );
+         this.elements.set( index, value );
       }else{
          while( index != length() ){
             put( JSONNull.getInstance() );
@@ -1165,7 +1141,7 @@ public class JSONArray
 
    /**
     * Append an long value. This increases the array's length by one.
-    *
+    * 
     * @param value A long value.
     * @return this.
     */
@@ -1178,7 +1154,7 @@ public class JSONArray
    /**
     * Put a value in the JSONArray, where the value will be a JSONObject which
     * is produced from a Map.
-    *
+    * 
     * @param value A Map value.
     * @return this.
     */
@@ -1190,7 +1166,7 @@ public class JSONArray
 
    /**
     * Append an object value. This increases the array's length by one.
-    *
+    * 
     * @param value An object value. The value should be a Boolean, Double,
     *        Integer, JSONArray, JSONObject, JSONFunction, Long, or String, or
     *        the JSONObject.NULL object.
@@ -1198,7 +1174,7 @@ public class JSONArray
     */
    public JSONArray put( Object value )
    {
-      this.myArrayList.add( value );
+      this.elements.add( value );
       return this;
    }
 
@@ -1207,13 +1183,13 @@ public class JSONArray
     */
    public Object[] toArray()
    {
-      return this.myArrayList.toArray();
+      return this.elements.toArray();
    }
 
    /**
     * Produce a JSONObject by combining a JSONArray of names with the values of
     * this JSONArray.
-    *
+    * 
     * @param names A JSONArray containing a list of key strings. These will be
     *        paired with the values.
     * @return A JSONObject, or null if there are no names or if this JSONArray
@@ -1226,7 +1202,7 @@ public class JSONArray
          return null;
       }
       JSONObject jo = new JSONObject();
-      for( int i = 0; i < names.length(); i += 1 ){
+      for( int i = 0; i < names.length(); i++ ){
          jo.put( names.getString( i ), this.opt( i ) );
       }
       return jo;
@@ -1239,7 +1215,7 @@ public class JSONArray
     * the array contains an invalid number.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    *
+    * 
     * @return a printable, displayable, transmittable representation of the
     *         array.
     */
@@ -1256,7 +1232,7 @@ public class JSONArray
    /**
     * Make a prettyprinted JSON text of this JSONArray. Warning: This method
     * assumes that the data structure is acyclical.
-    *
+    * 
     * @param indentFactor The number of spaces to add to each level of
     *        indentation.
     * @return a printable, displayable, transmittable representation of the
@@ -1273,7 +1249,7 @@ public class JSONArray
    /**
     * Make a prettyprinted JSON text of this JSONArray. Warning: This method
     * assumes that the data structure is acyclical.
-    *
+    * 
     * @param indentFactor The number of spaces to add to each level of
     *        indentation.
     * @param indent The indention of the top level.
@@ -1290,7 +1266,7 @@ public class JSONArray
       int i;
       StringBuffer sb = new StringBuffer( "[" );
       if( len == 1 ){
-         sb.append( JSONUtils.valueToString( this.myArrayList.get( 0 ), indentFactor, indent ) );
+         sb.append( JSONUtils.valueToString( this.elements.get( 0 ), indentFactor, indent ) );
       }else{
          int newindent = indent + indentFactor;
          sb.append( '\n' );
@@ -1301,7 +1277,7 @@ public class JSONArray
             for( int j = 0; j < newindent; j += 1 ){
                sb.append( ' ' );
             }
-            sb.append( JSONUtils.valueToString( this.myArrayList.get( i ), indentFactor, newindent ) );
+            sb.append( JSONUtils.valueToString( this.elements.get( i ), indentFactor, newindent ) );
          }
          sb.append( '\n' );
          for( i = 0; i < indent; i += 1 ){
@@ -1317,7 +1293,7 @@ public class JSONArray
     * compactness, no whitespace is added.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    *
+    * 
     * @return The writer.
     * @throws JSONException
     */
@@ -1333,7 +1309,7 @@ public class JSONArray
             if( b ){
                writer.write( ',' );
             }
-            Object v = this.myArrayList.get( i );
+            Object v = this.elements.get( i );
             if( v instanceof JSONObject ){
                ((JSONObject) v).write( writer );
             }else if( v instanceof JSONArray ){

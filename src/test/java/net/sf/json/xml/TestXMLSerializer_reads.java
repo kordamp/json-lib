@@ -17,6 +17,7 @@
 package net.sf.json.xml;
 
 import junit.framework.TestCase;
+import net.sf.json.Assertions;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -244,7 +245,7 @@ public class TestXMLSerializer_reads extends TestCase
             .toString(), xmlObject.get( "nested" )
             .toString() );
    }
-   
+
    public void testReadNullObject()
    {
       String xml = "<o null=\"true\"/>";
@@ -266,6 +267,22 @@ public class TestXMLSerializer_reads extends TestCase
       JSONArray xmlArray = XMLSerializer.readArray( xml );
       JSONArray expected = new JSONArray( "[1.1,2.2,3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
+   }
+
+   public void testReadObjectFullTypes()
+   {
+      String xml = "<o><int type=\"integer\">1</int>" + "<decimal type=\"float\">2.0</decimal>"
+            + "<number type=\"number\">3.1416</number>" + "<bool type=\"boolean\">true</bool>"
+            + "<string>json</string>"
+            + "<func type=\"function\" params=\"a\" ><![CDATA[return a;]]></func></o>";
+      JSONObject xmlObject = XMLSerializer.readObject( xml );
+      JSONObject expected = new JSONObject( "{func:function(a){ return a; }}" );
+      expected.put( "int", new Integer( 1 ) );
+      expected.put( "decimal", new Double( 2.0 ) );
+      expected.put( "number", new Double( 3.1416 ) );
+      expected.put( "bool", Boolean.TRUE );
+      expected.put( "string", "json" );
+      Assertions.assertEquals( expected, xmlObject );
    }
 
    public void testReadSimpleObject_withDefaultType()

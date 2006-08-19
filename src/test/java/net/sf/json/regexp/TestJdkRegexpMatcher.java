@@ -16,33 +16,23 @@
 
 package net.sf.json.regexp;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class JdkRegexpMatcher implements RegexpMatcher
+public class TestJdkRegexpMatcher extends AbstractRegexpMatcherTestCase
 {
-   private Pattern pattern;
-
-   public JdkRegexpMatcher( String pattern )
+   public static void main( String[] args )
    {
-      this.pattern = Pattern.compile( pattern );
+      junit.textui.TestRunner.run( TestJdkRegexpMatcher.class );
    }
 
-   public String getGroupIfMatches( String str, int group )
+   public TestJdkRegexpMatcher( String name )
    {
-      Matcher matcher = pattern.matcher( str );
-      if( matcher.matches() ){
-         return matcher.group( group );
-      }
-      return "";
+      super( name );
    }
 
-   public boolean matches( String str )
+   protected RegexpMatcher getRegexpMatcher( String pattern )
    {
-      return pattern.matcher( str )
-            .matches();
+      return new JdkRegexpMatcher( pattern );
    }
 }

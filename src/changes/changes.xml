@@ -7,7 +7,7 @@
 		</author>
 	</properties>
 	<body>
-		<release version="N/A" date="2006-08-17"
+		<release version="N/A" date="2006-08-19"
 			desc="Current working version">
 			<action dev="Andres Almiray" type="add">
             Refactored converter package into 
@@ -16,8 +16,17 @@
 			<action dev="Andres Almiray" type="add">
             Added RegexpUtils for easy regexp handling.
 			</action>
+			<action dev="Andres Almiray" type="add">
+            Added more tests.
+			</action>
+			<action dev="Andres Almiray" type="update">
+            Updated "Getting Started" documentation.
+			</action>
 			<action dev="Andres Almiray" type="update">
             Moved RegexpMatchers to package net.sf.json.regexp
+			</action>
+			<action dev="Andres Almiray" type="fix" issue="1543117">
+			   Perl5RegexpMatcher is missing a return statement.
 			</action>
 			<action dev="Andres Almiray" type="fix" issue="1542104">
             JSONObject.toBean must handle interfaces.
