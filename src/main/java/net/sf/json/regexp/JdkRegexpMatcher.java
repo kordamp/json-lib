@@ -20,6 +20,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * JDK 1.4+ RegexpMatcher implementation.
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JdkRegexpMatcher implements RegexpMatcher

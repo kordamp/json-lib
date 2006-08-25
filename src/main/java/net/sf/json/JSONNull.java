@@ -41,7 +41,7 @@ SOFTWARE.
 
 
 /**
- * JSONObject.NULL is equivalent to the value that JavaScript calls null, whilst
+ * JSONNull is equivalent to the value that JavaScript calls null, whilst
  * Java's null is equivalent to the value that JavaScript calls undefined.
  *
  * @author JSON.org

@@ -38,10 +38,10 @@ import org.apache.commons.lang.ArrayUtils;
  */
 public final class JSONUtils
 {
-   private static RegexpMatcher FUNCTION_HEADER_MATCHER = null;
+   private static RegexpMatcher FUNCTION_HEADER_MATCHER;
    private static final String FUNCTION_HEADER_PATTERN = "^function[ ]?\\(.*\\)$";
-   private static RegexpMatcher FUNCTION_MACTHER = null;
-   private static RegexpMatcher FUNCTION_PARAMS_MATCHER = null;
+   private static RegexpMatcher FUNCTION_MACTHER;
+   private static RegexpMatcher FUNCTION_PARAMS_MATCHER;
    private static final String FUNCTION_PARAMS_PATTERN = "^function[ ]?\\((.*?)\\)$";
    private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*\\)[ ]?\\{.*\\}$";
 
@@ -92,7 +92,7 @@ public final class JSONUtils
       if( jsonArray == null || jsonArray.isEmpty() ){
          return new int[] { 0 };
       }
-   
+
       List dims = new ArrayList();
       JSONUtils.processArrayDimensions( jsonArray, dims, 0 );
       int[] dimensions = new int[dims.size()];
@@ -369,7 +369,7 @@ public final class JSONUtils
             default:
                if( c < ' ' ){
                   t = "000" + Integer.toHexString( c );
-                  sb.append( "\\u" + t.substring( t.length() - 4 ) );
+                  sb.append( "\\u" ).append( t.substring( t.length() - 4 ) );
                }else{
                   sb.append( c );
                }
@@ -445,7 +445,7 @@ public final class JSONUtils
     */
    public static String valueToString( Object value )
    {
-      if( value == null || value.equals( null ) ){
+      if( value == null ){
          return "null";
       }
       if( value instanceof JSONFunction ){
@@ -489,7 +489,7 @@ public final class JSONUtils
     */
    public static String valueToString( Object value, int indentFactor, int indent )
    {
-      if( value == null || value.equals( null ) ){
+      if( value == null ){
          return "null";
       }
       if( value instanceof JSONFunction ){

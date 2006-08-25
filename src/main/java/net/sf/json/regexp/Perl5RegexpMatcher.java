@@ -23,6 +23,10 @@ import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
 /**
+ * Jakarta-oro RegexpMatcher Implementation.<br>
+ * Runs on older JVMs (1.3.1). You must have oro-2.0.8.jar configured in your
+ * classpath.
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class Perl5RegexpMatcher implements RegexpMatcher

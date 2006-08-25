@@ -40,17 +40,42 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * Utility class for transforming JSON to XML an back.<br>
+ * When transforming JSONObject and JSONArray instances to XML, this class will
+ * add hints for converting back to JSON.<br>
+ * Examples:<br>
+ * <pre>
+ * JSONObject json = JSONObject.fromObject("{\"name\":\"json\",\"bool\":true,\"int\":1}");
+ * String xml = XMLSerializer.write( json );
+ * <xmp><o class="object">
+      <name type="string">json</name>
+      <bool type="boolean">true</bool>
+      <int type="number">1</int>
+   </o></xmp>
+ * </pre><pre>
+ * JSONArray json = JSONArray.fromObject("[1,2,3]");
+ * String xml = XMLSerializer.write( json );
+ * <xmp><a class="array">
+      <e type="number">1</e>
+      <e type="number">2</e>
+      <e type="number">3</e>
+   </a></xmp>
+ * </pre>
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class XMLSerializer
 {
    private static final Log log = LogFactory.getLog( XMLSerializer.class );
 
-   public static JSONArray readArray( String string )
+   /**
+    * Creates a JSONArray from a XML string.
+    */
+   public static JSONArray readArray( String xml )
    {
-      JSONArray jsonArray = new JSONArray();
+      JSONArray jsonArray = null;
       try{
-         Document doc = new Builder().build( new StringReader( string ) );
+         Document doc = new Builder().build( new StringReader( xml ) );
          Element root = doc.getRootElement();
          String defaultType = getType( root, JSONTypes.STRING );
          jsonArray = processArrayElement( root, defaultType );
@@ -61,11 +86,14 @@ public class XMLSerializer
       return jsonArray;
    }
 
-   public static JSONObject readObject( String string )
+   /**
+    * Creates a JSONObject from a XML string.
+    */
+   public static JSONObject readObject( String xml )
    {
-      JSONObject jsonObject = new JSONObject();
+      JSONObject jsonObject = null;
       try{
-         Document doc = new Builder().build( new StringReader( string ) );
+         Document doc = new Builder().build( new StringReader( xml ) );
          Element root = doc.getRootElement();
          String defaultType = getType( root, JSONTypes.STRING );
          jsonObject = processObjectElement( root, defaultType );
@@ -76,6 +104,9 @@ public class XMLSerializer
       return jsonObject;
    }
 
+   /**
+    * Writes a JSONArray into a XML string.
+    */
    public static String write( JSONArray jsonArray )
    {
       Object[] array = jsonArray.toArray();
@@ -84,6 +115,9 @@ public class XMLSerializer
       return writeDocument( doc );
    }
 
+   /**
+    * Writes a JSONObject into a XML string.
+    */
    public static String write( JSONObject jsonObject )
    {
       Element root = null;

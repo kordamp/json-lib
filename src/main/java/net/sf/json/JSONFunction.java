@@ -178,13 +178,16 @@ public class JSONFunction implements Serializable
       StringBuffer b = new StringBuffer( "function(" );
       if( params.length > 0 ){
          for( int i = 0; i < params.length - 1; i++ ){
-            b.append( params[i] + "," );
+            b.append( params[i] )
+                  .append( "," );
          }
          b.append( params[params.length - 1] );
       }
       b.append( "){" );
       if( text.length() > 0 ){
-         b.append( " " + text + " " );
+         b.append( " " )
+               .append( text )
+               .append( " " );
       }
       b.append( "}" );
       return b.toString();
