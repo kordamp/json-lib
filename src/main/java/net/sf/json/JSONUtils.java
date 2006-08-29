@@ -445,7 +445,7 @@ public final class JSONUtils
     */
    public static String valueToString( Object value )
    {
-      if( value == null ){
+      if( value == null || isNull( value ) ){
          return "null";
       }
       if( value instanceof JSONFunction ){
@@ -489,7 +489,7 @@ public final class JSONUtils
     */
    public static String valueToString( Object value, int indentFactor, int indent )
    {
-      if( value == null ){
+      if( value == null || isNull( value ) ){
          return "null";
       }
       if( value instanceof JSONFunction ){

@@ -18,6 +18,8 @@ package net.sf.json.util;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Map;
 
 import net.sf.ezmorph.MorphException;
 import net.sf.ezmorph.MorpherRegistry;
@@ -35,7 +37,7 @@ import org.apache.commons.beanutils.PropertyUtils;
  * the properties of the source DynaBean. If a bean property and the dyna
  * property differ in type, it will try to morph it. If a Morpher is not found
  * for that type, the conversion will be aborted with a MorphException.
- * 
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class DynaBeanToBeanMorpher implements ObjectMorpher
@@ -120,18 +122,23 @@ public class DynaBeanToBeanMorpher implements ObjectMorpher
    {
       if( clazz == null ){
          throw new IllegalArgumentException( "target class is null" );
-      }
-      if( clazz.isPrimitive() ){
+      }else if( clazz.isPrimitive() ){
          throw new IllegalArgumentException( "target class is a primitive" );
-      }
-      if( clazz.isArray() ){
+      }else if( clazz.isArray() ){
          throw new IllegalArgumentException( "target class is an array" );
-      }
-      if( clazz.isInterface() ){
+      }else if( clazz.isInterface() ){
          throw new IllegalArgumentException( "target class is an interface" );
-      }
-      if( DynaBean.class.isAssignableFrom( clazz ) ){
+      }else if( DynaBean.class.isAssignableFrom( clazz ) ){
          throw new IllegalArgumentException( "target class is a DynaBean" );
+      }else if( Number.class.isAssignableFrom( clazz ) || Boolean.class.isAssignableFrom( clazz )
+            || Character.class.isAssignableFrom( clazz ) ){
+         throw new IllegalArgumentException( "target class is a wrapper" );
+      }else if( String.class.isAssignableFrom( clazz ) ){
+         throw new IllegalArgumentException( "target class is a String" );
+      }else if( Collection.class.isAssignableFrom( clazz ) ){
+         throw new IllegalArgumentException( "target class is a Collection" );
+      }else if( Map.class.isAssignableFrom( clazz ) ){
+         throw new IllegalArgumentException( "target class is a Map" );
       }
    }
 }

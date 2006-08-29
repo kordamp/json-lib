@@ -7,8 +7,8 @@
 		</author>
 	</properties>
 	<body>
-		<release version="N/A" date="2006-08-19"
-			desc="Current working version">
+		<release version="8.0" date="2006-08-29"
+			desc="Fifth public release">
 			<action dev="Andres Almiray" type="add">
             Refactored converter package into 
             EZMorph (http://ezmorph.sourceforge.net).

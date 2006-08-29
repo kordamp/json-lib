@@ -6,7 +6,7 @@
 	<groupId>net.sf.json-lib</groupId>
 	<artifactId>json-lib</artifactId>
 	<packaging>jar</packaging>
-	<version>0.8.0-dev</version>
+	<version>0.8</version>
 	<name>json-lib</name>
 
 	<url>http://json-lib.sourceforge.net</url>
