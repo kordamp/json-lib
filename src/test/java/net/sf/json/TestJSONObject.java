@@ -67,12 +67,13 @@ public class TestJSONObject extends TestCase
       }
    }
 
-   public void testFromBean_JSONObject(){
+   public void testFromBean_JSONObject()
+   {
       JSONObject json = new JSONObject();
-      json.put("name","json");
-      Assertions.assertEquals(json,JSONObject.fromBean(json));
+      json.put( "name", "json" );
+      Assertions.assertEquals( json, JSONObject.fromBean( json ) );
    }
-   
+
    public void testFromBean_DynaBean() throws Exception
    {
       JSONObject json = JSONObject.fromBean( createDynaBean() );
@@ -500,6 +501,40 @@ public class TestJSONObject extends TestCase
       JSONObject nestedJson = jsonObject.getJSONObject( "nested" );
       Object nestedBean = PropertyUtils.getProperty( bean, "nested" );
       assertEquals( nestedJson.get( "nested" ), PropertyUtils.getProperty( nestedBean, "nested" ) );
+   }
+
+   public void testToBean_nested_beans__null_object() throws Exception
+   {
+      // BUG 1553617
+
+      String json = "{\"beanA\":{bool:true,integer:1,string:\"jsonbean\"},\"beanB\":null}";
+      JSONObject jsonObject = new JSONObject( json );
+      BeanC bean = (BeanC) JSONObject.toBean( jsonObject, BeanC.class );
+      assertNotNull( bean );
+      BeanA beanA = bean.getBeanA();
+      assertNotNull( beanA );
+      assertEquals( true, beanA.isBool() );
+      assertEquals( 1, beanA.getInteger() );
+      assertEquals( "jsonbean", beanA.getString() );
+      BeanB beanB = bean.getBeanB();
+      assertNull( beanB );
+   }
+
+   public void testToBean_nested_dynabeans__null_object() throws Exception
+   {
+      // BUG 1553617
+
+      String json = "{\"beanA\":{bool:true,integer:1,string:\"jsonbean\"},\"beanB\":null}";
+      JSONObject jsonObject = new JSONObject( json );
+      Object bean = JSONObject.toBean( jsonObject );
+      assertNotNull( bean );
+      Object beanA = PropertyUtils.getProperty( bean, "beanA" );
+      assertNotNull( beanA );
+      assertEquals( Boolean.TRUE, PropertyUtils.getProperty( beanA, "bool" ) );
+      assertEquals( new Integer( 1 ), PropertyUtils.getProperty( beanA, "integer" ) );
+      assertEquals( "jsonbean", PropertyUtils.getProperty( beanA, "string" ) );
+      Object beanB = PropertyUtils.getProperty( bean, "beanB" );
+      assertNull( beanB );
    }
 
    public void testToBean_nested_beans_in_map__beans()

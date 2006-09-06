@@ -28,17 +28,18 @@ public class BeanA
    private int integer = 42;
    private String string = "json";
 
-   public boolean equals( Object obj ){
+   public boolean equals( Object obj )
+   {
       if( obj == this ){
          return true;
       }
       if( obj == null ){
          return false;
       }
-      if( !BeanA.class.isAssignableFrom( obj.getClass() )){
+      if( !BeanA.class.isAssignableFrom( obj.getClass() ) ){
          return false;
       }
-      return EqualsBuilder.reflectionEquals(this,obj);
+      return EqualsBuilder.reflectionEquals( this, obj );
    }
 
    public int getInteger()
@@ -51,8 +52,9 @@ public class BeanA
       return string;
    }
 
-   public int hashCode(){
-    return HashCodeBuilder.reflectionHashCode(this);
+   public int hashCode()
+   {
+      return HashCodeBuilder.reflectionHashCode( this );
    }
 
    public boolean isBool()

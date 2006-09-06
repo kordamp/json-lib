@@ -285,6 +285,9 @@ public class JSONObject
                if( type.isPrimitive() ){
                   // assume assigned default value
                   log.warn( "Tried to assign null value to " + key + ":" + type.getName() );
+                  setProperty( dynaBean, key, JSONUtils.getMorpherRegistry().morph( type, null ) );
+               }else{
+                  setProperty( dynaBean, key, null );
                }
             }
          }
@@ -389,11 +392,12 @@ public class JSONObject
                   }
                }
             }else{
-               if( type.isPrimitive() && !(bean instanceof Map) ){
+               if( type.isPrimitive() ){
                   // assume assigned default value
                   log.warn( "Tried to assign null value to " + key + ":" + type.getName() );
+                  setProperty( bean, key, JSONUtils.getMorpherRegistry().morph( type, null ) );
                }else{
-                  ((Map) bean).put( key, null );
+                  setProperty( bean, key, null );
                }
             }
          }
