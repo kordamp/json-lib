@@ -7,6 +7,15 @@
 		</author>
 	</properties>
 	<body>
+      <release version="N/A" date="2006-09-06"
+			desc="Current working version">
+			<action dev="Andres Almiray" type="update">
+				Updated front page and howto documentation.
+			</action>
+			<action dev="Andres Almiray" type="fix" issue="1553617">
+			   JSONObject.toBean() generates a ClassCastException.
+			</action>
+		</release>
 		<release version="8.0" date="2006-08-29"
 			desc="Fifth public release">
 			<action dev="Andres Almiray" type="add">

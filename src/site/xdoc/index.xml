@@ -67,9 +67,23 @@
 				These properties make JSON an ideal data-interchange
 				language.
 			</p>
-         <p>
-            <a href="http://www.json.org">json.org</a>
-         </p>
+		</section>
+		<section name="Who is using it ?">
+			<p>
+   <table>
+      <thead>
+         <th>Project</th>
+         <th>Description</th>
+      </thead>
+      <tbody>
+         <tr>
+            <td valign="top"><a href="http://www.mentaframework.org/">Mentawai</a></td>
+            <td>The Mentawai goal is to be a simple, flexible, joyful and productive Java web framework.<br/>
+            Json-lib is used in the ajax renderers package.</td>
+         </tr>
+      </tbody>
+   </table>
+			</p>
 		</section>
 	</body>
 </document>

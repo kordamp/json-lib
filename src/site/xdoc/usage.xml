@@ -73,6 +73,11 @@
    // prints {"name":"json","pojoId":1,"options":["a","f"],
          "func1":function(i){ return this.options[i];},
          "func2":function(i){ return this.options[i];}}</source>
+
+		 <p><img src="images/icon_warning_sml.gif"/> <strong><font color="#FF0000">CAUTION:</font></strong>
+		 when parsing, neither JSONObject nor JSONArray checks for cycles in the hierarchy.
+		 It is a task left for the user of the library. <img src="images/icon_warning_sml.gif"/></p>
+
        </subsection>
 
        <subsection name="From JSON to Beans">
@@ -114,18 +119,40 @@
 		 class conversion. The only possible solution is to postprocess the collection transforming each
 		 DynaBean into an specific bean.
 		 </p>
-		 <p>To ease the scenarios where postprocessing is needed, Json-lib has a Morpher capable of
+		 <p>To ease the postprocessing scenarios, Json-lib has a Morpher capable of
 		 transforming a DynaBean into an specific bean,
-		 <a href="apidocs/net/sf/json/util/DynaBeanToBeanMorpher.html"><code>DynaBeanToBeanMorpher</code></a>
-		 </p>
+       <a href="apidocs/net/sf/json/util/DynaBeanToBeanMorpher.html"><code>DynaBeanToBeanMorpher</code></a><br/>
+       Example:</p>
+       <source>
+   class MyBean{
+      private List data;
+      // getters &amp; setters
+   }
+
+   class Person{
+      private String name;
+      // getters &amp; setters
+   }
+
+   ...
+
+   String json = "{'data':[{'name':'Wallace'},{'name':'Grommit'}]}";
+   MyBean bean = JSONObject.toBean( json, MyBean.class );</source>
+       <p>This yields a MyBean instance that has DynaBeans inside the 'data' attribute', so now comes 
+       the part of postprocessing, this can be done with an Iterator<br/>
+       Example:</p>
+       <source>
+   Morpher dynaMorpher = new DynaBeanToBeanMorpher( Person.class, JSONUtils.getMorpherRegistry() );
+   morpherRegistry.registerMorpher( dynaMorpher );
+   List output = new ArrayList();
+   for( Iterator i = bean.getData().iterator(); i.hasNext(); ){
+      output.add( morpherRegistry.morph( Person.class, i.next() ) );
+   }
+   bean.setData( output );</source>
 		 <p>To learn more about Morphers, please visit <a href="http://ezmorph.sourceforge.net">EZMorph's project site</a>.
 		 </p>
        </subsection>
        </subsection>
-
-		 <p><img src="images/icon_warning_sml.gif"/> <strong><font color="#FF0000">CAUTION:</font></strong>
-		 when parsing, neither JSONObject nor JSONArray checks for cycles in the hierarchy.
-		 It is a task left for the user of the library. <img src="images/icon_warning_sml.gif"/></p>
 
        <a name="xml"/>
        <subsection name="Working with XML">
@@ -174,6 +201,11 @@
    // prints [function(i,j){ return matrix[i][j]; }]
      </source>
           </subsection>
+
+		 <p><img src="images/icon_warning_sml.gif"/> <strong><font color="#FF0000">CAUTION:</font></strong>
+		 when parsing, neither JSONObject nor JSONArray checks for cycles in the hierarchy.
+		 It is a task left for the user of the library. <img src="images/icon_warning_sml.gif"/></p>
+
        </subsection>
 	  </section>
 	</body>
