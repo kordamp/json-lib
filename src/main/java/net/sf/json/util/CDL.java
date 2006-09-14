@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.util;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 
 /*
 Copyright (c) 2002 JSON.org

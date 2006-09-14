@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.json;
+package net.sf.json.util;
 
 import java.io.IOException;
 import java.io.Writer;
+
+import net.sf.json.JSONException;
+import net.sf.json.JSONUtils;
 
 /*
 Copyright (c) 2002 JSON.org

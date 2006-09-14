@@ -23,6 +23,9 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.json.sample.BeanA;
+import net.sf.json.util.JSONDynaBean;
+import net.sf.json.util.JSONDynaClass;
+import net.sf.json.util.JSONTokener;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>

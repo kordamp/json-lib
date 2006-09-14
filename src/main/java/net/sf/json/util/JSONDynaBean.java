@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.util;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.DynaBean;

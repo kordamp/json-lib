@@ -18,6 +18,8 @@ package net.sf.json;
 
 import java.io.StringWriter;
 
+import net.sf.json.util.JSONBuilder;
+
 import junit.framework.TestCase;
 
 /**

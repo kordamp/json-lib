@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.json;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public interface JSONTypes
+public interface JSON
 {
-   String ARRAY = "array";
-   String BOOLEAN = "boolean";
-   String FLOAT = "float";
-   String FUNCTION = "function";
-   String INTEGER = "integer";
-   String NUMBER = "number";
-   String OBJECT = "object";
-   String STRING = "string";
+   boolean isArray();
 }

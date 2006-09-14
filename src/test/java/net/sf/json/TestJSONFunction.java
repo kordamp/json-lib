@@ -16,6 +16,7 @@
 
 package net.sf.json;
 
+import net.sf.json.util.JSONTokener;
 import junit.framework.TestCase;
 
 /**

@@ -16,6 +16,8 @@
 
 package net.sf.json;
 
+import net.sf.json.util.JSONBuilder;
+import net.sf.json.util.JSONStringer;
 import junit.framework.TestCase;
 
 /**

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.json;
+package net.sf.json.util;
 
 /*
 Copyright (c) 2002 JSON.org
@@ -41,6 +41,7 @@ SOFTWARE.
 
 
 import java.io.StringWriter;
+
 
 /**
  * JSONStringer provides a quick and convenient way of producing JSON text. The

@@ -7,8 +7,26 @@
 		</author>
 	</properties>
 	<body>
-      <release version="N/A" date="2006-09-06"
+      <release version="N/A" date="2006-09-13"
 			desc="Current working version">
+			<action dev="Andres Almiray" type="add">
+				Added new builders toJSON() on JSONUtils.
+			</action>
+			<action dev="Andres Almiray" type="add">
+            Added new interface JSON to identify a valid JSON type 
+				(JSONObject, JSONArray, JSONNull).
+			</action>
+			<action dev="Andres Almiray" type="add">
+				Added support for JSONString in builders and value setters. FR 1557286.
+			</action>
+			<action dev="Andres Almiray" type="update">
+			   When parsing beans to JSON, transient and volatile properties
+			   will be omitted.
+			</action>
+			<action dev="Andres Almiray" type="update">
+				Cleaned up the core API, moved mixed purpouse classes 
+				to net.sf.json.util
+			</action>
 			<action dev="Andres Almiray" type="update">
 				Updated front page and howto documentation.
 			</action>
@@ -67,7 +85,7 @@
 		<release version="0.7" date="2006-08-07"
 			desc="Fourth public release">
 			<action dev="Andres Almiray" type="fix" issue="1529946">
-				Make Json-lib JDK 1.3.1 compatible.
+				Make Json-lib JDK 1.3.1 compatible. FR 1529946.
 			</action>
 		</release>
 		<release version="0.6" date="2006-07-24"
@@ -91,7 +109,7 @@
 				Added test suites for each package and for full project.
 			</action>
 			<action dev="Andres Almiray" type="fix" issue="1516306">
-				Support js functions as type.
+				Support js functions as type. FR 1516306.
 			</action>
 			<action dev="Andres Almiray" type="update">
 				Moved common methods of JSONObject, JSONArray to

@@ -29,7 +29,11 @@ import net.sf.json.sample.BeanC;
 import net.sf.json.sample.BeanFoo;
 import net.sf.json.sample.BeanWithFunc;
 import net.sf.json.sample.MappingBean;
+import net.sf.json.sample.FieldTestBean;
 import net.sf.json.sample.ValueBean;
+import net.sf.json.util.JSONDynaBean;
+import net.sf.json.util.JSONDynaClass;
+import net.sf.json.util.JSONTokener;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -46,6 +50,30 @@ public class TestJSONObject extends TestCase
    public TestJSONObject( String testName )
    {
       super( testName );
+   }
+
+   public void testConstructor_Object_String_Array__bean()
+   {
+      BeanA beanA = new BeanA();
+      JSONObject jsonObject = new JSONObject( beanA, new String[] { "bool", "integer" } );
+      assertEquals( true, jsonObject.getBoolean( "bool" ) );
+      assertEquals( 42, jsonObject.getInt( "integer" ) );
+   }
+
+   public void testConstructor_Object_String_Array__DynaBean() throws Exception
+   {
+      Map properties = new HashMap();
+      properties.put( "bool", Boolean.class );
+      properties.put( "integer", Integer.class );
+      JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
+      JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
+      dynaBean.setDynamicFormClass( dynaClass );
+      dynaBean.set( "bool", Boolean.TRUE );
+      dynaBean.set( "integer", new Integer( 42 ) );
+
+      JSONObject jsonObject = new JSONObject( dynaBean, new String[] { "bool", "integer" } );
+      assertEquals( true, jsonObject.getBoolean( "bool" ) );
+      assertEquals( 42, jsonObject.getInt( "integer" ) );
    }
 
    public void testFromBean_array()
@@ -67,17 +95,17 @@ public class TestJSONObject extends TestCase
       }
    }
 
+   public void testFromBean_DynaBean() throws Exception
+   {
+      JSONObject json = JSONObject.fromBean( createDynaBean() );
+      assertEquals( "json", json.getString( "name" ) );
+   }
+
    public void testFromBean_JSONObject()
    {
       JSONObject json = new JSONObject();
       json.put( "name", "json" );
       Assertions.assertEquals( json, JSONObject.fromBean( json ) );
-   }
-
-   public void testFromBean_DynaBean() throws Exception
-   {
-      JSONObject json = JSONObject.fromBean( createDynaBean() );
-      assertEquals( "json", json.getString( "name" ) );
    }
 
    public void testFromBean_JSONTokener()
@@ -249,6 +277,23 @@ public class TestJSONObject extends TestCase
          assertEquals( true, json.getBoolean( "bool" ) );
          assertEquals( 42, json.getInt( "integer" ) );
          assertEquals( "json", json.getString( "string" ) );
+      }
+      catch( JSONException jsone ){
+         fail( jsone.getMessage() );
+      }
+   }
+
+   public void testFromObject_Bean__transient_fields()
+   {
+      try{
+         FieldTestBean bean = new FieldTestBean();
+         bean.setString( "json" );
+         bean.setTransientString( "transient" );
+         bean.setVolatileString( "volatile" );
+         JSONObject json = JSONObject.fromObject( bean );
+         assertEquals( "json", json.getString( "string" ) );
+         assertFalse(json.has( "transientString" ));
+         assertFalse(json.has( "volatileString" ));
       }
       catch( JSONException jsone ){
          fail( jsone.getMessage() );
@@ -520,23 +565,6 @@ public class TestJSONObject extends TestCase
       assertNull( beanB );
    }
 
-   public void testToBean_nested_dynabeans__null_object() throws Exception
-   {
-      // BUG 1553617
-
-      String json = "{\"beanA\":{bool:true,integer:1,string:\"jsonbean\"},\"beanB\":null}";
-      JSONObject jsonObject = new JSONObject( json );
-      Object bean = JSONObject.toBean( jsonObject );
-      assertNotNull( bean );
-      Object beanA = PropertyUtils.getProperty( bean, "beanA" );
-      assertNotNull( beanA );
-      assertEquals( Boolean.TRUE, PropertyUtils.getProperty( beanA, "bool" ) );
-      assertEquals( new Integer( 1 ), PropertyUtils.getProperty( beanA, "integer" ) );
-      assertEquals( "jsonbean", PropertyUtils.getProperty( beanA, "string" ) );
-      Object beanB = PropertyUtils.getProperty( bean, "beanB" );
-      assertNull( beanB );
-   }
-
    public void testToBean_nested_beans_in_map__beans()
    {
       // BUG 1542092
@@ -592,6 +620,23 @@ public class TestJSONObject extends TestCase
       assertEquals( new Integer( beanB.getValue() ), ((JSONDynaBean) bb).get( "value" ) );
    }
 
+   public void testToBean_nested_dynabeans__null_object() throws Exception
+   {
+      // BUG 1553617
+
+      String json = "{\"beanA\":{bool:true,integer:1,string:\"jsonbean\"},\"beanB\":null}";
+      JSONObject jsonObject = new JSONObject( json );
+      Object bean = JSONObject.toBean( jsonObject );
+      assertNotNull( bean );
+      Object beanA = PropertyUtils.getProperty( bean, "beanA" );
+      assertNotNull( beanA );
+      assertEquals( Boolean.TRUE, PropertyUtils.getProperty( beanA, "bool" ) );
+      assertEquals( new Integer( 1 ), PropertyUtils.getProperty( beanA, "integer" ) );
+      assertEquals( "jsonbean", PropertyUtils.getProperty( beanA, "string" ) );
+      Object beanB = PropertyUtils.getProperty( bean, "beanB" );
+      assertNull( beanB );
+   }
+
    public void testToBean_null()
    {
       assertNull( JSONObject.toBean( null ) );
@@ -625,30 +670,6 @@ public class TestJSONObject extends TestCase
       assertEquals( "010", items[1][0] );
       assertEquals( "011", items[1][1] );
       assertEquals( "020", items[2][0] );
-   }
-
-   public void testConstructor_Object_String_Array__bean()
-   {
-      BeanA beanA = new BeanA();
-      JSONObject jsonObject = new JSONObject( beanA, new String[] { "bool", "integer" } );
-      assertEquals( true, jsonObject.getBoolean( "bool" ) );
-      assertEquals( 42, jsonObject.getInt( "integer" ) );
-   }
-
-   public void testConstructor_Object_String_Array__DynaBean() throws Exception
-   {
-      Map properties = new HashMap();
-      properties.put( "bool", Boolean.class );
-      properties.put( "integer", Integer.class );
-      JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
-      JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
-      dynaBean.setDynamicFormClass( dynaClass );
-      dynaBean.set( "bool", Boolean.TRUE );
-      dynaBean.set( "integer", new Integer( 42 ) );
-
-      JSONObject jsonObject = new JSONObject( dynaBean, new String[] { "bool", "integer" } );
-      assertEquals( true, jsonObject.getBoolean( "bool" ) );
-      assertEquals( 42, jsonObject.getInt( "integer" ) );
    }
 
    private JSONDynaBean createDynaBean() throws Exception

@@ -45,9 +45,9 @@ SOFTWARE.
  * Java's null is equivalent to the value that JavaScript calls undefined.
  *
  * @author JSON.org
- * @version 1
+ * @version 2
  */
-public final class JSONNull
+public final class JSONNull implements JSON
 {
    /** singleton instance */
    private static JSONNull instance;
@@ -84,6 +84,11 @@ public final class JSONNull
    public int hashCode()
    {
       return 42 + "null".hashCode();
+   }
+
+   public boolean isArray()
+   {
+      return false;
    }
 
    /**

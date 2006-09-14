@@ -32,9 +32,9 @@ import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Provides useful methods on java objects.
- *
+ * 
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
- * @version 4
+ * @version 5
  */
 public final class JSONUtils
 {
@@ -59,7 +59,7 @@ public final class JSONUtils
    /**
     * Produce a string from a double. The string "null" will be returned if the
     * number is not finite.
-    *
+    * 
     * @param d A double.
     * @return A String.
     */
@@ -197,11 +197,11 @@ public final class JSONUtils
     */
    public static boolean isFunction( Object obj )
    {
-      if( obj != null && obj instanceof String  ){
+      if( obj != null && obj instanceof String ){
          String str = (String) obj;
          return FUNCTION_MACTHER.matches( str );
       }
-      if( obj != null && obj instanceof JSONFunction  ){
+      if( obj != null && obj instanceof JSONFunction ){
          return true;
       }
       return false;
@@ -278,9 +278,16 @@ public final class JSONUtils
       return false;
    }
 
+   public static boolean mayBeJSON( String string )
+   {
+      return string != null
+            && ("null".equalsIgnoreCase( string )
+                  || (string.startsWith( "[" ) && string.endsWith( "]" )) || (string.startsWith( "{" ) && string.endsWith( "}" )));
+   }
+
    /**
     * Produce a string from a Number.
-    *
+    * 
     * @param n A Number
     * @return A String.
     * @throws JSONException If n is a non-finite number.
@@ -314,7 +321,7 @@ public final class JSONUtils
     * <strong>CAUTION:</strong> if <code>string</code> represents a
     * javascript function, translation of characters will not take place. This
     * will produce a non-conformant JSON text.
-    *
+    * 
     * @param string A String
     * @return A String correctly formatted for insertion in a JSON text.
     */
@@ -369,7 +376,8 @@ public final class JSONUtils
             default:
                if( c < ' ' ){
                   t = "000" + Integer.toHexString( c );
-                  sb.append( "\\u" ).append( t.substring( t.length() - 4 ) );
+                  sb.append( "\\u" )
+                        .append( t.substring( t.length() - 4 ) );
                }else{
                   sb.append( c );
                }
@@ -381,7 +389,7 @@ public final class JSONUtils
 
    /**
     * Throw an exception if the object is an NaN or infinite number.
-    *
+    * 
     * @param o The object to test.
     * @throws JSONException If o is a non-finite number.
     */
@@ -400,6 +408,54 @@ public final class JSONUtils
       }
    }
 
+   public static JSON toJSON( JSONString string )
+   {
+      if( string == null ){
+         return JSONNull.getInstance();
+      }
+      return toJSON( string.toJSONString() );
+
+   }
+
+   public static JSON toJSON( Object object )
+   {
+      JSON json = null;
+      if( object == null ){
+         json = JSONNull.getInstance();
+      }else if( isArray( object ) ){
+         json = JSONArray.fromObject( object );
+      }else{
+         try{
+            json = JSONObject.fromObject( object );
+         }
+         catch( JSONException e ){
+            json = JSONArray.fromObject( object );
+         }
+      }
+
+      return json;
+   }
+
+   public static JSON toJSON( String string )
+   {
+      JSON json = null;
+      if( string == null ){
+         json = JSONNull.getInstance();
+      }
+
+      if( string.startsWith( "[" ) ){
+         json = JSONArray.fromString( string );
+      }else if( string.startsWith( "{" ) ){
+         json = JSONObject.fromString( string );
+      }else if( "null".equalsIgnoreCase( string ) ){
+         json = JSONNull.getInstance();
+      }else{
+         throw new JSONException( "Invalid JSON String" );
+      }
+
+      return json;
+   }
+
    /**
     * Converts an array of primitive chars to objects.<br>
     * <p>
@@ -409,7 +465,7 @@ public final class JSONUtils
     * This method returns <code>null</code> for a <code>null</code> input
     * array.
     * </p>
-    *
+    * 
     * @param array a <code>char</code> array
     * @return a <code>Character</code> array, <code>null</code> if null
     *         array input
@@ -436,7 +492,7 @@ public final class JSONUtils
     * common case), then a text will be produced by the rules.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    *
+    * 
     * @param value The value to be serialized.
     * @return a printable, displayable, transmittable representation of the
     *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
@@ -477,7 +533,7 @@ public final class JSONUtils
     * Make a prettyprinted JSON text of an object value.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    *
+    * 
     * @param value The value to be serialized.
     * @param indentFactor The number of spaces to add to each level of
     *        indentation.
@@ -521,7 +577,7 @@ public final class JSONUtils
       return quote( value.toString() );
    }
 
-   static void processArrayDimensions( JSONArray jsonArray, List dims, int index )
+   private static void processArrayDimensions( JSONArray jsonArray, List dims, int index )
    {
       if( dims.size() <= index ){
          dims.add( new Integer( jsonArray.length() ) );

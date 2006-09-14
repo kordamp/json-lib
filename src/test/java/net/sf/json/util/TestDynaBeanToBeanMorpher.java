@@ -24,8 +24,6 @@ import net.sf.ezmorph.MorphException;
 import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.MorpherRegistry;
 import net.sf.json.Assertions;
-import net.sf.json.JSONDynaBean;
-import net.sf.json.JSONDynaClass;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;

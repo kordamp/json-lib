@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.util;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaClass;
