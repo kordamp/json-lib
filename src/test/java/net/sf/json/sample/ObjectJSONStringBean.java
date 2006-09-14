@@ -16,42 +16,42 @@
 
 package net.sf.json.sample;
 
+import net.sf.json.JSONString;
+
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class FieldTestBean
+public class ObjectJSONStringBean implements JSONString
 {
-   private String string;
-   private transient String transientString;
-   private volatile String volatileString;
+   private int id;
+   private String name;
 
-   public String getString()
+   public int getId()
    {
-      return string;
+      return id;
    }
 
-   public String getTransientString()
+   public String getName()
    {
-      return transientString;
+      return name;
    }
 
-   public String getVolatileString()
+   public void setId( int id )
    {
-      return volatileString;
+      this.id = id;
    }
 
-   public void setString( String string )
+   public void setName( String name )
    {
-      this.string = string;
+      this.name = name;
    }
 
-   public void setTransientString( String transientString )
+   public String toJSONString()
    {
-      this.transientString = transientString;
-   }
-
-   public void setVolatileString( String volatileString )
-   {
-      this.volatileString = volatileString;
+      return new StringBuffer().append( "{" )
+            .append( "\"name\":\"" )
+            .append( name )
+            .append( "\"}" )
+            .toString();
    }
 }

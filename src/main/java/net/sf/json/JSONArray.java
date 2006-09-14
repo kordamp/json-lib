@@ -98,7 +98,7 @@ import org.apache.commons.lang.ArrayUtils;
  * <li>Comments written in the slashshlash, slashstar, and hash conventions
  * will be ignored.</li>
  * </ul>
- * 
+ *
  * @author JSON.org
  * @version 3
  */
@@ -107,7 +107,7 @@ public final class JSONArray implements JSON
    /**
     * Creates a JSONArray from a java array.<br>
     * The java array can be multidimensional.
-    * 
+    *
     * @param array A Java array
     */
    public static JSONArray fromArray( Object[] array )
@@ -119,7 +119,7 @@ public final class JSONArray implements JSON
     * Creates a JSONArray from a Collection.<br>
     * Its elements can be maps, POJOs, java arrays (primitive & object),
     * collections.
-    * 
+    *
     * @param collection A collection
     */
    public static JSONArray fromCollection( Collection collection )
@@ -129,22 +129,24 @@ public final class JSONArray implements JSON
 
    /**
     * Creates a JSONArray from a JSONString.<br>
-    * 
+    *
     * @param string
     */
    public static JSONArray fromJSONString( JSONString string )
    {
       return new JSONArray( new JSONTokener( string.toJSONString() ) );
    }
+
    /**
     * Creates a JSONArray from a JSONTokener.
-    * 
+    *
     * @param tokenern a JSONTokener
     */
    public static JSONArray fromJSONTokener( JSONTokener tokener )
    {
       return new JSONArray( tokener );
    }
+
    /**
     * Creates a JSONArray.<br>
     * Inspects the object type to call the correct JSONArray factory method.
@@ -195,7 +197,7 @@ public final class JSONArray implements JSON
 
    /**
     * Constructs a JSONArray from a string in JSON format.
-    * 
+    *
     * @param str A string in JSON format
     */
    public static JSONArray fromString( String string )
@@ -341,7 +343,7 @@ public final class JSONArray implements JSON
 
    /**
     * Construct a JSONArray from an boolean[].<br>
-    * 
+    *
     * @param array An boolean[] array.
     */
    public JSONArray( boolean[] array )
@@ -352,7 +354,7 @@ public final class JSONArray implements JSON
 
    /**
     * Construct a JSONArray from an byte[].<br>
-    * 
+    *
     * @param array An byte[] array.
     */
    public JSONArray( byte[] array )
@@ -363,7 +365,7 @@ public final class JSONArray implements JSON
 
    /**
     * Construct a JSONArray from an char[].<br>
-    * 
+    *
     * @param array An char[] array.
     */
    public JSONArray( char[] array )
@@ -374,7 +376,7 @@ public final class JSONArray implements JSON
 
    /**
     * Construct a JSONArray from a Collection.
-    * 
+    *
     * @param collection A Collection.
     */
    public JSONArray( Collection collection )
@@ -384,7 +386,7 @@ public final class JSONArray implements JSON
          for( Iterator elements = collection.iterator(); elements.hasNext(); ){
             Object element = elements.next();
             if( element instanceof JSONString ){
-               this.elements.add( fromJSONString( (JSONString)element ) );
+               this.elements.add( fromJSONString( (JSONString) element ) );
             }else if( JSONUtils.isArray( element ) ){
                this.elements.add( fromObject( element ) );
             }else if( element instanceof JSONArray ){
@@ -411,7 +413,7 @@ public final class JSONArray implements JSON
 
    /**
     * Construct a JSONArray from an double[].<br>
-    * 
+    *
     * @param array An double[] array.
     */
    public JSONArray( double[] array )
@@ -422,7 +424,7 @@ public final class JSONArray implements JSON
 
    /**
     * Construct a JSONArray from an float[].<br>
-    * 
+    *
     * @param array An float[] array.
     */
    public JSONArray( float[] array )
@@ -433,7 +435,7 @@ public final class JSONArray implements JSON
 
    /**
     * Construct a JSONArray from an int[].<br>
-    * 
+    *
     * @param array An int[] array.
     */
    public JSONArray( int[] array )
@@ -445,7 +447,7 @@ public final class JSONArray implements JSON
    /**
     * Construct a JSONArray from another JSONArray.<br>
     * This method will return a shallow copy of the input array.
-    * 
+    *
     * @param jsonArray A JSONArray.
     * @throws JSONException If there is a syntax error.
     */
@@ -459,7 +461,7 @@ public final class JSONArray implements JSON
 
    /**
     * Construct a JSONArray from a JSONTokener.
-    * 
+    *
     * @param x A JSONTokener
     * @throws JSONException If there is a syntax error.
     */
@@ -534,7 +536,7 @@ public final class JSONArray implements JSON
 
    /**
     * Construct a JSONArray from an long[].<br>
-    * 
+    *
     * @param array An long[] array.
     */
    public JSONArray( long[] array )
@@ -546,7 +548,7 @@ public final class JSONArray implements JSON
    /**
     * Construct a JSONArray from an Object[].<br>
     * Assumes the object hierarchy is acyclical.
-    * 
+    *
     * @param array An Object[] array.
     */
    public JSONArray( Object[] array )
@@ -555,7 +557,7 @@ public final class JSONArray implements JSON
       for( int i = 0; i < array.length; i++ ){
          Object element = array[i];
          if( element instanceof JSONString ){
-            this.elements.add( fromJSONString( (JSONString)element ) );
+            this.elements.add( fromJSONString( (JSONString) element ) );
          }else if( JSONUtils.isArray( element ) ){
             this.elements.add( fromObject( element ) );
          }else if( element instanceof JSONArray ){
@@ -581,7 +583,7 @@ public final class JSONArray implements JSON
 
    /**
     * Construct a JSONArray from an short[].<br>
-    * 
+    *
     * @param array An short[] array.
     */
    public JSONArray( short[] array )
@@ -592,7 +594,7 @@ public final class JSONArray implements JSON
 
    /**
     * Construct a JSONArray from a source JSON text.
-    * 
+    *
     * @param string A string that begins with <code>[</code>&nbsp;<small>(left
     *        bracket)</small> and ends with <code>]</code>&nbsp;<small>(right
     *        bracket)</small>.
@@ -605,7 +607,7 @@ public final class JSONArray implements JSON
 
    /**
     * Get the object value associated with an index.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return An object value.
     * @throws JSONException If there is no value for the index.
@@ -622,7 +624,7 @@ public final class JSONArray implements JSON
    /**
     * Get the boolean value associated with an index. The string values "true"
     * and "false" are converted to boolean.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return The truth.
     * @throws JSONException If there is no value for the index or if the value
@@ -643,7 +645,7 @@ public final class JSONArray implements JSON
 
    /**
     * Get the double value associated with an index.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return The value.
     * @throws JSONException If the key is not found or if the value cannot be
@@ -662,7 +664,7 @@ public final class JSONArray implements JSON
 
    /**
     * Get the int value associated with an index.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return The value.
     * @throws JSONException If the key is not found or if the value cannot be
@@ -677,7 +679,7 @@ public final class JSONArray implements JSON
 
    /**
     * Get the JSONArray associated with an index.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return A JSONArray value.
     * @throws JSONException If there is no value for the index. or if the value
@@ -694,7 +696,7 @@ public final class JSONArray implements JSON
 
    /**
     * Get the JSONObject associated with an index.
-    * 
+    *
     * @param index subscript
     * @return A JSONObject value.
     * @throws JSONException If there is no value for the index or if the value
@@ -711,7 +713,7 @@ public final class JSONArray implements JSON
 
    /**
     * Get the long value associated with an index.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return The value.
     * @throws JSONException If the key is not found or if the value cannot be
@@ -725,7 +727,7 @@ public final class JSONArray implements JSON
 
    /**
     * Get the string associated with an index.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return A string value.
     * @throws JSONException If there is no value for the index.
@@ -757,7 +759,7 @@ public final class JSONArray implements JSON
     * Make a string from the contents of this JSONArray. The
     * <code>separator</code> string is inserted between each element. Warning:
     * This method assumes that the data structure is acyclical.
-    * 
+    *
     * @param separator A string that will be inserted between the elements.
     * @return a string.
     * @throws JSONException If the array contains an invalid number.
@@ -778,7 +780,7 @@ public final class JSONArray implements JSON
 
    /**
     * Get the number of elements in the JSONArray, included nulls.
-    * 
+    *
     * @return The length (or size).
     */
    public int length()
@@ -788,7 +790,7 @@ public final class JSONArray implements JSON
 
    /**
     * Get the optional object value associated with an index.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return An object value, or null if there is no object at that index.
     */
@@ -801,7 +803,7 @@ public final class JSONArray implements JSON
     * Get the optional boolean value associated with an index. It returns false
     * if there is no value at that index, or if the value is not Boolean.TRUE or
     * the String "true".
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return The truth.
     */
@@ -814,7 +816,7 @@ public final class JSONArray implements JSON
     * Get the optional boolean value associated with an index. It returns the
     * defaultValue if there is no value at that index or if it is not a Boolean
     * or the String "true" or "false" (case insensitive).
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @param defaultValue A boolean default.
     * @return The truth.
@@ -833,7 +835,7 @@ public final class JSONArray implements JSON
     * Get the optional double value associated with an index. NaN is returned if
     * there is no value for the index, or if the value is not a number and
     * cannot be converted to a number.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return The value.
     */
@@ -846,7 +848,7 @@ public final class JSONArray implements JSON
     * Get the optional double value associated with an index. The defaultValue
     * is returned if there is no value for the index, or if the value is not a
     * number and cannot be converted to a number.
-    * 
+    *
     * @param index subscript
     * @param defaultValue The default value.
     * @return The value.
@@ -865,7 +867,7 @@ public final class JSONArray implements JSON
     * Get the optional int value associated with an index. Zero is returned if
     * there is no value for the index, or if the value is not a number and
     * cannot be converted to a number.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return The value.
     */
@@ -878,7 +880,7 @@ public final class JSONArray implements JSON
     * Get the optional int value associated with an index. The defaultValue is
     * returned if there is no value for the index, or if the value is not a
     * number and cannot be converted to a number.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @param defaultValue The default value.
     * @return The value.
@@ -895,7 +897,7 @@ public final class JSONArray implements JSON
 
    /**
     * Get the optional JSONArray associated with an index.
-    * 
+    *
     * @param index subscript
     * @return A JSONArray value, or null if the index has no value, or if the
     *         value is not a JSONArray.
@@ -910,7 +912,7 @@ public final class JSONArray implements JSON
     * Get the optional JSONObject associated with an index. Null is returned if
     * the key is not found, or null if the index has no value, or if the value
     * is not a JSONObject.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return A JSONObject value.
     */
@@ -924,7 +926,7 @@ public final class JSONArray implements JSON
     * Get the optional long value associated with an index. Zero is returned if
     * there is no value for the index, or if the value is not a number and
     * cannot be converted to a number.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return The value.
     */
@@ -937,7 +939,7 @@ public final class JSONArray implements JSON
     * Get the optional long value associated with an index. The defaultValue is
     * returned if there is no value for the index, or if the value is not a
     * number and cannot be converted to a number.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @param defaultValue The default value.
     * @return The value.
@@ -956,7 +958,7 @@ public final class JSONArray implements JSON
     * Get the optional string value associated with an index. It returns an
     * empty string if there is no value at that index. If the value is not a
     * string and is not null, then it is coverted to a string.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @return A String value.
     */
@@ -968,7 +970,7 @@ public final class JSONArray implements JSON
    /**
     * Get the optional string associated with an index. The defaultValue is
     * returned if the key is not found.
-    * 
+    *
     * @param index The index must be between 0 and length() - 1.
     * @param defaultValue The default value.
     * @return A String value.
@@ -981,7 +983,7 @@ public final class JSONArray implements JSON
 
    /**
     * Append a boolean value. This increases the array's length by one.
-    * 
+    *
     * @param value A boolean value.
     * @return this.
     */
@@ -994,7 +996,7 @@ public final class JSONArray implements JSON
    /**
     * Put a value in the JSONArray, where the value will be a JSONArray which is
     * produced from a Collection.
-    * 
+    *
     * @param value A Collection value.
     * @return this.
     */
@@ -1006,7 +1008,7 @@ public final class JSONArray implements JSON
 
    /**
     * Append a double value. This increases the array's length by one.
-    * 
+    *
     * @param value A double value.
     * @throws JSONException if the value is not finite.
     * @return this.
@@ -1021,7 +1023,7 @@ public final class JSONArray implements JSON
 
    /**
     * Append an int value. This increases the array's length by one.
-    * 
+    *
     * @param value An int value.
     * @return this.
     */
@@ -1035,7 +1037,7 @@ public final class JSONArray implements JSON
     * Put or replace a boolean value in the JSONArray. If the index is greater
     * than the length of the JSONArray, then null elements will be added as
     * necessary to pad it out.
-    * 
+    *
     * @param index The subscript.
     * @param value A boolean value.
     * @return this.
@@ -1050,7 +1052,7 @@ public final class JSONArray implements JSON
    /**
     * Put a value in the JSONArray, where the value will be a JSONArray which is
     * produced from a Collection.
-    * 
+    *
     * @param index The subscript.
     * @param value A Collection value.
     * @return this.
@@ -1067,7 +1069,7 @@ public final class JSONArray implements JSON
     * Put or replace a double value. If the index is greater than the length of
     * the JSONArray, then null elements will be added as necessary to pad it
     * out.
-    * 
+    *
     * @param index The subscript.
     * @param value A double value.
     * @return this.
@@ -1084,7 +1086,7 @@ public final class JSONArray implements JSON
     * Put or replace an int value. If the index is greater than the length of
     * the JSONArray, then null elements will be added as necessary to pad it
     * out.
-    * 
+    *
     * @param index The subscript.
     * @param value An int value.
     * @return this.
@@ -1100,7 +1102,7 @@ public final class JSONArray implements JSON
     * Put or replace a long value. If the index is greater than the length of
     * the JSONArray, then null elements will be added as necessary to pad it
     * out.
-    * 
+    *
     * @param index The subscript.
     * @param value A long value.
     * @return this.
@@ -1115,7 +1117,7 @@ public final class JSONArray implements JSON
    /**
     * Put a value in the JSONArray, where the value will be a JSONObject which
     * is produced from a Map.
-    * 
+    *
     * @param index The subscript.
     * @param value The Map value.
     * @return this.
@@ -1132,7 +1134,7 @@ public final class JSONArray implements JSON
     * Put or replace an object value in the JSONArray. If the index is greater
     * than the length of the JSONArray, then null elements will be added as
     * necessary to pad it out.
-    * 
+    *
     * @param index The subscript.
     * @param value An object value. The value should be a Boolean, Double,
     *        Integer, JSONArray, JSONObject, JSONFunction, Long, String,
@@ -1180,8 +1182,43 @@ public final class JSONArray implements JSON
    }
 
    /**
+    * Put or replace a String value in the JSONArray. If the index is greater
+    * than the length of the JSONArray, then null elements will be added as
+    * necessary to pad it out.<br>
+    * The string may be a valid JSON formatted string, in tha case, it will be
+    * trabsformed to a JSONArray, JSONObjetc or JSONNull.
+    *
+    * @param index The subscript.
+    * @param value A String value.
+    * @return this.
+    * @throws JSONException If the index is negative or if the the value is an
+    *         invalid number.
+    */
+   public JSONArray put( int index, String value )
+   {
+      if( index < 0 ){
+         throw new JSONException( "JSONArray[" + index + "] not found." );
+      }
+      if( index < length() ){
+         if( value == null ){
+            this.elements.add( "" );
+         }else if( JSONUtils.mayBeJSON( value ) ){
+            this.elements.add( JSONUtils.toJSON( value ) );
+         }else{
+            this.elements.add( value );
+         }
+      }else{
+         while( index != length() ){
+            put( JSONNull.getInstance() );
+         }
+         put( value );
+      }
+      return this;
+   }
+
+   /**
     * Append an JSON value. This increases the array's length by one.
-    * 
+    *
     * @param value An JSON value.
     * @return this.
     */
@@ -1193,7 +1230,7 @@ public final class JSONArray implements JSON
 
    /**
     * Append an JSONString value. This increases the array's length by one.
-    * 
+    *
     * @param value An JSONString value.
     * @return this.
     */
@@ -1205,7 +1242,7 @@ public final class JSONArray implements JSON
 
    /**
     * Append an long value. This increases the array's length by one.
-    * 
+    *
     * @param value A long value.
     * @return this.
     */
@@ -1218,7 +1255,7 @@ public final class JSONArray implements JSON
    /**
     * Put a value in the JSONArray, where the value will be a JSONObject which
     * is produced from a Map.
-    * 
+    *
     * @param value A Map value.
     * @return this.
     */
@@ -1230,7 +1267,7 @@ public final class JSONArray implements JSON
 
    /**
     * Append an object value. This increases the array's length by one.
-    * 
+    *
     * @param value An object value. The value should be a Boolean, Double,
     *        Integer, JSONArray, JSONObject, JSONFunction, Long, String,
     *        JSONString or the JSONNull object.
@@ -1265,6 +1302,26 @@ public final class JSONArray implements JSON
    }
 
    /**
+    * Append a String value. This increases the array's length by one.<br>
+    * The string may be a valid JSON formatted string, in tha case, it will be
+    * trabsformed to a JSONArray, JSONObjetc or JSONNull.
+    *
+    * @param value A String value.
+    * @return this.
+    */
+   public JSONArray put( String value )
+   {
+      if( value == null ){
+         this.elements.add( "" );
+      }else if( JSONUtils.mayBeJSON( value ) ){
+         this.elements.add( JSONUtils.toJSON( value ) );
+      }else{
+         this.elements.add( value );
+      }
+      return this;
+   }
+
+   /**
     * Produce an Object[] with the contents of this JSONArray.
     */
    public Object[] toArray()
@@ -1275,7 +1332,7 @@ public final class JSONArray implements JSON
    /**
     * Produce a JSONObject by combining a JSONArray of names with the values of
     * this JSONArray.
-    * 
+    *
     * @param names A JSONArray containing a list of key strings. These will be
     *        paired with the values.
     * @return A JSONObject, or null if there are no names or if this JSONArray
@@ -1301,7 +1358,7 @@ public final class JSONArray implements JSON
     * the array contains an invalid number.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    * 
+    *
     * @return a printable, displayable, transmittable representation of the
     *         array.
     */
@@ -1318,7 +1375,7 @@ public final class JSONArray implements JSON
    /**
     * Make a prettyprinted JSON text of this JSONArray. Warning: This method
     * assumes that the data structure is acyclical.
-    * 
+    *
     * @param indentFactor The number of spaces to add to each level of
     *        indentation.
     * @return a printable, displayable, transmittable representation of the
@@ -1335,7 +1392,7 @@ public final class JSONArray implements JSON
    /**
     * Make a prettyprinted JSON text of this JSONArray. Warning: This method
     * assumes that the data structure is acyclical.
-    * 
+    *
     * @param indentFactor The number of spaces to add to each level of
     *        indentation.
     * @param indent The indention of the top level.
@@ -1379,7 +1436,7 @@ public final class JSONArray implements JSON
     * compactness, no whitespace is added.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    * 
+    *
     * @return The writer.
     * @throws JSONException
     */

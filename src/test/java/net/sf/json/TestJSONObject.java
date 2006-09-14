@@ -28,8 +28,9 @@ import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.BeanFoo;
 import net.sf.json.sample.BeanWithFunc;
-import net.sf.json.sample.MappingBean;
 import net.sf.json.sample.FieldTestBean;
+import net.sf.json.sample.MappingBean;
+import net.sf.json.sample.ObjectJSONStringBean;
 import net.sf.json.sample.ValueBean;
 import net.sf.json.util.JSONDynaBean;
 import net.sf.json.util.JSONDynaClass;
@@ -292,8 +293,8 @@ public class TestJSONObject extends TestCase
          bean.setVolatileString( "volatile" );
          JSONObject json = JSONObject.fromObject( bean );
          assertEquals( "json", json.getString( "string" ) );
-         assertFalse(json.has( "transientString" ));
-         assertFalse(json.has( "volatileString" ));
+         assertFalse( json.has( "transientString" ) );
+         assertFalse( json.has( "volatileString" ) );
       }
       catch( JSONException jsone ){
          fail( jsone.getMessage() );
@@ -470,6 +471,119 @@ public class TestJSONObject extends TestCase
       }
       catch( JSONException jsone ){
          fail( jsone.getMessage() );
+      }
+   }
+
+   public void testPut_boolean()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "bool", Boolean.TRUE );
+      assertTrue( jsonObject.getBoolean( "bool" ) );
+   }
+
+   public void testPut_double()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "double", 1d );
+      assertEquals( 1d, jsonObject.getDouble( "double" ), 0d );
+   }
+
+   public void testPut_int()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "int", 1 );
+      assertEquals( 1, jsonObject.getInt( "int" ) );
+   }
+
+   public void testPut_JSON()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "null", JSONNull.getInstance() );
+      Assertions.assertEquals( JSONNull.getInstance(), jsonObject.get( "null" ) );
+   }
+
+   public void testPut_JSONFunction()
+   {
+      JSONObject jsonObject = new JSONObject();
+      JSONFunction f = new JSONFunction( "return this;" );
+      jsonObject.put( "func", f );
+      Assertions.assertEquals( f, (JSONFunction) jsonObject.get( "func" ) );
+   }
+
+   public void testPut_JSONString()
+   {
+      JSONObject jsonObject = new JSONObject();
+      ObjectJSONStringBean bean = new ObjectJSONStringBean();
+      bean.setName( "json" );
+      jsonObject.put( "bean", bean );
+      Assertions.assertEquals( JSONObject.fromJSONString( bean ), jsonObject.getJSONObject( "bean" ) );
+   }
+
+   public void testPut_JSONTokener()
+   {
+      JSONObject jsonObject = new JSONObject();
+      JSONTokener tok = new JSONTokener( "{'name':'json'}" );
+      jsonObject.put( "obj", tok );
+      tok.reset();
+      Assertions.assertEquals( new JSONObject( tok ), jsonObject.getJSONObject( "obj" ) );
+   }
+
+   public void testPut_long()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "long", 1L );
+      assertEquals( 1L, jsonObject.getLong( "long" ) );
+   }
+
+   public void testPut_Map()
+   {
+      Map map = new HashMap();
+      map.put( "name", "json" );
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "map", map );
+      Assertions.assertEquals( new JSONObject( map ), jsonObject.getJSONObject( "map" ) );
+   }
+
+   public void testPut_Number()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "num", new Double( 2 ) );
+      Assertions.assertEquals( new Double( 2 ).doubleValue(), jsonObject.getDouble( "num" ), 0d );
+   }
+
+   public void testPut_Object()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "bean", new BeanA() );
+      Assertions.assertEquals( JSONObject.fromBean( new BeanA() ),
+            jsonObject.getJSONObject( "bean" ) );
+   }
+
+   public void testPut_String()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "str", "json" );
+      Assertions.assertEquals( "json", jsonObject.getString( "str" ) );
+   }
+
+   public void testPut_String_JSON()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "str", "[]" );
+      Assertions.assertEquals( new JSONArray().toString(), jsonObject.getString( "str" ) );
+   }
+
+   public void testPut_String_null()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "str", (String) null );
+      // special case, if value null, there is no value associated to key
+      try{
+         jsonObject.getString( "str" );
+         fail( "Should have thrown a JSONException" );
+      }
+      catch( JSONException expected ){
+         // ok
       }
    }
 

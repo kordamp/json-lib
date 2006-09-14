@@ -27,12 +27,13 @@ import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.MorpherRegistry;
 import net.sf.json.regexp.RegexpMatcher;
 import net.sf.json.regexp.RegexpUtils;
+import net.sf.json.util.JSONTokener;
 
 import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Provides useful methods on java objects.
- * 
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  * @version 5
  */
@@ -59,7 +60,7 @@ public final class JSONUtils
    /**
     * Produce a string from a double. The string "null" will be returned if the
     * number is not finite.
-    * 
+    *
     * @param d A double.
     * @return A String.
     */
@@ -287,7 +288,7 @@ public final class JSONUtils
 
    /**
     * Produce a string from a Number.
-    * 
+    *
     * @param n A Number
     * @return A String.
     * @throws JSONException If n is a non-finite number.
@@ -321,7 +322,7 @@ public final class JSONUtils
     * <strong>CAUTION:</strong> if <code>string</code> represents a
     * javascript function, translation of characters will not take place. This
     * will produce a non-conformant JSON text.
-    * 
+    *
     * @param string A String
     * @return A String correctly formatted for insertion in a JSON text.
     */
@@ -389,7 +390,7 @@ public final class JSONUtils
 
    /**
     * Throw an exception if the object is an NaN or infinite number.
-    * 
+    *
     * @param o The object to test.
     * @throws JSONException If o is a non-finite number.
     */
@@ -408,6 +409,11 @@ public final class JSONUtils
       }
    }
 
+   /**
+    * Creates a JSONObject, JSONArray or a JSONNull from a JSONString.
+    *
+    * @throws JSONException if the string is not a valid JSON string
+    */
    public static JSON toJSON( JSONString string )
    {
       if( string == null ){
@@ -417,6 +423,11 @@ public final class JSONUtils
 
    }
 
+   /**
+    * Creates a JSONObject, JSONArray or a JSONNull from object.
+    *
+    * @throws JSONException is the object can not be converted
+    */
    public static JSON toJSON( Object object )
    {
       JSON json = null;
@@ -429,6 +440,9 @@ public final class JSONUtils
             json = JSONObject.fromObject( object );
          }
          catch( JSONException e ){
+            if( object instanceof JSONTokener ){
+               ((JSONTokener) object).reset();
+            }
             json = JSONArray.fromObject( object );
          }
       }
@@ -436,14 +450,17 @@ public final class JSONUtils
       return json;
    }
 
+   /**
+    * Creates a JSONObject, JSONArray or a JSONNull from a JSONString.
+    *
+    * @throws JSONException if the string is not a valid JSON string
+    */
    public static JSON toJSON( String string )
    {
       JSON json = null;
       if( string == null ){
          json = JSONNull.getInstance();
-      }
-
-      if( string.startsWith( "[" ) ){
+      }else if( string.startsWith( "[" ) ){
          json = JSONArray.fromString( string );
       }else if( string.startsWith( "{" ) ){
          json = JSONObject.fromString( string );
@@ -465,7 +482,7 @@ public final class JSONUtils
     * This method returns <code>null</code> for a <code>null</code> input
     * array.
     * </p>
-    * 
+    *
     * @param array a <code>char</code> array
     * @return a <code>Character</code> array, <code>null</code> if null
     *         array input
@@ -492,7 +509,7 @@ public final class JSONUtils
     * common case), then a text will be produced by the rules.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    * 
+    *
     * @param value The value to be serialized.
     * @return a printable, displayable, transmittable representation of the
     *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
@@ -533,7 +550,7 @@ public final class JSONUtils
     * Make a prettyprinted JSON text of an object value.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    * 
+    *
     * @param value The value to be serialized.
     * @param indentFactor The number of spaces to add to each level of
     *        indentation.
