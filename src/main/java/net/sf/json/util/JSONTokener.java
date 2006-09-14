@@ -109,6 +109,7 @@ public class JSONTokener
          this.myIndex -= 1;
       }
    }
+
    public int length()
    {
       if( this.mySource == null ){

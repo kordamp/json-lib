@@ -16,8 +16,8 @@
 
 package net.sf.json;
 
-import net.sf.json.util.JSONTokener;
 import junit.framework.TestCase;
+import net.sf.json.util.JSONTokener;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -32,6 +32,24 @@ public class TestJSONFunction extends TestCase
    public TestJSONFunction( String name )
    {
       super( name );
+   }
+
+   public void testEquals()
+   {
+      JSONFunction expected = new JSONFunction( new String[] { "a" }, "return a;" );
+      assertFalse( expected.equals( null ) );
+      assertFalse( expected.equals( new Object() ) );
+      assertFalse( expected.equals( "" ) );
+      assertFalse( expected.equals( new JSONFunction( "return a;" ) ) );
+      assertFalse( expected.equals( new JSONFunction( new String[] { "a" }, "return b;" ) ) );
+      assertTrue( expected.equals( new JSONFunction( new String[] { "a" }, "return a;" ) ) );
+   }
+
+   public void testHashCode()
+   {
+      JSONFunction a = new JSONFunction( new String[] { "a,b" }, "return a+b;" );
+      JSONFunction b = new JSONFunction( new String[] { "a,b" }, "return a+b;" );
+      assertTrue( a.hashCode() == b.hashCode() );
    }
 
    public void testParse_JSONTokener()

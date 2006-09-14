@@ -14,73 +14,82 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.util;
 
-import net.sf.json.util.JSONBuilder;
-import net.sf.json.util.JSONStringer;
+import java.io.StringWriter;
+
 import junit.framework.TestCase;
+import net.sf.json.JSONFunction;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONUtils;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class TestJSONStringer extends TestCase
+public class TestJSONBuilder extends TestCase
 {
    public static void main( String[] args )
    {
-      junit.textui.TestRunner.run( TestJSONStringer.class );
+      junit.textui.TestRunner.run( TestJSONBuilder.class );
    }
 
-   public TestJSONStringer( String testName )
+   public TestJSONBuilder( String testName )
    {
       super( testName );
    }
 
    public void testCreateArray()
    {
-      JSONBuilder b = new JSONStringer().array()
+      StringWriter w = new StringWriter();
+      new JSONBuilder( w ).array()
             .value( true )
             .value( 1.1d )
             .value( 2L )
             .value( "text" )
             .endArray();
-      assertEquals( "[true,1.1,2,\"text\"]", b.toString() );
+      assertEquals( "[true,1.1,2,\"text\"]", w.toString() );
    }
 
    public void testCreateEmptyArray()
    {
-      JSONBuilder b = new JSONStringer().array()
+      StringWriter w = new StringWriter();
+      new JSONBuilder( w ).array()
             .endArray();
-      assertEquals( "[]", b.toString() );
+      assertEquals( "[]", w.toString() );
    }
 
    public void testCreateEmptyArrayWithNullObjects()
    {
-      JSONBuilder b = new JSONStringer().array()
+      StringWriter w = new StringWriter();
+      new JSONBuilder( w ).array()
             .value( null )
             .value( null )
             .endArray();
-      assertEquals( "[null,null]", b.toString() );
+      assertEquals( "[null,null]", w.toString() );
    }
 
    public void testCreateEmptyObject()
    {
-      JSONBuilder b = new JSONStringer().object()
+      StringWriter w = new StringWriter();
+      new JSONBuilder( w ).object()
             .endObject();
-      assertEquals( "{}", b.toString() );
+      assertEquals( "{}", w.toString() );
    }
 
    public void testCreateFunctionArray()
    {
-      JSONBuilder b = new JSONStringer().array()
+      StringWriter w = new StringWriter();
+      new JSONBuilder( w ).array()
             .value( new JSONFunction( "var a = 1;" ) )
             .value( new JSONFunction( "var b = 2;" ) )
             .endArray();
-      assertEquals( "[function(){ var a = 1; },function(){ var b = 2; }]", b.toString() );
+      assertEquals( "[function(){ var a = 1; },function(){ var b = 2; }]", w.toString() );
    }
 
    public void testCreateSimpleObject()
    {
-      JSONBuilder b = new JSONStringer().object()
+      StringWriter w = new StringWriter();
+      new JSONBuilder( w ).object()
             .key( "bool" )
             .value( true )
             .key( "numDouble" )
@@ -92,7 +101,7 @@ public class TestJSONStringer extends TestCase
             .key( "func" )
             .value( new JSONFunction( "var a = 1;" ) )
             .endObject();
-      JSONObject jsonObj = JSONObject.fromObject( b.toString() );
+      JSONObject jsonObj = JSONObject.fromObject( w.toString() );
       assertEquals( Boolean.TRUE, jsonObj.get( "bool" ) );
       assertEquals( new Double( 1.1d ), jsonObj.get( "numDouble" ) );
       assertEquals( new Long( 2 ).longValue(), ((Number) jsonObj.get( "numInt" )).longValue() );

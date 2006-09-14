@@ -1201,11 +1201,11 @@ public final class JSONArray implements JSON
       }
       if( index < length() ){
          if( value == null ){
-            this.elements.add( "" );
+            this.elements.set( index, "" );
          }else if( JSONUtils.mayBeJSON( value ) ){
-            this.elements.add( JSONUtils.toJSON( value ) );
+            this.elements.set( index, JSONUtils.toJSON( value ) );
          }else{
-            this.elements.add( value );
+            this.elements.set( index, value );
          }
       }else{
          while( index != length() ){
