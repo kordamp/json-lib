@@ -43,8 +43,6 @@ import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -157,12 +155,6 @@ public final class JSONObject implements JSON
             for( int i = 0; i < pds.length; i++ ){
                String key = pds[i].getName();
                if( "class".equals( key ) ){
-                  continue;
-               }
-
-               Field field = getField( bean.getClass(), key );
-               if( field != null
-                     && (Modifier.isTransient( field.getModifiers() ) || Modifier.isVolatile( field.getModifiers() )) ){
                   continue;
                }
 
@@ -461,22 +453,6 @@ public final class JSONObject implements JSON
       }
 
       return targetClass;
-   }
-
-   private static Field getField( Class klass, String fieldName )
-   {
-      Field field = null;
-      try{
-         field = klass.getDeclaredField( fieldName );
-      }
-      catch( NoSuchFieldException nsfe ){
-         Class superClass = klass.getSuperclass();
-         if( superClass != null ){
-            return getField( superClass, fieldName );
-         }
-      }
-
-      return field;
    }
 
    /**
@@ -789,12 +765,6 @@ public final class JSONObject implements JSON
             for( int i = 0; i < pds.length; i++ ){
                String key = pds[i].getName();
                if( "class".equals( key ) || !ArrayUtils.contains( names, key ) ){
-                  continue;
-               }
-
-               Field field = getField( object.getClass(), key );
-               if( field != null
-                     && (Modifier.isTransient( field.getModifiers() ) || Modifier.isVolatile( field.getModifiers() )) ){
                   continue;
                }
 

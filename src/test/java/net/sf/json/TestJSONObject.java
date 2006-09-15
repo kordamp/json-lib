@@ -28,7 +28,6 @@ import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.BeanFoo;
 import net.sf.json.sample.BeanWithFunc;
-import net.sf.json.sample.FieldTestBean;
 import net.sf.json.sample.MappingBean;
 import net.sf.json.sample.ObjectJSONStringBean;
 import net.sf.json.sample.ValueBean;
@@ -278,23 +277,6 @@ public class TestJSONObject extends TestCase
          assertEquals( true, json.getBoolean( "bool" ) );
          assertEquals( 42, json.getInt( "integer" ) );
          assertEquals( "json", json.getString( "string" ) );
-      }
-      catch( JSONException jsone ){
-         fail( jsone.getMessage() );
-      }
-   }
-
-   public void testFromObject_Bean__transient_fields()
-   {
-      try{
-         FieldTestBean bean = new FieldTestBean();
-         bean.setString( "json" );
-         bean.setTransientString( "transient" );
-         bean.setVolatileString( "volatile" );
-         JSONObject json = JSONObject.fromObject( bean );
-         assertEquals( "json", json.getString( "string" ) );
-         assertFalse( json.has( "transientString" ) );
-         assertFalse( json.has( "volatileString" ) );
       }
       catch( JSONException jsone ){
          fail( jsone.getMessage() );
