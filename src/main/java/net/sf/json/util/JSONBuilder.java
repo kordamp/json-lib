@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import net.sf.json.JSONException;
-import net.sf.json.JSONUtils;
 
 /*
 Copyright (c) 2002 JSON.org

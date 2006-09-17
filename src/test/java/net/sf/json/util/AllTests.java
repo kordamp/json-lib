@@ -28,6 +28,7 @@ public class AllTests extends TestSuite
       TestSuite suite = new TestSuite();
       suite.setName( "util" );
 
+      suite.addTest( new TestSuite( TestJSONUtils.class ) );
       suite.addTest( new TestSuite( TestDynaBeanToBeanMorpher.class ) );
       suite.addTest( new TestSuite( TestJSONTokener.class ) );
       suite.addTest( new TestSuite( TestJSONBuilder.class ) );

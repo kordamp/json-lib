@@ -26,8 +26,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONFunction;
 import net.sf.json.JSONObject;
-import net.sf.json.JSONUtils;
 import net.sf.json.util.JSONTypes;
+import net.sf.json.util.JSONUtils;
 import nu.xom.Attribute;
 import nu.xom.Builder;
 import nu.xom.Document;
@@ -431,6 +431,5 @@ public class XMLSerializer
             super.write( text );
          }
       }
-
    }
 }

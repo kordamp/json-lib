@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.json.util.JSONTokener;
+import net.sf.json.util.JSONUtils;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -205,7 +206,25 @@ public final class JSONArray implements JSON
       return new JSONArray( string );
    }
 
-   // ------------------------------------------------------
+   /**
+    * Returns the number of dimensions suited for a java array.
+    */
+   public static int[] getDimensions( JSONArray jsonArray )
+   {
+      // short circuit for empty arrays
+      if( jsonArray == null || jsonArray.isEmpty() ){
+         return new int[] { 0 };
+      }
+   
+      List dims = new ArrayList();
+      processArrayDimensions( jsonArray, dims, 0 );
+      int[] dimensions = new int[dims.size()];
+      int j = 0;
+      for( Iterator i = dims.iterator(); i.hasNext(); ){
+         dimensions[j++] = ((Integer) i.next()).intValue();
+      }
+      return dimensions;
+   }
 
    /**
     * Creates a java array from a JSONArray.
@@ -237,7 +256,7 @@ public final class JSONArray implements JSON
    public static Object[] toArray( JSONArray jsonArray, Class objectClass, Map classMap )
    {
       // TODO handle empty jsonArray
-      int[] dimensions = JSONUtils.getDimensions( jsonArray );
+      int[] dimensions = JSONArray.getDimensions( jsonArray );
       Object array = Array.newInstance( Object.class, dimensions );
       int size = jsonArray.length();
       for( int i = 0; i < size; i++ ){
@@ -328,6 +347,26 @@ public final class JSONArray implements JSON
       return list;
    }
 
+   private static void processArrayDimensions( JSONArray jsonArray, List dims, int index )
+   {
+      if( dims.size() <= index ){
+         dims.add( new Integer( jsonArray.length() ) );
+      }else{
+         int i = ((Integer) dims.get( index )).intValue();
+         if( jsonArray.length() > i ){
+            dims.set( index, new Integer( jsonArray.length() ) );
+         }
+      }
+      for( Iterator i = jsonArray.iterator(); i.hasNext(); ){
+         Object item = i.next();
+         if( item instanceof JSONArray ){
+            processArrayDimensions( (JSONArray) item, dims, index + 1 );
+         }
+      }
+   }
+
+   // ------------------------------------------------------
+
    /**
     * The List where the JSONArray's properties are kept.
     */
@@ -405,6 +444,7 @@ public final class JSONArray implements JSON
                   this.elements.add( jsonObject );
                }
             }else{
+               JSONUtils.testValidity( element );
                this.elements.add( element );
             }
          }
@@ -420,6 +460,7 @@ public final class JSONArray implements JSON
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      // TODO testValidity
    }
 
    /**
@@ -431,6 +472,7 @@ public final class JSONArray implements JSON
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      // TODO testValidity
    }
 
    /**
@@ -576,6 +618,7 @@ public final class JSONArray implements JSON
                this.elements.add( jsonObject );
             }
          }else{
+            JSONUtils.testValidity( element );
             this.elements.add( element );
          }
       }
@@ -1153,7 +1196,7 @@ public final class JSONArray implements JSON
          if( JSONUtils.isFunction( value ) ){
             this.elements.set( index, value );
          }else if( value instanceof JSONString ){
-            this.elements.set( index, JSONUtils.toJSON( (JSONString) value ) );
+            this.elements.set( index, JSONSerializer.toJSON( (JSONString) value ) );
          }else if( JSONUtils.isArray( value ) ){
             this.elements.set( index, JSONArray.fromObject( value ) );
          }else if( value instanceof JSON ){
@@ -1163,11 +1206,12 @@ public final class JSONArray implements JSON
          }else if( JSONUtils.isString( value ) ){
             String str = String.valueOf( value );
             if( JSONUtils.mayBeJSON( str ) ){
-               this.elements.set( index, JSONUtils.toJSON( str ) );
+               this.elements.set( index, JSONSerializer.toJSON( str ) );
             }else{
                this.elements.set( index, str );
             }
          }else if( JSONUtils.isNumber( value ) || JSONUtils.isBoolean( value ) ){
+            JSONUtils.testValidity( value );
             this.elements.set( index, value );
          }else{
             this.elements.set( index, JSONObject.fromObject( value ) );
@@ -1203,7 +1247,7 @@ public final class JSONArray implements JSON
          if( value == null ){
             this.elements.set( index, "" );
          }else if( JSONUtils.mayBeJSON( value ) ){
-            this.elements.set( index, JSONUtils.toJSON( value ) );
+            this.elements.set( index, JSONSerializer.toJSON( value ) );
          }else{
             this.elements.set( index, value );
          }
@@ -1236,7 +1280,7 @@ public final class JSONArray implements JSON
     */
    public JSONArray put( JSONString value )
    {
-      this.elements.add( JSONUtils.toJSON( value ) );
+      this.elements.add( JSONSerializer.toJSON( value ) );
       return this;
    }
 
@@ -1278,7 +1322,7 @@ public final class JSONArray implements JSON
       if( JSONUtils.isFunction( value ) ){
          this.elements.add( value );
       }else if( value instanceof JSONString ){
-         this.elements.add( JSONUtils.toJSON( (JSONString) value ) );
+         this.elements.add( JSONSerializer.toJSON( (JSONString) value ) );
       }else if( JSONUtils.isArray( value ) ){
          this.elements.add( JSONArray.fromObject( value ) );
       }else if( value instanceof JSON ){
@@ -1288,11 +1332,12 @@ public final class JSONArray implements JSON
       }else if( JSONUtils.isString( value ) ){
          String str = String.valueOf( value );
          if( JSONUtils.mayBeJSON( str ) ){
-            this.elements.add( JSONUtils.toJSON( str ) );
+            this.elements.add( JSONSerializer.toJSON( str ) );
          }else{
             this.elements.add( str );
          }
       }else if( JSONUtils.isNumber( value ) || JSONUtils.isBoolean( value ) ){
+         JSONUtils.testValidity( value );
          this.elements.add( value );
       }else{
          this.elements.add( JSONObject.fromObject( value ) );
@@ -1314,7 +1359,7 @@ public final class JSONArray implements JSON
       if( value == null ){
          this.elements.add( "" );
       }else if( JSONUtils.mayBeJSON( value ) ){
-         this.elements.add( JSONUtils.toJSON( value ) );
+         this.elements.add( JSONSerializer.toJSON( value ) );
       }else{
          this.elements.add( value );
       }

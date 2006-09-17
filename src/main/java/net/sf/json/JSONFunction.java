@@ -19,6 +19,7 @@ package net.sf.json;
 import java.io.Serializable;
 
 import net.sf.json.util.JSONTokener;
+import net.sf.json.util.JSONUtils;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;

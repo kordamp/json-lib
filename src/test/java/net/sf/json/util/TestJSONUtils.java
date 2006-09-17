@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.util;
 
 import java.util.Collections;
 
 import junit.framework.TestCase;
-import net.sf.json.sample.ArrayJSONStringBean;
-import net.sf.json.sample.BeanA;
-import net.sf.json.sample.ObjectJSONStringBean;
-import net.sf.json.util.JSONTokener;
+import net.sf.json.JSONException;
+import net.sf.json.JSONFunction;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -54,6 +52,7 @@ public class TestJSONUtils extends TestCase
       assertEquals( "200", JSONUtils.doubleToString( 200.00000 ) );
    }
 
+ 
    public void testGetFunctionParams()
    {
       assertEquals( "", JSONUtils.getFunctionParams( "function()" ) );
@@ -129,109 +128,6 @@ public class TestJSONUtils extends TestCase
    public void testQuote_nullString()
    {
       assertEquals( "\"\"", JSONUtils.quote( null ) );
-   }
-
-   public void testToJSON_JSONString_array()
-   {
-      ArrayJSONStringBean bean = new ArrayJSONStringBean();
-      bean.setValue( "json,json" );
-      JSON json = JSONUtils.toJSON( bean );
-      assertNotNull( json );
-      assertTrue( json instanceof JSONArray );
-      Assertions.assertEquals( new JSONArray( "[json,json]" ), (JSONArray) json );
-   }
-
-   public void testToJSON_JSONString_null()
-   {
-      JSON json = JSONUtils.toJSON( (JSONString) null );
-      assertNotNull( json );
-      assertTrue( JSONNull.getInstance()
-            .equals( json ) );
-   }
-
-   public void testToJSON_JSONString_object()
-   {
-      ObjectJSONStringBean bean = new ObjectJSONStringBean();
-      bean.setName( "json" );
-      JSON json = JSONUtils.toJSON( bean );
-      assertNotNull( json );
-      assertTrue( json instanceof JSONObject );
-      Assertions.assertEquals( new JSONObject( "{\"name\":\"json\"}" ), (JSONObject) json );
-   }
-
-   public void testToJSON_Object_array()
-   {
-      JSON json = JSONUtils.toJSON( new int[] { 1, 2 } );
-      assertNotNull( json );
-      assertTrue( json instanceof JSONArray );
-      Assertions.assertEquals( new JSONArray( "[1,2]" ), (JSONArray) json );
-   }
-
-   public void testToJSON_Object_JSONTokener_array()
-   {
-      JSON json = JSONUtils.toJSON( new JSONTokener( "[1,2]" ) );
-      assertNotNull( json );
-      assertTrue( json instanceof JSONArray );
-      Assertions.assertEquals( new JSONArray( "[1,2]" ), (JSONArray) json );
-   }
-
-   public void testToJSON_Object_null()
-   {
-      JSON json = JSONUtils.toJSON( (Object) null );
-      assertNotNull( json );
-      assertTrue( JSONNull.getInstance()
-            .equals( json ) );
-   }
-
-   public void testToJSON_Object_object()
-   {
-      JSON json = JSONUtils.toJSON( new BeanA() );
-      assertNotNull( json );
-      assertTrue( json instanceof JSONObject );
-      Assertions.assertEquals( JSONObject.fromBean( new BeanA() ), (JSONObject) json );
-   }
-
-   public void testToJSON_String_array()
-   {
-      JSON json = JSONUtils.toJSON( "[json,json]" );
-      assertNotNull( json );
-      assertTrue( json instanceof JSONArray );
-      Assertions.assertEquals( new JSONArray( "[json,json]" ), (JSONArray) json );
-   }
-
-   public void testToJSON_String_invalid()
-   {
-      try{
-         JSONUtils.toJSON( "garbage" );
-         fail( "Should have throwed a JSONException" );
-      }
-      catch( JSONException expected ){
-         // ok
-      }
-   }
-
-   public void testToJSON_String_null()
-   {
-      JSON json = JSONUtils.toJSON( (String) null );
-      assertNotNull( json );
-      assertTrue( JSONNull.getInstance()
-            .equals( json ) );
-   }
-
-   public void testToJSON_String_null_literal()
-   {
-      JSON json = JSONUtils.toJSON( "null" );
-      assertNotNull( json );
-      assertTrue( JSONNull.getInstance()
-            .equals( json ) );
-   }
-
-   public void testToJSON_String_object()
-   {
-      JSON json = JSONUtils.toJSON( "{'name':'json'}" );
-      assertNotNull( json );
-      assertTrue( json instanceof JSONObject );
-      Assertions.assertEquals( new JSONObject( "{\"name\":\"json\"}" ), (JSONObject) json );
    }
 
    public void testValidity_inifiniteDouble()

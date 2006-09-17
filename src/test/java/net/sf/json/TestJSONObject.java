@@ -34,6 +34,7 @@ import net.sf.json.sample.ValueBean;
 import net.sf.json.util.JSONDynaBean;
 import net.sf.json.util.JSONDynaClass;
 import net.sf.json.util.JSONTokener;
+import net.sf.json.util.JSONUtils;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -456,11 +457,91 @@ public class TestJSONObject extends TestCase
       }
    }
 
+   public void testHas()
+   {
+      assertFalse( new JSONObject().has( "any" ) );
+      assertTrue( new JSONObject().put( "any", "value" )
+            .has( "any" ) );
+   }
+
+   public void testLength()
+   {
+      assertEquals( 0, new JSONObject().length() );
+   }
+
+   public void testLength_nullObject()
+   {
+      try{
+         new JSONObject( true ).length();
+         fail( "Expected a JSONException" );
+      }
+      catch( JSONException expected ){
+         // ok
+      }
+   }
+
+   public void testOptBoolean()
+   {
+      assertFalse( new JSONObject().optBoolean( "any" ) );
+   }
+
+   public void testOptBoolean_defaultValue()
+   {
+      assertTrue( new JSONObject().optBoolean( "any", true ) );
+   }
+
+   public void testOptDouble()
+   {
+      assertTrue( Double.isNaN( new JSONObject().optDouble( "any" ) ) );
+   }
+
+   public void testOptDouble_defaultValue()
+   {
+      assertEquals( 2d, new JSONObject().optDouble( "any", 2d ), 0d );
+   }
+
+   public void testOptInt()
+   {
+      assertEquals( 0, new JSONObject().optInt( "any" ) );
+   }
+
+   public void testOptInt_defaultValue()
+   {
+      assertEquals( 1, new JSONObject().optInt( "any", 1 ) );
+   }
+
+   public void testOptLong()
+   {
+      assertEquals( 0L, new JSONObject().optLong( "any" ) );
+   }
+
+   public void testOptLong_defaultValue()
+   {
+      assertEquals( 1L, new JSONObject().optLong( "any", 1L ) );
+   }
+
+   public void testOptString()
+   {
+      assertEquals( "", new JSONObject().optString( "any" ) );
+   }
+
+   public void testOptString_defaultValue()
+   {
+      assertEquals( "json", new JSONObject().optString( "any", "json" ) );
+   }
+
    public void testPut_boolean()
    {
       JSONObject jsonObject = new JSONObject();
       jsonObject.put( "bool", Boolean.TRUE );
       assertTrue( jsonObject.getBoolean( "bool" ) );
+   }
+
+   public void testPut_Boolean()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "bool", Boolean.TRUE );
+      Assertions.assertTrue( jsonObject.getBoolean( "bool" ) );
    }
 
    public void testPut_double()
@@ -524,6 +605,17 @@ public class TestJSONObject extends TestCase
       JSONObject jsonObject = new JSONObject();
       jsonObject.put( "map", map );
       Assertions.assertEquals( new JSONObject( map ), jsonObject.getJSONObject( "map" ) );
+   }
+
+   public void testPut_null_key()
+   {
+      try{
+         new JSONObject().put( null, "value" );
+         fail( "Expected a JSONException" );
+      }
+      catch( JSONException expected ){
+         // ok
+      }
    }
 
    public void testPut_Number()
@@ -604,7 +696,7 @@ public class TestJSONObject extends TestCase
       Assertions.assertEquals( bean.getIntarray(),
             JSONArray.toArray( jsonObject.getJSONArray( "intarray" ) ) );
    }
-
+   
    public void testToBean_interface()
    {
       // BUG 1542104
@@ -766,6 +858,17 @@ public class TestJSONObject extends TestCase
       assertEquals( "010", items[1][0] );
       assertEquals( "011", items[1][1] );
       assertEquals( "020", items[2][0] );
+   }
+
+   public void testToJSONArray()
+   {
+      String json = "{bool:true,integer:1,string:\"json\"}";
+      JSONArray names= JSONArray.fromObject( "['string','integer','bool']" );
+      JSONObject jsonObject = new JSONObject( json );
+      JSONArray jsonArray = jsonObject.toJSONArray( names );
+      assertEquals( "json", jsonArray.getString( 0 ) );
+      assertEquals( 1, jsonArray.getInt( 1 ) );
+      assertTrue( jsonArray.getBoolean( 2 ) );
    }
 
    private JSONDynaBean createDynaBean() throws Exception

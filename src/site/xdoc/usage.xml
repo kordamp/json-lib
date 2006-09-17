@@ -7,13 +7,24 @@
 
 	<body>
 	  <section name="How to use json-lib">
+       <a href="#serializer">Using the JSONSerializer</a><br/>
        <a href="#arrays">Working with arrays and collections</a><br/>
        <a href="#objects">Working with objects</a><br/>
        <a href="#xml">Working with XML</a><br/>
 
+       <a name="serializer"/>
+       <subsection name="Using the JSONSerializer">
+		 <p>JSONSerializer can transform any java object to JSON notation and back with a simple and
+		 clean interface, leveraging all the builders in JSONObject and JSONArray. To transform a
+		 java obect into JSON use <code>JSONSerializer.toJSON()</code>. To transform a valid JSON
+		 value (by JSON, I mean an Object implementing that interface), use <code>toJava()</code>.
+		 The last method is an instance method because the serializer needs special configuration to
+		 transform a JSON value to a bean class, array, List or DynaBean.</p>
+		 </subsection>
+
        <a name="arrays"/>
        <subsection name="Working with arrays and collections">
-         <p>The easiest way to create a <code>JSONArray</code> from a java array or collection
+         <p>The simplest way to create a <code>JSONArray</code> from a java array or collection
          is through the static factory methods from <code>JSONArray</code>. <code>JSONArray.fromObject()</code>
          will inspect its parameter and call the correct factory or constructor.</p>
          <p>Examples:</p>
@@ -40,8 +51,8 @@
        <a name="objects"/>
        <subsection name="Working with objects">
          <subsection name="From Beans &amp; Maps to JSON">
-         <p>The easiest way to create a <code>JSONObject</code> from a bean or <code>Map</code>
-         is through the static factory methods from <code>JSONObject</code>.<code>JSONObject.fromObject()</code>
+         <p>The simplest way to create a <code>JSONObject</code> from a bean or <code>Map</code>
+         is through the static factory methods from <code>JSONObject</code>. <code>JSONObject.fromObject()</code>
          will inspect its parameter and call the correct factory or constructor.</p>
          <p>Examples:</p>
 		 <source>

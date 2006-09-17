@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.util;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,9 +24,14 @@ import java.util.Map;
 
 import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.MorpherRegistry;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONFunction;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONString;
 import net.sf.json.regexp.RegexpMatcher;
 import net.sf.json.regexp.RegexpUtils;
-import net.sf.json.util.JSONTokener;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -83,27 +87,7 @@ public final class JSONUtils
       }
       return s;
    }
-
-   /**
-    * Returns the number of dimensions suited for a java array.
-    */
-   public static int[] getDimensions( JSONArray jsonArray )
-   {
-      // short circuit for empty arrays
-      if( jsonArray == null || jsonArray.isEmpty() ){
-         return new int[] { 0 };
-      }
-
-      List dims = new ArrayList();
-      JSONUtils.processArrayDimensions( jsonArray, dims, 0 );
-      int[] dimensions = new int[dims.size()];
-      int j = 0;
-      for( Iterator i = dims.iterator(); i.hasNext(); ){
-         dimensions[j++] = ((Integer) i.next()).intValue();
-      }
-      return dimensions;
-   }
-
+   
    /**
     * Returns the params of a function literal.
     */
@@ -286,6 +270,14 @@ public final class JSONUtils
                   || (string.startsWith( "[" ) && string.endsWith( "]" )) || (string.startsWith( "{" ) && string.endsWith( "}" )));
    }
 
+   public static JSONDynaBean newDynaBean( JSONObject jsonObject ) throws Exception{
+      Map props = getProperties( jsonObject );
+      JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, props );
+      JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
+      dynaBean.setDynamicFormClass( dynaClass );
+      return dynaBean;
+   }
+
    /**
     * Produce a string from a Number.
     *
@@ -298,7 +290,7 @@ public final class JSONUtils
       if( n == null ){
          throw new JSONException( "Null pointer" );
       }
-      JSONUtils.testValidity( n );
+      testValidity( n );
 
       // Shave off trailing zeros and decimal point, if possible.
 
@@ -328,7 +320,7 @@ public final class JSONUtils
     */
    public static String quote( String string )
    {
-      if( JSONUtils.isFunction( string ) ){
+      if( isFunction( string ) ){
          return string;
       }
       if( string == null || string.length() == 0 ){
@@ -407,70 +399,6 @@ public final class JSONUtils
             }
          }
       }
-   }
-
-   /**
-    * Creates a JSONObject, JSONArray or a JSONNull from a JSONString.
-    *
-    * @throws JSONException if the string is not a valid JSON string
-    */
-   public static JSON toJSON( JSONString string )
-   {
-      if( string == null ){
-         return JSONNull.getInstance();
-      }
-      return toJSON( string.toJSONString() );
-
-   }
-
-   /**
-    * Creates a JSONObject, JSONArray or a JSONNull from object.
-    *
-    * @throws JSONException is the object can not be converted
-    */
-   public static JSON toJSON( Object object )
-   {
-      JSON json = null;
-      if( object == null ){
-         json = JSONNull.getInstance();
-      }else if( isArray( object ) ){
-         json = JSONArray.fromObject( object );
-      }else{
-         try{
-            json = JSONObject.fromObject( object );
-         }
-         catch( JSONException e ){
-            if( object instanceof JSONTokener ){
-               ((JSONTokener) object).reset();
-            }
-            json = JSONArray.fromObject( object );
-         }
-      }
-
-      return json;
-   }
-
-   /**
-    * Creates a JSONObject, JSONArray or a JSONNull from a JSONString.
-    *
-    * @throws JSONException if the string is not a valid JSON string
-    */
-   public static JSON toJSON( String string )
-   {
-      JSON json = null;
-      if( string == null ){
-         json = JSONNull.getInstance();
-      }else if( string.startsWith( "[" ) ){
-         json = JSONArray.fromString( string );
-      }else if( string.startsWith( "{" ) ){
-         json = JSONObject.fromString( string );
-      }else if( "null".equalsIgnoreCase( string ) ){
-         json = JSONNull.getInstance();
-      }else{
-         throw new JSONException( "Invalid JSON String" );
-      }
-
-      return json;
    }
 
    /**
@@ -592,24 +520,6 @@ public final class JSONUtils
          return ((JSONArray) value).toString( indentFactor, indent );
       }
       return quote( value.toString() );
-   }
-
-   private static void processArrayDimensions( JSONArray jsonArray, List dims, int index )
-   {
-      if( dims.size() <= index ){
-         dims.add( new Integer( jsonArray.length() ) );
-      }else{
-         int i = ((Integer) dims.get( index )).intValue();
-         if( jsonArray.length() > i ){
-            dims.set( index, new Integer( jsonArray.length() ) );
-         }
-      }
-      for( Iterator i = jsonArray.iterator(); i.hasNext(); ){
-         Object item = i.next();
-         if( item instanceof JSONArray ){
-            processArrayDimensions( (JSONArray) item, dims, index + 1 );
-         }
-      }
    }
 
    private JSONUtils()

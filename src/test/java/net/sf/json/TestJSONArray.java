@@ -288,35 +288,35 @@ public class TestJSONArray extends TestCase
 
    public void testGetDimensions_empty_array()
    {
-      int[] dims = JSONUtils.getDimensions( new JSONArray() );
+      int[] dims = JSONArray.getDimensions( new JSONArray() );
       assertEquals( 1, dims.length );
       assertEquals( 0, dims[0] );
    }
 
    public void testGetDimensions_null_array()
    {
-      int[] dims = JSONUtils.getDimensions( null );
+      int[] dims = JSONArray.getDimensions( null );
       assertEquals( 1, dims.length );
       assertEquals( 0, dims[0] );
    }
 
    public void testGetDimensions_one_dimension()
    {
-      int[] dims = JSONUtils.getDimensions( new JSONArray( "[1,2,3]" ) );
+      int[] dims = JSONArray.getDimensions( new JSONArray( "[1,2,3]" ) );
       assertEquals( 1, dims.length );
       assertEquals( 3, dims[0] );
    }
 
    public void testGetDimensions_pyramid()
    {
-      int[] dims = JSONUtils.getDimensions( new JSONArray( "[1,[2,[3,[4]]]]" ) );
+      int[] dims = JSONArray.getDimensions( new JSONArray( "[1,[2,[3,[4]]]]" ) );
       assertEquals( 4, dims.length );
       assertEquals( 2, dims[0] );
       assertEquals( 2, dims[1] );
       assertEquals( 2, dims[2] );
       assertEquals( 1, dims[3] );
 
-      dims = JSONUtils.getDimensions( new JSONArray( "[[[[1],2],3],4]" ) );
+      dims = JSONArray.getDimensions( new JSONArray( "[[[[1],2],3],4]" ) );
       assertEquals( 4, dims.length );
       assertEquals( 2, dims[0] );
       assertEquals( 2, dims[1] );
@@ -326,17 +326,17 @@ public class TestJSONArray extends TestCase
 
    public void testGetDimensions_two_dimension()
    {
-      int[] dims = JSONUtils.getDimensions( new JSONArray( "[[1,2,3],[4,5,6]]" ) );
+      int[] dims = JSONArray.getDimensions( new JSONArray( "[[1,2,3],[4,5,6]]" ) );
       assertEquals( 2, dims.length );
       assertEquals( 2, dims[0] );
       assertEquals( 3, dims[1] );
 
-      dims = JSONUtils.getDimensions( new JSONArray( "[[1,2],[4,5,6]]" ) );
+      dims = JSONArray.getDimensions( new JSONArray( "[[1,2],[4,5,6]]" ) );
       assertEquals( 2, dims.length );
       assertEquals( 2, dims[0] );
       assertEquals( 3, dims[1] );
 
-      dims = JSONUtils.getDimensions( new JSONArray( "[[1,2,3],[4,5]]" ) );
+      dims = JSONArray.getDimensions( new JSONArray( "[[1,2,3],[4,5]]" ) );
       assertEquals( 2, dims.length );
       assertEquals( 2, dims[0] );
       assertEquals( 3, dims[1] );
@@ -493,7 +493,7 @@ public class TestJSONArray extends TestCase
    {
       JSONArray array = new JSONArray();
       int[] ints = { 1, 2 };
-      array.put( 1,  ints );
+      array.put( 1, ints );
       Assertions.assertEquals( new JSONArray( ints ), array.getJSONArray( 1 ) );
    }
 
@@ -509,7 +509,7 @@ public class TestJSONArray extends TestCase
    public void testPun_index_1_Boolean()
    {
       JSONArray array = new JSONArray();
-      array.put( 1,  Boolean.TRUE );
+      array.put( 1, Boolean.TRUE );
       Assertions.assertTrue( array.getBoolean( 1 ) );
    }
 
@@ -547,7 +547,7 @@ public class TestJSONArray extends TestCase
    public void testPun_index_1_JSON()
    {
       JSONArray array = new JSONArray();
-      array.put( 1,  JSONNull.getInstance() );
+      array.put( 1, JSONNull.getInstance() );
       Assertions.assertEquals( JSONNull.getInstance(), array.get( 1 ) );
    }
 
@@ -555,7 +555,7 @@ public class TestJSONArray extends TestCase
    {
       JSONArray array = new JSONArray();
       JSONFunction f = new JSONFunction( "return this;" );
-      array.put( 1,  f );
+      array.put( 1, f );
       Assertions.assertEquals( f, (JSONFunction) array.get( 1 ) );
    }
 
@@ -564,7 +564,7 @@ public class TestJSONArray extends TestCase
       JSONArray array = new JSONArray();
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
       bean.setValue( "json,json" );
-      array.put( 1,  bean );
+      array.put( 1, bean );
       Assertions.assertEquals( JSONArray.fromJSONString( bean ), array.getJSONArray( 1 ) );
    }
 
@@ -572,7 +572,7 @@ public class TestJSONArray extends TestCase
    {
       JSONArray array = new JSONArray();
       JSONTokener tok = new JSONTokener( "[1,2]" );
-      array.put( 1,  tok );
+      array.put( 1, tok );
       tok.reset();
       Assertions.assertEquals( new JSONArray( tok ), array.getJSONArray( 1 ) );
    }
@@ -600,35 +600,35 @@ public class TestJSONArray extends TestCase
    public void testPun_index_1_Number()
    {
       JSONArray array = new JSONArray();
-      array.put( 1,  new Double( 2 ) );
+      array.put( 1, new Double( 2 ) );
       Assertions.assertEquals( new Double( 2 ).doubleValue(), array.getDouble( 1 ), 1d );
    }
 
    public void testPun_index_1_Object()
    {
       JSONArray array = new JSONArray();
-      array.put( 1,  new BeanA() );
+      array.put( 1, new BeanA() );
       Assertions.assertEquals( JSONObject.fromBean( new BeanA() ), array.getJSONObject( 1 ) );
    }
 
    public void testPun_index_1_String()
    {
       JSONArray array = new JSONArray();
-      array.put( 1,  "json" );
+      array.put( 1, "json" );
       Assertions.assertEquals( "json", array.getString( 1 ) );
    }
 
    public void testPun_index_1_String_JSON()
    {
       JSONArray array = new JSONArray();
-      array.put( 1,  "[]" );
+      array.put( 1, "[]" );
       Assertions.assertEquals( new JSONArray().toString(), array.getString( 1 ) );
    }
 
    public void testPun_index_1_String_null()
    {
       JSONArray array = new JSONArray();
-      array.put( 1,  (String) null );
+      array.put( 1, (String) null );
       Assertions.assertEquals( "", array.getString( 1 ) );
    }
 
@@ -639,6 +639,7 @@ public class TestJSONArray extends TestCase
       array.put( ints );
       Assertions.assertEquals( new JSONArray( ints ), array.getJSONArray( 0 ) );
    }
+
    public void testPut_boolean()
    {
       JSONArray jsonArray = new JSONArray();
@@ -676,85 +677,86 @@ public class TestJSONArray extends TestCase
 
    public void testPut_index_0_Array()
    {
-      JSONArray array = new JSONArray("[null,null]");;
+      JSONArray array = new JSONArray( "[null,null]" );
+      ;
       int[] ints = { 0, 2 };
-      array.put( 0,  ints );
+      array.put( 0, ints );
       Assertions.assertEquals( new JSONArray( ints ), array.getJSONArray( 0 ) );
    }
 
    public void testPut_index_0_Boolean()
    {
-      JSONArray array = new JSONArray("[null,null]");;
-      array.put( 0,  Boolean.TRUE );
+      JSONArray array = new JSONArray( "[null,null]" );
+      ;
+      array.put( 0, Boolean.TRUE );
       Assertions.assertTrue( array.getBoolean( 0 ) );
    }
 
    public void testPut_index_0_JSON()
    {
-      JSONArray array = new JSONArray("[null,null]");
-      array.put( 0,  JSONNull.getInstance() );
+      JSONArray array = new JSONArray( "[null,null]" );
+      array.put( 0, JSONNull.getInstance() );
       Assertions.assertEquals( JSONNull.getInstance(), array.get( 0 ) );
    }
 
    public void testPut_index_0_JSONFunction()
    {
-      JSONArray array = new JSONArray("[null,null]");
+      JSONArray array = new JSONArray( "[null,null]" );
       JSONFunction f = new JSONFunction( "return this;" );
-      array.put( 0,  f );
+      array.put( 0, f );
       Assertions.assertEquals( f, (JSONFunction) array.get( 0 ) );
    }
 
    public void testPut_index_0_JSONString()
    {
-      JSONArray array = new JSONArray("[null,null]");
+      JSONArray array = new JSONArray( "[null,null]" );
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
       bean.setValue( "json,json" );
-      array.put( 0,  bean );
+      array.put( 0, bean );
       Assertions.assertEquals( JSONArray.fromJSONString( bean ), array.getJSONArray( 0 ) );
    }
 
    public void testPut_index_0_JSONTokener()
    {
-      JSONArray array = new JSONArray("[null,null]");
+      JSONArray array = new JSONArray( "[null,null]" );
       JSONTokener tok = new JSONTokener( "[0,2]" );
-      array.put( 0,  tok );
+      array.put( 0, tok );
       tok.reset();
       Assertions.assertEquals( new JSONArray( tok ), array.getJSONArray( 0 ) );
    }
 
    public void testPut_index_0_Number()
    {
-      JSONArray array = new JSONArray("[null,null]");
-      array.put( 0,  new Double( 2 ) );
+      JSONArray array = new JSONArray( "[null,null]" );
+      array.put( 0, new Double( 2 ) );
       Assertions.assertEquals( new Double( 2 ).doubleValue(), array.getDouble( 0 ), 0d );
    }
 
-
    public void testPut_index_0_Object()
    {
-      JSONArray array = new JSONArray("[null,null]");
-      array.put( 0,  new BeanA() );
+      JSONArray array = new JSONArray( "[null,null]" );
+      array.put( 0, new BeanA() );
       Assertions.assertEquals( JSONObject.fromBean( new BeanA() ), array.getJSONObject( 0 ) );
    }
 
    public void testPut_index_0_String()
    {
-      JSONArray array = new JSONArray("[null,null]");
-      array.put( 0,  "json" );
+      JSONArray array = new JSONArray( "[null,null]" );
+      array.put( 0, "json" );
       Assertions.assertEquals( "json", array.getString( 0 ) );
    }
 
    public void testPut_index_0_String_JSON()
    {
-      JSONArray array = new JSONArray("[null,null]");
-      array.put( 0,  "[]" );
+      JSONArray array = new JSONArray( "[null,null]" );
+      array.put( 0, "[]" );
       Assertions.assertEquals( new JSONArray().toString(), array.getString( 0 ) );
    }
 
    public void testPut_index_0_String_null()
    {
-      JSONArray array = new JSONArray("[null,null]");
-      array.put( 0,  (String) null );
+      JSONArray array = new JSONArray( "[null,null]" );
+      array.put( 0, (String) null );
       Assertions.assertEquals( "", array.getString( 0 ) );
    }
 

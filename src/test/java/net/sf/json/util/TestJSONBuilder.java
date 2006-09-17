@@ -21,7 +21,6 @@ import java.io.StringWriter;
 import junit.framework.TestCase;
 import net.sf.json.JSONFunction;
 import net.sf.json.JSONObject;
-import net.sf.json.JSONUtils;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
