@@ -7,7 +7,7 @@
 		</author>
 	</properties>
 	<body>
-      <release version="N/A" date="2006-09-16"
+      <release version="N/A" date="2006-09-25"
 			desc="Current working version">
 			<action dev="Andres Almiray" type="add">
 				Added new JSONSerializer utility class.
@@ -25,6 +25,9 @@
 			</action>
 			<action dev="Andres Almiray" type="update">
 				Updated front page and howto documentation.
+			</action>
+			<action dev="Andres Almiray" type="fix" issue="1564992">
+			   Multiple nested JSONException. 
 			</action>
 			<action dev="Andres Almiray" type="fix" issue="1553617">
 			   JSONObject.toBean() generates a ClassCastException.
