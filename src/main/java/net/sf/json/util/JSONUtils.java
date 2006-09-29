@@ -87,7 +87,7 @@ public final class JSONUtils
       }
       return s;
    }
-   
+
    /**
     * Returns the params of a function literal.
     */
@@ -270,7 +270,8 @@ public final class JSONUtils
                   || (string.startsWith( "[" ) && string.endsWith( "]" )) || (string.startsWith( "{" ) && string.endsWith( "}" )));
    }
 
-   public static JSONDynaBean newDynaBean( JSONObject jsonObject ) throws Exception{
+   public static JSONDynaBean newDynaBean( JSONObject jsonObject ) throws Exception
+   {
       Map props = getProperties( jsonObject );
       JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, props );
       JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
@@ -427,6 +428,30 @@ public final class JSONUtils
          result[i] = new Character( array[i] );
       }
       return result;
+   }
+
+   /**
+    * Transforms a Number into a valid javascript number.<br>
+    * Float gets promoted to Double.<br>
+    * Byte and Short get promoted to Integer.<br>
+    * Long gets downgraded to Integer if possible.<br>
+    */
+   public static Number transformNumber( Number input )
+   {
+      if( input instanceof Float ){
+         return new Double( input.doubleValue() );
+      }else if( input instanceof Short ){
+         return new Integer( input.intValue() );
+      }else if( input instanceof Byte ){
+         return new Integer( input.intValue() );
+      }else if( input instanceof Long ){
+         Long max = new Long( Integer.MAX_VALUE );
+         if( input.longValue() <= max.longValue() ){
+            return new Integer( input.intValue() );
+         }
+      }
+
+      return input;
    }
 
    /**

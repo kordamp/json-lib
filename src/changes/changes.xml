@@ -7,7 +7,7 @@
 		</author>
 	</properties>
 	<body>
-      <release version="N/A" date="2006-09-25"
+      <release version="N/A" date="2006-09-29"
 			desc="Current working version">
 			<action dev="Andres Almiray" type="add">
 				Added new JSONSerializer utility class.
@@ -18,6 +18,14 @@
 			</action>
 			<action dev="Andres Almiray" type="add">
 				Added support for JSONString in builders and value setters. FR 1557286.
+			</action>
+			<action dev="Andres Almiray" type="update">
+            JSONObject and JSONarray will convert Byte/Short/Long to Integer,
+            Float to Double when needed.
+			</action>
+			<action dev="Andres Almiray" type="update">
+            JSONArray.fromObject now allows creation of a single element 
+            array (all valid types).
 			</action>
 			<action dev="Andres Almiray" type="update">
 				Cleaned up the core API, moved mixed purpouse classes 

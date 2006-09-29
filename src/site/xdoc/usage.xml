@@ -130,7 +130,7 @@
 		 class conversion. The only possible solution is to postprocess the collection transforming each
 		 DynaBean into an specific bean.
 		 </p>
-		 <p>To ease the postprocessing scenarios, Json-lib has a Morpher capable of
+		 <p>To ease the postprocessing scenarios, Json-lib provides a Morpher capable of
 		 transforming a DynaBean into an specific bean,
        <a href="apidocs/net/sf/json/util/DynaBeanToBeanMorpher.html"><code>DynaBeanToBeanMorpher</code></a><br/>
        Example:</p>

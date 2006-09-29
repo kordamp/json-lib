@@ -82,8 +82,17 @@ public class Assertions extends ArrayAssertions
             assertEquals( header + "arrays first differed at element " + i + ";", expected, actual );
          }else{
             if( o1 instanceof String && o2 instanceof JSONFunction ){
-               assertEquals( header + "lists first differed at element [" + i + "];", (String) o1,
+               assertEquals( header + "arrays first differed at element [" + i + "];", (String) o1,
                      (JSONFunction) o2 );
+            }else if( o1 instanceof JSONFunction && o2 instanceof String ){
+               assertEquals( header + "arrays first differed at element [" + i + "];", (JSONFunction) o1,
+                     (String) o2 );
+            }else if( o1 instanceof JSONObject && o2 instanceof JSONObject ){
+               assertEquals( header + "arrays first differed at element [" + i + "];",
+                     (JSONObject) o1, (JSONObject) o2 );
+            }else if( o1 instanceof JSONFunction && o2 instanceof JSONFunction ){
+               assertEquals( header + "arrays first differed at element [" + i + "];",
+                     (JSONFunction) o1, (JSONFunction) o2 );
             }else{
                assertEquals( header + "arrays first differed at element [" + i + "];", o1, o2 );
             }
@@ -92,6 +101,11 @@ public class Assertions extends ArrayAssertions
    }
 
    public static void assertEquals( String expected, JSONFunction actual )
+   {
+      assertEquals( null, expected, actual );
+   }
+
+   public static void assertEquals( JSONFunction expected, String actual )
    {
       assertEquals( null, expected, actual );
    }
@@ -168,6 +182,15 @@ public class Assertions extends ArrayAssertions
             if( o1 instanceof String && o2 instanceof JSONFunction ){
                assertEquals( header + "lists first differed at element [" + i + "];", (String) o1,
                      (JSONFunction) o2 );
+            }else if( o1 instanceof JSONFunction && o2 instanceof String ){
+               assertEquals( header + "lists first differed at element [" + i + "];", (JSONFunction) o1,
+                     (String) o2 );
+            }else if( o1 instanceof JSONObject && o2 instanceof JSONObject ){
+               assertEquals( header + "lists first differed at element [" + i + "];",
+                     (JSONObject) o1, (JSONObject) o2 );
+            }else if( o1 instanceof JSONFunction && o2 instanceof JSONFunction ){
+               assertEquals( header + "lists first differed at element [" + i + "];",
+                     (JSONFunction) o1, (JSONFunction) o2 );
             }else{
                assertEquals( header + "lists first differed at element [" + i + "];", o1, o2 );
             }
@@ -185,5 +208,17 @@ public class Assertions extends ArrayAssertions
          fail( header + "actual function was null" );
       }
       assertEquals( header, expected, actual.toString() );
+   }
+
+   public static void assertEquals( String message, JSONFunction expected, String actual )
+   {
+      String header = message == null ? "" : message + ": ";
+      if( expected == null ){
+         fail( header + "expected string was null" );
+      }
+      if( actual == null ){
+         fail( header + "actual function was null" );
+      }
+      assertEquals( header, expected.toString(), actual );
    }
 }

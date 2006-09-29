@@ -23,12 +23,12 @@ import net.sf.json.util.JSONUtils;
 
 /**
  * Transforms java objects into JSON and back.<br>
- * Trnasformation from java to JSON is pretty straightforward, but the other way
+ * Transformation from java to JSON is pretty straightforward, but the other way
  * around needs certain configuration, otherwise the java objects produced will
  * be DynaBeans and Lists, because the JSON notation does not carry any
  * information on java classes.<br>
  * Use the provided property setters before calling <code>toJava()</code>.
- * 
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JSONSerializer
@@ -38,7 +38,7 @@ public class JSONSerializer
 
    /**
     * Creates a JSONObject, JSONArray or a JSONNull from object.
-    * 
+    *
     * @throws JSONException is the object can not be converted
     */
    public static JSON toJSON( Object object )
@@ -69,7 +69,7 @@ public class JSONSerializer
 
    /**
     * Creates a JSONObject, JSONArray or a JSONNull from a JSONString.
-    * 
+    *
     * @throws JSONException if the string is not a valid JSON string
     */
    private static JSON toJSON( JSONString string )
@@ -79,7 +79,7 @@ public class JSONSerializer
 
    /**
     * Creates a JSONObject, JSONArray or a JSONNull from a JSONString.
-    * 
+    *
     * @throws JSONException if the string is not a valid JSON string
     */
    private static JSON toJSON( String string )
@@ -114,7 +114,7 @@ public class JSONSerializer
 
    /**
     * Constructs a new JSONSerializer with specific values for conversion.
-    * 
+    *
     * @param rootClass
     * @param classMap
     * @param arrayMode
@@ -129,7 +129,7 @@ public class JSONSerializer
 
    /**
     * Returns the current array mode conversion
-    * 
+    *
     * @return either MODE_OBJECT_ARRAY or MODE_LIST
     */
    public synchronized int getArrayMode()
@@ -139,7 +139,7 @@ public class JSONSerializer
 
    /**
     * Returns the current attribute/class Map
-    * 
+    *
     * @return
     */
    public synchronized Map getClassMap()
@@ -149,7 +149,7 @@ public class JSONSerializer
 
    /**
     * Returns the current root Class.
-    * 
+    *
     * @return
     */
    public synchronized Class getRootClass()
@@ -174,7 +174,7 @@ public class JSONSerializer
     * Sets the current array mode for conversion.<br>
     * If the value is not MODE_LIST neither MODE_OBJECT_ARRAY, then MODE_LIST
     * will be used.
-    * 
+    *
     * @param arrayMode
     */
    public synchronized void setArrayMode( int arrayMode )
@@ -188,7 +188,7 @@ public class JSONSerializer
 
    /**
     * Sets the current attribute/Class Map
-    * 
+    *
     * @param classMap
     */
    public synchronized void setClassMap( Map classMap )
@@ -198,7 +198,7 @@ public class JSONSerializer
 
    /**
     * Sets the current root Class
-    * 
+    *
     * @param rootClass
     */
    public synchronized void setRootClass( Class rootClass )
@@ -210,7 +210,7 @@ public class JSONSerializer
     * Transform a JSON value to a java object.<br>
     * Depending on the configured values for conversion this will return a
     * DynaBean, a bean, a List, or and array.
-    * 
+    *
     * @param json
     * @return
     */

@@ -35,7 +35,7 @@ public class JSONFunction implements Serializable
    /** constant array for empty parameters */
    private static final String[] EMPTY_PARAM_ARRAY = new String[0];
 
-   private static final long serialVersionUID = 3669044966588851732L;
+   private static final long serialVersionUID = 5550817154436696969L;
 
    /**
     * Constructs a JSONFunction from a text representation
@@ -114,6 +114,10 @@ public class JSONFunction implements Serializable
       if( params != null ){
          this.params = new String[params.length];
          System.arraycopy( params, 0, this.params, 0, params.length );
+         // remove empty spaces
+         for( int i = 0; i < params.length; i++ ){
+            this.params[i] = this.params[i].trim();
+         }
       }else{
          this.params = EMPTY_PARAM_ARRAY;
       }

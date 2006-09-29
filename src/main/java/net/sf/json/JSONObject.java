@@ -143,7 +143,7 @@ public final class JSONObject implements JSON
       }else if( bean instanceof String ){
          return fromString( (String) bean );
       }else if( JSONUtils.isNumber( bean ) || JSONUtils.isBoolean( bean )
-            || bean instanceof Character || bean.getClass() == Character.TYPE ){
+            || JSONUtils.isString( bean ) ){
          return new JSONObject();
       }else if( JSONUtils.isArray( bean ) ){
          throw new IllegalArgumentException( "'bean' is an array. Use JSONArray instead" );
@@ -238,7 +238,7 @@ public final class JSONObject implements JSON
       }else if( object instanceof String ){
          return fromString( (String) object );
       }else if( JSONUtils.isNumber( object ) || JSONUtils.isBoolean( object )
-            || object instanceof Character || object.getClass() == Character.TYPE ){
+            || JSONUtils.isString( object ) ){
          return new JSONObject();
       }else if( JSONUtils.isArray( object ) ){
          throw new IllegalArgumentException( "'bean' is an array. Use JSONArray instead" );
@@ -467,7 +467,7 @@ public final class JSONObject implements JSON
       if( bean instanceof Map ){
          ((Map) bean).put( key, value );
       }else if( bean instanceof JSONObject ){
-         ((JSONObject) bean).put( key, value );
+         ((JSONObject) bean).set( key, value );
       }else{
          PropertyUtils.setProperty( bean, key, value );
       }
@@ -644,7 +644,7 @@ public final class JSONObject implements JSON
          }
          Object v = x.nextValue();
          if( !JSONUtils.isFunctionHeader( v ) ){
-            this.properties.put( key, v );
+            set( key, v );
          }else{
             // read params if any
             String params = JSONUtils.getFunctionParams( (String) v );
@@ -674,8 +674,7 @@ public final class JSONObject implements JSON
             String text = sb.toString();
             text = text.substring( 1, text.length() - 1 )
                   .trim();
-            this.properties.put( key, new JSONFunction( (params != null) ? params.split( "," )
-                  : null, text ) );
+            set( key, new JSONFunction( (params != null) ? params.split( "," ) : null, text ) );
          }
 
          /*
@@ -721,28 +720,7 @@ public final class JSONObject implements JSON
          Object k = entry.getKey();
          String key = (k instanceof String) ? (String) k : String.valueOf( k );
          Object value = entry.getValue();
-
-         if( JSONUtils.isFunction( value ) ){
-            this.properties.put( key, value );
-         }else if( value instanceof JSONString ){
-            this.properties.put( key, JSONSerializer.toJSON( (JSONString) value ) );
-         }else if( JSONUtils.isArray( value ) ){
-            this.properties.put( key, JSONArray.fromObject( value ) );
-         }else if( value instanceof JSON ){
-            this.properties.put( key, value );
-         }else if( JSONUtils.isString( value ) ){
-            String str = String.valueOf( value );
-            if( JSONUtils.mayBeJSON( str ) ){
-               this.properties.put( key, JSONSerializer.toJSON( str ) );
-            }else{
-               this.properties.put( key, str );
-            }
-         }else if( JSONUtils.isNumber( value ) || JSONUtils.isBoolean( value ) ){
-            JSONUtils.testValidity( value );
-            this.properties.put( key, value );
-         }else{
-            this.properties.put( key, fromObject( value ) );
-         }
+         set( key, value );
       }
    }
 
@@ -1090,7 +1068,7 @@ public final class JSONObject implements JSON
       while( keys.hasNext() ){
          ja.put( keys.next() );
       }
-      return ja.length() == 0 ? null : ja;
+      return ja;
    }
 
    /**
@@ -1412,28 +1390,7 @@ public final class JSONObject implements JSON
          throw new JSONException( "Null key." );
       }
       if( value != null ){
-         JSONUtils.testValidity( value );
-         if( JSONUtils.isFunction( value ) ){
-            this.properties.put( key, value );
-         }else if( value instanceof JSONString ){
-            this.properties.put( key, JSONSerializer.toJSON( (JSONString) value ) );
-         }else if( JSONUtils.isArray( value ) ){
-            this.properties.put( key, JSONArray.fromObject( value ) );
-         }else if( value instanceof JSON ){
-            this.properties.put( key, value );
-         }else if( JSONUtils.isString( value ) ){
-            String str = String.valueOf( value );
-            if( JSONUtils.mayBeJSON( str ) ){
-               this.properties.put( key, JSONSerializer.toJSON( str ) );
-            }else{
-               this.properties.put( key, str );
-            }
-         }else if( JSONUtils.isNumber( value ) || JSONUtils.isBoolean( value ) ){
-            JSONUtils.testValidity( value );
-            this.properties.put( key, value );
-         }else{
-            this.properties.put( key, fromObject( value ) );
-         }
+         set( key, value );
       }else{
          remove( key );
       }
@@ -1471,6 +1428,50 @@ public final class JSONObject implements JSON
    {
       verifyIsNull();
       return this.properties.remove( key );
+   }
+
+   /**
+    * Put a key/value pair in the JSONObject.
+    *
+    * @param key A key string.
+    * @param value An object which is the value. It should be of one of these
+    *        types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
+    *        String, or the JSONNull object.
+    * @return this.
+    * @throws JSONException If the value is non-finite number or if the key is
+    *         null.
+    */
+   public JSONObject set( String key, Object value )
+   {
+      verifyIsNull();
+      if( key == null ){
+         throw new JSONException( "Null key." );
+      }
+      if( JSONUtils.isFunction( value ) ){
+         this.properties.put( key, value );
+      }else if( value instanceof JSONString ){
+         this.properties.put( key, JSONSerializer.toJSON( (JSONString) value ) );
+      }else if( JSONUtils.isArray( value ) ){
+         this.properties.put( key, JSONArray.fromObject( value ) );
+      }else if( value instanceof JSON ){
+         this.properties.put( key, value );
+      }else if( JSONUtils.isString( value ) ){
+         String str = String.valueOf( value );
+         if( JSONUtils.mayBeJSON( str ) ){
+            this.properties.put( key, JSONSerializer.toJSON( str ) );
+         }else{
+            this.properties.put( key, str );
+         }
+      }else if( JSONUtils.isNumber( value ) ){
+         JSONUtils.testValidity( value );
+         this.properties.put( key, JSONUtils.transformNumber( (Number) value ) );
+      }else if( JSONUtils.isBoolean( value ) ){
+         this.properties.put( key, value );
+      }else{
+         this.properties.put( key, fromObject( value ) );
+      }
+
+      return this;
    }
 
    /**

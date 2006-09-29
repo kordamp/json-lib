@@ -12,7 +12,7 @@
 	<url>http://json-lib.sourceforge.net</url>
 
 	<description>
-		Java library for transforming beans, maps and XML to JSON.
+		Java library for transforming beans, maps, collections, java arrays and XML to JSON.
 	</description>
 
 	<inceptionYear>2006</inceptionYear>

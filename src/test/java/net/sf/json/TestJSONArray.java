@@ -223,10 +223,52 @@ public class TestJSONArray extends TestCase
             "[function(a){ return a; },[function(b){ return b; }]]" );
    }
 
+   public void testFromObject_Boolean()
+   {
+      JSONArray expected = new JSONArray( "[true]" );
+      JSONArray actual = JSONArray.fromObject( Boolean.TRUE );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testFromObject_Byte()
+   {
+      JSONArray expected = new JSONArray( "[1]" );
+      JSONArray actual = JSONArray.fromObject( new Byte( (byte) 1 ) );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testFromObject_Double()
+   {
+      JSONArray expected = new JSONArray( "[1.0]" );
+      JSONArray actual = JSONArray.fromObject( new Double( 1d ) );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testFromObject_Float()
+   {
+      JSONArray expected = new JSONArray( "[1.0]" );
+      JSONArray actual = JSONArray.fromObject( new Float( 1f ) );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testFromObject_Integer()
+   {
+      JSONArray expected = new JSONArray( "[1]" );
+      JSONArray actual = JSONArray.fromObject( new Integer( 1 ) );
+      Assertions.assertEquals( expected, actual );
+   }
+
    public void testFromObject_JSONArray()
    {
       JSONArray expected = new JSONArray( "[1,2]" );
       JSONArray actual = JSONArray.fromObject( new JSONArray( "[1,2]" ) );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testFromObject_JSONFunction()
+   {
+      JSONArray expected = new JSONArray( "[function(a){ return a; }]" );
+      JSONArray actual = JSONArray.fromObject( new JSONFunction( new String[] { "a" }, "return a;" ) );
       Assertions.assertEquals( expected, actual );
    }
 
@@ -239,15 +281,25 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testFromObject_unsupported_Object()
+   public void testFromObject_Long()
    {
-      try{
-         JSONArray.fromObject( new HashMap() );
-         fail( "Expected an IllegalArgumentException" );
-      }
-      catch( IllegalArgumentException expected ){
-         // OK
-      }
+      JSONArray expected = new JSONArray( "[1]" );
+      JSONArray actual = JSONArray.fromObject( new Long( 1L ) );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testFromObject_Map()
+   {
+      JSONArray expected = new JSONArray( "[{}]" );
+      JSONArray actual = JSONArray.fromObject( new HashMap() );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testFromObject_Short()
+   {
+      JSONArray expected = new JSONArray( "[1]" );
+      JSONArray actual = JSONArray.fromObject( new Short( (short) 1 ) );
+      Assertions.assertEquals( expected, actual );
    }
 
    public void testGet_exception()
@@ -919,8 +971,9 @@ public class TestJSONArray extends TestCase
 
    public void testToArray_Byte()
    {
-      Byte[] expected = new Byte[] { new Byte( (byte) 1 ), new Byte( (byte) 2 ) };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      Integer[] expected = new Integer[] { new Integer( 1 ), new Integer( 2 ) };
+      Byte[] bytes = new Byte[] { new Byte( (byte) 1 ), new Byte( (byte) 2 ) };
+      JSONArray jsonArray = JSONArray.fromObject( bytes );
       Object[] actual = JSONArray.toArray( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
@@ -951,8 +1004,9 @@ public class TestJSONArray extends TestCase
 
    public void testToArray_Character()
    {
-      Character[] expected = new Character[] { new Character( 'A' ), new Character( 'B' ) };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      String[] expected = { "A", "B" };
+      Character[] chars = new Character[] { new Character( 'A' ), new Character( 'B' ) };
+      JSONArray jsonArray = JSONArray.fromObject( chars );
       Object[] actual = JSONArray.toArray( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
@@ -999,8 +1053,9 @@ public class TestJSONArray extends TestCase
 
    public void testToArray_Float()
    {
-      Float[] expected = new Float[] { new Float( 1f ), new Float( 2f ) };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      Double[] expected = new Double[] { new Double( 1d ), new Double( 2d ) };
+      Float[] floats = new Float[] { new Float( 1f ), new Float( 2f ) };
+      JSONArray jsonArray = JSONArray.fromObject( floats );
       Object[] actual = JSONArray.toArray( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
@@ -1047,8 +1102,9 @@ public class TestJSONArray extends TestCase
 
    public void testToArray_Long()
    {
-      Long[] expected = new Long[] { new Long( 1 ), new Long( 2 ) };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      Integer[] expected = new Integer[] { new Integer( 1 ), new Integer( 2 ) };
+      Long[] longs = new Long[] { new Long( 1L ), new Long( 2L ) };
+      JSONArray jsonArray = JSONArray.fromObject( longs );
       Object[] actual = JSONArray.toArray( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
@@ -1056,6 +1112,15 @@ public class TestJSONArray extends TestCase
    public void testToArray_long_multi()
    {
       long[][] expected = new long[][] { { 1, 2, 3 }, { 4, 5, 6 } };
+      JSONArray jsonArray = JSONArray.fromObject( expected );
+      Object[] actual = JSONArray.toArray( jsonArray );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testToArray_Long2()
+   {
+      Long[] expected = new Long[] { new Long( Integer.MAX_VALUE + 1L ),
+            new Long( Integer.MAX_VALUE + 2L ) };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       Assertions.assertEquals( expected, actual );
@@ -1079,8 +1144,9 @@ public class TestJSONArray extends TestCase
 
    public void testToArray_Short()
    {
-      Short[] expected = new Short[] { new Short( (short) 1 ), new Short( (short) 2 ) };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      Integer[] expected = new Integer[] { new Integer( 1 ), new Integer( 2 ) };
+      Short[] shorts = new Short[] { new Short( (short) 1 ), new Short( (short) 2 ) };
+      JSONArray jsonArray = JSONArray.fromObject( shorts );
       Object[] actual = JSONArray.toArray( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
@@ -1148,13 +1214,12 @@ public class TestJSONArray extends TestCase
    public void testToList_Byte()
    {
       List expected = new ArrayList();
-      expected.add( new Byte( (byte) 1 ) );
-      expected.add( new Byte( (byte) 2 ) );
-      expected.add( new Byte( (byte) 3 ) );
-      expected.add( new Byte( (byte) 4 ) );
-      expected.add( new Byte( (byte) 5 ) );
-      expected.add( new Byte( (byte) 6 ) );
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      expected.add( new Integer( 1 ) );
+      expected.add( new Integer( 2 ) );
+      List bytes = new ArrayList();
+      bytes.add( new Byte( (byte) 1 ) );
+      bytes.add( new Byte( (byte) 2 ) );
+      JSONArray jsonArray = JSONArray.fromObject( bytes );
       List actual = JSONArray.toList( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
@@ -1162,9 +1227,12 @@ public class TestJSONArray extends TestCase
    public void testToList_Character()
    {
       List expected = new ArrayList();
-      expected.add( new Character( 'A' ) );
-      expected.add( new Character( 'B' ) );
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      expected.add( "A" );
+      expected.add( "B" );
+      List chars = new ArrayList();
+      chars.add( new Character( 'A' ) );
+      chars.add( new Character( 'B' ) );
+      JSONArray jsonArray = JSONArray.fromObject( chars );
       List actual = JSONArray.toList( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
@@ -1174,10 +1242,6 @@ public class TestJSONArray extends TestCase
       List expected = new ArrayList();
       expected.add( new Double( 1d ) );
       expected.add( new Double( 2d ) );
-      expected.add( new Double( 3d ) );
-      expected.add( new Double( 4d ) );
-      expected.add( new Double( 5d ) );
-      expected.add( new Double( 6d ) );
       JSONArray jsonArray = JSONArray.fromObject( expected );
       List actual = JSONArray.toList( jsonArray );
       Assertions.assertEquals( expected, actual );
@@ -1195,13 +1259,12 @@ public class TestJSONArray extends TestCase
    public void testToList_Float()
    {
       List expected = new ArrayList();
-      expected.add( new Float( 1f ) );
-      expected.add( new Float( 2f ) );
-      expected.add( new Float( 3f ) );
-      expected.add( new Float( 4f ) );
-      expected.add( new Float( 5f ) );
-      expected.add( new Float( 6f ) );
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      expected.add( new Double( 1d ) );
+      expected.add( new Double( 2d ) );
+      List floats = new ArrayList();
+      floats.add( new Float( 1f ) );
+      floats.add( new Float( 2f ) );
+      JSONArray jsonArray = JSONArray.fromObject( floats );
       List actual = JSONArray.toList( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
@@ -1211,10 +1274,6 @@ public class TestJSONArray extends TestCase
       List expected = new ArrayList();
       expected.add( new Integer( 1 ) );
       expected.add( new Integer( 2 ) );
-      expected.add( new Integer( 3 ) );
-      expected.add( new Integer( 4 ) );
-      expected.add( new Integer( 5 ) );
-      expected.add( new Integer( 6 ) );
       JSONArray jsonArray = JSONArray.fromObject( expected );
       List actual = JSONArray.toList( jsonArray );
       Assertions.assertEquals( expected, actual );
@@ -1241,12 +1300,21 @@ public class TestJSONArray extends TestCase
    public void testToList_Long()
    {
       List expected = new ArrayList();
-      expected.add( new Long( 1 ) );
-      expected.add( new Long( 2 ) );
-      expected.add( new Long( 3 ) );
-      expected.add( new Long( 4 ) );
-      expected.add( new Long( 5 ) );
-      expected.add( new Long( 6 ) );
+      expected.add( new Integer( 1 ) );
+      expected.add( new Integer( 2 ) );
+      List longs = new ArrayList();
+      longs.add( new Long( 1L ) );
+      longs.add( new Long( 2L ) );
+      JSONArray jsonArray = JSONArray.fromObject( longs );
+      List actual = JSONArray.toList( jsonArray );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testToList_Long2()
+   {
+      List expected = new ArrayList();
+      expected.add( new Long( Integer.MAX_VALUE + 1L ) );
+      expected.add( new Long( Integer.MAX_VALUE + 2L ) );
       JSONArray jsonArray = JSONArray.fromObject( expected );
       List actual = JSONArray.toList( jsonArray );
       Assertions.assertEquals( expected, actual );
@@ -1266,13 +1334,12 @@ public class TestJSONArray extends TestCase
    public void testToList_Short()
    {
       List expected = new ArrayList();
-      expected.add( new Short( (short) 1 ) );
-      expected.add( new Short( (short) 2 ) );
-      expected.add( new Short( (short) 3 ) );
-      expected.add( new Short( (short) 4 ) );
-      expected.add( new Short( (short) 5 ) );
-      expected.add( new Short( (short) 6 ) );
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      expected.add( new Integer( 1 ) );
+      expected.add( new Integer( 2 ) );
+      List shorts = new ArrayList();
+      shorts.add( new Short( (short) 1 ) );
+      shorts.add( new Short( (short) 2 ) );
+      JSONArray jsonArray = JSONArray.fromObject( shorts );
       List actual = JSONArray.toList( jsonArray );
       Assertions.assertEquals( expected, actual );
    }

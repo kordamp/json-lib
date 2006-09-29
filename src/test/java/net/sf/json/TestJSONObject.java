@@ -230,6 +230,7 @@ public class TestJSONObject extends TestCase
       map.put( "string", "json" );
       try{
          JSONObject json = JSONObject.fromMap( map );
+         System.err.println(json);
          assertEquals( "json", json.getString( "string" ) );
          Object nested = json.get( "nested" );
          assertTrue( JSONUtils.isNull( nested ) );
@@ -696,7 +697,7 @@ public class TestJSONObject extends TestCase
       Assertions.assertEquals( bean.getIntarray(),
             JSONArray.toArray( jsonObject.getJSONArray( "intarray" ) ) );
    }
-   
+
    public void testToBean_interface()
    {
       // BUG 1542104

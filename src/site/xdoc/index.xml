@@ -8,8 +8,8 @@
 	<body>
 		<section name="Welcome to Json-lib">
 			<p>
-            JSON-lib is a java library for transforming beans, maps and XML 
-				to JSON and back again to beans and DynaBeans.<br/> 
+            JSON-lib is a java library for transforming beans, maps, collections,
+            java arrays and XML to JSON and back again to beans and DynaBeans.<br/> 
 				It is based on the work by Douglas Crockford
 				in <a href="http://www.json.org/java">http://www.json.org/java</a>.
 			</p>
@@ -66,31 +66,6 @@
 				<br />
 				These properties make JSON an ideal data-interchange
 				language.
-			</p>
-		</section>
-		<section name="Who is using it ?">
-			<p>
-   <table>
-      <thead>
-         <th>Project</th>
-         <th>Description</th>
-      </thead>
-      <tbody>
-         <tr>
-            <td valign="top"><a href="http://www.mentaframework.org/">Mentawai</a></td>
-            <td>The Mentawai goal is to be a simple, flexible, joyful and productive Java web framework.<br/>
-            Json-lib is used in the ajax renderers package. Thanks to Rubem Azenha.</td>
-         </tr>
-         <tr>
-            <td valign="top"><a href="https://springmodules.dev.java.net/">Spring Modules</a></td>
-            <td>Spring Modules is a collection of tools, add-ons and modules to extend the 
-            <a href="http://www.springframework.org">Spring Framework</a>. The core goal of 
-            Spring Modules is to facilitate integration between Spring and other projects 
-            without cluttering or expanding the Spring core.<br/>
-            Json-lib is used in the XT Ajax Framework. Thanks to Sergio Bossa.</td>
-         </tr>
-      </tbody>
-   </table>
 			</p>
 		</section>
 	</body>

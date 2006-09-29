@@ -191,6 +191,12 @@ public final class JSONArray implements JSON
                throw new IllegalArgumentException( "Unsupported type" );
             }
          }
+      }else if( JSONUtils.isBoolean( object ) || JSONUtils.isFunction( object )
+            || JSONUtils.isNumber( object ) || JSONUtils.isNull( object )
+            || JSONUtils.isString( object ) || object instanceof JSON ){
+         return new JSONArray().put( object );
+      }else if( JSONUtils.isObject( object ) ){
+         return new JSONArray().put( JSONObject.fromObject( object ) );
       }else{
          throw new IllegalArgumentException( "Unsupported type" );
       }
@@ -215,7 +221,7 @@ public final class JSONArray implements JSON
       if( jsonArray == null || jsonArray.isEmpty() ){
          return new int[] { 0 };
       }
-   
+
       List dims = new ArrayList();
       processArrayDimensions( jsonArray, dims, 0 );
       int[] dimensions = new int[dims.size()];
@@ -255,7 +261,10 @@ public final class JSONArray implements JSON
     */
    public static Object[] toArray( JSONArray jsonArray, Class objectClass, Map classMap )
    {
-      // TODO handle empty jsonArray
+      if( jsonArray.length() == 0 ){
+         return new Object[0];
+      }
+
       int[] dimensions = JSONArray.getDimensions( jsonArray );
       Object array = Array.newInstance( Object.class, dimensions );
       int size = jsonArray.length();
@@ -400,6 +409,7 @@ public final class JSONArray implements JSON
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      // TODO transformNumber
    }
 
    /**
@@ -424,29 +434,7 @@ public final class JSONArray implements JSON
       if( collection != null ){
          for( Iterator elements = collection.iterator(); elements.hasNext(); ){
             Object element = elements.next();
-            if( element instanceof JSONString ){
-               this.elements.add( fromJSONString( (JSONString) element ) );
-            }else if( JSONUtils.isArray( element ) ){
-               this.elements.add( fromObject( element ) );
-            }else if( element instanceof JSONArray ){
-               this.elements.add( new JSONArray( (JSONArray) element ) );
-            }else if( JSONUtils.isFunction( element ) ){
-               if( element instanceof String ){
-                  this.elements.add( JSONFunction.parse( (String) element ) );
-               }else{
-                  this.elements.add( element );
-               }
-            }else if( JSONUtils.isObject( element ) ){
-               JSONObject jsonObject = JSONObject.fromObject( element );
-               if( jsonObject.isNullObject() ){
-                  this.elements.add( JSONNull.getInstance() );
-               }else{
-                  this.elements.add( jsonObject );
-               }
-            }else{
-               JSONUtils.testValidity( element );
-               this.elements.add( element );
-            }
+            put( element );
          }
       }
    }
@@ -473,6 +461,7 @@ public final class JSONArray implements JSON
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
       // TODO testValidity
+      // TODO transformNumber
    }
 
    /**
@@ -520,12 +509,12 @@ public final class JSONArray implements JSON
       for( ;; ){
          if( x.nextClean() == ',' ){
             x.back();
-            this.elements.add( JSONNull.getInstance() );
+            put( JSONNull.getInstance() );
          }else{
             x.back();
             Object v = x.nextValue();
             if( !JSONUtils.isFunctionHeader( v ) ){
-               this.elements.add( v );
+               put( v );
             }else{
                // read params if any
                String params = JSONUtils.getFunctionParams( (String) v );
@@ -585,6 +574,7 @@ public final class JSONArray implements JSON
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      // TODO transformNumber
    }
 
    /**
@@ -598,29 +588,7 @@ public final class JSONArray implements JSON
       this.elements = new ArrayList();
       for( int i = 0; i < array.length; i++ ){
          Object element = array[i];
-         if( element instanceof JSONString ){
-            this.elements.add( fromJSONString( (JSONString) element ) );
-         }else if( JSONUtils.isArray( element ) ){
-            this.elements.add( fromObject( element ) );
-         }else if( element instanceof JSONArray ){
-            this.elements.add( new JSONArray( (JSONArray) element ) );
-         }else if( JSONUtils.isFunction( element ) ){
-            if( element instanceof String ){
-               this.elements.add( JSONFunction.parse( (String) element ) );
-            }else{
-               this.elements.add( element );
-            }
-         }else if( JSONUtils.isObject( element ) ){
-            JSONObject jsonObject = JSONObject.fromObject( element );
-            if( jsonObject.isNullObject() ){
-               this.elements.add( JSONNull.getInstance() );
-            }else{
-               this.elements.add( jsonObject );
-            }
-         }else{
-            JSONUtils.testValidity( element );
-            this.elements.add( element );
-         }
+         put( element );
       }
    }
 
@@ -633,6 +601,7 @@ public final class JSONArray implements JSON
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      // TODO transformNumber
    }
 
    /**
@@ -1214,7 +1183,12 @@ public final class JSONArray implements JSON
             JSONUtils.testValidity( value );
             this.elements.set( index, value );
          }else{
-            this.elements.set( index, JSONObject.fromObject( value ) );
+            JSONObject jsonObject = JSONObject.fromObject( value );
+            if( jsonObject.isNullObject() ){
+               this.elements.set( index, JSONNull.getInstance() );
+            }else{
+               this.elements.set( index, jsonObject );
+            }
          }
       }else{
          while( index != length() ){
@@ -1292,7 +1266,7 @@ public final class JSONArray implements JSON
     */
    public JSONArray put( long value )
    {
-      put( new Long( value ) );
+      put( JSONUtils.transformNumber( new Long( value ) ) );
       return this;
    }
 
@@ -1336,11 +1310,18 @@ public final class JSONArray implements JSON
          }else{
             this.elements.add( str );
          }
-      }else if( JSONUtils.isNumber( value ) || JSONUtils.isBoolean( value ) ){
+      }else if( JSONUtils.isNumber( value ) ){
          JSONUtils.testValidity( value );
+         this.elements.add( JSONUtils.transformNumber( (Number) value ) );
+      }else if( JSONUtils.isBoolean( value ) ){
          this.elements.add( value );
       }else{
-         this.elements.add( JSONObject.fromObject( value ) );
+         JSONObject jsonObject = JSONObject.fromObject( value );
+         if( jsonObject.isNullObject() ){
+            this.elements.add( JSONNull.getInstance() );
+         }else{
+            this.elements.add( jsonObject );
+         }
       }
 
       return this;

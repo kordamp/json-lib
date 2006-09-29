@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+
+	<properties>
+		<title>Who is using Json-lib</title>
+	</properties>
+
+	<body>
+		<section name="Who is using it ?">
+			<p>
+   <table>
+      <thead>
+         <th>Project</th>
+         <th>Description</th>
+      </thead>
+      <tbody>
+         <tr>
+            <td valign="top"><a href="http://www.mentaframework.org/">Mentawai</a></td>
+            <td>The Mentawai goal is to be a simple, flexible, joyful and productive Java web framework.<br/>
+            Json-lib is used in the ajax renderers package. Thanks to Rubem Azenha.</td>
+         </tr>
+         <tr>
+            <td valign="top"><a href="https://springmodules.dev.java.net/">Spring Modules</a></td>
+            <td>Spring Modules is a collection of tools, add-ons and modules to extend the 
+            <a href="http://www.springframework.org">Spring Framework</a>. The core goal of 
+            Spring Modules is to facilitate integration between Spring and other projects 
+            without cluttering or expanding the Spring core.<br/>
+            Json-lib is used in the XT Ajax Framework. Thanks to Sergio Bossa.</td>
+         </tr>
+      </tbody>
+   </table>
+			</p>
+         <p>If you'd like your project included in this list, please send a message to
+         <a href="http://lists.sourceforge.net/lists/listinfo/json-lib-user">Json-lib's User list</a>.
+         </p>
+		</section>
+	</body>
+</document>
