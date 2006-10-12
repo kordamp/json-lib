@@ -117,6 +117,26 @@ public class TestJSONSerializer extends TestCase
       assertEquals( jsonObject.get( "string" ), bean.getString() );
    }
 
+   public void testToJava_JSONObject_and_reset() throws Exception
+   {
+      String json = "{bool:true,integer:1,string:\"json\"}";
+      JSONObject jsonObject = new JSONObject( json );
+      jsonSerializer.setRootClass( BeanA.class );
+      Object java = jsonSerializer.toJava( jsonObject );
+      assertNotNull( java );
+      assertTrue( java instanceof BeanA );
+      BeanA bean = (BeanA) java;
+      assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
+      assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
+      assertEquals( jsonObject.get( "string" ), bean.getString() );
+      jsonSerializer.reset();
+      java = jsonSerializer.toJava( jsonObject );
+      assertTrue( java instanceof DynaBean);
+      assertEquals( jsonObject.get( "bool" ), PropertyUtils.getProperty( java,"bool" ) );
+      assertEquals( jsonObject.get( "integer" ),  PropertyUtils.getProperty( java,"integer" ) );
+      assertEquals( jsonObject.get( "string" ), PropertyUtils.getProperty( java,"string" ) );
+   }
+
    public void testToJava_JSONObject_4()
    {
       setName( "JSONObject -> ToJava[rootClass:BeanA,classMap]" );

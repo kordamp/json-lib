@@ -7,8 +7,11 @@
 		</author>
 	</properties>
 	<body>
-      <release version="N/A" date="2006-09-29"
-			desc="Current working version">
+      <release version="0.9" date="2006-10-12"
+			desc="Sixth public release">
+			<action dev="Andres Almiray" type="add">
+				Added FAQ and "Who is using it" sections.
+			</action>
 			<action dev="Andres Almiray" type="add">
 				Added new JSONSerializer utility class.
 			</action>
@@ -18,6 +21,9 @@
 			</action>
 			<action dev="Andres Almiray" type="add">
 				Added support for JSONString in builders and value setters. FR 1557286.
+			</action>
+			<action dev="Andres Almiray" type="update">
+            Removed JSONObject.append() as it was very similar to JSONObject.accumulate()
 			</action>
 			<action dev="Andres Almiray" type="update">
             JSONObject and JSONarray will convert Byte/Short/Long to Integer,
@@ -41,7 +47,7 @@
 			   JSONObject.toBean() generates a ClassCastException.
 			</action>
 		</release>
-		<release version="8.0" date="2006-08-29"
+		<release version="0.8" date="2006-08-29"
 			desc="Fifth public release">
 			<action dev="Andres Almiray" type="add">
             Refactored converter package into 

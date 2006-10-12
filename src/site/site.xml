@@ -20,7 +20,8 @@
       <item name="Introduction" href="index.html"/>
       <item name="Download" href="https://sourceforge.net/project/showfiles.php?group_id=171425"/>
       <item name="Getting Started" href="usage.html"/>
-      <item name="Who is Using it?" href="users.html"/>
+      <item name="Who is using it?" href="users.html"/>
+      <item name="FAQ" href="faq.html"/>
       <item name="Changes" href="changes-report.html"/>
     </menu>
 

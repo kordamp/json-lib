@@ -6,7 +6,7 @@
 	<groupId>net.sf.json-lib</groupId>
 	<artifactId>json-lib</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9-dev</version>
+	<version>0.9</version>
 	<name>json-lib</name>
 
 	<url>http://json-lib.sourceforge.net</url>
@@ -98,7 +98,7 @@
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
-			<version>2.1</version>
+			<version>2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>

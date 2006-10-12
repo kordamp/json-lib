@@ -420,7 +420,7 @@ public final class JSONArray implements JSON
    public JSONArray( char[] array )
    {
       this.elements = new ArrayList();
-      this.elements.addAll( Arrays.asList( JSONUtils.toObject( array ) ) );
+      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
    }
 
    /**

@@ -24,6 +24,10 @@ import java.util.Map;
 
 import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.MorpherRegistry;
+import net.sf.ezmorph.array.CharArrayMorpher;
+import net.sf.ezmorph.array.CharacterObjectArrayMorpher;
+import net.sf.ezmorph.object.CharacterObjectMorpher;
+import net.sf.ezmorph.primitive.CharMorpher;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONFunction;
@@ -33,13 +37,11 @@ import net.sf.json.JSONString;
 import net.sf.json.regexp.RegexpMatcher;
 import net.sf.json.regexp.RegexpUtils;
 
-import org.apache.commons.lang.ArrayUtils;
-
 /**
  * Provides useful methods on java objects.
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
- * @version 5
+ * @version 6
  */
 public final class JSONUtils
 {
@@ -59,6 +61,14 @@ public final class JSONUtils
 
       // register standard morphers
       MorphUtils.registerStandardMorphers( morpherRegistry );
+      morpherRegistry.deregisterMorpher( morpherRegistry.getMorpherFor( char.class ) );
+      morpherRegistry.deregisterMorpher( morpherRegistry.getMorpherFor( Character.class ) );
+      morpherRegistry.deregisterMorpher( morpherRegistry.getMorpherFor( char[].class ) );
+      morpherRegistry.deregisterMorpher( morpherRegistry.getMorpherFor( Character[].class ) );
+      morpherRegistry.registerMorpher( new CharMorpher( '\0' ) );
+      morpherRegistry.registerMorpher( new CharacterObjectMorpher( new Character('\0') ) );
+      morpherRegistry.registerMorpher( new CharArrayMorpher( '\0' ) );
+      morpherRegistry.registerMorpher( new CharacterObjectArrayMorpher( new Character('\0') ) );
    }
 
    /**
@@ -147,6 +157,14 @@ public final class JSONUtils
    }
 
    /**
+    * Tests if a Class represents an array or Collection.
+    */
+   public static boolean isArray( Class clazz )
+   {
+      return clazz != null && (clazz.isArray() || Collection.class.isAssignableFrom( clazz ));
+   }
+
+   /**
     * Tests if obj is an array or Collection.
     */
    public static boolean isArray( Object obj )
@@ -162,6 +180,15 @@ public final class JSONUtils
    }
 
    /**
+    * Tests if Class represents a Boolean or primitive boolean
+    */
+   public static boolean isBoolean( Class clazz )
+   {
+      return clazz != null
+            && (Boolean.TYPE.isAssignableFrom( clazz ) || Boolean.class.isAssignableFrom( clazz ));
+   }
+
+   /**
     * Tests if obj is a Boolean or primitive boolean
     */
    public static boolean isBoolean( Object obj )
@@ -173,6 +200,15 @@ public final class JSONUtils
          return true;
       }
       return false;
+   }
+
+   /**
+    * Tests if Class represents a primitive double or wrapper.<br>
+    */
+   public static boolean isDouble( Class clazz )
+   {
+      return clazz != null
+            && (Double.TYPE.isAssignableFrom( clazz ) || Double.class.isAssignableFrom( clazz ));
    }
 
    /**
@@ -218,6 +254,19 @@ public final class JSONUtils
    }
 
    /**
+    * Tests if Class represents a primitive number or wrapper.<br>
+    */
+   public static boolean isNumber( Class clazz )
+   {
+      return clazz != null
+            && ((Byte.TYPE.isAssignableFrom( clazz ) || Byte.class.isAssignableFrom( clazz ))
+                  || (Short.TYPE.isAssignableFrom( clazz ) || Short.class.isAssignableFrom( clazz ))
+                  || (Integer.TYPE.isAssignableFrom( clazz ) || Integer.class.isAssignableFrom( clazz ))
+                  || (Long.TYPE.isAssignableFrom( clazz ) || Long.class.isAssignableFrom( clazz ))
+                  || (Float.TYPE.isAssignableFrom( clazz ) || Float.class.isAssignableFrom( clazz )) || (Double.TYPE.isAssignableFrom( clazz ) || Double.class.isAssignableFrom( clazz )));
+   }
+
+   /**
     * Tests if obj is a primitive number or wrapper.<br>
     */
    public static boolean isNumber( Object obj )
@@ -244,6 +293,15 @@ public final class JSONUtils
    {
       return !isNumber( obj ) && !isString( obj ) && !isBoolean( obj ) && !isArray( obj )
             || isNull( obj );
+   }
+
+   /**
+    * Tests if Class represents a String or a char
+    */
+   public static boolean isString( Class clazz )
+   {
+      return clazz != null
+            && (String.class.isAssignableFrom( clazz ) || (Character.TYPE.isAssignableFrom( clazz ) || Character.class.isAssignableFrom( clazz )));
    }
 
    /**
@@ -400,34 +458,6 @@ public final class JSONUtils
             }
          }
       }
-   }
-
-   /**
-    * Converts an array of primitive chars to objects.<br>
-    * <p>
-    * <strong>This method is not in ArrayUtils. (commons-lang 2.1)</strong>
-    * </p>
-    * <p>
-    * This method returns <code>null</code> for a <code>null</code> input
-    * array.
-    * </p>
-    *
-    * @param array a <code>char</code> array
-    * @return a <code>Character</code> array, <code>null</code> if null
-    *         array input
-    */
-   public static Object[] toObject( char[] array )
-   {
-      if( array == null ){
-         return null;
-      }else if( array.length == 0 ){
-         return ArrayUtils.EMPTY_CHARACTER_OBJECT_ARRAY;
-      }
-      final Character[] result = new Character[array.length];
-      for( int i = 0; i < array.length; i++ ){
-         result[i] = new Character( array[i] );
-      }
-      return result;
    }
 
    /**

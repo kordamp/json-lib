@@ -83,6 +83,22 @@ public class TestJSONArray extends TestCase
       testJSONArray( l, "[null,null]" );
    }
 
+   public void testConstructor_func()
+   {
+      JSONArray expected = new JSONArray( new String[] { "'"
+            + new JSONFunction( new String[] { "a" }, "return a;" ).toString() + "'" } );
+      JSONArray actual = new JSONArray( new String[] { "'function(a){ return a; }'" } );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testConstructor_func2()
+   {
+      JSONArray expected = new JSONArray( new String[] { "\""
+            + new JSONFunction( new String[] { "a" }, "return a;" ).toString() + "\"" } );
+      JSONArray actual = new JSONArray( new String[] { "\"function(a){ return a; }\"" } );
+      Assertions.assertEquals( expected, actual );
+   }
+
    public void testConstructor_JSONArray()
    {
       JSONArray expected = new JSONArray( "[1,2]" );

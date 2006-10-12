@@ -282,7 +282,7 @@ public final class JSONObject implements JSON
 
             if( !JSONUtils.isNull( value ) ){
                if( value instanceof JSONArray ){
-                  PropertyUtils.setProperty( dynaBean, key, JSONArray.toList( (JSONArray) value ) );
+                  setProperty( dynaBean, key, JSONArray.toList( (JSONArray) value ) );
                }else if( String.class.isAssignableFrom( type )
                      || Boolean.class.isAssignableFrom( type )
                      || Byte.class.isAssignableFrom( type ) || Short.class.isAssignableFrom( type )
@@ -291,9 +291,9 @@ public final class JSONObject implements JSON
                      || Double.class.isAssignableFrom( type )
                      || Character.class.isAssignableFrom( type )
                      || JSONFunction.class.isAssignableFrom( type ) ){
-                  PropertyUtils.setProperty( dynaBean, key, value );
+                  setProperty( dynaBean, key, value );
                }else{
-                  PropertyUtils.setProperty( dynaBean, key, toBean( (JSONObject) value ) );
+                  setProperty( dynaBean, key, toBean( (JSONObject) value ) );
                }
             }else{
                if( type.isPrimitive() ){
@@ -374,7 +374,7 @@ public final class JSONObject implements JSON
                if( value instanceof JSONArray ){
                   if( List.class.isAssignableFrom( pd.getPropertyType() ) ){
                      List list = JSONArray.toList( (JSONArray) value, beanClass, classMap );
-                     PropertyUtils.setProperty( bean, key, list );
+                     setProperty( bean, key, list );
                   }else{
                      Object array = JSONArray.toArray( (JSONArray) value, beanClass, classMap );
                      Class innerType = JSONUtils.getInnerComponentType( pd.getPropertyType() );
@@ -396,7 +396,17 @@ public final class JSONObject implements JSON
                      || Double.class.isAssignableFrom( type )
                      || Character.class.isAssignableFrom( type )
                      || JSONFunction.class.isAssignableFrom( type ) ){
-                  setProperty( bean, key, value );
+                  if( pd != null ){
+                     if( !pd.getPropertyType()
+                           .isInstance( value ) ){
+                        setProperty( bean, key, JSONUtils.getMorpherRegistry()
+                              .morph( pd.getPropertyType(), value ) );
+                     }else{
+                        setProperty( bean, key, value );
+                     }
+                  }else{
+                     setProperty( bean, key, value );
+                  }
                }else{
                   if( pd != null ){
                      setProperty( bean, key, toBean( (JSONObject) value, pd.getPropertyType(),
@@ -467,7 +477,9 @@ public final class JSONObject implements JSON
       if( bean instanceof Map ){
          ((Map) bean).put( key, value );
       }else if( bean instanceof JSONObject ){
-         ((JSONObject) bean).set( key, value );
+         if( !((JSONObject) bean).isNullObject() ){
+            ((JSONObject) bean).set( key, value );
+         }
       }else{
          PropertyUtils.setProperty( bean, key, value );
       }
@@ -475,6 +487,9 @@ public final class JSONObject implements JSON
 
    private static void setValue( Object object, String key, Object value, Class type )
    {
+      if( key == null ){
+         throw new JSONException( "Null key" );
+      }
       try{
          if( JSONUtils.isFunction( value ) ){
             setProperty( object, key, value );
@@ -493,9 +508,27 @@ public final class JSONObject implements JSON
             }else{
                setProperty( object, key, str );
             }
-         }else if( JSONUtils.isNumber( value ) || JSONUtils.isBoolean( value ) ){
+         }else if( JSONUtils.isNumber( value ) ){
             JSONUtils.testValidity( value );
             setProperty( object, key, value );
+         }else if( JSONUtils.isBoolean( value ) ){
+            setProperty( object, key, value );
+         }else if( value == null ){
+            if( JSONUtils.isArray( type ) ){
+               setProperty( object, key, JSONSerializer.toJSON( "[]" ) );
+            }else if( JSONUtils.isNumber( type ) ){
+               if( JSONUtils.isDouble( type ) ){
+                  setProperty( object, key, new Double( 0 ) );
+               }else{
+                  setProperty( object, key, new Integer( 0 ) );
+               }
+            }else if( JSONUtils.isBoolean( type ) ){
+               setProperty( object, key, "false" );
+            }else if( JSONUtils.isString( type ) ){
+               setProperty( object, key, "" );
+            }else{
+               setProperty( object, key, JSONNull.getInstance() );
+            }
          }else{
             setProperty( object, key, fromObject( value ) );
          }
@@ -572,6 +605,11 @@ public final class JSONObject implements JSON
    public JSONObject( JSONObject jo )
    {
       this();
+      if( jo == null || jo.isNullObject() ){
+         nullObject = true;
+         return;
+      }
+
       JSONArray sa = jo.names();
       for( Iterator i = sa.iterator(); i.hasNext(); ){
          String key = (String) i.next();
@@ -591,6 +629,11 @@ public final class JSONObject implements JSON
    public JSONObject( JSONObject jo, String[] sa )
    {
       this();
+      if( jo == null || jo.isNullObject() ){
+         nullObject = true;
+         return;
+      }
+
       for( int i = 0; i < sa.length; i++ ){
          putOpt( sa[i], jo.opt( sa[i] ) );
       }
@@ -821,37 +864,6 @@ public final class JSONObject implements JSON
          put( key, value );
       }else if( o instanceof JSONArray ){
          ((JSONArray) o).put( value );
-      }else{
-         put( key, new JSONArray().put( o )
-               .put( value ) );
-      }
-
-      return this;
-   }
-
-   /**
-    * Append values to the array under a key. If the key does not exist in the
-    * JSONObject, then the key is put in the JSONObject with its value being a
-    * JSONArray containing the value parameter. If the key was already
-    * associated with a JSONArray, then the value parameter is appended to it.
-    *
-    * @param key A key string.
-    * @param value An object to be accumulated under the key.
-    * @return this.
-    * @throws JSONException If the key is null or if the current value
-    *         associated with the key is not a JSONArray.
-    */
-   public JSONObject append( String key, Object value )
-   {
-      if( isNullObject() ){
-         throw new JSONException( "Can't append on null object" );
-      }
-      JSONUtils.testValidity( value );
-      Object o = opt( key );
-      if( o == null ){
-         put( key, new JSONArray().put( value ) );
-      }else if( o instanceof JSONArray ){
-         throw new JSONException( "JSONObject[" + key + "] is not a JSONArray." );
       }else{
          put( key, new JSONArray().put( o )
                .put( value ) );

@@ -50,7 +50,7 @@ public class ObjectJSONStringBean implements JSONString
    {
       return new StringBuffer().append( "{" )
             .append( "\"name\":\"" )
-            .append( name )
+            .append( (name == null) ? "" : name )
             .append( "\"}" )
             .toString();
    }
