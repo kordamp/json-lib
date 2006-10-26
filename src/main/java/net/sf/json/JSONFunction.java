@@ -26,7 +26,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * JSONFunction represents a javaScript function's text.
- *
+ * 
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  * @version 3
  */
@@ -94,7 +94,7 @@ public class JSONFunction implements Serializable
 
    /**
     * Constructs a JSONFunction with no parameters.
-    *
+    * 
     * @param text The text of the function
     */
    public JSONFunction( String text )
@@ -104,7 +104,7 @@ public class JSONFunction implements Serializable
 
    /**
     * Constructs a JSONFunction with parameters.
-    *
+    * 
     * @param params The parameters of the function
     * @param text The text of the function
     */
@@ -112,11 +112,16 @@ public class JSONFunction implements Serializable
    {
       this.text = (text != null) ? text.trim() : "";
       if( params != null ){
-         this.params = new String[params.length];
-         System.arraycopy( params, 0, this.params, 0, params.length );
-         // remove empty spaces
-         for( int i = 0; i < params.length; i++ ){
-            this.params[i] = this.params[i].trim();
+         if( params.length == 1 && params[0].trim()
+               .equals( "" ) ){
+            this.params = EMPTY_PARAM_ARRAY;
+         }else{
+            this.params = new String[params.length];
+            System.arraycopy( params, 0, this.params, 0, params.length );
+            // remove empty spaces
+            for( int i = 0; i < params.length; i++ ){
+               this.params[i] = this.params[i].trim();
+            }
          }
       }else{
          this.params = EMPTY_PARAM_ARRAY;
@@ -135,9 +140,9 @@ public class JSONFunction implements Serializable
          return false;
       }
 
-      if( obj instanceof String ){
-         return toString().compareTo( (String) obj ) == 0;
-      }
+      // if( obj instanceof String ){
+      // return toString().compareTo( (String) obj ) == 0;
+      // }
 
       JSONFunction other = (JSONFunction) obj;
       if( params.length != other.params.length ){

@@ -16,16 +16,16 @@
 
 package net.sf.json;
 
-import java.util.Iterator;
 import java.util.List;
 
-import net.sf.ezmorph.test.ArrayAssertions;
+import net.sf.json.test.JSONAssert;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class Assertions extends ArrayAssertions
+public class Assertions extends JSONAssert
 {
+   /*
    public static void assertEquals( JSONArray expecteds, JSONArray actuals )
    {
       assertEquals( null, expecteds, actuals );
@@ -40,12 +40,14 @@ public class Assertions extends ArrayAssertions
    {
       assertEquals( null, expected, actual );
    }
+   */
 
    public static void assertEquals( List expecteds, List actuals )
    {
       assertEquals( null, expecteds, actuals );
    }
 
+   /*
    public static void assertEquals( String message, JSONArray expecteds, JSONArray actuals )
    {
       String header = message == null ? "" : message + ": ";
@@ -134,7 +136,7 @@ public class Assertions extends ArrayAssertions
       if( actual == null ){
          fail( header + "actual object was null" );
       }
-      if( expected == actual /* || expected.equals( actual ) */){
+      if( expected == actual ){
          return;
       }
       assertEquals( header + "names sizes differed, expected.names().length()=" + expected.names()
@@ -179,6 +181,7 @@ public class Assertions extends ArrayAssertions
          }
       }
    }
+*/
 
    public static void assertEquals( String message, List expecteds, List actuals )
    {
@@ -248,6 +251,7 @@ public class Assertions extends ArrayAssertions
       }
    }
 
+   /*
    public static void assertEquals( String message, String expected, JSONFunction actual )
    {
       String header = message == null ? "" : message + ": ";
@@ -259,4 +263,5 @@ public class Assertions extends ArrayAssertions
       }
       assertEquals( header, expected, actual.toString() );
    }
+   */
 }

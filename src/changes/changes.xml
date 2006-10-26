@@ -7,6 +7,15 @@
 		</author>
 	</properties>
 	<body>
+		<release version="N/A" date="2006-10-25"
+			desc="Current development version">
+			<action dev="Andres Almiray" type="add">
+				Added JSONAssert for easy JSON testing.
+			</action>
+			<action dev="Andres Almiray" type="add">
+				Updated JSONFunction constructor for correct length of parameters.
+			</action>
+		</release>
       <release version="0.9" date="2006-10-12"
 			desc="Sixth public release">
 			<action dev="Andres Almiray" type="add">

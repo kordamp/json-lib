@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.test;
 
 import junit.framework.TestSuite;
 
@@ -26,16 +26,9 @@ public class AllTests extends TestSuite
    public static TestSuite suite() throws Exception
    {
       TestSuite suite = new TestSuite();
-      suite.setName( "json-lib" );
+      suite.setName( "test" );
 
-      suite.addTest( new TestSuite( TestJSONFunction.class ) );
-      suite.addTest( new TestSuite( TestJSONArray.class ) );
-      suite.addTest( new TestSuite( TestJSONObject.class ) );
-      suite.addTest( new TestSuite( TestJSONSerializer.class ) );
-      suite.addTest( net.sf.json.regexp.AllTests.suite() );
-      suite.addTest( net.sf.json.util.AllTests.suite() );
-      suite.addTest( net.sf.json.xml.AllTests.suite() );
-      suite.addTest( net.sf.json.test.AllTests.suite() );
+      suite.addTest( new TestSuite( TestJSONAssert.class ) );
 
       return suite;
    }

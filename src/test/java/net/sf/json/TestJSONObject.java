@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.sf.ezmorph.test.ArrayAssertions;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;
@@ -746,7 +747,7 @@ public class TestJSONObject extends TestCase
       assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
       assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
       assertEquals( jsonObject.get( "string" ), bean.getString() );
-      Assertions.assertEquals( bean.getIntarray(),
+      ArrayAssertions.assertEquals( bean.getIntarray(),
             JSONArray.toArray( jsonObject.getJSONArray( "intarray" ) ) );
    }
 
@@ -770,7 +771,7 @@ public class TestJSONObject extends TestCase
 
       EmptyBean bean2 = (EmptyBean) JSONObject.toBean( json, EmptyBean.class );
 
-      Assertions.assertEquals( new Object[0], bean2.getArrayp() );
+      ArrayAssertions.assertEquals( new Object[0], bean2.getArrayp() );
       Assertions.assertEquals( new ArrayList(), bean2.getListp() );
       Assertions.assertEquals( new Byte( (byte) 0 ), bean2.getBytep() );
       Assertions.assertEquals( new Short( (short) 0 ), bean2.getShortp() );

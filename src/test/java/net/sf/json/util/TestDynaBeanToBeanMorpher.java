@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import net.sf.ezmorph.MorphException;
 import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.MorpherRegistry;
+import net.sf.ezmorph.test.ArrayAssertions;
 import net.sf.json.Assertions;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanB;
@@ -194,7 +195,7 @@ public class TestDynaBeanToBeanMorpher extends TestCase
       Assertions.assertEquals( true, beanB.isBool() );
       Assertions.assertEquals( 48, beanB.getInteger() );
       Assertions.assertEquals( "dyna json B", beanB.getString() );
-      Assertions.assertEquals( new int[] { 4, 5, 6 }, beanB.getIntarray() );
+      ArrayAssertions.assertEquals( new int[] { 4, 5, 6 }, beanB.getIntarray() );
    }
 
    public void testMorph_nested__specific_classes() throws Exception
@@ -219,7 +220,7 @@ public class TestDynaBeanToBeanMorpher extends TestCase
       Assertions.assertEquals( true, beanB.isBool() );
       Assertions.assertEquals( 42, beanB.getInteger() );
       Assertions.assertEquals( "json", beanB.getString() );
-      Assertions.assertEquals( new int[] { 1, 2, 3 }, beanB.getIntarray() );
+      ArrayAssertions.assertEquals( new int[] { 1, 2, 3 }, beanB.getIntarray() );
    }
 
    public void testMorph_null()
