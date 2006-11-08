@@ -31,6 +31,7 @@ import net.sf.json.sample.BeanC;
 import net.sf.json.sample.BeanFoo;
 import net.sf.json.sample.BeanWithFunc;
 import net.sf.json.sample.EmptyBean;
+import net.sf.json.sample.ListingBean;
 import net.sf.json.sample.MappingBean;
 import net.sf.json.sample.ObjectJSONStringBean;
 import net.sf.json.sample.ValueBean;
@@ -837,6 +838,61 @@ public class TestJSONObject extends TestCase
       assertEquals( "jsonbean", beanA.getString() );
       BeanB beanB = bean.getBeanB();
       assertNull( beanB );
+   }
+
+   public void testToBean_nested_beans_in_list__beans()
+   {
+      // BUG 1592799
+
+      ListingBean listingBean = new ListingBean();
+
+      ValueBean beanA1 = new ValueBean();
+      beanA1.setValue( 90000 );
+      ValueBean beanA2 = new ValueBean();
+      beanA2.setValue( 91000 );
+
+      listingBean.addAttribute( beanA1 );
+      listingBean.addAttribute( beanA2 );
+
+      JSONObject jsonObject = JSONObject.fromObject( listingBean );
+      Map classMap = new HashMap();
+      classMap.put( "attributes", ValueBean.class );
+      ListingBean listingBean2 = (ListingBean) JSONObject.toBean( jsonObject, ListingBean.class,
+            classMap );
+      List attributes = listingBean2.getAttributes();
+      Object ba = attributes.get( 0 );
+      Object bb = attributes.get( 1 );
+
+      assertTrue( ba instanceof ValueBean );
+      assertTrue( bb instanceof ValueBean );
+      assertEquals( beanA1.getValue(), ((ValueBean) ba).getValue() );
+      assertEquals( beanA2.getValue(), ((ValueBean) bb).getValue() );
+   }
+
+   public void testToBean_nested_beans_in_list__DynaBean()
+   {
+      // BUG 1592799
+
+      ListingBean listingBean = new ListingBean();
+
+      ValueBean beanA1 = new ValueBean();
+      beanA1.setValue( 90000 );
+      ValueBean beanA2 = new ValueBean();
+      beanA2.setValue( 91000 );
+
+      listingBean.addAttribute( beanA1 );
+      listingBean.addAttribute( beanA2 );
+
+      JSONObject jsonObject = JSONObject.fromObject( listingBean );
+      ListingBean listingBean2 = (ListingBean) JSONObject.toBean( jsonObject, ListingBean.class );
+      List attributes = listingBean2.getAttributes();
+      Object ba = attributes.get( 0 );
+      Object bb = attributes.get( 1 );
+
+      assertTrue( ba instanceof JSONDynaBean );
+      assertTrue( bb instanceof JSONDynaBean );
+      assertEquals( new Integer( beanA1.getValue() ), ((JSONDynaBean) ba).get( "value" ) );
+      assertEquals( new Integer( beanA2.getValue() ), ((JSONDynaBean) bb).get( "value" ) );
    }
 
    public void testToBean_nested_beans_in_map__beans()

@@ -21,17 +21,18 @@ import junit.framework.TestSuite;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class AllTests extends TestSuite
+public class JSONTestSuite extends TestSuite
 {
    public static TestSuite suite() throws Exception
    {
       TestSuite suite = new TestSuite();
-      suite.setName( "core" );
+      suite.setName( "json-lib" );
 
-      suite.addTest( new TestSuite( TestJSONFunction.class ) );
-      suite.addTest( new TestSuite( TestJSONArray.class ) );
-      suite.addTest( new TestSuite( TestJSONObject.class ) );
-      suite.addTest( new TestSuite( TestJSONSerializer.class ) );
+      suite.addTest( net.sf.json.AllTests.suite() );
+      suite.addTest( net.sf.json.regexp.AllTests.suite() );
+      suite.addTest( net.sf.json.util.AllTests.suite() );
+      suite.addTest( net.sf.json.xml.AllTests.suite() );
+      suite.addTest( net.sf.json.test.AllTests.suite() );
 
       return suite;
    }

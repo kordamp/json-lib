@@ -14,25 +14,30 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.sample;
 
-import junit.framework.TestSuite;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class AllTests extends TestSuite
+public class ListingBean
 {
-   public static TestSuite suite() throws Exception
+   private List attributes = new ArrayList();
+
+   public void addAttribute( Object value )
    {
-      TestSuite suite = new TestSuite();
-      suite.setName( "core" );
+      this.attributes.add( value );
+   }
 
-      suite.addTest( new TestSuite( TestJSONFunction.class ) );
-      suite.addTest( new TestSuite( TestJSONArray.class ) );
-      suite.addTest( new TestSuite( TestJSONObject.class ) );
-      suite.addTest( new TestSuite( TestJSONSerializer.class ) );
+   public List getAttributes()
+   {
+      return attributes;
+   }
 
-      return suite;
+   public void setAttributes( List attributes )
+   {
+      this.attributes = attributes;
    }
 }
