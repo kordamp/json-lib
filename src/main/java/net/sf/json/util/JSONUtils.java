@@ -16,6 +16,7 @@
 
 package net.sf.json.util;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,10 +25,6 @@ import java.util.Map;
 
 import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.MorpherRegistry;
-import net.sf.ezmorph.array.CharArrayMorpher;
-import net.sf.ezmorph.array.CharacterObjectArrayMorpher;
-import net.sf.ezmorph.object.CharacterObjectMorpher;
-import net.sf.ezmorph.primitive.CharMorpher;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONFunction;
@@ -39,7 +36,7 @@ import net.sf.json.regexp.RegexpUtils;
 
 /**
  * Provides useful methods on java objects.
- *
+ * 
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  * @version 6
  */
@@ -61,20 +58,12 @@ public final class JSONUtils
 
       // register standard morphers
       MorphUtils.registerStandardMorphers( morpherRegistry );
-      morpherRegistry.deregisterMorpher( morpherRegistry.getMorpherFor( char.class ) );
-      morpherRegistry.deregisterMorpher( morpherRegistry.getMorpherFor( Character.class ) );
-      morpherRegistry.deregisterMorpher( morpherRegistry.getMorpherFor( char[].class ) );
-      morpherRegistry.deregisterMorpher( morpherRegistry.getMorpherFor( Character[].class ) );
-      morpherRegistry.registerMorpher( new CharMorpher( '\0' ) );
-      morpherRegistry.registerMorpher( new CharacterObjectMorpher( new Character('\0') ) );
-      morpherRegistry.registerMorpher( new CharArrayMorpher( '\0' ) );
-      morpherRegistry.registerMorpher( new CharacterObjectArrayMorpher( new Character('\0') ) );
    }
 
    /**
     * Produce a string from a double. The string "null" will be returned if the
     * number is not finite.
-    *
+    * 
     * @param d A double.
     * @return A String.
     */
@@ -259,11 +248,9 @@ public final class JSONUtils
    public static boolean isNumber( Class clazz )
    {
       return clazz != null
-            && ((Byte.TYPE.isAssignableFrom( clazz ) || Byte.class.isAssignableFrom( clazz ))
-                  || (Short.TYPE.isAssignableFrom( clazz ) || Short.class.isAssignableFrom( clazz ))
-                  || (Integer.TYPE.isAssignableFrom( clazz ) || Integer.class.isAssignableFrom( clazz ))
-                  || (Long.TYPE.isAssignableFrom( clazz ) || Long.class.isAssignableFrom( clazz ))
-                  || (Float.TYPE.isAssignableFrom( clazz ) || Float.class.isAssignableFrom( clazz )) || (Double.TYPE.isAssignableFrom( clazz ) || Double.class.isAssignableFrom( clazz )));
+            && (Byte.TYPE.isAssignableFrom( clazz ) || Short.TYPE.isAssignableFrom( clazz )
+                  || Integer.TYPE.isAssignableFrom( clazz ) || Long.TYPE.isAssignableFrom( clazz )
+                  || Float.TYPE.isAssignableFrom( clazz ) || Double.TYPE.isAssignableFrom( clazz ) || Number.class.isAssignableFrom( clazz ));
    }
 
    /**
@@ -279,11 +266,8 @@ public final class JSONUtils
             || (obj != null && obj.getClass() == Double.TYPE) ){
          return true;
       }
-      if( (obj instanceof Byte) || (obj instanceof Short) || (obj instanceof Integer)
-            || (obj instanceof Long) || (obj instanceof Float) || (obj instanceof Double) ){
-         return true;
-      }
-      return false;
+
+      return obj instanceof Number;
    }
 
    /**
@@ -339,7 +323,7 @@ public final class JSONUtils
 
    /**
     * Produce a string from a Number.
-    *
+    * 
     * @param n A Number
     * @return A String.
     * @throws JSONException If n is a non-finite number.
@@ -373,7 +357,7 @@ public final class JSONUtils
     * <strong>CAUTION:</strong> if <code>string</code> represents a
     * javascript function, translation of characters will not take place. This
     * will produce a non-conformant JSON text.
-    *
+    * 
     * @param string A String
     * @return A String correctly formatted for insertion in a JSON text.
     */
@@ -441,7 +425,7 @@ public final class JSONUtils
 
    /**
     * Throw an exception if the object is an NaN or infinite number.
-    *
+    * 
     * @param o The object to test.
     * @throws JSONException If o is a non-finite number.
     */
@@ -456,6 +440,13 @@ public final class JSONUtils
             if( ((Float) o).isInfinite() || ((Float) o).isNaN() ){
                throw new JSONException( "JSON does not allow non-finite numbers." );
             }
+         }else if( o instanceof BigDecimal ){
+            // convert to Float and Double
+            Float f = new Float( ((BigDecimal) o).floatValue() );
+            Double d = new Double( ((BigDecimal) o).doubleValue() );
+            if( d.isInfinite() || d.isNaN() || f.isInfinite() || f.isNaN() ){
+               throw new JSONException( "JSON does not allow non-finite numbers" );
+            }
          }
       }
    }
@@ -468,6 +459,7 @@ public final class JSONUtils
     */
    public static Number transformNumber( Number input )
    {
+      // TODO should check against ECMAScript-262
       if( input instanceof Float ){
          return new Double( input.doubleValue() );
       }else if( input instanceof Short ){
@@ -492,7 +484,7 @@ public final class JSONUtils
     * common case), then a text will be produced by the rules.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    *
+    * 
     * @param value The value to be serialized.
     * @return a printable, displayable, transmittable representation of the
     *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
@@ -533,7 +525,7 @@ public final class JSONUtils
     * Make a prettyprinted JSON text of an object value.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    *
+    * 
     * @param value The value to be serialized.
     * @param indentFactor The number of spaces to add to each level of
     *        indentation.

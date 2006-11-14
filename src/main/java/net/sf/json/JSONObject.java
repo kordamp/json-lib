@@ -284,11 +284,7 @@ public final class JSONObject implements JSON
                if( value instanceof JSONArray ){
                   setProperty( dynaBean, key, JSONArray.toList( (JSONArray) value ) );
                }else if( String.class.isAssignableFrom( type )
-                     || Boolean.class.isAssignableFrom( type )
-                     || Byte.class.isAssignableFrom( type ) || Short.class.isAssignableFrom( type )
-                     || Integer.class.isAssignableFrom( type )
-                     || Long.class.isAssignableFrom( type ) || Float.class.isAssignableFrom( type )
-                     || Double.class.isAssignableFrom( type )
+                     || Boolean.class.isAssignableFrom( type ) || JSONUtils.isNumber( type )
                      || Character.class.isAssignableFrom( type )
                      || JSONFunction.class.isAssignableFrom( type ) ){
                   setProperty( dynaBean, key, value );
@@ -374,14 +370,16 @@ public final class JSONObject implements JSON
                if( value instanceof JSONArray ){
                   if( List.class.isAssignableFrom( pd.getPropertyType() ) ){
                      Class targetClass = findTargetClass( key, classMap );
-                     // if targetClass is null the outcome will be a List of DynaBeans
-                     // targetClass = (targetClass != null) ? targetClass : beanClass;
+                     // if targetClass is null the outcome will be a List of
+                     // DynaBeans
+                     // targetClass = (targetClass != null) ? targetClass :
+                     // beanClass;
                      List list = JSONArray.toList( (JSONArray) value, targetClass, classMap );
                      setProperty( bean, key, list );
                   }else{
                      Object array = JSONArray.toArray( (JSONArray) value, beanClass, classMap );
                      Class innerType = JSONUtils.getInnerComponentType( pd.getPropertyType() );
-                     if( innerType.isPrimitive() || Number.class.isAssignableFrom( innerType )
+                     if( innerType.isPrimitive() || JSONUtils.isNumber( innerType )
                            || Boolean.class.isAssignableFrom( innerType )
                            || Character.class.isAssignableFrom( innerType ) || !array.getClass()
                                  .equals( pd.getPropertyType() ) ){
@@ -392,11 +390,7 @@ public final class JSONObject implements JSON
                      setProperty( bean, key, array );
                   }
                }else if( String.class.isAssignableFrom( type )
-                     || Boolean.class.isAssignableFrom( type )
-                     || Byte.class.isAssignableFrom( type ) || Short.class.isAssignableFrom( type )
-                     || Integer.class.isAssignableFrom( type )
-                     || Long.class.isAssignableFrom( type ) || Float.class.isAssignableFrom( type )
-                     || Double.class.isAssignableFrom( type )
+                     || Boolean.class.isAssignableFrom( type ) || JSONUtils.isNumber( type )
                      || Character.class.isAssignableFrom( type )
                      || JSONFunction.class.isAssignableFrom( type ) ){
                   if( pd != null ){

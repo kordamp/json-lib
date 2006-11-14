@@ -27,6 +27,12 @@
             without cluttering or expanding the Spring core.<br/>
             Json-lib is used in the XT Ajax Framework. Thanks to Sergio Bossa.</td>
          </tr>
+         <tr>
+            <td valign="top"><a href="http://maven.nuxeo.org/">Nuxeo</a></td>
+	    <td>Nuxeo 5 is a robust, extensible, global Enterprise Content Management (ECM) solution
+            available as Open Source Software.<br/>
+            Json-lib is used in the NXThemes JSF components module. Thanks to Jean-Marc Orliagueta.</td>
+         </tr>
       </tbody>
    </table>
 			</p>

@@ -16,6 +16,8 @@
 package net.sf.json;
 
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -142,6 +144,46 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
+   public void testConstructor_Object_Array_BigDecimal()
+   {
+      // bug 1596168
+
+      // an array of BigDecimals
+      Number[] numberArray = new Number[] { BigDecimal.valueOf( 10000000000L, 10 ),
+            new BigDecimal( "-1.0" ), new BigDecimal( "99.99E-1" ) };
+
+      assertEquals( "1.0000000000", numberArray[0].toString() );
+      assertEquals( "-1.0", numberArray[1].toString() );
+      assertEquals( "9.999", numberArray[2].toString() );
+
+      JSONArray jsonNumArray = JSONArray.fromArray( numberArray );
+
+      assertEquals( "1.0000000000", jsonNumArray.get( 0 )
+            .toString() );
+      assertEquals( "-1.0", jsonNumArray.get( 1 )
+            .toString() );
+      assertEquals( "9.999", jsonNumArray.get( 2 )
+            .toString() );
+   }
+
+   public void testConstructor_Object_Array_BigInteger()
+   {
+      // bug 1596168
+
+      Number[] numberArray = new Number[] { new BigInteger( "18437736874454810627" ),
+            new BigInteger( "9007199254740990" ) };
+
+      assertEquals( "18437736874454810627", numberArray[0].toString() );
+      assertEquals( "9007199254740990", numberArray[1].toString() );
+
+      JSONArray jsonNumArray = JSONArray.fromArray( numberArray );
+
+      assertEquals( "18437736874454810627", jsonNumArray.get( 0 )
+            .toString() );
+      assertEquals( "9007199254740990", jsonNumArray.get( 1 )
+            .toString() );
+   }
+
    public void testConstructor_Object_Array_functions()
    {
       JSONArray expected = new JSONArray( "[function(a){ return a; }]" );
@@ -238,6 +280,18 @@ public class TestJSONArray extends TestCase
    {
       testJSONArray( "[function(a){ return a; },[function(b){ return b; }]]",
             "[function(a){ return a; },[function(b){ return b; }]]" );
+   }
+
+   public void testFromObject_BigDecimal()
+   {
+      JSONArray actual = JSONArray.fromObject( new BigDecimal( "12345678901234567890.1234567890" ) );
+      assertTrue( actual.get( 0 ) instanceof BigDecimal );
+   }
+
+   public void testFromObject_BigInteger()
+   {
+      JSONArray actual = JSONArray.fromObject( new BigInteger( "123456789012345678901234567890" ) );
+      assertTrue( actual.get( 0 ) instanceof BigInteger );
    }
 
    public void testFromObject_Boolean()
@@ -954,6 +1008,22 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
+   public void testToArray_BigDecimal()
+   {
+      BigDecimal[] expected = new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ONE };
+      JSONArray jsonArray = JSONArray.fromObject( expected );
+      Object[] actual = JSONArray.toArray( jsonArray );
+      ArrayAssertions.assertEquals( expected, actual );
+   }
+
+   public void testToArray_BigInteger()
+   {
+      BigInteger[] expected = new BigInteger[] { BigInteger.ZERO, BigInteger.ONE };
+      JSONArray jsonArray = JSONArray.fromObject( expected );
+      Object[] actual = JSONArray.toArray( jsonArray );
+      ArrayAssertions.assertEquals( expected, actual );
+   }
+
    public void testToArray_boolean()
    {
       boolean[] expected = new boolean[] { true, false };
@@ -1215,6 +1285,26 @@ public class TestJSONArray extends TestCase
       expected.add( new BeanA() );
       JSONArray jsonArray = JSONArray.fromObject( expected );
       List actual = JSONArray.toList( jsonArray, BeanA.class );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testToList_BigDecimal()
+   {
+      List expected = new ArrayList();
+      expected.add( BigDecimal.ZERO );
+      expected.add( BigDecimal.ONE );
+      JSONArray jsonArray = JSONArray.fromObject( expected );
+      List actual = JSONArray.toList( jsonArray );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testToList_BigInteger()
+   {
+      List expected = new ArrayList();
+      expected.add( BigInteger.ZERO );
+      expected.add( BigInteger.ONE );
+      JSONArray jsonArray = JSONArray.fromObject( expected );
+      List actual = JSONArray.toList( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
 

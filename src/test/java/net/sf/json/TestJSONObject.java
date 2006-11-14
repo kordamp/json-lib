@@ -17,6 +17,8 @@
 package net.sf.json;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,6 +35,7 @@ import net.sf.json.sample.BeanWithFunc;
 import net.sf.json.sample.EmptyBean;
 import net.sf.json.sample.ListingBean;
 import net.sf.json.sample.MappingBean;
+import net.sf.json.sample.NumberBean;
 import net.sf.json.sample.ObjectJSONStringBean;
 import net.sf.json.sample.ValueBean;
 import net.sf.json.util.JSONDynaBean;
@@ -752,6 +755,17 @@ public class TestJSONObject extends TestCase
             JSONArray.toArray( jsonObject.getJSONArray( "intarray" ) ) );
    }
 
+   public void testToBean_DynaBean__BigInteger_BigDecimal()
+   {
+      JSONObject json = new JSONObject().put( "i", BigInteger.ZERO )
+            .put( "d", BigDecimal.ONE );
+      Object bean = JSONObject.toBean( json );
+      Object i = ((JSONDynaBean) bean).get( "i" );
+      Object d = ((JSONDynaBean) bean).get( "d" );
+      assertTrue( i instanceof BigInteger );
+      assertTrue( d instanceof BigDecimal );
+   }
+
    public void testToBean_emptyBean()
    {
       EmptyBean bean = new EmptyBean();
@@ -1000,6 +1014,52 @@ public class TestJSONObject extends TestCase
       assertEquals( "010", items[1][0] );
       assertEquals( "011", items[1][1] );
       assertEquals( "020", items[2][0] );
+   }
+
+   public void testToBean_NumberBean()
+   {
+      JSONObject json = new JSONObject();
+      json.put( "pbyte", new Byte( (byte) 2 ) );
+      json.put( "pshort", new Short( (short) 2 ) );
+      json.put( "pint", new Integer( 2 ) );
+      json.put( "plong", new Long( 2 ) );
+      json.put( "pfloat", new Float( 2 ) );
+      json.put( "pdouble", new Double( 2 ) );
+      json.put( "pbigint", new BigInteger( "2" ) );
+      json.put( "pbigdec", new BigDecimal( "2" ) );
+
+      NumberBean bean = (NumberBean) JSONObject.toBean( json, NumberBean.class );
+      assertEquals( (byte) 2, bean.getPbyte() );
+      assertEquals( (short) 2, bean.getPshort() );
+      assertEquals( 2, bean.getPint() );
+      assertEquals( 2L, bean.getPlong() );
+      assertEquals( 2f, bean.getPfloat(), 0f );
+      assertEquals( 2d, bean.getPdouble(), 0d );
+      assertEquals( new BigInteger( "2" ), bean.getPbigint() );
+      assertEquals( new BigDecimal( "2" ), bean.getPbigdec() );
+   }
+
+   public void testToBean_NumberBean_2()
+   {
+      JSONObject json = new JSONObject();
+      json.put( "pbyte", new Integer( 2 ) );
+      json.put( "pshort", new Integer( 2 ) );
+      json.put( "pint", new Integer( 2 ) );
+      json.put( "plong", new Integer( 2 ) );
+      json.put( "pfloat", new Integer( 2 ) );
+      json.put( "pdouble", new Integer( 2 ) );
+      json.put( "pbigint", new Integer( 2 ) );
+      json.put( "pbigdec", new Integer( 2 ) );
+
+      NumberBean bean = (NumberBean) JSONObject.toBean( json, NumberBean.class );
+      assertEquals( (byte) 2, bean.getPbyte() );
+      assertEquals( (short) 2, bean.getPshort() );
+      assertEquals( 2, bean.getPint() );
+      assertEquals( 2L, bean.getPlong() );
+      assertEquals( 2f, bean.getPfloat(), 0f );
+      assertEquals( 2d, bean.getPdouble(), 0d );
+      assertEquals( new BigInteger( "2" ), bean.getPbigint() );
+      assertEquals( new BigDecimal( "2" ), bean.getPbigdec() );
    }
 
    public void testToJSONArray()
