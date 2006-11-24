@@ -130,6 +130,8 @@ public final class JSONObject implements JSON
    {
       if( bean == null || JSONUtils.isNull( bean ) ){
          return new JSONObject( true );
+      }else if( bean instanceof Enum ){
+         throw new IllegalArgumentException( "'bean' is an Enum. Use JSONArray instead" );
       }else if( bean instanceof JSONObject ){
          return new JSONObject( (JSONObject) bean );
       }else if( bean instanceof DynaBean ){
@@ -171,7 +173,7 @@ public final class JSONObject implements JSON
          return jsonObject;
       }
    }
-
+   
    /**
     * Creates a JSONObject from a DynaBean.<br>
     * Supports nested maps, POJOs, and arrays/collections.
@@ -225,6 +227,8 @@ public final class JSONObject implements JSON
    {
       if( object == null || JSONUtils.isNull( object ) ){
          return new JSONObject( true );
+      }else if( object instanceof Enum ){
+         throw new IllegalArgumentException( "'object' is an Enum. Use JSONArray instead" );
       }else if( object instanceof JSONObject ){
          return new JSONObject( (JSONObject) object );
       }else if( object instanceof DynaBean ){
@@ -526,6 +530,8 @@ public final class JSONObject implements JSON
             }else{
                setProperty( object, key, JSONNull.getInstance() );
             }
+         }else if( Enum.class.isAssignableFrom( type ) ){
+            setProperty( object, key, ((Enum)value).toString());
          }else{
             setProperty( object, key, fromObject( value ) );
          }
@@ -538,10 +544,10 @@ public final class JSONObject implements JSON
       }
    }
 
-   // ------------------------------------------------------
-
    /** identifies this object as null */
    private boolean nullObject;
+
+   // ------------------------------------------------------
 
    /**
     * The Map where the JSONObject's properties are kept.
@@ -591,6 +597,17 @@ public final class JSONObject implements JSON
          Object value = bean.get( dynaProperty.getName() );
          setValue( this, key, value, type );
       }
+   }
+
+   /**
+    * Construct a JSONObject from an Enum.
+    * 
+    * @param e An enum value.
+    * @exception JSONException Always throw an exception.
+    */
+   public JSONObject( Enum e )
+   {
+      throw new IllegalArgumentException("Enum is not supported. Use JSONArray instead");
    }
 
    /**
@@ -1476,6 +1493,8 @@ public final class JSONObject implements JSON
          this.properties.put( key, JSONUtils.transformNumber( (Number) value ) );
       }else if( JSONUtils.isBoolean( value ) ){
          this.properties.put( key, value );
+      }else if( value != null && Enum.class.isAssignableFrom( value.getClass() ) ){
+         this.properties.put( key,  ((Enum)value).toString());
       }else{
          this.properties.put( key, fromObject( value ) );
       }

@@ -50,6 +50,11 @@
       The <code>function</code> type from javascript is not part of the JSON
       format "officially" (please refer to <a href="http://www.json.org">http://www.json.org</a>)
       but it is supported as well.</p>
+      <p>Json-lib comes in two flavors, depending on the jdk compatibility. 
+      json-lib-x.x-jdk13 is compatible with JDK 1.3.1 and upwards. 
+      json-lib-x.x-jdk15 is compatible with JDK 1.5, includes support for Enums in JSONArray and JSONObject.
+      Please reffer to the appropriate javadoc links available in the project menu.
+      </p>
 		</section>
 		<section name="What is JSON ?">
 			<p>

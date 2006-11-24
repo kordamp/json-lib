@@ -195,6 +195,8 @@ public final class JSONArray implements JSON
             || JSONUtils.isNumber( object ) || JSONUtils.isNull( object )
             || JSONUtils.isString( object ) || object instanceof JSON ){
          return new JSONArray().put( object );
+      }else if( object instanceof Enum ){
+         return new JSONArray( (Enum) object );
       }else if( JSONUtils.isObject( object ) ){
          return new JSONArray().put( JSONObject.fromObject( object ) );
       }else{
@@ -443,6 +445,22 @@ public final class JSONArray implements JSON
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
       // TODO testValidity
+   }
+
+   /**
+    * Construct a JSONArray from an Enum value.
+    * 
+    * @param e A enum value.
+    * @throws JSONException If there is a syntax error.
+    */
+   public JSONArray( Enum e )
+   {
+      this();
+      if( e != null ){
+         this.elements.add( e.toString() );
+      }else{
+         throw new JSONException( "enum value is null" );
+      }
    }
 
    /**
@@ -1176,6 +1194,8 @@ public final class JSONArray implements JSON
          }else if( JSONUtils.isNumber( value ) || JSONUtils.isBoolean( value ) ){
             JSONUtils.testValidity( value );
             this.elements.set( index, value );
+         }else if( value instanceof Enum ){
+            this.elements.set( index, String.valueOf( value ) );
          }else{
             JSONObject jsonObject = JSONObject.fromObject( value );
             if( jsonObject.isNullObject() ){
@@ -1309,6 +1329,8 @@ public final class JSONArray implements JSON
          this.elements.add( JSONUtils.transformNumber( (Number) value ) );
       }else if( JSONUtils.isBoolean( value ) ){
          this.elements.add( value );
+      }else if( value instanceof Enum ){
+         this.elements.add( String.valueOf( value ) );
       }else{
          JSONObject jsonObject = JSONObject.fromObject( value );
          if( jsonObject.isNullObject() ){

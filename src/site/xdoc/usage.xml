@@ -148,7 +148,9 @@
    ...
 
    String json = "{'data':[{'name':'Wallace'},{'name':'Grommit'}]}";
-   MyBean bean = JSONObject.toBean( json, MyBean.class );</source>
+   Map classMap = new HashMap();
+   classMap.put( "data", Person.class );
+   MyBean bean = JSONObject.toBean( json, MyBean.class, classMap );</source>
        <p>This yields a MyBean instance that has DynaBeans inside the 'data' attribute', so now comes 
        the part of postprocessing, this can be done with an Iterator<br/>
        Example:</p>

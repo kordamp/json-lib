@@ -23,6 +23,8 @@
       <item name="Who is using it?" href="users.html"/>
       <item name="FAQ" href="faq.html"/>
       <item name="Changes" href="changes-report.html"/>
+      <item name="Javadoc (jdk13)" href="apidocs/index.html"/>
+      <item name="Javadoc (jdk15)" href="apidocs/jdk15/index.html"/>
     </menu>
 
     ${reports}
