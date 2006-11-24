@@ -15,6 +15,9 @@
  */
 package net.sf.json;
 
+import java.io.IOException;
+import java.io.Writer;
+
 /*
 Copyright (c) 2002 JSON.org
 
@@ -39,11 +42,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 /**
- * JSONNull is equivalent to the value that JavaScript calls null, whilst
- * Java's null is equivalent to the value that JavaScript calls undefined.
- *
+ * JSONNull is equivalent to the value that JavaScript calls null, whilst Java's
+ * null is equivalent to the value that JavaScript calls undefined.
+ * 
  * @author JSON.org
  * @version 2
  */
@@ -71,7 +73,7 @@ public final class JSONNull implements JSON
 
    /**
     * A Null object is equal to the null value and to itself.
-    *
+    * 
     * @param object An object to test for nullness.
     * @return true if the object parameter is the JSONObject.NULL object or
     *         null.
@@ -93,11 +95,32 @@ public final class JSONNull implements JSON
 
    /**
     * Get the "null" string value.
-    *
+    * 
     * @return The string "null".
     */
    public String toString()
    {
       return "null";
+   }
+
+   public String toString( int indentFactor )
+   {
+      return toString();
+   }
+
+   public String toString( int indentFactor, int indent )
+   {
+      return toString();
+   }
+
+   public Writer write( Writer writer )
+   {
+      try{
+         writer.write( toString() );
+         return writer;
+      }
+      catch( IOException e ){
+         throw new JSONException( e );
+      }
    }
 }

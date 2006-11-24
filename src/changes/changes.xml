@@ -7,13 +7,16 @@
 		</author>
 	</properties>
 	<body>
-		<release version="N/A" date="2006-11-14"
+		<release version="N/A" date="2006-11-24"
 			desc="Current development version">
 			<action dev="Andres Almiray" type="add">
 				Added JSONAssert for easy JSON testing.
 			</action>
 			<action dev="Andres Almiray" type="add">
 				Updated JSONFunction constructor for correct length of parameters.
+			</action>
+			<action dev="Andres Almiray" type="fix" issue="1602386">
+				Add printer friendly methods to JSON interface.
 			</action>
 			<action dev="Andres Almiray" type="fix" issue="1596168">
 				JSONArray fails to convert an array of BigDecimals/BigInteger.
