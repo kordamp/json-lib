@@ -18,12 +18,11 @@ package net.sf.json.util;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.DynaProperty;
@@ -37,7 +36,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class JSONDynaBean implements DynaBean, Serializable
 {
-   private static final long serialVersionUID = -3152084265262514977L;
+   private static final long serialVersionUID = -8287401671998903440L;
    protected JSONDynaClass dynaClass;
    protected Map dynaValues = new HashMap();
 
@@ -48,11 +47,17 @@ public class JSONDynaBean implements DynaBean, Serializable
 
    public boolean contains( String name, String key )
    {
+      DynaProperty dynaProperty = getDynaProperty( name );
+
+      Class type = dynaProperty.getType();
+      if( !Map.class.isAssignableFrom( type ) ){
+         throw new IllegalArgumentException( "Non-Mapped property name: " + name + " key: " + key );
+      }
+
       Object value = dynaValues.get( name );
       if( value == null ){
-         throw new NullPointerException( "Unmapped property name: " + name + " key: " + key );
-      }else if( !(value instanceof Map) ){
-         throw new IllegalArgumentException( "Non-Mapped property name: " + name + " key: " + key );
+         value = new HashMap();
+         dynaValues.put( name, value );
       }
       return ((Map) value).containsKey( key );
    }
@@ -89,9 +94,6 @@ public class JSONDynaBean implements DynaBean, Serializable
       }
 
       Class type = getDynaProperty( name ).getType();
-      if( type == null ){
-         throw new NullPointerException( "Unspecified property type for " + name );
-      }
       if( !type.isPrimitive() ){
          return value;
       }
@@ -119,13 +121,16 @@ public class JSONDynaBean implements DynaBean, Serializable
 
    public Object get( String name, int index )
    {
-      Object value = dynaValues.get( name );
-      if( value == null ){
-         throw new NullPointerException( "Unindexed property name: " + name + " index: " + index );
-      }else if( !(value instanceof List) || !(value.getClass().isArray()) ){
+      DynaProperty dynaProperty = getDynaProperty( name );
+
+      Class type = dynaProperty.getType();
+      if( !type.isArray() || List.class.isAssignableFrom( type ) ){
          throw new IllegalArgumentException( "Non-Indexed property name: " + name + " index: "
                + index );
       }
+
+      Object value = dynaValues.get( name );
+
       if( value.getClass()
             .isArray() ){
          value = Array.get( value, index );
@@ -138,11 +143,20 @@ public class JSONDynaBean implements DynaBean, Serializable
 
    public Object get( String name, String key )
    {
+      DynaProperty dynaProperty = getDynaProperty( name );
+      if( dynaProperty.getType() == null ){
+         throw new NullPointerException( "Unspecified property type for " + name );
+      }
+
+      Class type = dynaProperty.getType();
+      if( !Map.class.isAssignableFrom( type ) ){
+         throw new IllegalArgumentException( "Non-Mapped property name: " + name + " key: " + key );
+      }
+
       Object value = dynaValues.get( name );
       if( value == null ){
-         throw new NullPointerException( "Unmapped property name: " + name + " key: " + key );
-      }else if( !(value instanceof Map) ){
-         throw new IllegalArgumentException( "Non-Mapped property name: " + name + " key: " + key );
+         value = new HashMap();
+         dynaValues.put( name, value );
       }
       return ((Map) value).get( key );
    }
@@ -165,26 +179,49 @@ public class JSONDynaBean implements DynaBean, Serializable
 
    public void remove( String name, String key )
    {
+      DynaProperty dynaProperty = getDynaProperty( name );
+
+      Class type = dynaProperty.getType();
+      if( !Map.class.isAssignableFrom( type ) ){
+         throw new IllegalArgumentException( "Non-Mapped property name: " + name + " key: " + key );
+      }
+
       Object value = dynaValues.get( name );
       if( value == null ){
-         throw new NullPointerException( "Unmapped property name: " + name + " key: " + key );
-      }else if( !(value instanceof Map) ){
-         throw new IllegalArgumentException( "Non-Mapped property name: " + name + " key: " + key );
+         value = new HashMap();
+         dynaValues.put( name, value );
       }
       ((Map) value).remove( key );
    }
 
    public void set( String name, int index, Object value )
    {
-      Object prop = dynaValues.get( name );
-      if( prop == null ){
-         throw new NullPointerException( "Unindexed property name: " + name + " index: " + index );
-      }else if( !(prop instanceof List) || !(prop.getClass().isArray()) ){
+      DynaProperty dynaProperty = getDynaProperty( name );
+
+      Class type = dynaProperty.getType();
+      if( !type.isArray() || List.class.isAssignableFrom( type ) ){
          throw new IllegalArgumentException( "Non-Indexed property name: " + name + " index: "
                + index );
       }
+
+      Object prop = dynaValues.get( name );
+      if( prop == null ){
+         if( List.class.isAssignableFrom( type ) ){
+            prop = new ArrayList();
+         }else{
+            prop = Array.newInstance( type.getComponentType(), index + 1 );
+         }
+         dynaValues.put( name, prop );
+      }
+
       if( prop.getClass()
             .isArray() ){
+         if( index >= Array.getLength( prop ) ){
+            Object tmp = Array.newInstance( type.getComponentType(), index + 1 );
+            System.arraycopy( prop, 0, tmp, 0, Array.getLength( prop ) );
+            prop = tmp;
+            dynaValues.put( name, tmp );
+         }
          Array.set( prop, index, value );
       }else if( value instanceof List ){
          ((List) prop).set( index, value );
@@ -194,39 +231,33 @@ public class JSONDynaBean implements DynaBean, Serializable
    public void set( String name, Object value )
    {
       DynaProperty property = getDynaProperty( name );
-      if( property.getType() == null ){
-         throw new NullPointerException( "Unspecified property type for " + name );
+
+      if( value == null || !isDynaAssignable( property.getType(), value.getClass() ) ){
+         value = JSONUtils.getMorpherRegistry()
+               .morph( property.getType(), value );
       }
 
-      if( value == null ){
-         if( property.getType()
-               .isPrimitive() ){
-            throw new NullPointerException( "Property type for " + name + " is primitive" );
-         }
-      }else if( !isDynaAssignable( property.getType(), value.getClass() ) ){
-         try{
-            value = ConvertUtils.convert( String.valueOf( value ), value.getClass() );
-         }
-         catch( Exception e ){
-            throw new IllegalArgumentException( "Unassignable property type for " + name );
-         }
-      }
-      // log.debug( name + " = " + value );
       dynaValues.put( name, value );
    }
 
    public void set( String name, String key, Object value )
    {
+      DynaProperty dynaProperty = getDynaProperty( name );
+
+      Class type = dynaProperty.getType();
+      if( !Map.class.isAssignableFrom( type ) ){
+         throw new IllegalArgumentException( "Non-Mapped property name: " + name + " key: " + key );
+      }
+
       Object prop = dynaValues.get( name );
       if( prop == null ){
-         throw new IllegalArgumentException( "Unmapped property name: " + name + " key: " + key );
-      }else if( !(prop instanceof Map) ){
-         throw new IllegalArgumentException( "Non-Mapped property name: " + name + " key: " + key );
+         prop = new HashMap();
+         dynaValues.put( name, prop );
       }
       ((Map) prop).put( key, value );
    }
 
-   public void setDynamicFormClass( JSONDynaClass dynaClass )
+   public synchronized void setDynaBeanClass( JSONDynaClass dynaClass )
    {
       if( this.dynaClass == null ){
          this.dynaClass = dynaClass;
@@ -251,6 +282,9 @@ public class JSONDynaBean implements DynaBean, Serializable
    protected boolean isDynaAssignable( Class dest, Class src )
    {
       boolean assignable = dest.isAssignableFrom( src );
+      if( assignable ){
+         return true;
+      }
       assignable = (dest == Boolean.TYPE && src == Boolean.class) ? true : assignable;
       assignable = (dest == Byte.TYPE && src == Byte.class) ? true : assignable;
       assignable = (dest == Character.TYPE && src == Character.class) ? true : assignable;

@@ -289,7 +289,6 @@ public class TestJSONAssert extends TestCase
          JSONAssert.assertEquals( expected, actual );
       }
       catch( AssertionFailedError e ){
-         e.printStackTrace();
          fail( "Should be equal" );
       }
    }

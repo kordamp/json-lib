@@ -29,7 +29,7 @@ import net.sf.json.JSONSerializer;
 
 /**
  * Provides assertions on equality for JSON strings and JSON types.
- * 
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JSONAssert extends Assert
@@ -263,7 +263,7 @@ public class JSONAssert extends Assert
       if( actual == null ){
          fail( header + "actual string was null" );
       }else if( expected == null ){
-         assertEquals( header, "null".toString(), actual );
+         assertEquals( header, "null", actual );
       }else{
          assertEquals( header, expected.toString(), actual );
       }

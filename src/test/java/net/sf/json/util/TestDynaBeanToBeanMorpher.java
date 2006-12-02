@@ -134,7 +134,7 @@ public class TestDynaBeanToBeanMorpher extends TestCase
       properties.put( "bool", Boolean.class );
       JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
       JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
-      dynaBean.setDynamicFormClass( dynaClass );
+      dynaBean.setDynaBeanClass( dynaClass );
       dynaBean.set( "string", "dyna json" );
       dynaBean.set( "integer", "24" );
       dynaBean.set( "bool", "false" );
@@ -155,7 +155,7 @@ public class TestDynaBeanToBeanMorpher extends TestCase
       properties.put( "bool", Boolean.class );
       JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
       JSONDynaBean dynaBeanA = (JSONDynaBean) dynaClass.newInstance();
-      dynaBeanA.setDynamicFormClass( dynaClass );
+      dynaBeanA.setDynaBeanClass( dynaClass );
       dynaBeanA.set( "string", "dyna json" );
       dynaBeanA.set( "integer", "24" );
       dynaBeanA.set( "bool", "false" );
@@ -167,7 +167,7 @@ public class TestDynaBeanToBeanMorpher extends TestCase
       properties.put( "intarray", int[].class );
       dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
       JSONDynaBean dynaBeanB = (JSONDynaBean) dynaClass.newInstance();
-      dynaBeanB.setDynamicFormClass( dynaClass );
+      dynaBeanB.setDynaBeanClass( dynaClass );
       dynaBeanB.set( "string", "dyna json B" );
       dynaBeanB.set( "integer", "48" );
       dynaBeanB.set( "bool", "true" );
@@ -178,7 +178,7 @@ public class TestDynaBeanToBeanMorpher extends TestCase
       properties.put( "beanB", DynaBean.class );
       dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
       JSONDynaBean dynaBeanC = (JSONDynaBean) dynaClass.newInstance();
-      dynaBeanC.setDynamicFormClass( dynaClass );
+      dynaBeanC.setDynaBeanClass( dynaClass );
       dynaBeanC.set( "beanA", dynaBeanA );
       dynaBeanC.set( "beanB", dynaBeanB );
 
@@ -205,7 +205,7 @@ public class TestDynaBeanToBeanMorpher extends TestCase
       properties.put( "beanB", BeanB.class );
       JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
       JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
-      dynaBean.setDynamicFormClass( dynaClass );
+      dynaBean.setDynaBeanClass( dynaClass );
       dynaBean.set( "beanA", new BeanA() );
       dynaBean.set( "beanB", new BeanB() );
 

@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.DynaProperty;
@@ -49,7 +48,7 @@ public class JSONDynaClass implements DynaClass, Serializable
       }
    };
 
-   private static final long serialVersionUID = 3856810283982201386L;
+   private static final long serialVersionUID = 6807849157046519646L;
 
    protected Map attributes;
    protected DynaProperty dynaProperties[];
@@ -125,15 +124,15 @@ public class JSONDynaClass implements DynaClass, Serializable
 
    public DynaBean newInstance() throws IllegalAccessException, InstantiationException
    {
-      JSONDynaBean dynamicForm = (JSONDynaBean) getJsonBeanClass().newInstance();
-      dynamicForm.setDynamicFormClass( this );
+      JSONDynaBean dynaBean = (JSONDynaBean) getJsonBeanClass().newInstance();
+      dynaBean.setDynaBeanClass( this );
       Iterator keys = attributes.keySet()
             .iterator();
       while( keys.hasNext() ){
          String key = (String) keys.next();
-         dynamicForm.set( key, null );
+         dynaBean.set( key, null );
       }
-      return dynamicForm;
+      return dynaBean;
    }
 
    public String toString()

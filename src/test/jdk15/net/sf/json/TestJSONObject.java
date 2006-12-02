@@ -126,7 +126,7 @@ public class TestJSONObject extends TestCase
       properties.put( "integer", Integer.class );
       JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
       JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
-      dynaBean.setDynamicFormClass( dynaClass );
+      dynaBean.setDynaBeanClass( dynaClass );
       dynaBean.set( "bool", Boolean.TRUE );
       dynaBean.set( "integer", new Integer( 42 ) );
 
@@ -281,7 +281,7 @@ public class TestJSONObject extends TestCase
       properties.put( "bean", BeanA.class );
       JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
       JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
-      dynaBean.setDynamicFormClass( dynaClass );
+      dynaBean.setDynaBeanClass( dynaClass );
       dynaBean.set( "string", "json" );
       dynaBean.set( "number", new Double( 2 ) );
       dynaBean.set( "array", new Integer[] { new Integer( 1 ), new Integer( 2 ) } );
@@ -378,7 +378,7 @@ public class TestJSONObject extends TestCase
       properties.put( "jsonEnum", JsonEnum.class );
       JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
       JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
-      dynaBean.setDynamicFormClass( dynaClass );
+      dynaBean.setDynaBeanClass( dynaClass );
       dynaBean.set( "jsonEnum", JsonEnum.OBJECT );
       JSONObject json = JSONObject.fromObject( dynaBean );
       assertNotNull( json );
@@ -844,13 +844,23 @@ public class TestJSONObject extends TestCase
 
    public void testToBean_DynaBean__BigInteger_BigDecimal()
    {
+      BigInteger l = BigInteger.valueOf(Long.MAX_VALUE);
+      l = l.pow(100);
+      BigDecimal m = new BigDecimal( l.pow( 5 ) ).add( new BigDecimal("0.001") );
       JSONObject json = new JSONObject().put( "i", BigInteger.ZERO )
-            .put( "d", BigDecimal.ONE );
+            .put( "d", BigDecimal.ONE )
+            .put( "bi", l )
+            .put( "bd", m );
       Object bean = JSONObject.toBean( json );
       Object i = ((JSONDynaBean) bean).get( "i" );
       Object d = ((JSONDynaBean) bean).get( "d" );
-      assertTrue( i instanceof BigInteger );
-      assertTrue( d instanceof BigDecimal );
+      assertTrue( i instanceof Integer );
+      assertTrue( d instanceof Integer );
+
+      Object bi = ((JSONDynaBean) bean).get( "bi" );
+      Object bd = ((JSONDynaBean) bean).get( "bd" );
+      assertTrue( bi instanceof BigInteger );
+      assertTrue( bd instanceof BigDecimal );
    }
 
    public void testToBean_emptyBean()
@@ -1181,7 +1191,7 @@ public class TestJSONObject extends TestCase
       properties.put( "str", String.class );
       JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
       JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
-      dynaBean.setDynamicFormClass( dynaClass );
+      dynaBean.setDynaBeanClass( dynaClass );
       dynaBean.set( "name", "json" );
       dynaBean.set( "func", new JSONFunction( "return this;" ) );
       dynaBean.set( "jsonstr", new ObjectJSONStringBean() );

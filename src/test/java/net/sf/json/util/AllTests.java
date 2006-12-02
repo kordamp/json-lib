@@ -33,6 +33,7 @@ public class AllTests extends TestSuite
       suite.addTest( new TestSuite( TestJSONTokener.class ) );
       suite.addTest( new TestSuite( TestJSONBuilder.class ) );
       suite.addTest( new TestSuite( TestJSONStringer.class ) );
+      suite.addTest( new TestSuite( TestJSONDynaBean.class ) );
 
       return suite;
    }

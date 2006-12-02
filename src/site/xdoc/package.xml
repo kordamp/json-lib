@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+
+	<properties>
+		<title>Json-lib::Build instructions</title>
+	</properties>
+
+	<body>
+		<section name="Build instructions">
+			<a href="#jdk13">Building the jdk13 package</a>
+			<a href="#jdk15">Building the jdk15 package</a>
+			<a name="jdk13" />
+			<subsection name="Building the jdk13 package">
+				<p>
+					<ol>
+						<li>
+							Download the latest snapshot from
+							<a
+								href="http://sourceforge.net/cvs/?group_id=174866">
+								cvs
+							</a>
+							.
+						</li>
+						<li>
+							You must have ant 1.6.5 installed in your
+							system. You can download it from
+							<a href="http://ant.apache.org"
+								target="_new">
+								here
+							</a>
+							.
+						</li>
+						<li>
+							Execute 'ant jar', the distribution jar
+							should be inside the
+							<i>target</i>
+							directory.
+						</li>
+					</ol>
+				</p>
+			</subsection>
+			<a name="jdk15" />
+			<subsection name="Building the jdk15 package">
+				<p>
+					<ol>
+						<li>
+							Download the latest snapshot from
+							<a
+								href="http://sourceforge.net/cvs/?group_id=174866">
+								cvs
+							</a>
+							.
+						</li>
+						<li>
+							You must have ant 1.6.5 installed in your
+							system. You can download it from
+							<a href="http://ant.apache.org"
+								target="_new">
+								here
+							</a>
+							.
+						</li>
+						<li>
+							Execute 'ant jar.jdk15', the distribution
+							jar should be inside the
+							<i>target</i>
+							directory.
+						</li>
+					</ol>
+				</p>
+			</subsection>
+		</section>
+	</body>
+</document>

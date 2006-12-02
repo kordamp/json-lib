@@ -6,13 +6,14 @@
 	<groupId>net.sf.json-lib</groupId>
 	<artifactId>json-lib</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9-dev</version>
+	<version>1.0b1</version>
 	<name>json-lib</name>
 
 	<url>http://json-lib.sourceforge.net</url>
 
 	<description>
-		Java library for transforming beans, maps, collections, java arrays and XML to JSON.
+		Java library for transforming beans, maps, collections, java
+		arrays and XML to JSON.
 	</description>
 
 	<inceptionYear>2006</inceptionYear>
@@ -120,7 +121,7 @@
 		<dependency>
 			<groupId>net.sf.ezmorph</groupId>
 			<artifactId>ezmorph</artifactId>
-			<version>0.9</version>
+			<version>0.9.1</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -179,9 +180,7 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>
-					maven-project-info-reports-plugin
-				</artifactId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -255,15 +254,11 @@
 		<snapshotRepository>
 			<id>sf_snapshots</id>
 			<name>SourceForge Snapshot</name>
-			<url>
-				scpexe://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo
-			</url>
+			<url>scpexe://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo</url>
 		</snapshotRepository>
 		<site>
 			<id>sf_website</id>
-			<url>
-				scpexe://ssh.sf.net/home/groups/j/js/json-lib/htdocs
-			</url>
+			<url>scpexe://ssh.sf.net/home/groups/j/js/json-lib/htdocs</url>
 		</site>
 	</distributionManagement>
 

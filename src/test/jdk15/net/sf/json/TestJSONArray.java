@@ -1557,7 +1557,7 @@ public class TestJSONArray extends TestCase
       properties.put( "name", String.class );
       JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
       JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
-      dynaBean.setDynamicFormClass( dynaClass );
+      dynaBean.setDynaBeanClass( dynaClass );
       dynaBean.set( "name", "json" );
       // JSON Strings can not be null, only empty
       return dynaBean;
