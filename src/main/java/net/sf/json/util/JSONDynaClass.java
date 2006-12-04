@@ -35,7 +35,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class JSONDynaClass implements DynaClass, Serializable
 {
-   private static final Comparator DynaPropertyComparator = new Comparator(){
+   private static final Comparator dynaPropertyComparator = new Comparator(){
       public int compare( Object a, Object b )
       {
          if( a instanceof DynaProperty && b instanceof DynaProperty ){
@@ -170,9 +170,25 @@ public class JSONDynaClass implements DynaClass, Serializable
             Object pclass = entry.getValue();
             DynaProperty dynaProperty = null;
             if( pclass instanceof String ){
-               dynaProperty = new DynaProperty( pname, Class.forName( (String) pclass ) );
+               Class klass = (Class) Class.forName( (String) pclass );
+               if( klass.isArray() ){
+                  if( klass.getComponentType()
+                        .isArray() ){
+                     throw new IllegalArgumentException(
+                           "Multidimensional arrays are not supported" );
+                  }
+               }
+               dynaProperty = new DynaProperty( pname, klass );
             }else if( pclass instanceof Class ){
-               dynaProperty = new DynaProperty( pname, (Class) pclass );
+               Class klass = (Class) pclass;
+               if( klass.isArray() ){
+                  if( klass.getComponentType()
+                        .isArray() ){
+                     throw new IllegalArgumentException(
+                           "Multidimensional arrays are not supported" );
+                  }
+               }
+               dynaProperty = new DynaProperty( pname, klass );
             }else{
                throw new IllegalArgumentException( "Type must be String or Class" );
             }
@@ -185,6 +201,6 @@ public class JSONDynaClass implements DynaClass, Serializable
       }
 
       // keep properties sorted by name
-      Arrays.sort( dynaProperties, 0, dynaProperties.length, DynaPropertyComparator );
+      Arrays.sort( dynaProperties, 0, dynaProperties.length, dynaPropertyComparator );
    }
 }

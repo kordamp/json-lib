@@ -34,7 +34,6 @@ public class TestJSONDynaBean extends TestCase
    }
 
    private JSONDynaBean dynaBean;
-
    private JSONDynaBean primitiveDynaBean;
 
    public TestJSONDynaBean( String name )

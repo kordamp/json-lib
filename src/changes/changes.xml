@@ -16,6 +16,9 @@
 				Updated JSONFunction constructor for correct length of
 				parameters.
 			</action>
+			<action dev="Andres Almiray" type="fix" issue="1608212">
+				JSONDynaClass allows multidimensional arrays.
+			</action>
 			<action dev="Andres Almiray" type="fix" issue="1607448">
 				Primitives support for JSONDynaBean.
 			</action>
