@@ -32,6 +32,9 @@ public class AllTests extends TestSuite
       suite.addTest( new TestSuite( TestJSONArray.class ) );
       suite.addTest( new TestSuite( TestJSONObject.class ) );
       suite.addTest( new TestSuite( TestJSONSerializer.class ) );
+      suite.addTest( new TestSuite( TestJSONArrayAsJSON.class ) );
+      suite.addTest( new TestSuite( TestJSONObjectAsJSON.class ) );
+      suite.addTest( new TestSuite( TestJSONNullAsJSON.class ) );
 
       return suite;
    }

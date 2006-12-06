@@ -45,7 +45,7 @@ SOFTWARE.
 /**
  * JSONNull is equivalent to the value that JavaScript calls null, whilst Java's
  * null is equivalent to the value that JavaScript calls undefined.
- * 
+ *
  * @author JSON.org
  * @version 2
  */
@@ -73,7 +73,7 @@ public final class JSONNull implements JSON
 
    /**
     * A Null object is equal to the null value and to itself.
-    * 
+    *
     * @param object An object to test for nullness.
     * @return true if the object parameter is the JSONObject.NULL object or
     *         null.
@@ -95,7 +95,7 @@ public final class JSONNull implements JSON
 
    /**
     * Get the "null" string value.
-    * 
+    *
     * @return The string "null".
     */
    public String toString()
@@ -110,7 +110,12 @@ public final class JSONNull implements JSON
 
    public String toString( int indentFactor, int indent )
    {
-      return toString();
+      StringBuffer sb = new StringBuffer();
+      for( int i = 0; i < indent; i += 1 ){
+         sb.append( ' ' );
+      }
+      sb.append( toString() );
+      return sb.toString();
    }
 
    public Writer write( Writer writer )

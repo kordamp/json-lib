@@ -1620,6 +1620,9 @@ public final class JSONObject implements JSON
                sb.append( ' ' );
             }
          }
+         for( i = 0; i < indent; i += 1 ){
+            sb.insert( 0, ' ' );
+         }
       }
       sb.append( '}' );
       return sb.toString();

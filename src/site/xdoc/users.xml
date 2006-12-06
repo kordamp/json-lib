@@ -17,7 +17,7 @@
          <tr>
             <td valign="top"><a href="http://www.mentaframework.org/">Mentawai</a></td>
             <td>The Mentawai goal is to be a simple, flexible, joyful and productive Java web framework.<br/>
-            Json-lib is used in the ajax renderers package. Thanks to Rubem Azenha.</td>
+            Json-lib is used in the AJAX renderers package. Thanks to Rubem Azenha.</td>
          </tr>
          <tr>
             <td valign="top"><a href="https://springmodules.dev.java.net/">Spring Modules</a></td>
@@ -25,13 +25,23 @@
             <a href="http://www.springframework.org">Spring Framework</a>. The core goal of 
             Spring Modules is to facilitate integration between Spring and other projects 
             without cluttering or expanding the Spring core.<br/>
-            Json-lib is used in the XT Ajax Framework. Thanks to Sergio Bossa.</td>
+            Json-lib is used in the XT AJAX Framework. Thanks to Sergio Bossa.</td>
          </tr>
          <tr>
             <td valign="top"><a href="http://maven.nuxeo.org/">Nuxeo</a></td>
 	    <td>Nuxeo 5 is a robust, extensible, global Enterprise Content Management (ECM) solution
             available as Open Source Software.<br/>
             Json-lib is used in the NXThemes JSF components module. Thanks to Jean-Marc Orliagueta.</td>
+         </tr>
+         <tr>
+            <td valign="top"><a href="http://ejoe.sourceforge.net/">EJOE</a></td>
+	    <td>EJOE is a lightweight Java client/server framework built to send and receive objects 
+            through pluggable (de)serialization mechanisms. It offers a high-performance, simple, and 
+	    clean object request broker (whereby ORB is meant in its natural manner and not in its 
+	    relation with CORBA), with server and client components for easy integration in your 
+	    client/server applications. It's an highly scaleable implementation of the common 
+	    request-process-response pattern based on the java.nio package.<br/>
+            Json-lib is used in the JSON adpaters package. Thanks to Michael Manske.</td>
          </tr>
       </tbody>
    </table>

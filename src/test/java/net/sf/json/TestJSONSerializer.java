@@ -50,7 +50,7 @@ public class TestJSONSerializer extends TestCase
 
    public void testToJava_JSONArray_1()
    {
-      setName( "JSONArray('[]') -> ToJava[default]" );
+      setName( "JSONArray('[]') -&gt; ToJava[default]" );
       JSONArray jsonArray = new JSONArray( "[]" );
       Object java = jsonSerializer.toJava( jsonArray );
       assertNotNull( java );
@@ -61,7 +61,7 @@ public class TestJSONSerializer extends TestCase
 
    public void testToJava_JSONArray_2()
    {
-      setName( "JSONArray('[]') -> ToJava[arrayMode:OBJECT_ARRAY]" );
+      setName( "JSONArray('[]') -&gt; ToJava[arrayMode:OBJECT_ARRAY]" );
       JSONArray jsonArray = new JSONArray( "[]" );
       jsonSerializer.setArrayMode( JSONSerializer.MODE_OBJECT_ARRAY );
       Object java = jsonSerializer.toJava( jsonArray );
@@ -73,21 +73,21 @@ public class TestJSONSerializer extends TestCase
 
    public void testToJava_JSONNull_1()
    {
-      setName( "JSONNull -> ToJava[default]" );
+      setName( "JSONNull -&gt; ToJava[default]" );
       Object java = jsonSerializer.toJava( JSONNull.getInstance() );
       assertNull( java );
    }
 
    public void testToJava_JSONObject_1()
    {
-      setName( "JSONObject(null:true) -> ToJava[default]" );
+      setName( "JSONObject(null:true) -&gt; ToJava[default]" );
       Object java = jsonSerializer.toJava( new JSONObject( true ) );
       assertNull( java );
    }
 
    public void testToJava_JSONObject_2() throws Exception
    {
-      setName( "JSONObject -> ToJava[default]" );
+      setName( "JSONObject -&gt; ToJava[default]" );
       String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
       JSONObject jsonObject = new JSONObject( json );
       Object bean = jsonSerializer.toJava( jsonObject );
@@ -104,7 +104,7 @@ public class TestJSONSerializer extends TestCase
 
    public void testToJava_JSONObject_3() throws Exception
    {
-      setName( "JSONObject -> ToJava[rootClass:BeanA]" );
+      setName( "JSONObject -&gt; ToJava[rootClass:BeanA]" );
       String json = "{bool:true,integer:1,string:\"json\"}";
       JSONObject jsonObject = new JSONObject( json );
       jsonSerializer.setRootClass( BeanA.class );
@@ -139,7 +139,7 @@ public class TestJSONSerializer extends TestCase
 
    public void testToJava_JSONObject_4()
    {
-      setName( "JSONObject -> ToJava[rootClass:BeanA,classMap]" );
+      setName( "JSONObject -&gt; ToJava[rootClass:BeanA,classMap]" );
 
       MappingBean mappingBean = new MappingBean();
       ValueBean beanA = new ValueBean();

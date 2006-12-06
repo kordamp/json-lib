@@ -454,7 +454,7 @@ public final class JSONUtils
             if( ((Float) o).isInfinite() || ((Float) o).isNaN() ){
                throw new JSONException( "JSON does not allow non-finite numbers." );
             }
-         }else if( o instanceof BigDecimal ){
+         }else if( o instanceof BigDecimal || o instanceof BigInteger ){
             // TODO should check against ECMAScript-262
             return;
             /*
