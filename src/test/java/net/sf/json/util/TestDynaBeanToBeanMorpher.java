@@ -16,6 +16,7 @@
 
 package net.sf.json.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +60,17 @@ public class TestDynaBeanToBeanMorpher extends TestCase
       }
    }
 
+   public void testException_Collection_subclass()
+   {
+      try{
+         new DynaBeanToBeanMorpher( ArrayList.class, morpherRegistry );
+         fail( "Expected an IllegalArgumentException" );
+      }
+      catch( IllegalArgumentException expected ){
+         // ok
+      }
+   }
+
    public void testException_DynaBean_class()
    {
       try{
@@ -74,6 +86,17 @@ public class TestDynaBeanToBeanMorpher extends TestCase
    {
       try{
          new DynaBeanToBeanMorpher( Map.class, morpherRegistry );
+         fail( "Expected an IllegalArgumentException" );
+      }
+      catch( IllegalArgumentException expected ){
+         // ok
+      }
+   }
+
+   public void testException_Map_subclass()
+   {
+      try{
+         new DynaBeanToBeanMorpher( HashMap.class, morpherRegistry );
          fail( "Expected an IllegalArgumentException" );
       }
       catch( IllegalArgumentException expected ){
@@ -114,6 +137,17 @@ public class TestDynaBeanToBeanMorpher extends TestCase
       }
    }
 
+   public void testException_String_class()
+   {
+      try{
+         new DynaBeanToBeanMorpher( String.class, morpherRegistry );
+         fail( "Expected an IllegalArgumentException" );
+      }
+      catch( IllegalArgumentException expected ){
+         // ok
+      }
+   }
+
    public void testException_unssuported_value()
    {
       try{
@@ -122,6 +156,31 @@ public class TestDynaBeanToBeanMorpher extends TestCase
          fail( "Expected a MorphException" );
       }
       catch( MorphException expected ){
+         // ok
+      }
+   }
+
+   public void testException_wrapper_class()
+   {
+      try{
+         new DynaBeanToBeanMorpher( Integer.class, morpherRegistry );
+         fail( "Expected an IllegalArgumentException" );
+      }
+      catch( IllegalArgumentException expected ){
+         // ok
+      }
+      try{
+         new DynaBeanToBeanMorpher( Boolean.class, morpherRegistry );
+         fail( "Expected an IllegalArgumentException" );
+      }
+      catch( IllegalArgumentException expected ){
+         // ok
+      }
+      try{
+         new DynaBeanToBeanMorpher( Character.class, morpherRegistry );
+         fail( "Expected an IllegalArgumentException" );
+      }
+      catch( IllegalArgumentException expected ){
          // ok
       }
    }

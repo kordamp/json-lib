@@ -48,11 +48,11 @@ public class JSONDynaClass implements DynaClass, Serializable
       }
    };
 
-   private static final long serialVersionUID = 6807849157046519646L;
+   private static final long serialVersionUID = 7621696882809002180L;
 
    protected Map attributes;
    protected DynaProperty dynaProperties[];
-   protected transient Class jsonBeanClass;
+   protected Class jsonBeanClass;
    protected String name;
    protected Map properties = new HashMap();
 
@@ -83,6 +83,9 @@ public class JSONDynaClass implements DynaClass, Serializable
       JSONDynaClass other = (JSONDynaClass) obj;
       EqualsBuilder builder = new EqualsBuilder().append( this.name, other.name )
             .append( this.type, other.type );
+      if( dynaProperties.length != other.dynaProperties.length ){
+         return false;
+      }
       for( int i = 0; i < dynaProperties.length; i++ ){
          DynaProperty a = this.dynaProperties[i];
          DynaProperty b = other.dynaProperties[i];
@@ -197,7 +200,7 @@ public class JSONDynaClass implements DynaClass, Serializable
          }
       }
       catch( ClassNotFoundException cnfe ){
-         throw new RuntimeException( cnfe );
+         throw new IllegalArgumentException( cnfe );
       }
 
       // keep properties sorted by name

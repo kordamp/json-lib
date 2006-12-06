@@ -17,7 +17,6 @@
 package net.sf.json.util;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -92,17 +91,12 @@ public class DynaBeanToBeanMorpher implements ObjectMorpher
             }
          }
       }
-      catch( InstantiationException e ){
-         throw new MorphException( e );
-      }
-      catch( IllegalAccessException e ){
-         throw new MorphException( e );
-      }
-      catch( InvocationTargetException e ){
-         throw new MorphException( e );
-      }
-      catch( NoSuchMethodException e ){
-         throw new MorphException( e );
+      catch( Exception e ){
+         if( e instanceof MorphException ){
+            throw (MorphException) e;
+         }else{
+            throw new MorphException( e );
+         }
       }
 
       return bean;
