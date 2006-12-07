@@ -20,11 +20,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONFunction;
+import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONTypes;
 import net.sf.json.util.JSONUtils;
@@ -44,22 +47,23 @@ import org.apache.commons.logging.LogFactory;
  * When transforming JSONObject and JSONArray instances to XML, this class will
  * add hints for converting back to JSON.<br>
  * Examples:<br>
+ *
  * <pre>
  * JSONObject json = JSONObject.fromObject("{\"name\":\"json\",\"bool\":true,\"int\":1}");
  * String xml = XMLSerializer.write( json );
  * <xmp><o class="object">
-      <name type="string">json</name>
-      <bool type="boolean">true</bool>
-      <int type="number">1</int>
-   </o></xmp>
+ <name type="string">json</name>
+ <bool type="boolean">true</bool>
+ <int type="number">1</int>
+ </o></xmp>
  * </pre><pre>
  * JSONArray json = JSONArray.fromObject("[1,2,3]");
  * String xml = XMLSerializer.write( json );
  * <xmp><a class="array">
-      <e type="number">1</e>
-      <e type="number">2</e>
-      <e type="number">3</e>
-   </a></xmp>
+ <e type="number">1</e>
+ <e type="number">2</e>
+ <e type="number">3</e>
+ </a></xmp>
  * </pre>
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -70,6 +74,11 @@ public class XMLSerializer
 
    /**
     * Creates a JSONArray from a XML string.
+    *
+    * @param xml A well-formed xml document in a String
+    * @return a JSONArray
+    * @throws JSONException if the conversion from XML to JSON can't be made for
+    *         I/O or format reasons.
     */
    public static JSONArray readArray( String xml )
    {
@@ -88,6 +97,11 @@ public class XMLSerializer
 
    /**
     * Creates a JSONObject from a XML string.
+    *
+    * @param xml A well-formed xml document in a String
+    * @return a JSONObject
+    * @throws JSONException if the conversion from XML to JSON can't be made for
+    *         I/O or format reasons.
     */
    public static JSONObject readObject( String xml )
    {
@@ -105,30 +119,54 @@ public class XMLSerializer
    }
 
    /**
-    * Writes a JSONArray into a XML string.
+    * Writes a JSON value into a XML string with UTF-8 encoding.<br>
+    *
+    * @param json The JSON value to transform
+    * @return a String representation of a well-formed xml document.
+    * @throws JSONException if the conversion from JSON to XML can't be made for
+    *         I/O reasons.
     */
-   public static String write( JSONArray jsonArray )
+   public static String write( JSON json )
    {
-      Object[] array = jsonArray.toArray();
-      Element root = processJSONArray( new Element( "a" ), array );
-      Document doc = new Document( root );
-      return writeDocument( doc );
+      return write( json, null );
    }
 
    /**
-    * Writes a JSONObject into a XML string.
+    * Writes a JSON value into a XML string with an specific encoding.<br>
+    * If the encoding string is null it will use UTF-8.
+    *
+    * @param json The JSON value to transform
+    * @param encoding The xml encoding to use
+    * @return a String representation of a well-formed xml document.
+    * @throws JSONException if the conversion from JSON to XML can't be made for
+    *         I/O reasons or the encoding is not supported.
     */
-   public static String write( JSONObject jsonObject )
+   public static String write( JSON json, String encoding )
    {
-      Element root = null;
-      if( jsonObject.isNullObject() ){
+      if( JSONNull.getInstance()
+            .equals( json ) ){
+         Element root = null;
          root = new Element( "o" );
          root.addAttribute( new Attribute( "null", "true" ) );
+         Document doc = new Document( root );
+         return writeDocument( doc, encoding );
+      }else if( json instanceof JSONArray ){
+         JSONArray jsonArray = (JSONArray) json;
+         Element root = processJSONArray( new Element( "a" ), jsonArray );
+         Document doc = new Document( root );
+         return writeDocument( doc, encoding );
       }else{
-         root = processJSONObject( jsonObject, new Element( "o" ) );
+         JSONObject jsonObject = (JSONObject) json;
+         Element root = null;
+         if( jsonObject.isNullObject() ){
+            root = new Element( "o" );
+            root.addAttribute( new Attribute( "null", "true" ) );
+         }else{
+            root = processJSONObject( jsonObject, new Element( "o" ) );
+         }
+         Document doc = new Document( root );
+         return writeDocument( doc, encoding );
       }
-      Document doc = new Document( root );
-      return writeDocument( doc );
    }
 
    private static String getClass( Element element )
@@ -196,11 +234,11 @@ public class XMLSerializer
       return jsonArray;
    }
 
-   private static Element processJSONArray( Element root, Object[] array )
+   private static Element processJSONArray( Element root, JSONArray array )
    {
-      for( int i = 0; i < array.length; i++ ){
+      for( int i = 0; i < array.length(); i++ ){
          Element element = new Element( "e" );
-         Object el = array[i];
+         Object el = array.get( i );
          if( JSONUtils.isBoolean( el ) ){
             element.addAttribute( new Attribute( "type", JSONTypes.BOOLEAN ) );
             element.appendChild( el.toString() );
@@ -220,7 +258,7 @@ public class XMLSerializer
             element.appendChild( el.toString() );
          }else if( el instanceof JSONArray ){
             element.addAttribute( new Attribute( "class", JSONTypes.ARRAY ) );
-            element = processJSONArray( element, ((JSONArray) el).toArray() );
+            element = processJSONArray( element, (JSONArray) el );
          }else if( el instanceof JSONObject ){
             element.addAttribute( new Attribute( "class", JSONTypes.OBJECT ) );
             element = processJSONObject( (JSONObject) el, element );
@@ -267,7 +305,7 @@ public class XMLSerializer
             element.appendChild( el.toString() );
          }else if( el instanceof JSONArray ){
             element.addAttribute( new Attribute( "class", JSONTypes.ARRAY ) );
-            element = processJSONArray( element, ((JSONArray) el).toArray() );
+            element = processJSONArray( element, (JSONArray) el );
          }else if( el instanceof JSONObject ){
             element.addAttribute( new Attribute( "class", JSONTypes.OBJECT ) );
             element = processJSONObject( (JSONObject) el, element );
@@ -398,15 +436,16 @@ public class XMLSerializer
       }
    }
 
-   private static String writeDocument( Document doc )
+   private static String writeDocument( Document doc, String encoding )
    {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      XomSerializer serializer = new XomSerializer( baos );
       try{
+         XomSerializer serializer = (encoding == null) ? new XomSerializer( baos )
+               : new XomSerializer( baos, encoding );
          serializer.write( doc );
       }
       catch( IOException ioe ){
-         // TODO manage exception
+         throw new JSONException( ioe );
       }
       return baos.toString();
    }
@@ -416,6 +455,11 @@ public class XMLSerializer
       public XomSerializer( OutputStream out )
       {
          super( out );
+      }
+
+      public XomSerializer( OutputStream out, String encoding ) throws UnsupportedEncodingException
+      {
+         super( out, encoding );
       }
 
       protected void write( Text text ) throws IOException

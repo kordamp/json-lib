@@ -17,6 +17,7 @@
 package net.sf.json.xml;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
 import org.custommonkey.xmlunit.XMLTestCase;
@@ -34,6 +35,13 @@ public class TestXMLSerializer_writes extends XMLTestCase
    public TestXMLSerializer_writes( String testName )
    {
       super( testName );
+   }
+
+   public void testWrite_null() throws Exception
+   {
+      String expected = "<o null=\"true\"/>";
+      String xml = XMLSerializer.write( null );
+      assertXMLEqual( expected, xml );
    }
 
    public void testWriteBooleanArray() throws Exception
@@ -58,6 +66,20 @@ public class TestXMLSerializer_writes extends XMLTestCase
       String expected = "<a><e type=\"function\" params=\"a\"><![CDATA[return a;]]></e></a>";
       String xml = XMLSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
+   }
+
+   public void testWriteJSONNull() throws Exception
+   {
+      String expected = "<o null=\"true\"/>";
+      String xml = XMLSerializer.write( JSONNull.getInstance() );
+      assertXMLEqual( expected, xml );
+   }
+
+   public void testWriteJSONNull_encoding() throws Exception
+   {
+      String expected = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
+      String xml = XMLSerializer.write( JSONNull.getInstance(), "ISO-8859-1" );
+      assertTrue( xml.startsWith( expected ) );
    }
 
    public void testWriteMultiBooleanArray() throws Exception
@@ -91,7 +113,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
       String xml = XMLSerializer.write( jsonObject );
       assertXMLEqual( expected, xml );
    }
-   
+
    public void testWriteNullObject() throws Exception
    {
       JSONObject jsonObject = new JSONObject( true );

@@ -7,7 +7,7 @@
 		</author>
 	</properties>
 	<body>
-		<release version="N/A" date="2006-12-02"
+		<release version="N/A" date="2006-12-08"
 			desc="Current development version">
 			<action dev="Andres Almiray" type="add">
 				Added JSONAssert for easy JSON testing.
@@ -16,6 +16,9 @@
 				Updated JSONFunction constructor for correct length of
 				parameters.
 			</action>
+         <action dev="Andres Almiray" type="fix" issue="1610979">
+            Support different encodings on XmlSerializer.
+         </action>
 			<action dev="Andres Almiray" type="fix" issue="1608212">
 				JSONDynaClass allows multidimensional arrays.
 			</action>
