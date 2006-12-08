@@ -16,6 +16,9 @@
 
 package net.sf.json.sample;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
@@ -31,5 +34,10 @@ public class BeanB extends BeanA
    public void setIntarray( int[] intarray )
    {
       this.intarray = intarray;
+   }
+
+   public String toString()
+   {
+      return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
    }
 }

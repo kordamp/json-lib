@@ -19,6 +19,8 @@ package net.sf.json.test;
 import java.util.Iterator;
 
 import junit.framework.Assert;
+import net.sf.ezmorph.Morpher;
+import net.sf.ezmorph.object.IdentityObjectMorpher;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -26,6 +28,7 @@ import net.sf.json.JSONFunction;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
+import net.sf.json.util.JSONUtils;
 
 /**
  * Provides assertions on equality for JSON strings and JSON types.
@@ -197,7 +200,29 @@ public class JSONAssert extends Assert
                assertEquals( header + "arrays first differed at element [" + i + "];",
                      (JSONFunction) o1, (JSONFunction) o2 );
             }else{
-               assertEquals( header + "arrays first differed at element [" + i + "];", o1, o2 );
+               if( o1 instanceof String ){
+                  assertEquals( header + "arrays first differed at element [" + i + "];",
+                        (String) o1, String.valueOf( o2 ) );
+               }else if( o2 instanceof String ){
+                  assertEquals( header + "arrays first differed at element [" + i + "];",
+                        String.valueOf( o1 ), (String) o2 );
+               }else{
+                  Morpher m1 = JSONUtils.getMorpherRegistry()
+                        .getMorpherFor( o1.getClass() );
+                  Morpher m2 = JSONUtils.getMorpherRegistry()
+                        .getMorpherFor( o2.getClass() );
+                  if( m1 != null && m1 != IdentityObjectMorpher.getInstance() ){
+                     assertEquals( header + "arrays first differed at element [" + i + "];", o1,
+                           JSONUtils.getMorpherRegistry()
+                                 .morph( o1.getClass(), o2 ) );
+                  }else if( m2 != null && m2 != IdentityObjectMorpher.getInstance() ){
+                     assertEquals( header + "arrays first differed at element [" + i + "];",
+                           JSONUtils.getMorpherRegistry()
+                                 .morph( o1.getClass(), o1 ), o2 );
+                  }else{
+                     assertEquals( header + "arrays first differed at element [" + i + "];", o1, o2 );
+                  }
+               }
             }
          }
       }
@@ -346,7 +371,29 @@ public class JSONAssert extends Assert
             assertEquals( header + "objects differed at key [" + key + "];", (JSONFunction) o1,
                   (JSONFunction) o2 );
          }else{
-            assertEquals( header + "objects differed at key [" + key + "];", o1, o2 );
+            if( o1 instanceof String ){
+               assertEquals( header + "objects differed at key [" + key + "];", (String) o1,
+                     String.valueOf( o2 ) );
+            }else if( o2 instanceof String ){
+               assertEquals( header + "objects differed at key [" + key + "];",
+                     String.valueOf( o1 ), (String) o2 );
+            }else{
+               Morpher m1 = JSONUtils.getMorpherRegistry()
+                     .getMorpherFor( o1.getClass() );
+               Morpher m2 = JSONUtils.getMorpherRegistry()
+                     .getMorpherFor( o2.getClass() );
+               if( m1 != null && m1 != IdentityObjectMorpher.getInstance() ){
+                  assertEquals( header + "objects differed at key [" + key + "];", o1,
+                        JSONUtils.getMorpherRegistry()
+                              .morph( o1.getClass(), o2 ) );
+               }else if( m2 != null && m2 != IdentityObjectMorpher.getInstance() ){
+                  assertEquals( header + "objects differed at key [" + key + "];",
+                        JSONUtils.getMorpherRegistry()
+                              .morph( o1.getClass(), o1 ), o2 );
+               }else{
+                  assertEquals( header + "objects differed at key [" + key + "];", o1, o2 );
+               }
+            }
          }
       }
    }

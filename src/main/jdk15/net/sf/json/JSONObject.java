@@ -385,7 +385,7 @@ public final class JSONObject implements JSON
                      Class innerType = JSONUtils.getInnerComponentType( pd.getPropertyType() );
                      if( innerType.isPrimitive() || JSONUtils.isNumber( innerType )
                            || Boolean.class.isAssignableFrom( innerType )
-                           || Character.class.isAssignableFrom( innerType ) || !array.getClass()
+                           || JSONUtils.isString( innerType ) || !array.getClass()
                                  .equals( pd.getPropertyType() ) ){
                         array = JSONUtils.getMorpherRegistry()
                               .morph( Array.newInstance( innerType, 0 )
@@ -394,8 +394,8 @@ public final class JSONObject implements JSON
                      setProperty( bean, key, array );
                   }
                }else if( String.class.isAssignableFrom( type )
-                     || Boolean.class.isAssignableFrom( type ) || JSONUtils.isNumber( type )
-                     || Character.class.isAssignableFrom( type )
+                     || JSONUtils.isBoolean( type ) || JSONUtils.isNumber( type )
+                     || JSONUtils.isString( type )
                      || JSONFunction.class.isAssignableFrom( type ) ){
                   if( pd != null ){
                      if( !pd.getPropertyType()
@@ -410,7 +410,11 @@ public final class JSONObject implements JSON
                   }
                }else{
                   if( pd != null ){
-                     setProperty( bean, key, toBean( (JSONObject) value, pd.getPropertyType(),
+                     Class targetClass = pd.getPropertyType();
+                     if( targetClass == Object.class ){
+                        targetClass = findTargetClass( key, classMap );
+                     }
+                     setProperty( bean, key, toBean( (JSONObject) value, targetClass,
                            classMap ) );
                   }else{
                      Class targetClass = findTargetClass( key, classMap );
@@ -500,9 +504,9 @@ public final class JSONObject implements JSON
             setProperty( object, key, JSONArray.fromObject( value ) );
          }else if( value instanceof JSON ){
             setProperty( object, key, value );
-         }else if( String.class.isAssignableFrom( type ) ){
-            String str = (String) value;
-            if( str == null ){
+         }else if( String.class.isAssignableFrom( type ) || JSONUtils.isString( value ) ){
+            String str = String.valueOf( value );
+            if( value == null ){
                setProperty( object, key, "" );
             }else if( JSONUtils.mayBeJSON( str ) ){
                setProperty( object, key, JSONSerializer.toJSON( str ) );
@@ -1486,7 +1490,11 @@ public final class JSONObject implements JSON
          if( JSONUtils.mayBeJSON( str ) ){
             this.properties.put( key, JSONSerializer.toJSON( str ) );
          }else{
-            this.properties.put( key, str );
+            if(value == null ){
+               this.properties.put( key, "" );
+            }else{
+               this.properties.put( key, str );
+            }
          }
       }else if( JSONUtils.isNumber( value ) ){
          JSONUtils.testValidity( value );

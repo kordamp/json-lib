@@ -16,6 +16,12 @@
 				Updated JSONFunction constructor for correct length of
 				parameters.
 			</action>
+         <action dev="Andres Almiray" type="update">
+            Updated javadocs and site docs.
+         </action>
+         <action dev="Andres Almiray" type="fix" issue="1611204">
+            Inspect property's value type in factory methods.
+         </action>
          <action dev="Andres Almiray" type="fix" issue="1610979">
             Support different encodings on XmlSerializer.
          </action>

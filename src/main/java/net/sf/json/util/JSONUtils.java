@@ -313,7 +313,8 @@ public final class JSONUtils
       if( obj instanceof Character ){
          return true;
       }
-      if( obj != null && obj.getClass() == Character.TYPE ){
+      if( obj != null
+            && (obj.getClass() == Character.TYPE || String.class.isAssignableFrom( obj.getClass() )) ){
          return true;
       }
       return false;

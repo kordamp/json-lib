@@ -27,6 +27,11 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.ezmorph.test.ArrayAssertions;
+import net.sf.json.Assertions;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONFunction;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;
@@ -39,6 +44,7 @@ import net.sf.json.sample.JsonEnum;
 import net.sf.json.sample.ListingBean;
 import net.sf.json.sample.MappingBean;
 import net.sf.json.sample.NumberBean;
+import net.sf.json.sample.ObjectBean;
 import net.sf.json.sample.ObjectJSONStringBean;
 import net.sf.json.sample.ValueBean;
 import net.sf.json.util.JSONDynaBean;
@@ -502,6 +508,68 @@ public class TestJSONObject extends TestCase
             .toString(), json.toString() );
    }
 
+   public void testFromObject_ObjectBean()
+   {
+      // FR 1611204
+      ObjectBean bean = new ObjectBean();
+      bean.setPbyte( Byte.valueOf( "1" ) );
+      bean.setPshort( Short.valueOf( "1" ) );
+      bean.setPint( Integer.valueOf( "1" ) );
+      bean.setPlong( Long.valueOf( "1" ) );
+      bean.setPfloat( Float.valueOf( "1" ) );
+      bean.setPdouble( Double.valueOf( "1" ) );
+      bean.setPchar( new Character( '1' ) );
+      bean.setPboolean( Boolean.TRUE );
+      bean.setPstring( "json" );
+      bean.setParray( new String[] { "a", "b" } );
+      bean.setBean( new BeanA() );
+      bean.setPlist( new ArrayList(){
+         {
+            add( "1" );
+            add( "2" );
+         }
+      } );
+      bean.setPmap( new HashMap(){
+         {
+            put( "string", "json" );
+         }
+      } );
+      bean.setPfunction( new JSONFunction( "this;" ) );
+
+      JSONObject json = JSONObject.fromObject( bean );
+      assertEquals( 1, json.getInt( "pbyte" ) );
+      assertEquals( 1, json.getInt( "pshort" ) );
+      assertEquals( 1, json.getInt( "pint" ) );
+      assertEquals( 1, json.getInt( "plong" ) );
+      assertEquals( 1d, json.getDouble( "pfloat" ), 0d );
+      assertEquals( 1d, json.getDouble( "pdouble" ), 0d );
+      assertTrue( json.getBoolean( "pboolean" ) );
+      assertEquals( "json", json.get( "pstring" ) );
+      Assertions.assertEquals( new JSONArray( "['a','b']" ), json.getJSONArray( "parray" ) );
+      Assertions.assertEquals( new JSONArray( "['1','2']" ), json.getJSONArray( "plist" ) );
+      assertEquals( "1", json.getString( "pchar" ) );
+      JSONObject b = new JSONObject().put( "string", "json" )
+            .put( "integer", "42" )
+            .put( "bool", "true" );
+      Assertions.assertEquals( b, json.getJSONObject( "bean" ) );
+      b = new JSONObject().put( "string", "json" );
+      Assertions.assertEquals( b, json.getJSONObject( "pmap" ) );
+   }
+
+   public void testFromObject_ObjectBean_empty()
+   {
+      // FR 1611204
+      ObjectBean bean = new ObjectBean();
+      JSONObject json = JSONObject.fromObject( bean );
+
+      String[] keys = { "pbyte", "pshort", "pint", "plong", "pfloat", "pdouble", "pboolean",
+            "pchar", "pstring", "parray", "plist", "pmap", "bean" };
+      for( int i = 0; i < keys.length; i++ ){
+         assertTrue( JSONNull.getInstance()
+               .equals( json.get( keys[i] ) ) );
+      }
+   }
+
    public void testFromObject_String()
    {
       JSONObject json = JSONObject.fromObject( "{\"string\":\"json\"}" );
@@ -844,9 +912,9 @@ public class TestJSONObject extends TestCase
 
    public void testToBean_DynaBean__BigInteger_BigDecimal()
    {
-      BigInteger l = BigInteger.valueOf(Long.MAX_VALUE);
-      l = l.pow(100);
-      BigDecimal m = new BigDecimal( l.pow( 5 ) ).add( new BigDecimal("0.001") );
+      BigInteger l = BigInteger.valueOf( Long.MAX_VALUE );
+      l = l.pow( 100 );
+      BigDecimal m = new BigDecimal( l.pow( 5 ) ).add( new BigDecimal( "0.001" ) );
       JSONObject json = new JSONObject().put( "i", BigInteger.ZERO )
             .put( "d", BigDecimal.ONE )
             .put( "bi", l )
@@ -1168,6 +1236,73 @@ public class TestJSONObject extends TestCase
       assertEquals( 2d, bean.getPdouble(), 0d );
       assertEquals( new BigInteger( "2" ), bean.getPbigint() );
       assertEquals( new BigDecimal( "2" ), bean.getPbigdec() );
+   }
+
+   public void testToBean_ObjectBean()
+   {
+      // FR 1611204
+      ObjectBean bean = new ObjectBean();
+      bean.setPbyte( Byte.valueOf( "1" ) );
+      bean.setPshort( Short.valueOf( "1" ) );
+      bean.setPint( Integer.valueOf( "1" ) );
+      bean.setPlong( Long.valueOf( "1" ) );
+      bean.setPfloat( Float.valueOf( "1" ) );
+      bean.setPdouble( Double.valueOf( "1" ) );
+      bean.setPchar( new Character( '1' ) );
+      bean.setPboolean( Boolean.TRUE );
+      bean.setPstring( "json" );
+      bean.setParray( new String[] { "a", "b" } );
+      bean.setBean( new BeanA() );
+      bean.setPlist( new ArrayList(){
+         {
+            add( "1" );
+            add( "2" );
+         }
+      } );
+      bean.setPmap( new HashMap(){
+         {
+            put( "string", "json" );
+         }
+      } );
+      bean.setPfunction( new JSONFunction( "this;" ) );
+      JSONObject json = JSONObject.fromObject( bean );
+      Map classMap = new HashMap();
+      classMap.put( "bean", BeanA.class );
+      ObjectBean obj = (ObjectBean) JSONObject.toBean( json, ObjectBean.class, classMap );
+      assertEquals( Integer.valueOf( "1" ), obj.getPbyte() );
+      assertEquals( Integer.valueOf( "1" ), obj.getPshort() );
+      assertEquals( Integer.valueOf( "1" ), obj.getPint() );
+      assertEquals( Integer.valueOf( "1" ), obj.getPlong() );
+      assertEquals( Double.valueOf( "1" ), obj.getPfloat() );
+      assertEquals( Double.valueOf( "1" ), obj.getPdouble() );
+      assertEquals( "1", obj.getPchar() );
+      assertEquals( "json", obj.getPstring() );
+      List l = new ArrayList();
+      l.add( "a" );
+      l.add( "b" );
+      ArrayAssertions.assertEquals( l.toArray(), (Object[]) obj.getParray() );
+      l = new ArrayList();
+      l.add( "1" );
+      l.add( "2" );
+      ArrayAssertions.assertEquals( l.toArray(), (Object[]) obj.getPlist() );
+      assertEquals( new BeanA(), obj.getBean() );
+      assertTrue( obj.getPmap() instanceof JSONDynaBean );
+   }
+
+   public void testToBean_ObjectBean_empty() throws Exception
+   {
+      // FR 1611204
+      ObjectBean bean = new ObjectBean();
+      JSONObject json = JSONObject.fromObject( bean );
+      Map classMap = new HashMap();
+      classMap.put( "bean", BeanA.class );
+      ObjectBean obj = (ObjectBean) JSONObject.toBean( json, ObjectBean.class, classMap );
+
+      String[] keys = { "pbyte", "pshort", "pint", "plong", "pfloat", "pdouble", "pboolean",
+            "pchar", "pstring", "parray", "plist", "pmap", "bean" };
+      for( int i = 0; i < keys.length; i++ ){
+         assertNull( PropertyUtils.getProperty( obj, keys[i] ) );
+      }
    }
 
    public void testToJSONArray()
