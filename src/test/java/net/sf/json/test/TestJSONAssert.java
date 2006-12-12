@@ -45,7 +45,7 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSON_JSON__actual_null()
    {
       try{
-         JSON expected = new JSONArray( "[1,2,3]" );
+         JSON expected = JSONArray.fromObject( "[1,2,3]" );
          JSONAssert.assertEquals( expected, null );
       }
       catch( AssertionFailedError e ){
@@ -56,7 +56,7 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSON_JSON__expected_null()
    {
       try{
-         JSON actual = new JSONObject( "{\"str\":\"json\"}" );
+         JSON actual = JSONObject.fromObject( "{\"str\":\"json\"}" );
          JSONAssert.assertEquals( null, actual );
       }
       catch( AssertionFailedError e ){
@@ -67,8 +67,8 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSON_JSON__JSONArray_JSONArray()
    {
       try{
-         JSON expected = new JSONArray( "[1,2,3]" );
-         JSON actual = new JSONArray( "[1,2,3]" );
+         JSON expected = JSONArray.fromObject( "[1,2,3]" );
+         JSON actual = JSONArray.fromObject( "[1,2,3]" );
          JSONAssert.assertEquals( expected, actual );
       }
       catch( AssertionFailedError e ){
@@ -79,8 +79,8 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSON_JSON__JSONArray_JSONObject()
    {
       try{
-         JSON expected = new JSONArray( "[1,2,3]" );
-         JSON actual = new JSONObject( "{\"str\":\"json\"}" );
+         JSON expected = JSONArray.fromObject( "[1,2,3]" );
+         JSON actual = JSONObject.fromObject( "{\"str\":\"json\"}" );
          JSONAssert.assertEquals( expected, actual );
       }
       catch( AssertionFailedError e ){
@@ -92,7 +92,7 @@ public class TestJSONAssert extends TestCase
    {
       try{
          JSON expected = JSONNull.getInstance();
-         JSON actual = new JSONArray( "[1,2,3]" );
+         JSON actual = JSONArray.fromObject( "[1,2,3]" );
 
          JSONAssert.assertEquals( expected, actual );
       }
@@ -116,8 +116,8 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSON_JSON__JSONObject_JSONArray()
    {
       try{
-         JSON expected = new JSONObject( "{\"str\":\"json\"}" );
-         JSON actual = new JSONArray( "[1,2,3]" );
+         JSON expected = JSONObject.fromObject( "{\"str\":\"json\"}" );
+         JSON actual = JSONArray.fromObject( "[1,2,3]" );
 
          JSONAssert.assertEquals( expected, actual );
       }
@@ -129,8 +129,8 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSON_JSON__JSONObject_JSONObject()
    {
       try{
-         JSON expected = new JSONObject( "{\"str\":\"json\"}" );
-         JSON actual = new JSONObject( "{\"str\":\"json\"}" );
+         JSON expected = JSONObject.fromObject( "{\"str\":\"json\"}" );
+         JSON actual = JSONObject.fromObject( "{\"str\":\"json\"}" );
          JSONAssert.assertEquals( expected, actual );
       }
       catch( AssertionFailedError e ){
@@ -159,7 +159,7 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSONArray_JSONArray__actual_null()
    {
       try{
-         JSONArray expected = new JSONArray( "[1,2,3]" );
+         JSONArray expected = JSONArray.fromObject( "[1,2,3]" );
          JSONAssert.assertEquals( expected, (JSONArray) null );
       }
       catch( AssertionFailedError e ){
@@ -170,7 +170,7 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSONArray_JSONArray__different_length()
    {
       try{
-         JSONArray expected = new JSONArray( "[1]" );
+         JSONArray expected = JSONArray.fromObject( "[1]" );
          JSONArray actual = new JSONArray();
          JSONAssert.assertEquals( expected, actual );
       }
@@ -183,7 +183,7 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSONArray_JSONArray__expected_null()
    {
       try{
-         JSONArray actual = new JSONArray( "[1,2,3]" );
+         JSONArray actual = JSONArray.fromObject( "[1,2,3]" );
          JSONAssert.assertEquals( (JSONArray) null, actual );
       }
       catch( AssertionFailedError e ){
@@ -194,7 +194,7 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSONArray_JSONArray__nulls()
    {
       try{
-         JSONArray expected = new JSONArray( "[1]" );
+         JSONArray expected = JSONArray.fromObject( "[1]" );
          JSONArray actual = new JSONArray().put( JSONNull.getInstance() );
          JSONAssert.assertEquals( expected, actual );
       }
@@ -204,7 +204,7 @@ public class TestJSONAssert extends TestCase
 
       try{
          JSONArray expected = new JSONArray().put( JSONNull.getInstance() );
-         JSONArray actual = new JSONArray( "[1]" );
+         JSONArray actual = JSONArray.fromObject( "[1]" );
          JSONAssert.assertEquals( expected, actual );
       }
       catch( AssertionFailedError e ){
@@ -215,7 +215,7 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSONArray_String()
    {
       try{
-         JSONArray expected = new JSONArray( "[1,2,3]" );
+         JSONArray expected = JSONArray.fromObject( "[1,2,3]" );
          String actual = "[1,2,3]";
          JSONAssert.assertEquals( expected, actual );
       }
@@ -227,7 +227,7 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSONArray_String_fail()
    {
       try{
-         JSONArray expected = new JSONArray( "[1,2,3]" );
+         JSONArray expected = JSONArray.fromObject( "[1,2,3]" );
          String actual = "{1,2,3}";
          JSONAssert.assertEquals( expected, actual );
       }
@@ -329,8 +329,8 @@ public class TestJSONAssert extends TestCase
          for( int i = 0; i < names.length; i++ ){
             map.put( names[i], values[i] );
          }
-         JSONObject expected = new JSONObject( map );
-         JSONObject actual = new JSONObject( map );
+         JSONObject expected = JSONObject.fromObject( map );
+         JSONObject actual = JSONObject.fromObject( map );
          JSONAssert.assertEquals( expected, actual );
       }
       catch( AssertionFailedError e ){
@@ -341,7 +341,7 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSONObject_JSONObject__actual_null()
    {
       try{
-         JSONObject expected = new JSONObject( "{}" );
+         JSONObject expected = JSONObject.fromObject( "{}" );
          JSONAssert.assertEquals( expected, (JSONObject) null );
       }
       catch( AssertionFailedError e ){
@@ -352,7 +352,7 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSONObject_JSONObject__expected_null()
    {
       try{
-         JSONObject actual = new JSONObject( "{}" );
+         JSONObject actual = JSONObject.fromObject( "{}" );
          JSONAssert.assertEquals( (JSONObject) null, actual );
       }
       catch( AssertionFailedError e ){
@@ -413,7 +413,7 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSONObject_String()
    {
       try{
-         JSONObject expected = new JSONObject( "{\"str\":\"json\"}" );
+         JSONObject expected = JSONObject.fromObject( "{\"str\":\"json\"}" );
          String actual = "{\"str\":\"json\"}";
          JSONAssert.assertEquals( expected, actual );
       }
@@ -425,7 +425,7 @@ public class TestJSONAssert extends TestCase
    public void testAssertEquals_JSONObject_String_fail()
    {
       try{
-         JSONObject expected = new JSONObject( "{\"str\":\"json\"}" );
+         JSONObject expected = JSONObject.fromObject( "{\"str\":\"json\"}" );
          String actual = "[1,2,3]";
          JSONAssert.assertEquals( expected, actual );
       }
@@ -438,7 +438,7 @@ public class TestJSONAssert extends TestCase
    {
       try{
          String expected = "[1,2,3]";
-         JSONArray actual = new JSONArray( "[1,2,3]" );
+         JSONArray actual = JSONArray.fromObject( "[1,2,3]" );
          JSONAssert.assertEquals( expected, actual );
       }
       catch( AssertionFailedError e ){
@@ -450,7 +450,7 @@ public class TestJSONAssert extends TestCase
    {
       try{
          String expected = "{1,2,3}";
-         JSONArray actual = new JSONArray( "[1,2,3]" );
+         JSONArray actual = JSONArray.fromObject( "[1,2,3]" );
          JSONAssert.assertEquals( expected, actual );
       }
       catch( AssertionFailedError e ){
@@ -498,7 +498,7 @@ public class TestJSONAssert extends TestCase
    {
       try{
          String expected = "{\"str\":\"json\"}";
-         JSONObject actual = new JSONObject( "{\"str\":\"json\"}" );
+         JSONObject actual = JSONObject.fromObject( "{\"str\":\"json\"}" );
          JSONAssert.assertEquals( expected, actual );
       }
       catch( AssertionFailedError e ){
@@ -510,7 +510,7 @@ public class TestJSONAssert extends TestCase
    {
       try{
          String expected = "[1,2,3]";
-         JSONObject actual = new JSONObject( "{\"str\":\"json\"}" );
+         JSONObject actual = JSONObject.fromObject( "{\"str\":\"json\"}" );
          JSONAssert.assertEquals( expected, actual );
       }
       catch( AssertionFailedError e ){

@@ -28,6 +28,14 @@ public class AllTests extends TestSuite
       TestSuite suite = new TestSuite();
       suite.setName( "core" );
 
+      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_ObjectBean.class ) );
+      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_DynaBean.class ) );
+      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_JSONObject.class ) );
+      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_JSONString.class ) );
+      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_JSONTokener.class ) );
+      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_Map.class ) );
+      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_String.class ) );
+
       suite.addTest( new TestSuite( TestJSONFunction.class ) );
       suite.addTest( new TestSuite( TestJSONArray.class ) );
       suite.addTest( new TestSuite( TestJSONObject.class ) );

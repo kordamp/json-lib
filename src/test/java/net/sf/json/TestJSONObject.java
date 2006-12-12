@@ -26,18 +26,21 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.test.ArrayAssertions;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.BeanFoo;
 import net.sf.json.sample.BeanWithFunc;
+import net.sf.json.sample.ClassBean;
 import net.sf.json.sample.EmptyBean;
 import net.sf.json.sample.ListingBean;
 import net.sf.json.sample.MappingBean;
 import net.sf.json.sample.NumberBean;
 import net.sf.json.sample.ObjectBean;
 import net.sf.json.sample.ObjectJSONStringBean;
+import net.sf.json.sample.PropertyBean;
 import net.sf.json.sample.ValueBean;
 import net.sf.json.util.JSONDynaBean;
 import net.sf.json.util.JSONDynaClass;
@@ -67,9 +70,9 @@ public class TestJSONObject extends TestCase
       json.accumulate( "key", "1" );
       Assertions.assertEquals( 1, json.getInt( "key" ) );
       json.accumulate( "key", "2" );
-      Assertions.assertEquals( new JSONArray( "['1','2']" ), json.getJSONArray( "key" ) );
+      Assertions.assertEquals( JSONArray.fromObject( "['1','2']" ), json.getJSONArray( "key" ) );
       json.accumulate( "key", "3" );
-      Assertions.assertEquals( new JSONArray( "['1','2','3']" ), json.getJSONArray( "key" ) );
+      Assertions.assertEquals( JSONArray.fromObject( "['1','2','3']" ), json.getJSONArray( "key" ) );
    }
 
    public void testAccumulate__nullObject()
@@ -83,54 +86,16 @@ public class TestJSONObject extends TestCase
       }
    }
 
-   public void testConstructor_JSONObject_String_Array()
-   {
-      JSONObject json = new JSONObject().put( "bool", "true" )
-            .put( "int", "1" );
-      JSONObject jsonObject = new JSONObject( json, new String[] { "bool" } );
-      assertEquals( true, jsonObject.getBoolean( "bool" ) );
-      assertTrue( !jsonObject.has( "int" ) );
-   }
-
    public void testConstructor_Object__nullJSONObject()
    {
-      JSONObject jsonObject = new JSONObject( (JSONObject) null );
-      assertTrue( jsonObject.isNullObject() );
-   }
-
-   public void testConstructor_Object_String_Array__bean()
-   {
-      BeanA beanA = new BeanA();
-      JSONObject jsonObject = new JSONObject( beanA, new String[] { "bool", "integer" } );
-      assertEquals( true, jsonObject.getBoolean( "bool" ) );
-      assertEquals( 42, jsonObject.getInt( "integer" ) );
-   }
-
-   public void testConstructor_Object_String_Array__DynaBean() throws Exception
-   {
-      Map properties = new HashMap();
-      properties.put( "bool", Boolean.class );
-      properties.put( "integer", Integer.class );
-      JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
-      JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
-      dynaBean.setDynaBeanClass( dynaClass );
-      dynaBean.set( "bool", Boolean.TRUE );
-      dynaBean.set( "integer", new Integer( 42 ) );
-
-      JSONObject jsonObject = new JSONObject( dynaBean, new String[] { "bool", "integer" } );
-      assertEquals( true, jsonObject.getBoolean( "bool" ) );
-      assertEquals( 42, jsonObject.getInt( "integer" ) );
-   }
-
-   public void testConstructor_Object_String_Array__nullJSONObject()
-   {
-      JSONObject jsonObject = new JSONObject( (JSONObject) null, new String[] { "bool", "integer" } );
+      JSONObject jsonObject = JSONObject.fromJSONObject( (JSONObject) null );
       assertTrue( jsonObject.isNullObject() );
    }
 
    public void testConstructor_Object_String_Array__nullObject()
    {
-      JSONObject jsonObject = new JSONObject( (Object) null, new String[] { "bool", "integer" } );
+      JSONObject jsonObject = JSONObject.fromObject( (Object) null, new String[] { "bool",
+            "integer" } );
       assertTrue( jsonObject.isNullObject() );
    }
 
@@ -140,7 +105,7 @@ public class TestJSONObject extends TestCase
          JSONObject.fromBean( new ArrayList() );
          fail( "Expected a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // OK
       }
 
@@ -148,18 +113,27 @@ public class TestJSONObject extends TestCase
          JSONObject.fromBean( new String[] { "json" } );
          fail( "Expected a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // OK
       }
+   }
+
+   public void testFromBean_ClassBean()
+   {
+      ClassBean classBean = new ClassBean();
+      classBean.setKlass( Object.class );
+      JSONObject json = JSONObject.fromBean( classBean );
+      assertEquals( "java.lang.Object", json.get( "klass" ) );
    }
 
    public void testFromBean_DynaBean() throws Exception
    {
       JSONObject json = JSONObject.fromBean( createDynaBean() );
       assertEquals( "json", json.getString( "name" ) );
-      Assertions.assertEquals( new JSONArray( "[1,2]" ), json.getJSONArray( "str" ) );
-      Assertions.assertEquals( new JSONObject( "{'id':'1'}" ), json.getJSONObject( "json" ) );
-      Assertions.assertEquals( new JSONObject( "{'name':''}" ), json.getJSONObject( "jsonstr" ) );
+      Assertions.assertEquals( JSONArray.fromObject( "[1,2]" ), json.getJSONArray( "str" ) );
+      Assertions.assertEquals( JSONObject.fromObject( "{'id':'1'}" ), json.getJSONObject( "json" ) );
+      Assertions.assertEquals( JSONObject.fromObject( "{'name':''}" ),
+            json.getJSONObject( "jsonstr" ) );
       Assertions.assertEquals( "function(){ return this; }", (JSONFunction) json.get( "func" ) );
    }
 
@@ -198,6 +172,13 @@ public class TestJSONObject extends TestCase
       assertEquals( true, json.getBoolean( "bool" ) );
       assertEquals( 42, json.getInt( "integer" ) );
       assertEquals( "json", json.getString( "string" ) );
+   }
+
+   public void testFromBean_noReadMethod()
+   {
+      JSONObject json = JSONObject.fromBean( new PropertyBean() );
+      assertTrue( json.has( "propertyWithNoWriteMethod" ) );
+      assertTrue( !json.has( "propertyWithNoReadMethod" ) );
    }
 
    public void testFromBean_null()
@@ -271,7 +252,7 @@ public class TestJSONObject extends TestCase
    public void testFromJSONTokener()
    {
       JSONTokener jsonTokener = new JSONTokener( "{\"string\":\"json\"}" );
-      JSONObject json = new JSONObject( jsonTokener );
+      JSONObject json = JSONObject.fromObject( jsonTokener );
       assertEquals( "json", json.getString( "string" ) );
    }
 
@@ -301,7 +282,7 @@ public class TestJSONObject extends TestCase
          JSONObject.fromObject( new ArrayList() );
          fail( "Expected a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // OK
       }
 
@@ -309,7 +290,7 @@ public class TestJSONObject extends TestCase
          JSONObject.fromObject( new String[] { "json" } );
          fail( "Expected a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // OK
       }
    }
@@ -396,15 +377,15 @@ public class TestJSONObject extends TestCase
       map.put( "bool", Boolean.TRUE );
       map.put( "integer", new Integer( 42 ) );
       map.put( "string", "json" );
-      map.put( "array", new JSONArray( "[1]" ) );
-      map.put( "object", new JSONObject( "{\"name\":\"json\"}" ) );
+      map.put( "array", JSONArray.fromObject( "[1]" ) );
+      map.put( "object", JSONObject.fromObject( "{\"name\":\"json\"}" ) );
 
       JSONObject json = JSONObject.fromObject( map );
       assertEquals( true, json.getBoolean( "bool" ) );
       assertEquals( 42, json.getInt( "integer" ) );
       assertEquals( "json", json.getString( "string" ) );
-      Assertions.assertEquals( new JSONArray( "[1]" ), json.getJSONArray( "array" ) );
-      Assertions.assertEquals( new JSONObject( "{\"name\":\"json\"}" ),
+      Assertions.assertEquals( JSONArray.fromObject( "[1]" ), json.getJSONArray( "array" ) );
+      Assertions.assertEquals( JSONObject.fromObject( "{\"name\":\"json\"}" ),
             json.getJSONObject( "object" ) );
    }
 
@@ -437,18 +418,14 @@ public class TestJSONObject extends TestCase
       bean.setPboolean( Boolean.TRUE );
       bean.setPstring( "json" );
       bean.setParray( new String[] { "a", "b" } );
-      bean.setBean( new BeanA() );
-      bean.setPlist( new ArrayList(){
-         {
-            add( "1" );
-            add( "2" );
-         }
-      } );
-      bean.setPmap( new HashMap(){
-         {
-            put( "string", "json" );
-         }
-      } );
+      bean.setPbean( new BeanA() );
+      List list = new ArrayList();
+      list.add( "1" );
+      list.add( "2" );
+      bean.setPlist( list );
+      Map map = new HashMap();
+      map.put( "string", "json" );
+      bean.setPmap( map );
       bean.setPfunction( new JSONFunction( "this;" ) );
 
       JSONObject json = JSONObject.fromObject( bean );
@@ -460,13 +437,13 @@ public class TestJSONObject extends TestCase
       assertEquals( 1d, json.getDouble( "pdouble" ), 0d );
       assertTrue( json.getBoolean( "pboolean" ) );
       assertEquals( "json", json.get( "pstring" ) );
-      Assertions.assertEquals( new JSONArray( "['a','b']" ), json.getJSONArray( "parray" ) );
-      Assertions.assertEquals( new JSONArray( "['1','2']" ), json.getJSONArray( "plist" ) );
+      Assertions.assertEquals( JSONArray.fromObject( "['a','b']" ), json.getJSONArray( "parray" ) );
+      Assertions.assertEquals( JSONArray.fromObject( "['1','2']" ), json.getJSONArray( "plist" ) );
       assertEquals( "1", json.getString( "pchar" ) );
       JSONObject b = new JSONObject().put( "string", "json" )
             .put( "integer", "42" )
             .put( "bool", "true" );
-      Assertions.assertEquals( b, json.getJSONObject( "bean" ) );
+      Assertions.assertEquals( b, json.getJSONObject( "pbean" ) );
       b = new JSONObject().put( "string", "json" );
       Assertions.assertEquals( b, json.getJSONObject( "pmap" ) );
    }
@@ -478,7 +455,7 @@ public class TestJSONObject extends TestCase
       JSONObject json = JSONObject.fromObject( bean );
 
       String[] keys = { "pbyte", "pshort", "pint", "plong", "pfloat", "pdouble", "pboolean",
-            "pchar", "pstring", "parray", "plist", "pmap", "bean" };
+            "pchar", "pstring", "parray", "plist", "pmap", "pbean" };
       for( int i = 0; i < keys.length; i++ ){
          assertTrue( JSONNull.getInstance()
                .equals( json.get( keys[i] ) ) );
@@ -658,6 +635,13 @@ public class TestJSONObject extends TestCase
       Assertions.assertTrue( jsonObject.getBoolean( "bool" ) );
    }
 
+   public void testPut_Class()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "class", Object.class );
+      assertEquals( "java.lang.Object", jsonObject.get( "class" ) );
+   }
+
    public void testPut_Collection()
    {
       JSONObject jsonObject = new JSONObject();
@@ -709,7 +693,7 @@ public class TestJSONObject extends TestCase
       JSONTokener tok = new JSONTokener( "{'name':'json'}" );
       jsonObject.put( "obj", tok );
       tok.reset();
-      Assertions.assertEquals( new JSONObject( tok ), jsonObject.getJSONObject( "obj" ) );
+      Assertions.assertEquals( JSONObject.fromObject( tok ), jsonObject.getJSONObject( "obj" ) );
    }
 
    public void testPut_long()
@@ -725,7 +709,7 @@ public class TestJSONObject extends TestCase
       map.put( "name", "json" );
       JSONObject jsonObject = new JSONObject();
       jsonObject.put( "map", map );
-      Assertions.assertEquals( new JSONObject( map ), jsonObject.getJSONObject( "map" ) );
+      Assertions.assertEquals( JSONObject.fromObject( map ), jsonObject.getJSONObject( "map" ) );
    }
 
    public void testPut_null_key()
@@ -785,7 +769,7 @@ public class TestJSONObject extends TestCase
    public void testToBean() throws Exception
    {
       String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
-      JSONObject jsonObject = new JSONObject( json );
+      JSONObject jsonObject = JSONObject.fromObject( json );
       Object bean = JSONObject.toBean( jsonObject );
       assertEquals( jsonObject.get( "name" ), PropertyUtils.getProperty( bean, "name" ) );
       assertEquals( jsonObject.get( "bool" ), PropertyUtils.getProperty( bean, "bool" ) );
@@ -799,7 +783,7 @@ public class TestJSONObject extends TestCase
    public void testToBean_BeanA()
    {
       String json = "{bool:true,integer:1,string:\"json\"}";
-      JSONObject jsonObject = new JSONObject( json );
+      JSONObject jsonObject = JSONObject.fromObject( json );
       BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
       assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
       assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
@@ -809,7 +793,7 @@ public class TestJSONObject extends TestCase
    public void testToBean_BeanB()
    {
       String json = "{bool:true,integer:1,string:\"json\",intarray:[4,5,6]}";
-      JSONObject jsonObject = new JSONObject( json );
+      JSONObject jsonObject = JSONObject.fromObject( json );
       BeanB bean = (BeanB) JSONObject.toBean( jsonObject, BeanB.class );
       assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
       assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
@@ -818,13 +802,22 @@ public class TestJSONObject extends TestCase
             JSONArray.toArray( jsonObject.getJSONArray( "intarray" ) ) );
    }
 
+   public void testToBean_ClassBean()
+   {
+      JSONObject json = new JSONObject();
+      json.put( "klass", "java.lang.Object" );
+
+      ClassBean bean = (ClassBean) JSONObject.toBean( json, ClassBean.class );
+      assertEquals( Object.class, bean.getKlass() );
+   }
+
    public void testToBean_DynaBean__BigInteger_BigDecimal()
    {
       BigInteger l = BigInteger.valueOf( Long.MAX_VALUE );
       l = l.pow( 100 );
       BigDecimal m = new BigDecimal( l.pow( 5 ) ).add( new BigDecimal( "0.001" ) );
       JSONObject json = new JSONObject().put( "i", BigInteger.ZERO )
-            .put( "d", BigDecimal.ONE )
+            .put( "d", MorphUtils.BIGDECIMAL_ONE )
             .put( "bi", l )
             .put( "bd", m );
       Object bean = JSONObject.toBean( json );
@@ -876,7 +869,7 @@ public class TestJSONObject extends TestCase
       // BUG 1542104
 
       try{
-         JSONObject.toBean( new JSONObject( "{\"int\":1}" ), Serializable.class );
+         JSONObject.toBean( JSONObject.fromObject( "{\"int\":1}" ), Serializable.class );
          fail( "Expected a JSONException" );
       }
       catch( JSONException expected ){
@@ -890,7 +883,7 @@ public class TestJSONObject extends TestCase
 
       Map map = new HashMap();
       map.put( "name", "json" );
-      Object obj = JSONObject.toBean( new JSONObject( map ), Map.class );
+      Object obj = JSONObject.toBean( JSONObject.fromObject( map ), Map.class );
       assertTrue( obj instanceof Map );
       assertEquals( map.get( "name" ), ((Map) obj).get( "name" ) );
    }
@@ -898,7 +891,7 @@ public class TestJSONObject extends TestCase
    public void testToBean_nested() throws Exception
    {
       String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },nested:{nested:true}}";
-      JSONObject jsonObject = new JSONObject( json );
+      JSONObject jsonObject = JSONObject.fromObject( json );
       Object bean = JSONObject.toBean( jsonObject );
       assertEquals( jsonObject.get( "name" ), PropertyUtils.getProperty( bean, "name" ) );
       assertEquals( jsonObject.get( "bool" ), PropertyUtils.getProperty( bean, "bool" ) );
@@ -915,7 +908,7 @@ public class TestJSONObject extends TestCase
       // BUG 1553617
 
       String json = "{\"beanA\":{bool:true,integer:1,string:\"jsonbean\"},\"beanB\":null}";
-      JSONObject jsonObject = new JSONObject( json );
+      JSONObject jsonObject = JSONObject.fromObject( json );
       BeanC bean = (BeanC) JSONObject.toBean( jsonObject, BeanC.class );
       assertNotNull( bean );
       BeanA beanA = bean.getBeanA();
@@ -1042,7 +1035,7 @@ public class TestJSONObject extends TestCase
       // BUG 1553617
 
       String json = "{\"beanA\":{bool:true,integer:1,string:\"jsonbean\"},\"beanB\":null}";
-      JSONObject jsonObject = new JSONObject( json );
+      JSONObject jsonObject = JSONObject.fromObject( json );
       Object bean = JSONObject.toBean( jsonObject );
       assertNotNull( bean );
       Object beanA = PropertyUtils.getProperty( bean, "beanA" );
@@ -1052,6 +1045,17 @@ public class TestJSONObject extends TestCase
       assertEquals( "jsonbean", PropertyUtils.getProperty( beanA, "string" ) );
       Object beanB = PropertyUtils.getProperty( bean, "beanB" );
       assertNull( beanB );
+   }
+
+   public void testtoBean_noWriteMethod()
+   {
+      JSONObject json = new JSONObject();
+      json.put( "propertyWithNoReadMethod", "json" );
+      json.put( "propertyWithNoWriteMethod", "value" );
+      PropertyBean bean = (PropertyBean) JSONObject.toBean( json, PropertyBean.class );
+      assertNotNull( bean );
+      assertEquals( "json", bean.valueOfPropertyWithNoReadMethod() );
+      assertEquals( "json", bean.getPropertyWithNoWriteMethod() );
    }
 
    public void testToBean_null()
@@ -1149,22 +1153,18 @@ public class TestJSONObject extends TestCase
       bean.setPboolean( Boolean.TRUE );
       bean.setPstring( "json" );
       bean.setParray( new String[] { "a", "b" } );
-      bean.setBean( new BeanA() );
-      bean.setPlist( new ArrayList(){
-         {
-            add( "1" );
-            add( "2" );
-         }
-      } );
-      bean.setPmap( new HashMap(){
-         {
-            put( "string", "json" );
-         }
-      } );
+      bean.setPbean( new BeanA() );
+      List list = new ArrayList();
+      list.add( "1" );
+      list.add( "2" );
+      bean.setPlist( list );
+      Map map = new HashMap();
+      map.put( "string", "json" );
+      bean.setPmap( map );
       bean.setPfunction( new JSONFunction( "this;" ) );
       JSONObject json = JSONObject.fromObject( bean );
       Map classMap = new HashMap();
-      classMap.put( "bean", BeanA.class );
+      classMap.put( "pbean", BeanA.class );
       ObjectBean obj = (ObjectBean) JSONObject.toBean( json, ObjectBean.class, classMap );
       assertEquals( Integer.valueOf( "1" ), obj.getPbyte() );
       assertEquals( Integer.valueOf( "1" ), obj.getPshort() );
@@ -1182,7 +1182,7 @@ public class TestJSONObject extends TestCase
       l.add( "1" );
       l.add( "2" );
       ArrayAssertions.assertEquals( l.toArray(), (Object[]) obj.getPlist() );
-      assertEquals( new BeanA(), obj.getBean() );
+      assertEquals( new BeanA(), obj.getPbean() );
       assertTrue( obj.getPmap() instanceof JSONDynaBean );
    }
 
@@ -1196,7 +1196,7 @@ public class TestJSONObject extends TestCase
       ObjectBean obj = (ObjectBean) JSONObject.toBean( json, ObjectBean.class, classMap );
 
       String[] keys = { "pbyte", "pshort", "pint", "plong", "pfloat", "pdouble", "pboolean",
-            "pchar", "pstring", "parray", "plist", "pmap", "bean" };
+            "pchar", "pstring", "parray", "plist", "pmap", "pbean" };
       for( int i = 0; i < keys.length; i++ ){
          assertNull( PropertyUtils.getProperty( obj, keys[i] ) );
       }
@@ -1206,7 +1206,7 @@ public class TestJSONObject extends TestCase
    {
       String json = "{bool:true,integer:1,string:\"json\"}";
       JSONArray names = JSONArray.fromObject( "['string','integer','bool']" );
-      JSONObject jsonObject = new JSONObject( json );
+      JSONObject jsonObject = JSONObject.fromObject( json );
       JSONArray jsonArray = jsonObject.toJSONArray( names );
       assertEquals( "json", jsonArray.getString( 0 ) );
       assertEquals( 1, jsonArray.getInt( 1 ) );

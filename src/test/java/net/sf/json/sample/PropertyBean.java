@@ -19,28 +19,23 @@ package net.sf.json.sample;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class EnumBean
+public class PropertyBean
 {
-   private JsonEnum jsonEnum;
-   private String string;
+   private String propertyWithNoReadMethod;
+   private final String propertyWithNoWriteMethod = "json";
 
-   public JsonEnum getJsonEnum()
+   public String getPropertyWithNoWriteMethod()
    {
-      return jsonEnum;
+      return propertyWithNoWriteMethod;
    }
 
-   public String getString()
+   public void setPropertyWithNoReadMethod( String propertyWithNoReadMethod )
    {
-      return string;
+      this.propertyWithNoReadMethod = propertyWithNoReadMethod;
    }
 
-   public void setJsonEnum( JsonEnum jsonEnum )
+   public String valueOfPropertyWithNoReadMethod()
    {
-      this.jsonEnum = jsonEnum;
-   }
-
-   public void setString( String string )
-   {
-      this.string = string;
+      return propertyWithNoReadMethod;
    }
 }

@@ -48,24 +48,24 @@ public class TestJSONArrayAsJSON extends AbstractJSONTest
 
    protected Object[] getToStringExpectations1()
    {
-      return new Object[] { "[1,true,\"json\"]", new JSONArray("[1,true,'json']") };
+      return new Object[] { "[1,true,\"json\"]", JSONArray.fromObject("[1,true,'json']") };
    }
 
    protected Object[] getToStringExpectations2()
    {
       return new Object[] { "[\n" + "  1,\n" + "  true,\n"+ "  \"json\"\n" + "]",
-            new JSONArray( "[1,true,'json']" ) };
+            JSONArray.fromObject( "[1,true,'json']" ) };
    }
 
    protected Object[] getToStringExpectations3()
    {
       return new Object[] { "  [\n" + "    1,\n" + "    true,\n"+ "    \"json\"\n" + "  ]",
-            new JSONArray( "[1,true,'json']" ) };
+            JSONArray.fromObject( "[1,true,'json']" ) };
 
    }
 
    protected Object[] getWriteExpectations()
    {
-      return new Object[] { "[1,true,\"json\"]", new JSONArray( "[1,true,'json']" ) };
+      return new Object[] { "[1,true,\"json\"]", JSONArray.fromObject( "[1,true,'json']" ) };
    }
 }

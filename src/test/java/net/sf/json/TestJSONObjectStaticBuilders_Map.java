@@ -14,33 +14,35 @@
  * limitations under the License.
  */
 
-package net.sf.json.sample;
+package net.sf.json;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class EnumBean
+public class TestJSONObjectStaticBuilders_Map extends AbstractJSONObjectStaticBuildersTestCase
 {
-   private JsonEnum jsonEnum;
-   private String string;
-
-   public JsonEnum getJsonEnum()
+   public static void main( String[] args )
    {
-      return jsonEnum;
+      junit.textui.TestRunner.run( TestJSONObjectStaticBuilders_Map.class );
    }
 
-   public String getString()
+   public TestJSONObjectStaticBuilders_Map( String name )
    {
-      return string;
+      super( name );
    }
 
-   public void setJsonEnum( JsonEnum jsonEnum )
+   protected Object getSource()
    {
-      this.jsonEnum = jsonEnum;
-   }
-
-   public void setString( String string )
-   {
-      this.string = string;
+      Map map = new HashMap();
+      String[] props = getProperties();
+      for( int i = 0; i < props.length; i++ ){
+         map.put( props[i], PropertyConstants.getPropertyValue( props[i] ) );
+      }
+      map.put( "class", "" );
+      map.put( "pexcluded", "" );
+      return map;
    }
 }

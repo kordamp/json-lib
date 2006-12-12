@@ -19,24 +19,14 @@ package net.sf.json.sample;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class EnumBean
+@JsonAnnotation("json")
+public class AnnotationBean
 {
-   private JsonEnum jsonEnum;
    private String string;
-
-   public JsonEnum getJsonEnum()
-   {
-      return jsonEnum;
-   }
 
    public String getString()
    {
       return string;
-   }
-
-   public void setJsonEnum( JsonEnum jsonEnum )
-   {
-      this.jsonEnum = jsonEnum;
    }
 
    public void setString( String string )

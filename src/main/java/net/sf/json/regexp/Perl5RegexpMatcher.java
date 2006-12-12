@@ -40,7 +40,7 @@ public class Perl5RegexpMatcher implements RegexpMatcher
          this.pattern = compiler.compile( pattern, Perl5Compiler.READ_ONLY_MASK );
       }
       catch( MalformedPatternException mpe ){
-         throw new RuntimeException( mpe );
+         throw new RuntimeException( mpe.getMessage() );
       }
    }
 

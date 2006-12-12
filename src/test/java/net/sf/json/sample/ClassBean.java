@@ -19,28 +19,17 @@ package net.sf.json.sample;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class EnumBean
+public class ClassBean
 {
-   private JsonEnum jsonEnum;
-   private String string;
+   private Class klass;
 
-   public JsonEnum getJsonEnum()
+   public Class getKlass()
    {
-      return jsonEnum;
+      return klass;
    }
 
-   public String getString()
+   public void setKlass( Class klass )
    {
-      return string;
-   }
-
-   public void setJsonEnum( JsonEnum jsonEnum )
-   {
-      this.jsonEnum = jsonEnum;
-   }
-
-   public void setString( String string )
-   {
-      this.string = string;
+      this.klass = klass;
    }
 }

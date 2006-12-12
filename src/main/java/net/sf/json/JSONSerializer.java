@@ -39,28 +39,55 @@ public class JSONSerializer
    /**
     * Creates a JSONObject, JSONArray or a JSONNull from object.
     *
-    * @throws JSONException is the object can not be converted
+    * @param object
+    * @throws JSONException if the object can not be converted
     */
    public static JSON toJSON( Object object )
+   {
+      return toJSON( object, null, false );
+   }
+
+   /**
+    * Creates a JSONObject, JSONArray or a JSONNull from object.
+    *
+    * @param object
+    * @param excludes A group of property names to be excluded
+    * @throws JSONException if the object can not be converted
+    */
+   public static JSON toJSON( Object object, String[] excludes )
+   {
+      return toJSON( object, excludes, false );
+   }
+
+   /**
+    * Creates a JSONObject, JSONArray or a JSONNull from object.
+    *
+    * @param object
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @throws JSONException if the object can not be converted
+    */
+   public static JSON toJSON( Object object, String[] excludes, boolean ignoreDefaultExcludes )
    {
       JSON json = null;
       if( object == null ){
          json = JSONNull.getInstance();
       }else if( object instanceof JSONString ){
-         json = toJSON( (JSONString) object );
+         json = toJSON( (JSONString) object, excludes, ignoreDefaultExcludes );
       }else if( object instanceof String ){
-         json = toJSON( (String) object );
+         json = toJSON( (String) object, excludes, ignoreDefaultExcludes );
       }else if( JSONUtils.isArray( object ) ){
-         json = JSONArray.fromObject( object );
+         json = JSONArray.fromObject( object, excludes, ignoreDefaultExcludes );
       }else{
          try{
-            json = JSONObject.fromObject( object );
+            json = JSONObject.fromObject( object, excludes, ignoreDefaultExcludes );
          }
          catch( JSONException e ){
             if( object instanceof JSONTokener ){
                ((JSONTokener) object).reset();
             }
-            json = JSONArray.fromObject( object );
+            json = JSONArray.fromObject( object, excludes, ignoreDefaultExcludes );
          }
       }
 
@@ -72,9 +99,9 @@ public class JSONSerializer
     *
     * @throws JSONException if the string is not a valid JSON string
     */
-   private static JSON toJSON( JSONString string )
+   private static JSON toJSON( JSONString string, String[] excludes, boolean ignoreDefaultExcludes )
    {
-      return toJSON( string.toJSONString() );
+      return toJSON( string.toJSONString(), excludes, ignoreDefaultExcludes );
    }
 
    /**
@@ -82,13 +109,13 @@ public class JSONSerializer
     *
     * @throws JSONException if the string is not a valid JSON string
     */
-   private static JSON toJSON( String string )
+   private static JSON toJSON( String string, String[] excludes, boolean ignoreDefaultExcludes )
    {
       JSON json = null;
       if( string.startsWith( "[" ) ){
-         json = JSONArray.fromString( string );
+         json = JSONArray.fromString( string, excludes, ignoreDefaultExcludes );
       }else if( string.startsWith( "{" ) ){
-         json = JSONObject.fromString( string );
+         json = JSONObject.fromString( string, excludes, ignoreDefaultExcludes );
       }else if( "null".equalsIgnoreCase( string ) ){
          json = JSONNull.getInstance();
       }else{

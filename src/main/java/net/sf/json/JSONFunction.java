@@ -21,12 +21,13 @@ import java.io.Serializable;
 import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * JSONFunction represents a javaScript function's text.
- * 
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  * @version 3
  */
@@ -74,7 +75,7 @@ public class JSONFunction implements Serializable
          String text = sb.toString();
          text = text.substring( 1, text.length() - 1 )
                .trim();
-         return new JSONFunction( (params != null) ? params.split( "," ) : null, text );
+         return new JSONFunction( (params != null) ? StringUtils.split( params, "," ) : null, text );
       }
    }
 
@@ -94,7 +95,7 @@ public class JSONFunction implements Serializable
 
    /**
     * Constructs a JSONFunction with no parameters.
-    * 
+    *
     * @param text The text of the function
     */
    public JSONFunction( String text )
@@ -104,7 +105,7 @@ public class JSONFunction implements Serializable
 
    /**
     * Constructs a JSONFunction with parameters.
-    * 
+    *
     * @param params The parameters of the function
     * @param text The text of the function
     */

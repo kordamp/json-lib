@@ -54,18 +54,18 @@ public class TestJSONObjectAsJSON extends AbstractJSONTest
    protected Object[] getToStringExpectations2()
    {
       return new Object[] { "{\n" + "  \"name\": \"json\",\n" + "  \"id\": 1\n" + "}",
-            new JSONObject( "{'name':'json',id:1}" ) };
+            JSONObject.fromObject( "{'name':'json',id:1}" ) };
    }
 
    protected Object[] getToStringExpectations3()
    {
       return new Object[] { "  {\n" + "    \"name\": \"json\",\n" + "    \"id\": 1\n" + "  }",
-            new JSONObject( "{'name':'json',id:1}" ) };
+            JSONObject.fromObject( "{'name':'json',id:1}" ) };
 
    }
 
    protected Object[] getWriteExpectations()
    {
-      return new Object[] { "{\"name\":\"json\",\"id\":1}", new JSONObject( "{'name':'json',id:1}" ) };
+      return new Object[] { "{\"name\":\"json\",\"id\":1}", JSONObject.fromObject( "{'name':'json',id:1}" ) };
    }
 }

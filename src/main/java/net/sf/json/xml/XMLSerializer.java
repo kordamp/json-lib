@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
@@ -39,6 +38,8 @@ import nu.xom.Elements;
 import nu.xom.Serializer;
 import nu.xom.Text;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -248,7 +249,7 @@ public class XMLSerializer
          }else if( JSONUtils.isFunction( el ) ){
             JSONFunction func = (JSONFunction) el;
             element.addAttribute( new Attribute( "type", JSONTypes.FUNCTION ) );
-            String params = Arrays.toString( func.getParams() );
+            String params = ArrayUtils.toString( func.getParams() );
             params = params.substring( 1 );
             params = params.substring( 0, params.length() - 1 );
             element.addAttribute( new Attribute( "params", params ) );
@@ -295,7 +296,7 @@ public class XMLSerializer
          }else if( JSONUtils.isFunction( el ) ){
             JSONFunction func = (JSONFunction) el;
             element.addAttribute( new Attribute( "type", JSONTypes.FUNCTION ) );
-            String params = Arrays.toString( func.getParams() );
+            String params = ArrayUtils.toString( func.getParams() );
             params = params.substring( 1 );
             params = params.substring( 0, params.length() - 1 );
             element.addAttribute( new Attribute( "params", params ) );
@@ -372,8 +373,7 @@ public class XMLSerializer
             String text = element.getValue();
             Attribute paramsAttribute = element.getAttribute( "params" );
             if( paramsAttribute != null ){
-               params = paramsAttribute.getValue()
-                     .split( "," );
+               params = StringUtils.split( paramsAttribute.getValue(), "," );
             }
             jsonArray.put( new JSONFunction( params, text ) );
          }
@@ -416,8 +416,7 @@ public class XMLSerializer
             String text = element.getValue();
             Attribute paramsAttribute = element.getAttribute( "params" );
             if( paramsAttribute != null ){
-               params = paramsAttribute.getValue()
-                     .split( "," );
+               params = StringUtils.split( paramsAttribute.getValue(), "," );
             }
             jsonObject.put( element.getLocalName(), new JSONFunction( params, text ) );
          }else if( type.compareToIgnoreCase( JSONTypes.STRING ) == 0 ){
@@ -426,8 +425,7 @@ public class XMLSerializer
             if( paramsAttribute != null ){
                String[] params = null;
                String text = element.getValue();
-               params = paramsAttribute.getValue()
-                     .split( "," );
+               params = StringUtils.split( paramsAttribute.getValue(), "," );
                jsonObject.put( element.getLocalName(), new JSONFunction( params, text ) );
             }else{
                jsonObject.put( element.getLocalName(), element.getValue() );

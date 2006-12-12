@@ -55,7 +55,6 @@ public class JSONDynaClass implements DynaClass, Serializable
    protected Class jsonBeanClass;
    protected String name;
    protected Map properties = new HashMap();
-
    protected Class type;
 
    public JSONDynaClass( String name, Class type, Map attributes )
@@ -200,7 +199,7 @@ public class JSONDynaClass implements DynaClass, Serializable
          }
       }
       catch( ClassNotFoundException cnfe ){
-         throw new IllegalArgumentException( cnfe );
+         throw new IllegalArgumentException( cnfe.getMessage() );
       }
 
       // keep properties sorted by name

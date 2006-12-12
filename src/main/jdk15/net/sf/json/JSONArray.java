@@ -41,6 +41,7 @@ SOFTWARE.
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +54,7 @@ import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * A JSONArray is an ordered sequence of values. Its external text form is a
@@ -110,10 +112,43 @@ public final class JSONArray implements JSON
     * The java array can be multidimensional.
     *
     * @param array A Java array
+    * @throws JSONException if the array can not be converted to a proper
+    *         JSONArray.
     */
    public static JSONArray fromArray( Object[] array )
    {
-      return new JSONArray( Arrays.asList( array ) );
+      return fromArray( array, null, false );
+   }
+
+   /**
+    * Creates a JSONArray from a java array.<br>
+    * The java array can be multidimensional.
+    *
+    * @param array A Java array
+    * @param excludes A group of property names to be excluded
+    * @throws JSONException if the array can not be converted to a proper
+    *         JSONArray.
+    */
+   public static JSONArray fromArray( Object[] array, String[] excludes )
+   {
+      return fromArray( array, excludes, false );
+   }
+
+   /**
+    * Creates a JSONArray from a java array.<br>
+    * The java array can be multidimensional.
+    *
+    * @param array A Java array
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @throws JSONException if the array can not be converted to a proper
+    *         JSONArray.
+    */
+   public static JSONArray fromArray( Object[] array, String[] excludes,
+         boolean ignoreDefaultExcludes )
+   {
+      return new JSONArray( array, excludes, ignoreDefaultExcludes );
    }
 
    /**
@@ -122,37 +157,129 @@ public final class JSONArray implements JSON
     * collections.
     *
     * @param collection A collection
+    * @throws JSONException if the collection can not be converted to a proper
+    *         JSONArray.
     */
    public static JSONArray fromCollection( Collection collection )
    {
-      return new JSONArray( collection );
+      return fromCollection( collection, null, false );
+   }
+
+   /**
+    * Creates a JSONArray from a Collection.<br>
+    * Its elements can be maps, POJOs, java arrays (primitive & object),
+    * collections.
+    *
+    * @param collection A collection
+    * @param excludes A group of property names to be excluded
+    * @throws JSONException if the collection can not be converted to a proper
+    *         JSONArray.
+    */
+   public static JSONArray fromCollection( Collection collection, String[] excludes )
+   {
+      return fromCollection( collection, excludes, false );
+   }
+
+   /**
+    * Creates a JSONArray from a Collection.<br>
+    * Its elements can be maps, POJOs, java arrays (primitive & object),
+    * collections.
+    *
+    * @param collection A collection
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @throws JSONException if the collection can not be converted to a proper
+    *         JSONArray.
+    */
+   public static JSONArray fromCollection( Collection collection, String[] excludes,
+         boolean ignoreDefaultExcludes )
+   {
+      return new JSONArray( collection, excludes, ignoreDefaultExcludes );
    }
 
    /**
     * Creates a JSONArray from a JSONString.<br>
     *
     * @param string
+    * @throws JSONException if the string can not be converted to a proper
+    *         JSONArray.
     */
    public static JSONArray fromJSONString( JSONString string )
    {
-      return new JSONArray( new JSONTokener( string.toJSONString() ) );
+      return fromJSONString( string, null, false );
    }
 
    /**
-    * Creates a JSONArray from a JSONTokener.
+    * Creates a JSONArray from a JSONString.<br>
     *
-    * @param tokener a JSONTokener
+    * @param string
+    * @param excludes A group of property names to be excluded
+    * @throws JSONException if the string can not be converted to a proper
+    *         JSONArray.
     */
-   public static JSONArray fromJSONTokener( JSONTokener tokener )
+   public static JSONArray fromJSONString( JSONString string, String[] excludes )
    {
-      return new JSONArray( tokener );
+      return fromJSONString( string, excludes, false );
+   }
+
+   /**
+    * Creates a JSONArray from a JSONString.<br>
+    *
+    * @param string
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @throws JSONException if the string can not be converted to a proper
+    *         JSONArray.
+    */
+   public static JSONArray fromJSONString( JSONString string, String[] excludes,
+         boolean ignoreDefaultValues )
+   {
+      return fromJSONTokener( new JSONTokener( string.toJSONString(), excludes ), excludes,
+            ignoreDefaultValues );
    }
 
    /**
     * Creates a JSONArray.<br>
     * Inspects the object type to call the correct JSONArray factory method.
+    *
+    * @param object
+    * @throws JSONException if the object can not be converted to a proper
+    *         JSONArray.
     */
    public static JSONArray fromObject( Object object )
+   {
+      return fromObject( object, null, false );
+   }
+
+   /**
+    * Creates a JSONArray.<br>
+    * Inspects the object type to call the correct JSONArray factory method.
+    *
+    * @param object
+    * @param excludes A group of property names to be excluded
+    * @throws JSONException if the object can not be converted to a proper
+    *         JSONArray.
+    */
+   public static JSONArray fromObject( Object object, String[] excludes )
+   {
+      return fromObject( object, excludes, false );
+   }
+
+   /**
+    * Creates a JSONArray.<br>
+    * Inspects the object type to call the correct JSONArray factory method.
+    *
+    * @param object
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @throws JSONException if the object can not be converted to a proper
+    *         JSONArray.
+    */
+   public static JSONArray fromObject( Object object, String[] excludes,
+         boolean ignoreDefaultExcludes )
    {
       if( object instanceof JSONString ){
          return fromJSONString( (JSONString) object );
@@ -188,7 +315,7 @@ public final class JSONArray implements JSON
             }else if( type == Character.TYPE ){
                return new JSONArray( (char[]) object );
             }else{
-               throw new IllegalArgumentException( "Unsupported type" );
+               throw new JSONException( "Unsupported type" );
             }
          }
       }else if( JSONUtils.isBoolean( object ) || JSONUtils.isFunction( object )
@@ -197,10 +324,13 @@ public final class JSONArray implements JSON
          return new JSONArray().put( object );
       }else if( object instanceof Enum ){
          return new JSONArray( (Enum) object );
+      }else if( object instanceof Annotation || (object != null && object.getClass()
+            .isAnnotation()) ){
+         throw new JSONException( "Unsupported type" );
       }else if( JSONUtils.isObject( object ) ){
-         return new JSONArray().put( JSONObject.fromObject( object ) );
+         return new JSONArray().put( JSONObject.fromObject( object, excludes, ignoreDefaultExcludes ) );
       }else{
-         throw new IllegalArgumentException( "Unsupported type" );
+         throw new JSONException( "Unsupported type" );
       }
    }
 
@@ -208,10 +338,41 @@ public final class JSONArray implements JSON
     * Constructs a JSONArray from a string in JSON format.
     *
     * @param string A string in JSON format
+    * @throws JSONException if the string can not be converted to a proper
+    *         JSONArray.
     */
    public static JSONArray fromString( String string )
    {
-      return new JSONArray( string );
+      return fromString( string, null, false );
+   }
+
+   /**
+    * Constructs a JSONArray from a string in JSON format.
+    *
+    * @param string A string in JSON format
+    * @param excludes A group of property names to be excluded
+    * @throws JSONException if the string can not be converted to a proper
+    *         JSONArray.
+    */
+   public static JSONArray fromString( String string, String[] excludes )
+   {
+      return fromString( string, excludes, false );
+   }
+
+   /**
+    * Constructs a JSONArray from a string in JSON format.
+    *
+    * @param string A string in JSON format
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @throws JSONException if the string can not be converted to a proper
+    *         JSONArray.
+    */
+   public static JSONArray fromString( String string, String[] excludes,
+         boolean ignoreDefaultExcludes )
+   {
+      return new JSONArray( string, excludes, ignoreDefaultExcludes );
    }
 
    /**
@@ -352,6 +513,27 @@ public final class JSONArray implements JSON
       return list;
    }
 
+   /**
+    * Creates a JSONArray from a JSONTokener.
+    *
+    * @param tokener a JSONTokener
+    */
+   private static JSONArray fromJSONTokener( JSONTokener tokener )
+   {
+      return fromJSONTokener( tokener, null, false );
+   }
+
+   /**
+    * Creates a JSONArray from a JSONTokener.
+    *
+    * @param tokener a JSONTokener
+    */
+   private static JSONArray fromJSONTokener( JSONTokener tokener, String[] excludes,
+         boolean ignoreDefaultValues )
+   {
+      return new JSONArray( tokener, excludes, ignoreDefaultValues );
+   }
+
    private static void processArrayDimensions( JSONArray jsonArray, List dims, int index )
    {
       if( dims.size() <= index ){
@@ -390,7 +572,7 @@ public final class JSONArray implements JSON
     *
     * @param array An boolean[] array.
     */
-   public JSONArray( boolean[] array )
+   private JSONArray( boolean[] array )
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
@@ -401,7 +583,7 @@ public final class JSONArray implements JSON
     *
     * @param array An byte[] array.
     */
-   public JSONArray( byte[] array )
+   private JSONArray( byte[] array )
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
@@ -413,7 +595,7 @@ public final class JSONArray implements JSON
     *
     * @param array An char[] array.
     */
-   public JSONArray( char[] array )
+   private JSONArray( char[] array )
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
@@ -423,14 +605,19 @@ public final class JSONArray implements JSON
     * Construct a JSONArray from a Collection.
     *
     * @param collection A Collection.
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @throws JSONException if the collection can not be converted to a proper
+    *         JSONArray.
     */
-   public JSONArray( Collection collection )
+   private JSONArray( Collection collection, String[] excludes, boolean ignoreDefaultExcludes )
    {
       this.elements = new ArrayList();
       if( collection != null ){
          for( Iterator elements = collection.iterator(); elements.hasNext(); ){
             Object element = elements.next();
-            put( element );
+            add( element, excludes, ignoreDefaultExcludes );
          }
       }
    }
@@ -440,7 +627,7 @@ public final class JSONArray implements JSON
     *
     * @param array An double[] array.
     */
-   public JSONArray( double[] array )
+   private JSONArray( double[] array )
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
@@ -453,7 +640,7 @@ public final class JSONArray implements JSON
     * @param e A enum value.
     * @throws JSONException If there is a syntax error.
     */
-   public JSONArray( Enum e )
+   private JSONArray( Enum e )
    {
       this();
       if( e != null ){
@@ -468,7 +655,7 @@ public final class JSONArray implements JSON
     *
     * @param array An float[] array.
     */
-   public JSONArray( float[] array )
+   private JSONArray( float[] array )
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
@@ -481,7 +668,7 @@ public final class JSONArray implements JSON
     *
     * @param array An int[] array.
     */
-   public JSONArray( int[] array )
+   private JSONArray( int[] array )
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
@@ -494,7 +681,7 @@ public final class JSONArray implements JSON
     * @param jsonArray A JSONArray.
     * @throws JSONException If there is a syntax error.
     */
-   public JSONArray( JSONArray jsonArray )
+   private JSONArray( JSONArray jsonArray )
    {
       this.elements = new ArrayList();
       if( jsonArray != null ){
@@ -506,9 +693,12 @@ public final class JSONArray implements JSON
     * Construct a JSONArray from a JSONTokener.
     *
     * @param x A JSONTokener
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
     * @throws JSONException If there is a syntax error.
     */
-   public JSONArray( JSONTokener x )
+   private JSONArray( JSONTokener x, String[] excludes, boolean ignoreDefaultExcludes )
    {
       this();
       if( x.nextClean() != '[' ){
@@ -556,8 +746,8 @@ public final class JSONArray implements JSON
                String text = sb.toString();
                text = text.substring( 1, text.length() - 1 )
                      .trim();
-               this.elements.add( new JSONFunction( (params != null) ? params.split( "," ) : null,
-                     text ) );
+               this.elements.add( new JSONFunction( (params != null) ? StringUtils.split( params,
+                     "," ) : null, text ) );
             }
          }
          switch( x.nextClean() )
@@ -582,7 +772,7 @@ public final class JSONArray implements JSON
     *
     * @param array An long[] array.
     */
-   public JSONArray( long[] array )
+   private JSONArray( long[] array )
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
@@ -594,13 +784,18 @@ public final class JSONArray implements JSON
     * Assumes the object hierarchy is acyclical.
     *
     * @param array An Object[] array.
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @throws JSONException if the object can not be converted to a proper
+    *         JSONArray.
     */
-   public JSONArray( Object[] array )
+   private JSONArray( Object[] array, String[] excludes, boolean ignoreDefaultExcludes )
    {
       this.elements = new ArrayList();
       for( int i = 0; i < array.length; i++ ){
          Object element = array[i];
-         put( element );
+         add( element, excludes, ignoreDefaultExcludes );
       }
    }
 
@@ -609,7 +804,7 @@ public final class JSONArray implements JSON
     *
     * @param array An short[] array.
     */
-   public JSONArray( short[] array )
+   private JSONArray( short[] array )
    {
       this.elements = new ArrayList();
       this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
@@ -624,9 +819,9 @@ public final class JSONArray implements JSON
     *        bracket)</small>.
     * @throws JSONException If there is a syntax error.
     */
-   public JSONArray( String string )
+   private JSONArray( String string, String[] excludes, boolean ignoreDefaultExcludes )
    {
-      this( new JSONTokener( string ) );
+      this( new JSONTokener( string, excludes ), excludes, ignoreDefaultExcludes );
    }
 
    /**
@@ -1085,7 +1280,7 @@ public final class JSONArray implements JSON
     */
    public JSONArray put( int index, Collection value )
    {
-      put( index, new JSONArray( value ) );
+      put( index, fromCollection( value ) );
       return this;
    }
 
@@ -1174,7 +1369,10 @@ public final class JSONArray implements JSON
          throw new JSONException( "JSONArray[" + index + "] not found." );
       }
       if( index < length() ){
-         if( JSONUtils.isFunction( value ) ){
+         if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
+               || value instanceof Class ){
+            this.elements.set( index, ((Class) value).getName() );
+         }else if( JSONUtils.isFunction( value ) ){
             this.elements.set( index, value );
          }else if( value instanceof JSONString ){
             this.elements.set( index, JSONSerializer.toJSON( (JSONString) value ) );
@@ -1307,7 +1505,10 @@ public final class JSONArray implements JSON
     */
    public JSONArray put( Object value )
    {
-      if( JSONUtils.isFunction( value ) ){
+      if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
+            || value instanceof Class ){
+         this.elements.add( ((Class) value).getName() );
+      }else if( JSONUtils.isFunction( value ) ){
          this.elements.add( value );
       }else if( value instanceof JSONString ){
          this.elements.add( JSONSerializer.toJSON( (JSONString) value ) );
@@ -1331,6 +1532,9 @@ public final class JSONArray implements JSON
          this.elements.add( value );
       }else if( value instanceof Enum ){
          this.elements.add( String.valueOf( value ) );
+      }else if( value instanceof Annotation || (value != null && value.getClass()
+            .isAnnotation()) ){
+         throw new JSONException( "Unsupported type" );
       }else{
          JSONObject jsonObject = JSONObject.fromObject( value );
          if( jsonObject.isNullObject() ){
@@ -1513,5 +1717,58 @@ public final class JSONArray implements JSON
       catch( IOException e ){
          throw new JSONException( e );
       }
+   }
+
+   /**
+    * Append an object value. This increases the array's length by one.
+    *
+    * @param value An object value. The value should be a Boolean, Double,
+    *        Integer, JSONArray, JSONObject, JSONFunction, Long, String,
+    *        JSONString or the JSONNull object.
+    * @return this.
+    */
+   private JSONArray add( Object value, String[] excludes, boolean ignoreDefaultValues )
+   {
+      if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
+            || value instanceof Class ){
+         this.elements.add( ((Class) value).getName() );
+      }else if( JSONUtils.isFunction( value ) ){
+         this.elements.add( value );
+      }else if( value instanceof JSONString ){
+         this.elements.add( JSONSerializer.toJSON( (JSONString) value, excludes,
+               ignoreDefaultValues ) );
+      }else if( JSONUtils.isArray( value ) ){
+         this.elements.add( JSONArray.fromObject( value, excludes, ignoreDefaultValues ) );
+      }else if( value instanceof JSON ){
+         this.elements.add( value );
+      }else if( value instanceof JSONTokener ){
+         this.elements.add( fromJSONTokener( (JSONTokener) value, excludes, ignoreDefaultValues ) );
+      }else if( JSONUtils.isString( value ) ){
+         String str = String.valueOf( value );
+         if( JSONUtils.mayBeJSON( str ) ){
+            this.elements.add( JSONSerializer.toJSON( str, excludes, ignoreDefaultValues ) );
+         }else{
+            this.elements.add( str );
+         }
+      }else if( JSONUtils.isNumber( value ) ){
+         JSONUtils.testValidity( value );
+         this.elements.add( JSONUtils.transformNumber( (Number) value ) );
+      }else if( JSONUtils.isBoolean( value ) ){
+         this.elements.add( value );
+      }else if( value instanceof Enum ){
+         this.elements.add( String.valueOf( value ) );
+      }else if( value instanceof Annotation || (value != null && value.getClass()
+            .isAnnotation()) ){
+         throw new JSONException( "Unsupported type" );
+      }else{
+         JSONObject jsonObject = JSONObject.fromObject( value, excludes, ignoreDefaultValues );
+         if( jsonObject.isNullObject() ){
+            this.elements.add( JSONNull.getInstance() );
+         }else{
+            this.elements.add( jsonObject );
+         }
+      }
+
+      return this;
    }
 }

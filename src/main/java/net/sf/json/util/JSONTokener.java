@@ -21,7 +21,6 @@ import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import net.sf.json.regexp.RegexpUtils;
 
-
 /*
 Copyright (c) 2002 JSON.org
 
@@ -52,7 +51,7 @@ SOFTWARE.
  * source strings.
  *
  * @author JSON.org
- * @version 3
+ * @version 4
  */
 public class JSONTokener
 {
@@ -78,6 +77,11 @@ public class JSONTokener
    }
 
    /**
+    * A group of property names to be excluded.
+    */
+   private String[] exclusions;
+
+   /**
     * The index of the next character.
     */
    private int myIndex;
@@ -94,8 +98,20 @@ public class JSONTokener
     */
    public JSONTokener( String s )
    {
+      this( s, null );
+   }
+
+   /**
+    * Construct a JSONTokener from a string.
+    *
+    * @param s A source string.
+    * @param exclusions A group of property names to be excluded
+    */
+   public JSONTokener( String s, String[] exclusions )
+   {
       this.myIndex = 0;
       this.mySource = s;
+      this.exclusions = exclusions;
    }
 
    /**
@@ -121,7 +137,8 @@ public class JSONTokener
    public boolean matches( String pattern )
    {
       String str = this.mySource.substring( this.myIndex );
-      return RegexpUtils.getMatcher( pattern ).matches( str );
+      return RegexpUtils.getMatcher( pattern )
+            .matches( str );
    }
 
    /**
@@ -359,10 +376,10 @@ public class JSONTokener
             return nextString( c );
          case '{':
             back();
-            return new JSONObject( this );
+            return JSONObject.fromObject( this, exclusions );
          case '[':
             back();
-            return new JSONArray( this );
+            return JSONArray.fromObject( this );
          default:
             // empty
       }

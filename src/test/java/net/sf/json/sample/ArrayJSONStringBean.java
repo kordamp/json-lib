@@ -16,9 +16,9 @@
 
 package net.sf.json.sample;
 
-import java.util.Arrays;
-
 import net.sf.json.JSONString;
+
+import org.apache.commons.lang.ArrayUtils;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -39,6 +39,8 @@ public class ArrayJSONStringBean implements JSONString
 
    public String toJSONString()
    {
-      return Arrays.toString( value.split( "," ) );
+      return ArrayUtils.toString( value.split( "," ) )
+            .replace( '{', '[' )
+            .replace( '}', ']' );
    }
 }

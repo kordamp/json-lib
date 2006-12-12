@@ -40,7 +40,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e class=\"object\" null=\"true\"/><e class=\"object\" null=\"true\"/></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[null,null]" );
+      JSONArray expected = JSONArray.fromObject( "[null,null]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -48,7 +48,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"boolean\"><e>true</e><e>false</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[true,false]" );
+      JSONArray expected = JSONArray.fromObject( "[true,false]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -56,7 +56,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e type=\"boolean\">true</e><e type=\"boolean\">false</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[true,false]" );
+      JSONArray expected = JSONArray.fromObject( "[true,false]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -71,7 +71,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"float\"><e>1.1</e><e>2.2</e><e>3.3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[1.1,2.2,3.3]" );
+      JSONArray expected = JSONArray.fromObject( "[1.1,2.2,3.3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -79,7 +79,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e type=\"float\">1.1</e><e type=\"float\">2.2</e><e type=\"float\">3.3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[1.1,2.2,3.3]" );
+      JSONArray expected = JSONArray.fromObject( "[1.1,2.2,3.3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -87,7 +87,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"function\"><e params=\"a\"><![CDATA[return a;]]></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[function(a){ return a; }]" );
+      JSONArray expected = JSONArray.fromObject( "[function(a){ return a; }]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -95,7 +95,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e params=\"a\" type=\"function\"><![CDATA[return a;]]></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[function(a){ return a; }]" );
+      JSONArray expected = JSONArray.fromObject( "[function(a){ return a; }]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -103,7 +103,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<o><func params=\"a\" ><![CDATA[return a;]]></func></o>";
       JSONObject xmlObject = XMLSerializer.readObject( xml );
-      JSONObject expected = new JSONObject( "{func:function(a){ return a; }}" );
+      JSONObject expected = JSONObject.fromObject( "{func:function(a){ return a; }}" );
       assertEquals( expected.toString(), xmlObject.toString() );
    }
 
@@ -111,7 +111,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"integer\"><e>1</e><e>2</e><e>3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[1,2,3]" );
+      JSONArray expected = JSONArray.fromObject( "[1,2,3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -119,7 +119,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e type=\"integer\">1</e><e type=\"integer\">2</e><e type=\"integer\">3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[1,2,3]" );
+      JSONArray expected = JSONArray.fromObject( "[1,2,3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -127,7 +127,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"string\"><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e>3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[true,2.2,\"3\"]" );
+      JSONArray expected = JSONArray.fromObject( "[true,2.2,\"3\"]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -135,7 +135,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e type=\"string\">3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[true,2.2,\"3\"]" );
+      JSONArray expected = JSONArray.fromObject( "[true,2.2,\"3\"]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -143,7 +143,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"boolean\"><e>true</e><e>false</e><e class=\"array\"><e>false</e><e>true</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[true,false,[false,true]]" );
+      JSONArray expected = JSONArray.fromObject( "[true,false,[false,true]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -151,7 +151,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e type=\"boolean\">true</e><e type=\"boolean\">false</e><e class=\"array\"><e type=\"boolean\">false</e><e type=\"boolean\">true</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[true,false,[false,true]]" );
+      JSONArray expected = JSONArray.fromObject( "[true,false,[false,true]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -159,7 +159,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"float\"><e>1.1</e><e>2.2</e><e>3.3</e><e class=\"array\"><e>1.1</e><e>2.2</e><e>3.3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[1.1,2.2,3.3,[1.1,2.2,3.3]]" );
+      JSONArray expected = JSONArray.fromObject( "[1.1,2.2,3.3,[1.1,2.2,3.3]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -167,7 +167,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e type=\"float\">1.1</e><e type=\"float\">2.2</e><e type=\"float\">3.3</e><e class=\"array\"><e type=\"float\">1.1</e><e type=\"float\">2.2</e><e type=\"float\">3.3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[1.1,2.2,3.3,[1.1,2.2,3.3]]" );
+      JSONArray expected = JSONArray.fromObject( "[1.1,2.2,3.3,[1.1,2.2,3.3]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -175,7 +175,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"integer\"><e>1</e><e>2</e><e>3</e><e class=\"array\"><e>1</e><e>2</e><e>3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[1,2,3,[1,2,3]]" );
+      JSONArray expected = JSONArray.fromObject( "[1,2,3,[1,2,3]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -183,7 +183,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e type=\"integer\">1</e><e type=\"integer\">2</e><e type=\"integer\">3</e><e class=\"array\"><e type=\"integer\">1</e><e type=\"integer\">2</e><e type=\"integer\">3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[1,2,3,[1,2,3]]" );
+      JSONArray expected = JSONArray.fromObject( "[1,2,3,[1,2,3]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -191,7 +191,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"string\"><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e>3</e><e class=\"array\"><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e>3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[true,2.2,\"3\",[true,2.2,\"3\"]]" );
+      JSONArray expected = JSONArray.fromObject( "[true,2.2,\"3\",[true,2.2,\"3\"]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -199,7 +199,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e type=\"string\">3</e><e class=\"array\"><e type=\"boolean\">true</e><e type=\"number\">2.2</e><e type=\"string\">3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[true,2.2,\"3\",[true,2.2,\"3\"]]" );
+      JSONArray expected = JSONArray.fromObject( "[true,2.2,\"3\",[true,2.2,\"3\"]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -207,7 +207,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"number\"><e>1.1</e><e>2.2</e><e>3</e><e class=\"array\"><e>1.1</e><e>2.2</e><e>3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[1.1,2.2,3,[1.1,2.2,3]]" );
+      JSONArray expected = JSONArray.fromObject( "[1.1,2.2,3,[1.1,2.2,3]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -215,7 +215,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e type=\"number\">1.1</e><e type=\"number\">2.2</e><e type=\"number\">3</e><e class=\"array\"><e type=\"number\">1.1</e><e type=\"number\">2.2</e><e type=\"number\">3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[1.1,2.2,3,[1.1,2.2,3]]" );
+      JSONArray expected = JSONArray.fromObject( "[1.1,2.2,3,[1.1,2.2,3]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -223,7 +223,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"string\"><e>1.1</e><e>2.2</e><e>3</e><e class=\"array\"><e>1.1</e><e>2.2</e><e>3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[\"1.1\",\"2.2\",\"3\",[\"1.1\",\"2.2\",\"3\"]]" );
+      JSONArray expected = JSONArray.fromObject( "[\"1.1\",\"2.2\",\"3\",[\"1.1\",\"2.2\",\"3\"]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -231,7 +231,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e type=\"string\">1.1</e><e type=\"string\">2.2</e><e type=\"string\">3</e><e class=\"array\"><e type=\"string\">1.1</e><e type=\"string\">2.2</e><e type=\"string\">3</e></e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[\"1.1\",\"2.2\",\"3\",[\"1.1\",\"2.2\",\"3\"]]" );
+      JSONArray expected = JSONArray.fromObject( "[\"1.1\",\"2.2\",\"3\",[\"1.1\",\"2.2\",\"3\"]]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -257,7 +257,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"number\"><e>1.1</e><e>2.2</e><e>3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[1.1,2.2,3]" );
+      JSONArray expected = JSONArray.fromObject( "[1.1,2.2,3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -265,7 +265,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e type=\"number\">1.1</e><e type=\"number\">2.2</e><e type=\"number\">3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[1.1,2.2,3]" );
+      JSONArray expected = JSONArray.fromObject( "[1.1,2.2,3]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -276,7 +276,7 @@ public class TestXMLSerializer_reads extends TestCase
             + "<string>json</string>"
             + "<func type=\"function\" params=\"a\" ><![CDATA[return a;]]></func></o>";
       JSONObject xmlObject = XMLSerializer.readObject( xml );
-      JSONObject expected = new JSONObject( "{func:function(a){ return a; }}" );
+      JSONObject expected = JSONObject.fromObject( "{func:function(a){ return a; }}" );
       expected.put( "int", new Integer( 1 ) );
       expected.put( "decimal", new Double( 2.0 ) );
       expected.put( "number", new Double( 3.1416 ) );
@@ -303,7 +303,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a type=\"string\"><e>1.1</e><e>2.2</e><e>3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[\"1.1\",\"2.2\",\"3\"]" );
+      JSONArray expected = JSONArray.fromObject( "[\"1.1\",\"2.2\",\"3\"]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 
@@ -311,7 +311,7 @@ public class TestXMLSerializer_reads extends TestCase
    {
       String xml = "<a><e type=\"string\">1.1</e><e type=\"string\">2.2</e><e type=\"string\">3</e></a>";
       JSONArray xmlArray = XMLSerializer.readArray( xml );
-      JSONArray expected = new JSONArray( "[\"1.1\",\"2.2\",\"3\"]" );
+      JSONArray expected = JSONArray.fromObject( "[\"1.1\",\"2.2\",\"3\"]" );
       assertEquals( expected.toString(), xmlArray.toString() );
    }
 }
