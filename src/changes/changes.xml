@@ -1,216 +1,372 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <document>
-	<properties>
-		<title>Json-lib::Changelog</title>
-		<author email="aalmiray@users.sourceforge.net">
-			Andres Almiray
-		</author>
-	</properties>
-	<body>
-		<release version="N/A" date="2006-12-12"
-			desc="Current development version">
-			<action dev="Andres Almiray" type="add">
-				Added JSONAssert for easy JSON testing.
-			</action>
-			<action dev="Andres Almiray" type="add">
-				Updated JSONFunction constructor for correct length of
-				parameters.
-			</action>
-         <action dev="Andres Almiray" type="update">
+   <properties>
+      <title>Json-lib::Changelog</title>
+      <author email="aalmiray@users.sourceforge.net">
+         Andres Almiray
+      </author>
+   </properties>
+   <body>
+      <release
+         version="1.0b1"
+         date="2006-12-18"
+         desc="First 1.0 beta release">
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added JSONAssert for easy JSON testing.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Updated JSONFunction constructor for correct length of
+            parameters.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
             Updated javadocs and site docs.
          </action>
-         <action dev="Andres Almiray" type="update">
-            Only default constructors are public (JSONObject &amp; JSONArray).
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Only default constructors are public (JSONObject &amp;
+            JSONArray).
          </action>
-         <action dev="Andres Almiray" type="update">
-            Class objects are converted to Strings (toJSON) and back (toJava).
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Class objects are converted to Strings (toJSON) and back
+            (toJava).
          </action>
-         <action dev="Andres Almiray" type="fix" issue="1614276">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1614276">
             Skip a property without write method.
          </action>
-         <action dev="Andres Almiray" type="fix" issue="1614275">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1614275">
             Skip a property without read method.
          </action>
-         <action dev="Andres Almiray" type="fix" issue="1614273">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1614273">
             Annotation should not be transformed.
          </action>
-         <action dev="Andres Almiray" type="fix" issue="1614278">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1614278">
             Change IAEs for JSONException.
          </action>
-         <action dev="Andres Almiray" type="fix" issue="1613402">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1613402">
             JSONObject tries to access Enum.getDeclaringClass().
          </action>
-         <action dev="Andres Almiray" type="fix" issue="1611204">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1611204">
             Inspect property's value type in factory methods.
          </action>
-         <action dev="Andres Almiray" type="fix" issue="1610979">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1610979">
             Support different encodings on XmlSerializer.
          </action>
-			<action dev="Andres Almiray" type="fix" issue="1608212">
-				JSONDynaClass allows multidimensional arrays.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1607448">
-				Primitives support for JSONDynaBean.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1557286">
-				Support Java 1.5 Enum in JSONObject and JSONArray.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1606609">
-				JDK 1.3 RuntimeException is not nestable.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1602386">
-				Add printer friendly methods to JSON interface.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1596168">
-				JSONArray fails to convert an array of
-				BigDecimals/BigInteger.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1592799">
-				Nested Lists were not handled properly in
-				JSONObject.toBean()
-			</action>
-		</release>
-		<release version="0.9" date="2006-10-12"
-			desc="Sixth public release">
-			<action dev="Andres Almiray" type="add">
-				Added FAQ and "Who is using it" sections.
-			</action>
-			<action dev="Andres Almiray" type="add">
-				Added new JSONSerializer utility class.
-			</action>
-			<action dev="Andres Almiray" type="add">
-				Added new interface JSON to identify a valid JSON type
-				(JSONObject, JSONArray, JSONNull).
-			</action>
-			<action dev="Andres Almiray" type="add">
-				Added support for JSONString in builders and value
-				setters. FR 1557286.
-			</action>
-			<action dev="Andres Almiray" type="update">
-				Removed JSONObject.append() as it was very similar to
-				JSONObject.accumulate()
-			</action>
-			<action dev="Andres Almiray" type="update">
-				JSONObject and JSONarray will convert Byte/Short/Long to
-				Integer, Float to Double when needed.
-			</action>
-			<action dev="Andres Almiray" type="update">
-				JSONArray.fromObject now allows creation of a single
-				element array (all valid types).
-			</action>
-			<action dev="Andres Almiray" type="update">
-				Cleaned up the core API, moved mixed purpouse classes to
-				net.sf.json.util
-			</action>
-			<action dev="Andres Almiray" type="update">
-				Updated front page and howto documentation.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1564992">
-				Multiple nested JSONException.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1553617">
-				JSONObject.toBean() generates a ClassCastException.
-			</action>
-		</release>
-		<release version="0.8" date="2006-08-29"
-			desc="Fifth public release">
-			<action dev="Andres Almiray" type="add">
-				Refactored converter package into EZMorph
-				(http://ezmorph.sourceforge.net).
-			</action>
-			<action dev="Andres Almiray" type="add">
-				Added RegexpUtils for easy regexp handling.
-			</action>
-			<action dev="Andres Almiray" type="add">
-				Added more tests.
-			</action>
-			<action dev="Andres Almiray" type="update">
-				Updated "Getting Started" documentation.
-			</action>
-			<action dev="Andres Almiray" type="update">
-				Moved RegexpMatchers to package net.sf.json.regexp
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1543117">
-				Perl5RegexpMatcher is missing a return statement.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1542104">
-				JSONObject.toBean must handle interfaces.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1542092">
-				JSONObject.toBean can not process all nested beans.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1540196">
-				JSONArray did not create multidimensional arrays
-				correctly.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1540137">
-				JSONObject's fromObject() and fromBean() did not support
-				DynaBeans properly
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1538330">
-				XmlSerializer writes wrong JSONFunction data.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1538095">
-				JSONObject.fromObject() does not work properly when
-				passed a boolean as parameter in JVM 1.5+
-			</action>
-		</release>
-		<release version="0.7.1" date="2006-08-09"
-			desc="Service release">
-			<action dev="Andres Almiray" type="fix" issue="1537557">
-				Json-lib had wrong class numbers for JDK 1.3.1
-			</action>
-		</release>
-		<release version="0.7" date="2006-08-07"
-			desc="Fourth public release">
-			<action dev="Andres Almiray" type="fix" issue="1529946">
-				Make Json-lib JDK 1.3.1 compatible. FR 1529946.
-			</action>
-		</release>
-		<release version="0.6" date="2006-07-24"
-			desc="Third public release">
-			<action dev="Andres Almiray" type="add">
-				Added support for DynaBean and java bean conversions.
-			</action>
-			<action dev="Andres Almiray" type="update">
-				Updated the XML generated by XMLSerializer.
-				<br />
-				JSONArray uses &lt;a&gt; for root element, JSONObject
-				uses &lt;o&gt; for root element.
-			</action>
-			<action dev="Andres Almiray" type="update">
-				Updated usage documentation.
-			</action>
-		</release>
-		<release version="0.4" date="2006-07-11"
-			desc="Second public release">
-			<action dev="Andres Almiray" type="add">
-				Added test suites for each package and for full project.
-			</action>
-			<action dev="Andres Almiray" type="fix" issue="1516306">
-				Support js functions as type. FR 1516306.
-			</action>
-			<action dev="Andres Almiray" type="update">
-				Moved common methods of JSONObject, JSONArray to
-				JSONUtils.
-			</action>
-			<action dev="Andres Almiray" type="update">
-				Renamed XML to XMLSerializer. Now uses XOM to parse
-				documents.
-			</action>
-			<action dev="Andres Almiray" type="update">
-				Moved common assertion methods to Assertions (tests).
-			</action>
-			<action dev="Andres Almiray" type="delete">
-				Deleted HTTP related classes.
-			</action>
-		</release>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1608212">
+            JSONDynaClass allows multidimensional arrays.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1607448">
+            Primitives support for JSONDynaBean.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1557286">
+            Support Java 1.5 Enum in JSONObject and JSONArray.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1606609">
+            JDK 1.3 RuntimeException is not nestable.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1602386">
+            Add printer friendly methods to JSON interface.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1596168">
+            JSONArray fails to convert an array of
+            BigDecimals/BigInteger.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1592799">
+            Nested Lists were not handled properly in
+            JSONObject.toBean()
+         </action>
+      </release>
 
-		<release version="0.2" date="2006-07-01"
-			desc="First public release">
-			<action dev="Andres Almiray" type="add">
-				First release.
-			</action>
-		</release>
-	</body>
+      <release
+         version="0.9"
+         date="2006-10-12"
+         desc="Sixth public release">
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added FAQ and "Who is using it" sections.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added new JSONSerializer utility class.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added new interface JSON to identify a valid JSON type
+            (JSONObject, JSONArray, JSONNull).
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added support for JSONString in builders and value setters.
+            FR 1557286.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Removed JSONObject.append() as it was very similar to
+            JSONObject.accumulate()
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            JSONObject and JSONarray will convert Byte/Short/Long to
+            Integer, Float to Double when needed.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            JSONArray.fromObject now allows creation of a single element
+            array (all valid types).
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Cleaned up the core API, moved mixed purpouse classes to
+            net.sf.json.util
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Updated front page and howto documentation.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1564992">
+            Multiple nested JSONException.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1553617">
+            JSONObject.toBean() generates a ClassCastException.
+         </action>
+      </release>
+
+      <release
+         version="0.8"
+         date="2006-08-29"
+         desc="Fifth public release">
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Refactored converter package into EZMorph
+            (http://ezmorph.sourceforge.net).
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added RegexpUtils for easy regexp handling.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added more tests.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Updated "Getting Started" documentation.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Moved RegexpMatchers to package net.sf.json.regexp
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1543117">
+            Perl5RegexpMatcher is missing a return statement.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1542104">
+            JSONObject.toBean must handle interfaces.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1542092">
+            JSONObject.toBean can not process all nested beans.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1540196">
+            JSONArray did not create multidimensional arrays correctly.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1540137">
+            JSONObject's fromObject() and fromBean() did not support
+            DynaBeans properly
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1538330">
+            XmlSerializer writes wrong JSONFunction data.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1538095">
+            JSONObject.fromObject() does not work properly when passed a
+            boolean as parameter in JVM 1.5+
+         </action>
+      </release>
+
+      <release
+         version="0.7.1"
+         date="2006-08-09"
+         desc="Service release">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1537557">
+            Json-lib had wrong class numbers for JDK 1.3.1
+         </action>
+      </release>
+
+      <release
+         version="0.7"
+         date="2006-08-07"
+         desc="Fourth public release">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1529946">
+            Make Json-lib JDK 1.3.1 compatible. FR 1529946.
+         </action>
+      </release>
+
+      <release
+         version="0.6"
+         date="2006-07-24"
+         desc="Third public release">
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added support for DynaBean and java bean conversions.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Updated the XML generated by XMLSerializer.
+            <br />
+            JSONArray uses &lt;a&gt; for root element, JSONObject uses
+            &lt;o&gt; for root element.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Updated usage documentation.
+         </action>
+      </release>
+
+      <release
+         version="0.4"
+         date="2006-07-11"
+         desc="Second public release">
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added test suites for each package and for full project.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1516306">
+            Support js functions as type. FR 1516306.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Moved common methods of JSONObject, JSONArray to JSONUtils.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Renamed XML to XMLSerializer. Now uses XOM to parse
+            documents.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Moved common assertion methods to Assertions (tests).
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="delete">
+            Deleted HTTP related classes.
+         </action>
+      </release>
+
+      <release
+         version="0.2"
+         date="2006-07-01"
+         desc="First public release">
+         <action
+            dev="Andres Almiray"
+            type="add">
+            First release.
+         </action>
+      </release>
+   </body>
 </document>

@@ -483,12 +483,12 @@ public final class JSONObject implements JSON
     * @throws JSONException if the source string is not a valid JSON string for
     *         a JSONObject
     */
-   public static JSONObject fromString( String str, String[] excludes, boolean ignoreDefaultValues )
+   public static JSONObject fromString( String str, String[] excludes, boolean ignoreDefaultExcludes )
    {
       if( str == null || "null".compareToIgnoreCase( str ) == 0 ){
          return new JSONObject( true );
       }
-      return new JSONObject( str, excludes, ignoreDefaultValues );
+      return new JSONObject( str, excludes, ignoreDefaultExcludes );
    }
 
    /**

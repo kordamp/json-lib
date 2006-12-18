@@ -234,10 +234,10 @@ public final class JSONArray implements JSON
     *         JSONArray.
     */
    public static JSONArray fromJSONString( JSONString string, String[] excludes,
-         boolean ignoreDefaultValues )
+         boolean ignoreDefaultExcludes )
    {
       return fromJSONTokener( new JSONTokener( string.toJSONString(), excludes ), excludes,
-            ignoreDefaultValues );
+            ignoreDefaultExcludes );
    }
 
    /**
