@@ -158,7 +158,14 @@
             </configuration>
          </plugin>
          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-site-plugin</artifactId>
+            <configuration>
+               <templateDirectory>
+                  ${basedir}/src/site
+               </templateDirectory>
+               <template>site.vm</template>
+            </configuration>
          </plugin>
 
          <plugin>

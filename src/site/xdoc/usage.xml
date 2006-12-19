@@ -28,24 +28,24 @@
          is through the static factory methods from <code>JSONArray</code>. <code>JSONArray.fromObject()</code>
          will inspect its parameter and call the correct factory or constructor.</p>
          <p>Examples:</p>
-		 <source>
+		 <textarea cols="70" rows="4" class="java:nocontrols:nogutter" name="srccode">
    boolean[] boolArray = new boolean[]{true,false,true};
    JSONArray jsonArray = JSONArray.fromObject( boolArray );
    System.out.println( jsonArray );
-   // prints [true,false,true]</source>
+   // prints [true,false,true]</textarea>
 
-		 <source>
+		 <textarea cols="70" rows="6" class="java:nocontrols:nogutter" name="srccode">
    List list = new ArrayList();
    list.add( "first" );
    list.add( "second" );
    JSONArray jsonArray = JSONArray.fromObject( list );
    System.out.println( jsonArray );
-   // prints ["first","second"]</source>
+   // prints ["first","second"]</textarea>
 
-		 <source>
+		 <textarea cols="70" rows="3" class="java:nocontrols:nogutter" name="srccode">
    JSONArray jsonArray = JSONArray.fromObject( "['json','is','easy']" );
    System.out.println( jsonArray );
-   // prints ["json","is","easy"]</source>
+   // prints ["json","is","easy"]</textarea>
        </subsection>
 
        <a name="objects"/>
@@ -55,7 +55,7 @@
          is through the static factory methods from <code>JSONObject</code>. <code>JSONObject.fromObject()</code>
          will inspect its parameter and call the correct factory or constructor.</p>
          <p>Examples:</p>
-		 <source>
+		 <textarea cols="70" rows="10" class="java:nocontrols:nogutter" name="srccode">
    Map map = new HashMap();
    map.put( "name", "json" );
    map.put( "bool", Boolean.TRUE );
@@ -65,9 +65,9 @@
 
    JSONObject json = JSONObject.fromObject( map );
    System.out.println( jsonObject );
-   // prints ["name":"json","bool":true,"int":1,"arr":["a","b"],"func":function(i){ return this.arr[i]; }]</source>
+   // prints ["name":"json","bool":true,"int":1,"arr":["a","b"],"func":function(i){ return this.arr[i]; }]</textarea>
 
-		 <source>
+		 <textarea cols="70" rows="16" class="java:nocontrols:nogutter" name="srccode">
    class MyBean{
       private String name = "json";
       private int pojoId = 1;
@@ -81,13 +81,15 @@
 
    JSONObject jsonObject = JSONObject.fromObject( new MyBean() );
    System.out.println( jsonObject );
-   // prints {"name":"json","pojoId":1,"options":["a","f"],
-         "func1":function(i){ return this.options[i];},
-         "func2":function(i){ return this.options[i];}}</source>
+   /* prints
+     {"name":"json","pojoId":1,"options":["a","f"],
+     "func1":function(i){ return this.options[i];},
+     "func2":function(i){ return this.options[i];}}
+   */</textarea>
 
-		 <p><img src="images/icon_warning_sml.gif"/> <strong><font color="#FF0000">CAUTION:</font></strong>
+	  <p><center><img src="images/icon_warning_sml.gif"/> <strong><font color="#FF0000">CAUTION:</font></strong>
 		 when parsing, neither JSONObject nor JSONArray checks for cycles in the hierarchy.
-		 It is a task left for the user of the library. <img src="images/icon_warning_sml.gif"/></p>
+		 It is a task left for the user of the library. <img src="images/icon_warning_sml.gif"/></center></p>
 
        </subsection>
 
@@ -96,7 +98,7 @@
        When using DynaBean all arrays are converted to Lists, when using an specific bean class
        the transformation will use type conversion if necessary on array properties.</p>
        <p>Convert to DynaBean:</p>
-	<source>
+		 <textarea cols="70" rows="10" class="java:nocontrols:nogutter" name="srccode">
    String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
    JSONObject jsonObject = new JSONObject( json );
    Object bean = JSONObject.toBean( jsonObject );
@@ -106,16 +108,16 @@
    assertEquals( jsonObject.get( "double" ), PropertyUtils.getProperty( bean, "double" ) );
    assertEquals( jsonObject.get( "func" ), PropertyUtils.getProperty( bean, "func" ) );
    List expected = JSONArray.toList( jsonObject.getJSONArray( "array" ) );
-   Assertions.assertListEquals( expected, (List) PropertyUtils.getProperty( bean, "array" ) );</source>
+   Assertions.assertListEquals( expected, (List) PropertyUtils.getProperty( bean, "array" ) );</textarea>
 
           <p>Convert to Bean:</p>
-	<source>
+		 <textarea cols="70" rows="6" class="java:nocontrols:nogutter" name="srccode">
    String json = "{bool:true,integer:1,string:\"json\"}";
    JSONObject jsonObject = new JSONObject( json );
    BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
    assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
    assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
-   assertEquals( jsonObject.get( "string" ), bean.getString() );</source>
+   assertEquals( jsonObject.get( "string" ), bean.getString() );</textarea>
 
 		 <p>There are two special cases when converting to an specific bean, if the target bean
 		 has a Map property and it must contain other beans, <code>JSONObject.toBean()</code> will
@@ -134,7 +136,7 @@
 		 transforming a DynaBean into an specific bean,
        <a href="apidocs/net/sf/json/util/DynaBeanToBeanMorpher.html"><code>DynaBeanToBeanMorpher</code></a><br/>
        Example:</p>
-       <source>
+		 <textarea cols="70" rows="16" class="java:nocontrols:nogutter" name="srccode">
    class MyBean{
       private List data;
       // getters &amp; setters
@@ -150,18 +152,18 @@
    String json = "{'data':[{'name':'Wallace'},{'name':'Grommit'}]}";
    Map classMap = new HashMap();
    classMap.put( "data", Person.class );
-   MyBean bean = JSONObject.toBean( json, MyBean.class, classMap );</source>
+   MyBean bean = JSONObject.toBean( json, MyBean.class, classMap );</textarea>
        <p>This yields a MyBean instance that has DynaBeans inside the 'data' attribute', so now comes 
        the part of postprocessing, this can be done with an Iterator<br/>
        Example:</p>
-       <source>
+		 <textarea cols="70" rows="7" class="java:nocontrols:nogutter" name="srccode">
    Morpher dynaMorpher = new DynaBeanToBeanMorpher( Person.class, JSONUtils.getMorpherRegistry() );
    morpherRegistry.registerMorpher( dynaMorpher );
    List output = new ArrayList();
    for( Iterator i = bean.getData().iterator(); i.hasNext(); ){
       output.add( morpherRegistry.morph( Person.class, i.next() ) );
    }
-   bean.setData( output );</source>
+   bean.setData( output );</textarea>
 		 <p>To learn more about Morphers, please visit <a href="http://ezmorph.sourceforge.net">EZMorph's project site</a>.
 		 </p>
        </subsection>
@@ -172,52 +174,85 @@
           <subsection name="From JSON to XML">
             <p>Transforming JSONObjects and JSONArrays to XML is as simple as a call to <code>XMLSerializer.write()</code>.<br/>
             XMLSerializer will append special attributes to each xml element for easing the transformation back to JSON.</p>
-   <source>
+   <table>
+      <tr>
+         <th>Code</th>
+	 <th>XML output</th>
+      </tr>
+      <tr>
+         <td valign="top">
+		 <textarea cols="70" rows="2" class="java:nocontrols:nogutter" name="srccode">
    JSONObject json = new JSONObject( true );
-   String xml = XMLSerializer.write( json );
-   System.out.println( xml );
-   // prints
-   <xmp><o class="object" null="true"/></xmp></source>
-   <source>
+   String xml = XMLSerializer.write( json );</textarea>
+         </td><td valign="top">
+		 <textarea cols="70" rows="1" class="xml:nocontrols:nogutter" name="srccode">
+   &lt;o class="object" null="true"&gt;
+		 </textarea>
+         </td>
+      </tr>
+      <tr>
+         <td valign="top">
+		 <textarea cols="70" rows="2" class="java:nocontrols:nogutter" name="srccode">
    JSONObject json = JSONObject.fromObject("{\"name\":\"json\",\"bool\":true,\"int\":1}");
-   String xml = XMLSerializer.write( json );
-   System.out.println( xml );
-   // prints
-   <xmp><o class="object">
-      <name type="string">json</name>
-      <bool type="boolean">true</bool>
-      <int type="number">1</int>
-   </o></xmp></source>
-   <source>
+   String xml = XMLSerializer.write( json );</textarea>
+         </td><td valign="top">
+		 <textarea cols="70" rows="5" class="xml:nocontrols:nogutter" name="srccode">
+   &lt;o class="object"&gt;
+      &lt;name type="string"&gt;json&lt;/name&gt;
+      &lt;bool type="boolean"&gt;true&lt;/bool&gt;
+      &lt;int type="number"&gt;1&lt;/int&gt;
+   &lt;/o&gt;
+   </textarea>
+         </td>
+      </tr>
+      <tr>
+         <td valign="top">
+		 <textarea cols="70" rows="2" class="java:nocontrols:nogutter" name="srccode">
    JSONArray json = JSONArray.fromObject("[1,2,3]");
-   String xml = XMLSerializer.write( json );
-   System.out.println( xml );
-   // prints
-   <xmp><a class="array">
-      <e type="number">1</e>
-      <e type="number">2</e>
-      <e type="number">3</e>
-   </a></xmp></source>
+   String xml = XMLSerializer.write( json );</textarea>
+         </td><td valign="top">
+		 <textarea cols="70" rows="5" class="xml:nocontrols:nogutter" name="srccode">
+   &lt;a class="array"&lt;
+      &lt;e type="number"&gt;1&lt;/e&gt;
+      &lt;e type="number"&gt;2&lt;/e&gt;
+      &lt;e type="number"&gt;3&lt;/e&gt;
+   &lt;/a&gt;
+   </textarea>
+         </td>
+      </tr>
+   </table>
           </subsection>
           <subsection name="From XML to JSON">
              <p>XMLSerializer treats each element as a <code>string</code> unless a type parameter is specified.<br/>
              JSONFunction needs an additional parameter that specifies that function's params.</p>
-     <source><xmp>
-   <a class="array">
-     <e type="function" params="i,j">
+   <table>
+      <tr>
+	 <th>XML input</th>
+         <th>Code</th>
+      </tr>
+      <tr>
+         <td valign="top">
+		 <textarea cols="70" rows="5" class="xml:nocontrols:nogutter" name="srccode">
+   &lt;a class="array"&gt;
+     &lt;e type="function" params="i,j"&gt;
          return matrix[i][j];
-     </e>
-   </a>
-     </xmp>
+     &lt;/e&gt;
+   &lt;/a&gt;
+   </textarea>
+         </td><td valign="top">
+		 <textarea cols="70" rows="3" class="java:nocontrols:nogutter" name="srccode">
    JSONArray json = XMLSerializer.read( xml );
    System.out.println( json );
    // prints [function(i,j){ return matrix[i][j]; }]
-     </source>
+   </textarea>
+         </td>
+      </tr>
+   </table>
           </subsection>
 
-		 <p><img src="images/icon_warning_sml.gif"/> <strong><font color="#FF0000">CAUTION:</font></strong>
+	  <p><center><img src="images/icon_warning_sml.gif"/> <strong><font color="#FF0000">CAUTION:</font></strong>
 		 when parsing, neither JSONObject nor JSONArray checks for cycles in the hierarchy.
-		 It is a task left for the user of the library. <img src="images/icon_warning_sml.gif"/></p>
+		 It is a task left for the user of the library. <img src="images/icon_warning_sml.gif"/></center></p>
 
        </subsection>
 	  </section>

@@ -36,5 +36,14 @@
       </p></answer>
     </faq>
 
+    <faq id="sintax">
+      <question>
+        <strong>Where can I get the code for the source code syntax highlighter ?</strong>
+      </question>
+      <answer><p>The SintaxHighlighter is availabe from Alex Gorbatchev at <a href="http://www.dreamprojections.com/SyntaxHighlighter">
+      http://www.dreamprojections.com/SyntaxHighlighter</a>.
+      </p></answer>
+    </faq>
+
   </part>
 </faqs>
