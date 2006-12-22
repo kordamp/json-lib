@@ -43,6 +43,23 @@
 	    request-process-response pattern based on the java.nio package.<br/>
             Json-lib is used in the JSON adpaters package. Thanks to Michael Manske.</td>
          </tr>
+         <tr>
+		 <td valign="top"><a href="http://incubator.apache.org/ofbiz/">OFBiz</a></td>
+	    <td>The Open For Business Project is an open source enterprise automation software project 
+            licensed under the Apache License Version 2.0. By open source enterprise automation we mean: 
+	    Open Source ERP, Open Source CRM, Open Source E-Business / E-Commerce, Open Source SCM, 
+	    Open Source MRP, Open Source CMMS/EAM, and so on.<br/>
+            Thanks to Si Chen.</td>
+         </tr>
+         <tr>
+	    <td valign="top"><a href="http://www.opentaps.org/">opentaps</a></td>
+	    <td>opentaps Open Source ERP + CRM brings you the advanced features and power of Tier 1 ERP 
+            and CRM software with the flexibility and low cost of ownership that only open source can deliver.
+	    You can use opentaps as an alternative to expensive and inflexible commercial ERP solutions, as a 
+	    replacement for in-house solutions that are difficult to maintain or extend, or as a starting point 
+	    to build your unique business model and processes.<br/>
+            opentaps is powered by OFBiz. Thanks to Si Chen.</td>
+         </tr>
       </tbody>
    </table>
 			</p>
