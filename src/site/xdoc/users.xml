@@ -22,35 +22,35 @@
          <tr>
 	    <td valign="top" align="center"><a href="https://springmodules.dev.java.net/">
 	    <img src="https://springmodules.dev.java.net/images/icon.gif" alt="Spring Modules" border="0"/></a></td>
-            <td valign="top">Spring Modules is a collection of tools, add-ons and modules to extend the 
-            <a href="http://www.springframework.org">Spring Framework</a>. The core goal of 
-            Spring Modules is to facilitate integration between Spring and other projects 
-            without cluttering or expanding the Spring core.<br/>
-            Json-lib is used in the XT AJAX Framework. Thanks to Sergio Bossa.</td>
+       <td valign="top">Spring Modules is a collection of tools, add-ons and modules to extend the 
+       <a href="http://www.springframework.org">Spring Framework</a>. The core goal of 
+       Spring Modules is to facilitate integration between Spring and other projects 
+       without cluttering or expanding the Spring core.<br/>
+       Json-lib is used in the XT AJAX Framework. Thanks to Sergio Bossa.</td>
          </tr>
          <tr>
-            <td valign="top" align="center"><a href="http://maven.nuxeo.org/">Nuxeo</a></td>
+       <td valign="top" align="center"><a href="http://maven.nuxeo.org/">Nuxeo</a></td>
 	    <td valign="top">Nuxeo 5 is a robust, extensible, global Enterprise Content Management (ECM) solution
-            available as Open Source Software.<br/>
-            Json-lib is used in the NXThemes JSF components module. Thanks to Jean-Marc Orliagueta.</td>
+       available as Open Source Software.<br/>
+       Json-lib is used in the NXThemes JSF components module. Thanks to Jean-Marc Orliagueta.</td>
          </tr>
          <tr>
-            <td valign="top" align="center"><a href="http://ejoe.sourceforge.net/">EJOE</a></td>
+       <td valign="top" align="center"><a href="http://ejoe.sourceforge.net/">EJOE</a></td>
 	    <td valign="top">EJOE is a lightweight Java client/server framework built to send and receive objects 
-            through pluggable (de)serialization mechanisms. It offers a high-performance, simple, and 
+       through pluggable (de)serialization mechanisms. It offers a high-performance, simple, and 
 	    clean object request broker (whereby ORB is meant in its natural manner and not in its 
 	    relation with CORBA), with server and client components for easy integration in your 
 	    client/server applications. It's an highly scaleable implementation of the common 
 	    request-process-response pattern based on the java.nio package.<br/>
-            Json-lib is used in the JSON adpaters package. Thanks to Michael Manske.</td>
+       Json-lib is used in the JSON adpaters package. Thanks to Michael Manske.</td>
          </tr>
          <tr>
-	    <td valign="top" align="center"><a href="http://incubator.apache.org/ofbiz/">OFBiz</a></td>
+	    <td valign="top" align="center"><a href="http://incubator.apache.org/ofbiz/">Apache OFBiz</a></td>
 	    <td valign="top">The Open For Business Project is an open source enterprise automation software project 
-            licensed under the Apache License Version 2.0. By open source enterprise automation we mean: 
+       licensed under the Apache License Version 2.0. By open source enterprise automation we mean: 
 	    Open Source ERP, Open Source CRM, Open Source E-Business / E-Commerce, Open Source SCM, 
 	    Open Source MRP, Open Source CMMS/EAM, and so on.<br/>
-            Thanks to Si Chen.</td>
+       Thanks to Si Chen.</td>
          </tr>
          <tr>
 	    <td valign="top" align="center"><a href="http://www.opentaps.org/">opentaps</a></td>
@@ -59,7 +59,14 @@
 	    You can use opentaps as an alternative to expensive and inflexible commercial ERP solutions, as a 
 	    replacement for in-house solutions that are difficult to maintain or extend, or as a starting point 
 	    to build your unique business model and processes.<br/>
-            opentaps is powered by OFBiz. Thanks to Si Chen.</td>
+       opentaps is powered by OFBiz. Thanks to Si Chen.</td>
+         </tr>
+         <tr>
+       <td valign="top" align="center"><a href="http://incubator.apache.org/tuscany/">Apache Tuscany</a></td>
+       <td valign="top">The aim of the Apache Tuscany project is to create, as a community, a robust 
+       infrastructure that simplifies the development of SOA-based systems. This project is currently 
+       in incubation within the Apache incubator.<br/>
+       Json-lib is used for testing purpouses in the bindings/jsonrpc module.</td>
          </tr>
       </tbody>
    </table>
@@ -73,10 +80,10 @@
 	    <td valign="top" align="center"><a href="http://www.tietoenator.com/">
 	    <img src="http://www.tietoenator.com/images/tietoenator.gif" alt="TietoEnator" border="0"/></a></td>
 	    <td valign="top">The largest IT-services company in Scandinavia is consulting, developing and hosting its 
-            customers’ digital businesses. TietoEnator is among the leading architects in building a more 
+       customers digital businesses. TietoEnator is among the leading architects in building a more 
 	    efficient information society. With over 15 000 experts, it is one of the largest IT services 
 	    providers in Europe.<br/>
-            Json-lib is used in an undisclosed project. Thanks to Manish Shah.</td>
+       Json-lib is used in an undisclosed project. Thanks to Manish Shah.</td>
          </tr>
       </tbody>
    </table>
