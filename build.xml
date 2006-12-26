@@ -166,7 +166,7 @@
 		<jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-sources-jdk15.jar" basedir="${maven.build.directory}/source/jdk15" />
 	</target>
 
-	<target name="javadoc.jdk15" description="Build javadocs (jdk15)">
+	<target name="javadoc.jdk15" description="Build javadocs (jdk15)" depends="setup">
 		<mkdir dir="${javadoc.jdk15.dir}" />
 		<mkdir dir="${maven.build.directory}/source/jdk15" />
 		<copy todir="${maven.build.directory}/source/jdk15">
@@ -188,9 +188,20 @@
 			</classpath>
 
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-			<link href="http://www.junit.org/junit/javadoc/3.8.1" />
+			<link href="http://www.junit.org/junit/javadoc/" />
+			<link href="http://jakarta.apache.org/commons/beanutils/commons-beanutils-1.7.0/docs/api/" />
+			<link href="http://jakarta.apache.org/commons/lang/api-2.2/" />
+			<link href="http://ezmorph.sourceforge.net/apidocs/" />
 		</javadoc>
 		<jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-javadoc-jdk15.jar" basedir="${javadoc.jdk15.dir}" />
+	</target>
+
+	<target name="setup" if="use.proxy">
+		<echo message="Setting proxy values [${maven.proxy.host}:${maven.proxy.port}]"/>
+		<setproxy proxyhost="${maven.proxy.host}"
+			proxyport="${maven.proxy.port}"
+			proxyuser="${maven.proxy.username}"
+			proxypassword="${maven.proxy.password}" />
 	</target>
 
 </project>

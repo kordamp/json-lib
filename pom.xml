@@ -97,32 +97,39 @@
          <groupId>commons-beanutils</groupId>
          <artifactId>commons-beanutils</artifactId>
          <version>1.7.0</version>
+         <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>commons-lang</groupId>
          <artifactId>commons-lang</artifactId>
          <version>2.2</version>
+         <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>commons-logging</groupId>
          <artifactId>commons-logging</artifactId>
          <version>1.1</version>
+         <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>xom</groupId>
          <artifactId>xom</artifactId>
          <version>1.1</version>
+         <scope>compile</scope>
+         <optional>true</optional>
       </dependency>
       <dependency>
          <groupId>oro</groupId>
          <artifactId>oro</artifactId>
          <version>2.0.8</version>
+         <scope>compile</scope>
          <optional>true</optional>
       </dependency>
       <dependency>
          <groupId>net.sf.ezmorph</groupId>
          <artifactId>ezmorph</artifactId>
          <version>0.9.2</version>
+         <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>log4j</groupId>
@@ -139,6 +146,7 @@
 
    <build>
       <defaultGoal>install</defaultGoal>
+      <!--
       <pluginManagement>
          <plugins>
             <plugin>
@@ -148,6 +156,7 @@
             </plugin>
          </plugins>
       </pluginManagement>
+      -->
 
       <plugins>
          <plugin>
@@ -201,6 +210,16 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.1</version>
+            <configuration>
+               <links>
+                  <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+                  <link>http://www.junit.org/junit/javadoc/</link>
+                  <link>http://jakarta.apache.org/commons/beanutils/commons-beanutils-1.7.0/docs/api/</link>
+                  <link>http://jakarta.apache.org/commons/lang/api-2.2/</link>
+                  <link>http://ezmorph.sourceforge.net/apidocs/</link>
+               </links>
+            </configuration>
          </plugin>
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
