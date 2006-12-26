@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  */
 public class JdkRegexpMatcher implements RegexpMatcher
 {
-   private Pattern pattern;
+   private final Pattern pattern;
 
    public JdkRegexpMatcher( String pattern )
    {

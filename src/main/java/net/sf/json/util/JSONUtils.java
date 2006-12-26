@@ -221,11 +221,11 @@ public final class JSONUtils
     */
    public static boolean isFunction( Object obj )
    {
-      if( obj != null && obj instanceof String ){
+      if( obj instanceof String ){
          String str = (String) obj;
          return FUNCTION_MACTHER.matches( str );
       }
-      if( obj != null && obj instanceof JSONFunction ){
+      if( obj instanceof JSONFunction ){
          return true;
       }
       return false;
@@ -237,7 +237,7 @@ public final class JSONUtils
     */
    public static boolean isFunctionHeader( Object obj )
    {
-      if( obj != null && obj instanceof String ){
+      if( obj instanceof String ){
          String str = (String) obj;
          return FUNCTION_HEADER_MATCHER.matches( str );
       }
@@ -327,12 +327,23 @@ public final class JSONUtils
                   || (string.startsWith( "[" ) && string.endsWith( "]" )) || (string.startsWith( "{" ) && string.endsWith( "}" )));
    }
 
-   public static JSONDynaBean newDynaBean( JSONObject jsonObject ) throws Exception
+   /**
+    * Creates a new JSONDynaBean from a JSONObject. The JSONDynaBean will have
+    * all the properties of the original JSONObject with the most accurate type.
+    * Values of properties are not copied.
+    */
+   public static JSONDynaBean newDynaBean( JSONObject jsonObject )
    {
       Map props = getProperties( jsonObject );
       JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, props );
-      JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
-      dynaBean.setDynaBeanClass( dynaClass );
+      JSONDynaBean dynaBean = null;
+      try{
+         dynaBean = (JSONDynaBean) dynaClass.newInstance();
+         dynaBean.setDynaBeanClass( dynaClass );
+      }
+      catch( Exception e ){
+         throw new JSONException( e );
+      }
       return dynaBean;
    }
 
@@ -560,16 +571,8 @@ public final class JSONUtils
       if( value instanceof JSONFunction ){
          return ((JSONFunction) value).toString();
       }
-      try{
-         if( value instanceof JSONString ){
-            Object o = ((JSONString) value).toJSONString();
-            if( o instanceof String ){
-               return (String) o;
-            }
-         }
-      }
-      catch( Exception e ){
-         /* forget about it */
+      if( value instanceof JSONString ){
+         return ((JSONString) value).toJSONString();
       }
       if( value instanceof Number ){
          return numberToString( (Number) value );

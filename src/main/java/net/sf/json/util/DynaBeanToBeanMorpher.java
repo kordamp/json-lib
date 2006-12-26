@@ -41,8 +41,8 @@ import org.apache.commons.beanutils.PropertyUtils;
  */
 public class DynaBeanToBeanMorpher implements ObjectMorpher
 {
-   private Class beanClass;
-   private MorpherRegistry morpherRegistry;
+   private final Class beanClass;
+   private final MorpherRegistry morpherRegistry;
 
    public DynaBeanToBeanMorpher( Class beanClass, MorpherRegistry morpherRegistry )
    {
@@ -91,12 +91,11 @@ public class DynaBeanToBeanMorpher implements ObjectMorpher
             }
          }
       }
+      catch( MorphException me ){
+         throw me;
+      }
       catch( Exception e ){
-         if( e instanceof MorphException ){
-            throw (MorphException) e;
-         }else{
-            throw new MorphException( e );
-         }
+         throw new MorphException( e );
       }
 
       return bean;

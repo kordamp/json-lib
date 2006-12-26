@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.sf.json.JSONException;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -47,9 +48,9 @@ public class TestJSONDynaBean extends TestCase
       try{
          dynaBean = new JSONDynaBean();
          dynaBean.setDynaBeanClass( new JSONDynaClass( "J", String.class, null ) );
-         fail( "should have thrown a IllegalArgumentException" );
+         fail( "should have thrown a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // ok
       }
    }
@@ -61,9 +62,9 @@ public class TestJSONDynaBean extends TestCase
          properties.put( "object", new Object() );
          dynaBean = new JSONDynaBean();
          dynaBean.setDynaBeanClass( new JSONDynaClass( "J", JSONDynaBean.class, properties ) );
-         fail( "should have thrown a IllegalArgumentException" );
+         fail( "should have thrown a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // ok
       }
    }
@@ -75,9 +76,9 @@ public class TestJSONDynaBean extends TestCase
          properties.put( "object", "java.lang.Unknown" );
          dynaBean = new JSONDynaBean();
          dynaBean.setDynaBeanClass( new JSONDynaClass( "J", JSONDynaBean.class, properties ) );
-         fail( "should have thrown a IllegalArgumentException" );
+         fail( "should have thrown a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // ok
       }
    }
@@ -93,9 +94,9 @@ public class TestJSONDynaBean extends TestCase
    {
       try{
          dynaBean.contains( "byte", "key" );
-         fail( "should have thrown a IllegalArgumentException" );
+         fail( "should have thrown a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // ok
       }
    }
@@ -112,9 +113,9 @@ public class TestJSONDynaBean extends TestCase
    {
       try{
          dynaBean.get( "byte", 0 );
-         fail( "should have thrown a IllegalArgumentException" );
+         fail( "should have thrown a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // ok
       }
    }
@@ -123,9 +124,9 @@ public class TestJSONDynaBean extends TestCase
    {
       try{
          dynaBean.get( "unknown" );
-         fail( "should have thrown a IllegalArgumentException" );
+         fail( "should have thrown a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // ok
       }
    }
@@ -134,9 +135,9 @@ public class TestJSONDynaBean extends TestCase
    {
       try{
          dynaBean.get( "byte", "key" );
-         fail( "should have thrown a IllegalArgumentException" );
+         fail( "should have thrown a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // ok
       }
    }
@@ -229,9 +230,9 @@ public class TestJSONDynaBean extends TestCase
    {
       try{
          dynaBean.remove( "byte", "key" );
-         fail( "should have thrown a IllegalArgumentException" );
+         fail( "should have thrown a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // ok
       }
    }
@@ -240,9 +241,9 @@ public class TestJSONDynaBean extends TestCase
    {
       try{
          dynaBean.set( "byte", 0, null );
-         fail( "should have thrown a IllegalArgumentException" );
+         fail( "should have thrown a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // ok
       }
    }
@@ -251,9 +252,9 @@ public class TestJSONDynaBean extends TestCase
    {
       try{
          dynaBean.set( "byte", "key", null );
-         fail( "should have thrown a IllegalArgumentException" );
+         fail( "should have thrown a JSONException" );
       }
-      catch( IllegalArgumentException expected ){
+      catch( JSONException expected ){
          // ok
       }
    }

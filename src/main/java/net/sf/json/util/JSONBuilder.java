@@ -83,7 +83,7 @@ SOFTWARE.
  */
 public class JSONBuilder
 {
-   private static final int maxdepth = 20;
+   private static final int MAXDEPTH = 20;
 
    /**
     * The comma flag determines if a comma should be output before the next
@@ -119,7 +119,7 @@ public class JSONBuilder
    {
       this.comma = false;
       this.mode = 'i';
-      this.stack = new char[maxdepth];
+      this.stack = new char[MAXDEPTH];
       this.top = 0;
       this.writer = w;
    }
@@ -304,7 +304,7 @@ public class JSONBuilder
     */
    private void push( char c )
    {
-      if( this.top >= maxdepth ){
+      if( this.top >= MAXDEPTH ){
          throw new JSONException( "Nesting too deep." );
       }
       this.stack[this.top] = c;

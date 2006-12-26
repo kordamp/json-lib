@@ -17,7 +17,6 @@
 package net.sf.json.util;
 
 import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 /*

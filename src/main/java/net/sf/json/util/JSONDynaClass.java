@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.sf.json.JSONException;
+
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.DynaProperty;
@@ -102,7 +104,7 @@ public class JSONDynaClass implements DynaClass, Serializable
    public DynaProperty getDynaProperty( String propertyName )
    {
       if( propertyName == null ){
-         throw new IllegalArgumentException( "Unnespecified bean property name" );
+         throw new JSONException( "Unnespecified bean property name" );
 
       }
       return (DynaProperty) properties.get( propertyName );
@@ -158,7 +160,7 @@ public class JSONDynaClass implements DynaClass, Serializable
       this.jsonBeanClass = this.type;
 
       if( !JSONDynaBean.class.isAssignableFrom( this.jsonBeanClass ) ){
-         throw new IllegalArgumentException( "Unnasignable dynaClass " + jsonBeanClass );
+         throw new JSONException( "Unnasignable dynaClass " + jsonBeanClass );
       }
 
       try{
@@ -173,33 +175,27 @@ public class JSONDynaClass implements DynaClass, Serializable
             DynaProperty dynaProperty = null;
             if( pclass instanceof String ){
                Class klass = (Class) Class.forName( (String) pclass );
-               if( klass.isArray() ){
-                  if( klass.getComponentType()
-                        .isArray() ){
-                     throw new IllegalArgumentException(
-                           "Multidimensional arrays are not supported" );
-                  }
+               if( klass.isArray() && klass.getComponentType()
+                     .isArray() ){
+                  throw new JSONException( "Multidimensional arrays are not supported" );
                }
                dynaProperty = new DynaProperty( pname, klass );
             }else if( pclass instanceof Class ){
                Class klass = (Class) pclass;
-               if( klass.isArray() ){
-                  if( klass.getComponentType()
-                        .isArray() ){
-                     throw new IllegalArgumentException(
-                           "Multidimensional arrays are not supported" );
-                  }
+               if( klass.isArray() && klass.getComponentType()
+                     .isArray() ){
+                  throw new JSONException( "Multidimensional arrays are not supported" );
                }
                dynaProperty = new DynaProperty( pname, klass );
             }else{
-               throw new IllegalArgumentException( "Type must be String or Class" );
+               throw new JSONException( "Type must be String or Class" );
             }
             properties.put( dynaProperty.getName(), dynaProperty );
             dynaProperties[i++] = dynaProperty;
          }
       }
       catch( ClassNotFoundException cnfe ){
-         throw new IllegalArgumentException( cnfe.getMessage() );
+         throw new JSONException( cnfe );
       }
 
       // keep properties sorted by name

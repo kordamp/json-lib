@@ -192,17 +192,17 @@ public class JSONFunction implements Serializable
       if( params.length > 0 ){
          for( int i = 0; i < params.length - 1; i++ ){
             b.append( params[i] )
-                  .append( "," );
+                  .append( ',' );
          }
          b.append( params[params.length - 1] );
       }
       b.append( "){" );
       if( text.length() > 0 ){
-         b.append( " " )
+         b.append( ' ' )
                .append( text )
-               .append( " " );
+               .append( ' ' );
       }
-      b.append( "}" );
+      b.append( '}' );
       return b.toString();
    }
 }

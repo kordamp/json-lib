@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.sf.json.JSONException;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -56,9 +57,9 @@ public class TestJSONDynaClass extends TestCase
          properties.put( "obj", Object.class.getName() );
          JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
          dynaClass.getDynaProperty( null );
-         fail( "Expected an IllegalArgumentException" );
+         fail( "Expected an JSONException" );
       }
-      catch( IllegalArgumentException exception ){
+      catch( JSONException exception ){
          // ok
       }
    }
@@ -101,9 +102,9 @@ public class TestJSONDynaClass extends TestCase
          Map properties = new HashMap();
          properties.put( "array", Object[][].class );
          new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
-         fail( "Expected an IllegalArgumentException" );
+         fail( "Expected an JSONException" );
       }
-      catch( IllegalArgumentException exception ){
+      catch( JSONException exception ){
          // ok
       }
    }
@@ -114,9 +115,9 @@ public class TestJSONDynaClass extends TestCase
          Map properties = new HashMap();
          properties.put( "array", Object[][].class.getName() );
          new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
-         fail( "Expected an IllegalArgumentException" );
+         fail( "Expected an JSONException" );
       }
-      catch( IllegalArgumentException exception ){
+      catch( JSONException exception ){
          // ok
       }
    }
