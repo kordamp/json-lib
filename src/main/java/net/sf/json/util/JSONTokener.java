@@ -77,11 +77,6 @@ public class JSONTokener
    }
 
    /**
-    * A group of property names to be excluded.
-    */
-   private String[] exclusions;
-
-   /**
     * The index of the next character.
     */
    private int myIndex;
@@ -98,20 +93,8 @@ public class JSONTokener
     */
    public JSONTokener( String s )
    {
-      this( s, null );
-   }
-
-   /**
-    * Construct a JSONTokener from a string.
-    *
-    * @param s A source string.
-    * @param exclusions A group of property names to be excluded
-    */
-   public JSONTokener( String s, String[] exclusions )
-   {
       this.myIndex = 0;
       this.mySource = s;
-      this.exclusions = exclusions;
    }
 
    /**
@@ -366,6 +349,21 @@ public class JSONTokener
     */
    public Object nextValue()
    {
+      return nextValue( null, false );
+   }
+
+   /**
+    * Get the next value. The value can be a Boolean, Double, Integer,
+    * JSONArray, JSONObject, Long, or String, or the JSONObject.NULL object.
+    *
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @throws JSONException If syntax error.
+    * @return An object.
+    */
+   public Object nextValue( String[] excludes, boolean ignoreDefaultExcludes )
+   {
       char c = nextClean();
       String s;
 
@@ -376,10 +374,10 @@ public class JSONTokener
             return nextString( c );
          case '{':
             back();
-            return JSONObject.fromObject( this, exclusions );
+            return JSONObject.fromObject( this, excludes, ignoreDefaultExcludes );
          case '[':
             back();
-            return JSONArray.fromObject( this );
+            return JSONArray.fromObject( this, excludes, ignoreDefaultExcludes );
          default:
             // empty
       }

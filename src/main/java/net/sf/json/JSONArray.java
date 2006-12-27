@@ -235,7 +235,7 @@ public final class JSONArray implements JSON
    public static JSONArray fromJSONString( JSONString string, String[] excludes,
          boolean ignoreDefaultExcludes )
    {
-      return fromJSONTokener( new JSONTokener( string.toJSONString(), excludes ), excludes,
+      return fromJSONTokener( new JSONTokener( string.toJSONString() ), excludes,
             ignoreDefaultExcludes );
    }
 
@@ -281,21 +281,21 @@ public final class JSONArray implements JSON
          boolean ignoreDefaultExcludes )
    {
       if( object instanceof JSONString ){
-         return fromJSONString( (JSONString) object );
+         return fromJSONString( (JSONString) object, excludes, ignoreDefaultExcludes );
       }else if( object instanceof Collection ){
-         return fromCollection( (Collection) object );
+         return fromCollection( (Collection) object, excludes, ignoreDefaultExcludes );
       }else if( object instanceof JSONArray ){
          return new JSONArray( (JSONArray) object );
       }else if( object instanceof JSONTokener ){
-         return fromJSONTokener( (JSONTokener) object );
+         return fromJSONTokener( (JSONTokener) object, excludes, ignoreDefaultExcludes );
       }else if( object instanceof String ){
-         return fromString( (String) object );
+         return fromString( (String) object, excludes, ignoreDefaultExcludes );
       }else if( object != null && object.getClass()
             .isArray() ){
          Class type = object.getClass()
                .getComponentType();
          if( !type.isPrimitive() ){
-            return fromArray( (Object[]) object );
+            return fromArray( (Object[]) object, excludes, ignoreDefaultExcludes );
          }else{
             if( type == Boolean.TYPE ){
                return new JSONArray( (boolean[]) object );
@@ -320,7 +320,7 @@ public final class JSONArray implements JSON
       }else if( JSONUtils.isBoolean( object ) || JSONUtils.isFunction( object )
             || JSONUtils.isNumber( object ) || JSONUtils.isNull( object )
             || JSONUtils.isString( object ) || object instanceof JSON ){
-         return new JSONArray().put( object );
+         return new JSONArray().put( object, excludes, ignoreDefaultExcludes );
       }else if( JSONUtils.isObject( object ) ){
          return new JSONArray().put( JSONObject.fromObject( object, excludes, ignoreDefaultExcludes ) );
       }else{
@@ -512,16 +512,6 @@ public final class JSONArray implements JSON
     *
     * @param tokener a JSONTokener
     */
-   private static JSONArray fromJSONTokener( JSONTokener tokener )
-   {
-      return fromJSONTokener( tokener, null, false );
-   }
-
-   /**
-    * Creates a JSONArray from a JSONTokener.
-    *
-    * @param tokener a JSONTokener
-    */
    private static JSONArray fromJSONTokener( JSONTokener tokener, String[] excludes,
          boolean ignoreDefaultValues )
    {
@@ -692,9 +682,9 @@ public final class JSONArray implements JSON
             put( JSONNull.getInstance() );
          }else{
             x.back();
-            Object v = x.nextValue();
+            Object v = x.nextValue( excludes, ignoreDefaultExcludes );
             if( !JSONUtils.isFunctionHeader( v ) ){
-               put( v );
+               add( v, excludes, ignoreDefaultExcludes );
             }else{
                // read params if any
                String params = JSONUtils.getFunctionParams( (String) v );
@@ -799,7 +789,7 @@ public final class JSONArray implements JSON
     */
    private JSONArray( String string, String[] excludes, boolean ignoreDefaultExcludes )
    {
-      this( new JSONTokener( string, excludes ), excludes, ignoreDefaultExcludes );
+      this( new JSONTokener( string ), excludes, ignoreDefaultExcludes );
    }
 
    /**
@@ -1199,7 +1189,35 @@ public final class JSONArray implements JSON
     */
    public JSONArray put( Collection value )
    {
-      put( fromCollection( value ) );
+      return put( value, null, false );
+   }
+
+   /**
+    * Put a value in the JSONArray, where the value will be a JSONArray which is
+    * produced from a Collection.
+    *
+    * @param value A Collection value.
+    * @param excludes A group of property names to be excluded
+    * @return this.
+    */
+   public JSONArray put( Collection value, String[] excludes )
+   {
+      return put( value, excludes, false );
+   }
+
+   /**
+    * Put a value in the JSONArray, where the value will be a JSONArray which is
+    * produced from a Collection.
+    *
+    * @param value A Collection value.
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @return this.
+    */
+   public JSONArray put( Collection value, String[] excludes, boolean ignoreDefaultExcludes )
+   {
+      put( fromCollection( value, excludes, ignoreDefaultExcludes ) );
       return this;
    }
 
@@ -1258,7 +1276,42 @@ public final class JSONArray implements JSON
     */
    public JSONArray put( int index, Collection value )
    {
-      put( index, fromCollection( value ) );
+      return put( index, value, null, false );
+   }
+
+   /**
+    * Put a value in the JSONArray, where the value will be a JSONArray which is
+    * produced from a Collection.
+    *
+    * @param index The subscript.
+    * @param value A Collection value.
+    * @param excludes A group of property names to be excluded
+    * @return this.
+    * @throws JSONException If the index is negative or if the value is not
+    *         finite.
+    */
+   public JSONArray put( int index, Collection value, String[] excludes )
+   {
+      return put( index, value, excludes, false );
+   }
+
+   /**
+    * Put a value in the JSONArray, where the value will be a JSONArray which is
+    * produced from a Collection.
+    *
+    * @param index The subscript.
+    * @param value A Collection value.
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @return this.
+    * @throws JSONException If the index is negative or if the value is not
+    *         finite.
+    */
+   public JSONArray put( int index, Collection value, String[] excludes,
+         boolean ignoreDefaultExcludes )
+   {
+      put( index, fromCollection( value, excludes, ignoreDefaultExcludes ) );
       return this;
    }
 
@@ -1323,7 +1376,41 @@ public final class JSONArray implements JSON
     */
    public JSONArray put( int index, Map value )
    {
-      put( index, JSONObject.fromObject( value ) );
+      return put( index, value, null, false );
+   }
+
+   /**
+    * Put a value in the JSONArray, where the value will be a JSONObject which
+    * is produced from a Map.
+    *
+    * @param index The subscript.
+    * @param value The Map value.
+    * @param excludes A group of property names to be excluded
+    * @return this.
+    * @throws JSONException If the index is negative or if the the value is an
+    *         invalid number.
+    */
+   public JSONArray put( int index, Map value, String[] excludes )
+   {
+      return put( index, value, excludes, false );
+   }
+
+   /**
+    * Put a value in the JSONArray, where the value will be a JSONObject which
+    * is produced from a Map.
+    *
+    * @param index The subscript.
+    * @param value The Map value.
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @return this.
+    * @throws JSONException If the index is negative or if the the value is an
+    *         invalid number.
+    */
+   public JSONArray put( int index, Map value, String[] excludes, boolean ignoreDefaultExcludes )
+   {
+      put( index, JSONObject.fromObject( value, excludes, ignoreDefaultExcludes ) );
       return this;
    }
 
@@ -1342,6 +1429,45 @@ public final class JSONArray implements JSON
     */
    public JSONArray put( int index, Object value )
    {
+      return put( index, value, null, false );
+   }
+
+   /**
+    * Put or replace an object value in the JSONArray. If the index is greater
+    * than the length of the JSONArray, then null elements will be added as
+    * necessary to pad it out.
+    *
+    * @param index The subscript.
+    * @param value An object value. The value should be a Boolean, Double,
+    *        Integer, JSONArray, JSONObject, JSONFunction, Long, String,
+    *        JSONString or the JSONNull object.
+    * @param excludes A group of property names to be excluded
+    * @return this.
+    * @throws JSONException If the index is negative or if the the value is an
+    *         invalid number.
+    */
+   public JSONArray put( int index, Object value, String[] excludes )
+   {
+      return put( index, value, excludes, false );
+   }
+
+   /**
+    * Put or replace an object value in the JSONArray. If the index is greater
+    * than the length of the JSONArray, then null elements will be added as
+    * necessary to pad it out.
+    *
+    * @param index The subscript.
+    * @param value An object value. The value should be a Boolean, Double,
+    *        Integer, JSONArray, JSONObject, JSONFunction, Long, String,
+    *        JSONString or the JSONNull object.
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    * @return this.
+    * @throws JSONException If the index is negative or if the the value is an
+    *         invalid number.
+    */
+   public JSONArray put( int index, Object value, String[] excludes, boolean ignoreDefaultExcludes )
+   {
       JSONUtils.testValidity( value );
       if( index < 0 ){
          throw new JSONException( "JSONArray[" + index + "] not found." );
@@ -1353,17 +1479,20 @@ public final class JSONArray implements JSON
          }else if( JSONUtils.isFunction( value ) ){
             this.elements.set( index, value );
          }else if( value instanceof JSONString ){
-            this.elements.set( index, JSONSerializer.toJSON( (JSONString) value ) );
+            this.elements.set( index, JSONSerializer.toJSON( (JSONString) value, excludes,
+                  ignoreDefaultExcludes ) );
          }else if( JSONUtils.isArray( value ) ){
-            this.elements.set( index, JSONArray.fromObject( value ) );
+            this.elements.set( index, JSONArray.fromObject( value, excludes, ignoreDefaultExcludes ) );
          }else if( value instanceof JSON ){
             this.elements.set( index, value );
          }else if( value instanceof JSONTokener ){
-            this.elements.set( index, fromJSONTokener( (JSONTokener) value ) );
+            this.elements.set( index, fromJSONTokener( (JSONTokener) value, excludes,
+                  ignoreDefaultExcludes ) );
          }else if( JSONUtils.isString( value ) ){
             String str = String.valueOf( value );
             if( JSONUtils.mayBeJSON( str ) ){
-               this.elements.set( index, JSONSerializer.toJSON( str ) );
+               this.elements.set( index, JSONSerializer.toJSON( str, excludes,
+                     ignoreDefaultExcludes ) );
             }else{
                this.elements.set( index, str );
             }
@@ -1371,7 +1500,7 @@ public final class JSONArray implements JSON
             JSONUtils.testValidity( value );
             this.elements.set( index, value );
          }else{
-            JSONObject jsonObject = JSONObject.fromObject( value );
+            JSONObject jsonObject = JSONObject.fromObject( value, excludes, ignoreDefaultExcludes );
             if( jsonObject.isNullObject() ){
                this.elements.set( index, JSONNull.getInstance() );
             }else{
@@ -1382,7 +1511,7 @@ public final class JSONArray implements JSON
          while( index != length() ){
             put( JSONNull.getInstance() );
          }
-         put( value );
+         put( value, excludes, ignoreDefaultExcludes );
       }
       return this;
    }
@@ -1402,6 +1531,46 @@ public final class JSONArray implements JSON
     */
    public JSONArray put( int index, String value )
    {
+      return put( index, value, null, false );
+   }
+
+   /**
+    * Put or replace a String value in the JSONArray. If the index is greater
+    * than the length of the JSONArray, then null elements will be added as
+    * necessary to pad it out.<br>
+    * The string may be a valid JSON formatted string, in tha case, it will be
+    * trabsformed to a JSONArray, JSONObjetc or JSONNull.
+    *
+    * @param index The subscript.
+    * @param value A String value.
+    * @param excludes A group of property names to be excluded
+    * @return this.
+    * @throws JSONException If the index is negative or if the the value is an
+    *         invalid number.
+    */
+   public JSONArray put( int index, String value, String[] excludes )
+   {
+      return put( index, value, excludes, false );
+   }
+
+   /**
+    * Put or replace a String value in the JSONArray. If the index is greater
+    * than the length of the JSONArray, then null elements will be added as
+    * necessary to pad it out.<br>
+    * The string may be a valid JSON formatted string, in tha case, it will be
+    * trabsformed to a JSONArray, JSONObjetc or JSONNull.
+    *
+    * @param index The subscript.
+    * @param value A String value.
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @return this.
+    * @throws JSONException If the index is negative or if the the value is an
+    *         invalid number.
+    */
+   public JSONArray put( int index, String value, String[] excludes, boolean ignoreDefaultExcludes )
+   {
       if( index < 0 ){
          throw new JSONException( "JSONArray[" + index + "] not found." );
       }
@@ -1409,7 +1578,8 @@ public final class JSONArray implements JSON
          if( value == null ){
             this.elements.set( index, "" );
          }else if( JSONUtils.mayBeJSON( value ) ){
-            this.elements.set( index, JSONSerializer.toJSON( value ) );
+            this.elements.set( index,
+                  JSONSerializer.toJSON( value, excludes, ignoreDefaultExcludes ) );
          }else{
             this.elements.set( index, value );
          }
@@ -1417,7 +1587,7 @@ public final class JSONArray implements JSON
          while( index != length() ){
             put( JSONNull.getInstance() );
          }
-         put( value );
+         put( value, excludes, ignoreDefaultExcludes );
       }
       return this;
    }
@@ -1431,18 +1601,6 @@ public final class JSONArray implements JSON
    public JSONArray put( JSON value )
    {
       this.elements.add( value );
-      return this;
-   }
-
-   /**
-    * Append an JSONString value. This increases the array's length by one.
-    *
-    * @param value An JSONString value.
-    * @return this.
-    */
-   public JSONArray put( JSONString value )
-   {
-      this.elements.add( JSONSerializer.toJSON( value ) );
       return this;
    }
 
@@ -1467,7 +1625,33 @@ public final class JSONArray implements JSON
     */
    public JSONArray put( Map value )
    {
-      put( JSONObject.fromObject( value ) );
+      return put( value, null, false );
+   }
+
+   /**
+    * Put a value in the JSONArray, where the value will be a JSONObject which
+    * is produced from a Map.
+    *
+    * @param value A Map value.
+    * @param excludes A group of property names to be excluded
+    * @return this.
+    */
+   public JSONArray put( Map value, String[] excludes )
+   {
+      return put( value, excludes, false );
+   }
+
+   /**
+    * Put a value in the JSONArray, where the value will be a JSONObject which
+    * is produced from a Map.
+    *
+    * @param value A Map value.
+    * @param excludes A group of property names to be excluded
+    * @return this.
+    */
+   public JSONArray put( Map value, String[] excludes, boolean ignoreDefaultExcludes )
+   {
+      put( JSONObject.fromObject( value, excludes, ignoreDefaultExcludes ) );
       return this;
    }
 
@@ -1481,41 +1665,37 @@ public final class JSONArray implements JSON
     */
    public JSONArray put( Object value )
    {
-      if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
-            || value instanceof Class ){
-         this.elements.add( ((Class) value).getName() );
-      }else if( JSONUtils.isFunction( value ) ){
-         this.elements.add( value );
-      }else if( value instanceof JSONString ){
-         this.elements.add( JSONSerializer.toJSON( (JSONString) value ) );
-      }else if( JSONUtils.isArray( value ) ){
-         this.elements.add( JSONArray.fromObject( value ) );
-      }else if( value instanceof JSON ){
-         this.elements.add( value );
-      }else if( value instanceof JSONTokener ){
-         this.elements.add( fromJSONTokener( (JSONTokener) value ) );
-      }else if( JSONUtils.isString( value ) ){
-         String str = String.valueOf( value );
-         if( JSONUtils.mayBeJSON( str ) ){
-            this.elements.add( JSONSerializer.toJSON( str ) );
-         }else{
-            this.elements.add( str );
-         }
-      }else if( JSONUtils.isNumber( value ) ){
-         JSONUtils.testValidity( value );
-         this.elements.add( JSONUtils.transformNumber( (Number) value ) );
-      }else if( JSONUtils.isBoolean( value ) ){
-         this.elements.add( value );
-      }else{
-         JSONObject jsonObject = JSONObject.fromObject( value );
-         if( jsonObject.isNullObject() ){
-            this.elements.add( JSONNull.getInstance() );
-         }else{
-            this.elements.add( jsonObject );
-         }
-      }
+      return put( value, null, false );
+   }
 
-      return this;
+   /**
+    * Append an object value. This increases the array's length by one.
+    *
+    * @param value An object value. The value should be a Boolean, Double,
+    *        Integer, JSONArray, JSONObject, JSONFunction, Long, String,
+    *        JSONString or the JSONNull object.
+    * @param excludes A group of property names to be excluded
+    * @return this.
+    */
+   public JSONArray put( Object value, String[] excludes )
+   {
+      return put( value, excludes, false );
+   }
+
+   /**
+    * Append an object value. This increases the array's length by one.
+    *
+    * @param value An object value. The value should be a Boolean, Double,
+    *        Integer, JSONArray, JSONObject, JSONFunction, Long, String,
+    *        JSONString or the JSONNull object.
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @return this.
+    */
+   public JSONArray put( Object value, String[] excludes, boolean ignoreDefaultExcludes )
+   {
+      return add( value, excludes, ignoreDefaultExcludes );
    }
 
    /**
@@ -1527,6 +1707,36 @@ public final class JSONArray implements JSON
     * @return this.
     */
    public JSONArray put( String value )
+   {
+      return put( value, null, false );
+   }
+
+   /**
+    * Append a String value. This increases the array's length by one.<br>
+    * The string may be a valid JSON formatted string, in tha case, it will be
+    * trabsformed to a JSONArray, JSONObjetc or JSONNull.
+    *
+    * @param value A String value.
+    * @param excludes A group of property names to be excluded
+    * @return this.
+    */
+   public JSONArray put( String value, String[] excludes )
+   {
+      return put( value, excludes, false );
+   }
+
+   /**
+    * Append a String value. This increases the array's length by one.<br>
+    * The string may be a valid JSON formatted string, in tha case, it will be
+    * trabsformed to a JSONArray, JSONObjetc or JSONNull.
+    *
+    * @param value A String value.
+    * @param excludes A group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @return this.
+    */
+   public JSONArray put( String value, String[] excludes, boolean ignoreDefaultExcludes )
    {
       if( value == null ){
          this.elements.add( "" );

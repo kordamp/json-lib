@@ -621,6 +621,32 @@ public class TestJSONObject extends TestCase
       assertEquals( "json", new JSONObject().optString( "any", "json" ) );
    }
 
+   public void testPut_Bean()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "bean", new ObjectBean() );
+      JSONObject actual = jsonObject.getJSONObject( "bean" );
+      Assertions.assertTrue( !actual.has( "class" ) );
+   }
+
+   public void testPut_Bean_exclusions()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "bean", new ObjectBean(), new String[] { "pexcluded" } );
+      JSONObject actual = jsonObject.getJSONObject( "bean" );
+      Assertions.assertTrue( !actual.has( "class" ) );
+      Assertions.assertTrue( !actual.has( "pexcluded" ) );
+   }
+
+   public void testPut_Bean_exclusions_ignoreDefault()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "bean", new ObjectBean(), new String[] { "pexcluded" }, true );
+      JSONObject actual = jsonObject.getJSONObject( "bean" );
+      Assertions.assertTrue( actual.has( "class" ) );
+      Assertions.assertTrue( !actual.has( "pexcluded" ) );
+   }
+
    public void testPut_boolean()
    {
       JSONObject jsonObject = new JSONObject();
@@ -647,6 +673,41 @@ public class TestJSONObject extends TestCase
       JSONObject jsonObject = new JSONObject();
       jsonObject.put( "list", Collections.EMPTY_LIST );
       Assertions.assertEquals( new JSONArray(), jsonObject.getJSONArray( "list" ) );
+   }
+
+   public void testPut_Collection2()
+   {
+      List list = new ArrayList();
+      list.add( new ObjectBean() );
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "list", list );
+      JSONObject actual = jsonObject.getJSONArray( "list" )
+            .getJSONObject( 0 );
+      Assertions.assertTrue( !actual.has( "class" ) );
+   }
+
+   public void testPut_Collection2_exclusions()
+   {
+      List list = new ArrayList();
+      list.add( new ObjectBean() );
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "list", list, new String[] { "pexcluded" } );
+      JSONObject actual = jsonObject.getJSONArray( "list" )
+            .getJSONObject( 0 );
+      Assertions.assertTrue( !actual.has( "class" ) );
+      Assertions.assertTrue( !actual.has( "pexcluded" ) );
+   }
+
+   public void testPut_Collection2_exclusions_ignoreDefault()
+   {
+      List list = new ArrayList();
+      list.add( new ObjectBean() );
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "list", list, new String[] { "pexcluded" }, true );
+      JSONObject actual = jsonObject.getJSONArray( "list" )
+            .getJSONObject( 0 );
+      Assertions.assertTrue( actual.has( "class" ) );
+      Assertions.assertTrue( !actual.has( "pexcluded" ) );
    }
 
    public void testPut_double()
@@ -710,6 +771,44 @@ public class TestJSONObject extends TestCase
       JSONObject jsonObject = new JSONObject();
       jsonObject.put( "map", map );
       Assertions.assertEquals( JSONObject.fromObject( map ), jsonObject.getJSONObject( "map" ) );
+   }
+
+   public void testPut_Map2()
+   {
+      Map map = new HashMap();
+      map.put( "name", "json" );
+      map.put( "class", "java.lang.Object" );
+      map.put( "excluded", "excluded" );
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "map", map );
+      JSONObject actual = jsonObject.getJSONObject( "map" );
+      Assertions.assertTrue( !actual.has( "class" ) );
+   }
+
+   public void testPut_Map2_exclusions()
+   {
+      Map map = new HashMap();
+      map.put( "name", "json" );
+      map.put( "class", "java.lang.Object" );
+      map.put( "pexcluded", "excluded" );
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "map", map, new String[] { "pexcluded" } );
+      JSONObject actual = jsonObject.getJSONObject( "map" );
+      Assertions.assertTrue( !actual.has( "class" ) );
+      Assertions.assertTrue( !actual.has( "pexcluded" ) );
+   }
+
+   public void testPut_Map2_exclusions_ignoreDefault()
+   {
+      Map map = new HashMap();
+      map.put( "name", "json" );
+      map.put( "class", "java.lang.Object" );
+      map.put( "pexcluded", "excluded" );
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "map", map, new String[] { "pexcluded" }, true );
+      JSONObject actual = jsonObject.getJSONObject( "map" );
+      Assertions.assertTrue( actual.has( "class" ) );
+      Assertions.assertTrue( !actual.has( "pexcluded" ) );
    }
 
    public void testPut_null_key()

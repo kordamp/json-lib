@@ -36,6 +36,11 @@ public class AllTests extends TestSuite
       suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_Map.class ) );
       suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_String.class ) );
 
+      suite.addTest( new TestSuite( TestJSONArrayStaticBuilders_Array_DynaBean.class ) );
+      suite.addTest( new TestSuite( TestJSONArrayStaticBuilders_Collection_DynaBean.class ) );
+      suite.addTest( new TestSuite( TestJSONArrayStaticBuilders_JSONString.class ) );
+      suite.addTest( new TestSuite( TestJSONArrayStaticBuilders_String.class ) );
+
       suite.addTest( new TestSuite( TestJSONFunction.class ) );
       suite.addTest( new TestSuite( TestJSONArray.class ) );
       suite.addTest( new TestSuite( TestJSONObject.class ) );

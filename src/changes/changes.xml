@@ -8,6 +8,30 @@
    </properties>
    <body>
       <release
+	 version="N/A"
+         date="2006-12-26"
+         desc="Development version">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1622676">
+            JSONArray.put does not use excludes.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1622675">
+            JSONObject.put does not use excludes.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1622674">
+            JSONArray does not pass excludes.
+         </action>
+      </release>
+      
+      <release
          version="1.0b1"
          date="2006-12-18"
          desc="First 1.0 beta release">
