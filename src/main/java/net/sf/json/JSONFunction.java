@@ -29,19 +29,27 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * JSONFunction represents a javaScript function's text.
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
- * @version 3
+ * @version 4
  */
 public class JSONFunction implements Serializable
 {
    /** constant array for empty parameters */
    private static final String[] EMPTY_PARAM_ARRAY = new String[0];
 
-   private static final long serialVersionUID = 5550817154436696969L;
+   private static final long serialVersionUID = 4808252866627073811L;
 
    /**
     * Constructs a JSONFunction from a text representation
     */
-   public static JSONFunction parse( JSONTokener x )
+   public static JSONFunction parse( String str )
+   {
+      return parse( new JSONTokener( str ) );
+   }
+
+   /**
+    * Constructs a JSONFunction from a text representation
+    */
+   private static JSONFunction parse( JSONTokener x )
    {
       Object v = x.nextValue();
       if( !JSONUtils.isFunctionHeader( v ) ){
@@ -77,14 +85,6 @@ public class JSONFunction implements Serializable
                .trim();
          return new JSONFunction( (params != null) ? StringUtils.split( params, "," ) : null, text );
       }
-   }
-
-   /**
-    * Constructs a JSONFunction from a text representation
-    */
-   public static JSONFunction parse( String str )
-   {
-      return parse( new JSONTokener( str ) );
    }
 
    /** the parameters of this function */

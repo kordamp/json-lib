@@ -8,9 +8,14 @@
    </properties>
    <body>
       <release
-	 version="N/A"
-         date="2006-12-26"
+         version="N/A"
+         date="2007-01-05"
          desc="Development version">
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Updated javadocs.
+         </action>
          <action
             dev="Andres Almiray"
             type="fix"
@@ -30,7 +35,7 @@
             JSONArray does not pass excludes.
          </action>
       </release>
-      
+
       <release
          version="1.0b1"
          date="2006-12-18"

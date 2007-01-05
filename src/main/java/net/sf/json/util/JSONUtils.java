@@ -36,7 +36,7 @@ import net.sf.json.regexp.RegexpMatcher;
 import net.sf.json.regexp.RegexpUtils;
 
 /**
- * Provides useful methods on java objects.
+ * Provides useful methods on java objects and JSON values.
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  * @version 6
@@ -49,8 +49,9 @@ public final class JSONUtils
    private static RegexpMatcher FUNCTION_PARAMS_MATCHER;
    private static final String FUNCTION_PARAMS_PATTERN = "^function[ ]?\\((.*?)\\)$";
    private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*\\)[ ]?\\{.*\\}$";
-
    private static final MorpherRegistry morpherRegistry = new MorpherRegistry();
+   private static final BigDecimal NUMBER_MAX_VALUE = new BigDecimal( "1.7976931348623157E308" );
+   private static final BigDecimal NUMBER_MIN_VALUE = new BigDecimal( "5E-324" );
 
    static{
       FUNCTION_HEADER_MATCHER = RegexpUtils.getMatcher( FUNCTION_HEADER_PATTERN );
@@ -96,6 +97,9 @@ public final class JSONUtils
       return FUNCTION_PARAMS_MATCHER.getGroupIfMatches( function, 1 );
    }
 
+   /**
+    * Returns the inner-most component type of an Array.
+    */
    public static Class getInnerComponentType( Class type )
    {
       if( !type.isArray() ){
@@ -104,6 +108,9 @@ public final class JSONUtils
       return getInnerComponentType( type.getComponentType() );
    }
 
+   /**
+    * Returns the singleton MorpherRegistry.
+    */
    public static MorpherRegistry getMorpherRegistry()
    {
       return morpherRegistry;
@@ -123,7 +130,8 @@ public final class JSONUtils
    }
 
    /**
-    * Returns the JSON type.
+    * Returns the JSON type.<br>
+    * Values are Object, String, Boolean, Number(subclasses) &amp; JSONFunction.
     */
    public static Class getTypeClass( Object obj )
    {
@@ -320,6 +328,15 @@ public final class JSONUtils
       return false;
    }
 
+   /**
+    * Tests if the String possibly represents a valid JSON String.<br>
+    * Valid JSON strings are:
+    * <ul>
+    * <li>"null"</li>
+    * <li>starts with "[" and ends with "]"</li>
+    * <li>starts with "{" and ends with "}"</li>
+    * </ul>
+    */
    public static boolean mayBeJSON( String string )
    {
       return string != null
@@ -466,15 +483,19 @@ public final class JSONUtils
             if( ((Float) o).isInfinite() || ((Float) o).isNaN() ){
                throw new JSONException( "JSON does not allow non-finite numbers." );
             }
-         }else if( o instanceof BigDecimal || o instanceof BigInteger ){
-            // TODO should check against ECMAScript-262
-            return;
-            /*
-             * Float f = new Float( ((BigDecimal) o).floatValue() ); Double d =
-             * new Double( ((BigDecimal) o).doubleValue() ); if( d.isInfinite() ||
-             * d.isNaN() || f.isInfinite() || f.isNaN() ){ throw new
-             * JSONException( "JSON does not allow non-finite numbers" ); }
-             */
+         }else if( o instanceof BigDecimal ){
+            if( NUMBER_MAX_VALUE.compareTo( o ) == -1 ){
+               throw new JSONException( "Number is bigger than ECMAScript Number.MAX_VALUE" );
+            }else if( NUMBER_MIN_VALUE.compareTo( o ) == 1 ){
+               throw new JSONException( "Number is smaller than ECMAScript Number.MIN_VALUE" );
+            }
+         }else if( o instanceof BigInteger ){
+            BigDecimal d = new BigDecimal( (BigInteger) o );
+            if( NUMBER_MAX_VALUE.compareTo( d ) == -1 ){
+               throw new JSONException( "Number is bigger than ECMAScript Number.MAX_VALUE" );
+            }else if( NUMBER_MIN_VALUE.compareTo( d ) == 1 ){
+               throw new JSONException( "Number is smaller than ECMAScript Number.MIN_VALUE" );
+            }
          }
       }
    }
@@ -487,7 +508,6 @@ public final class JSONUtils
     */
    public static Number transformNumber( Number input )
    {
-      // TODO should check against ECMAScript-262
       if( input instanceof Float ){
          return new Double( input.doubleValue() );
       }else if( input instanceof Short ){

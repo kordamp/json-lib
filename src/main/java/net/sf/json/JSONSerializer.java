@@ -39,7 +39,7 @@ public class JSONSerializer
    /**
     * Creates a JSONObject, JSONArray or a JSONNull from object.
     *
-    * @param object
+    * @param object any java Object
     * @throws JSONException if the object can not be converted
     */
    public static JSON toJSON( Object object )
@@ -50,7 +50,7 @@ public class JSONSerializer
    /**
     * Creates a JSONObject, JSONArray or a JSONNull from object.
     *
-    * @param object
+    * @param object any java Object
     * @param excludes A group of property names to be excluded
     * @throws JSONException if the object can not be converted
     */
@@ -62,7 +62,7 @@ public class JSONSerializer
    /**
     * Creates a JSONObject, JSONArray or a JSONNull from object.
     *
-    * @param object
+    * @param object any java Object
     * @param excludes A group of property names to be excluded
     * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
     *        property names
@@ -142,9 +142,11 @@ public class JSONSerializer
    /**
     * Constructs a new JSONSerializer with specific values for conversion.
     *
-    * @param rootClass
-    * @param classMap
-    * @param arrayMode
+    * @param rootClass the target class for conversion
+    * @param classMap Map of classes, every key identifies a property or a
+    *        regexp
+    * @param arrayMode array mode for conversion, either MODE_OBJECT_ARRAY or
+    *        MODE_LIST
     */
    public JSONSerializer( Class rootClass, Map classMap, int arrayMode )
    {
@@ -167,7 +169,7 @@ public class JSONSerializer
    /**
     * Returns the current attribute/class Map
     *
-    * @return
+    * @return a Map of classes, every key identifies a property or a regexp
     */
    public synchronized Map getClassMap()
    {
@@ -177,7 +179,7 @@ public class JSONSerializer
    /**
     * Returns the current root Class.
     *
-    * @return
+    * @return the target class for conversion
     */
    public synchronized Class getRootClass()
    {
@@ -202,7 +204,7 @@ public class JSONSerializer
     * If the value is not MODE_LIST neither MODE_OBJECT_ARRAY, then MODE_LIST
     * will be used.
     *
-    * @param arrayMode
+    * @param arrayMode array mode for conversion
     */
    public synchronized void setArrayMode( int arrayMode )
    {
@@ -216,7 +218,8 @@ public class JSONSerializer
    /**
     * Sets the current attribute/Class Map
     *
-    * @param classMap
+    * @param classMap a Map of classes, every key identifies a property or a
+    *        regexp
     */
    public synchronized void setClassMap( Map classMap )
    {
@@ -226,7 +229,7 @@ public class JSONSerializer
    /**
     * Sets the current root Class
     *
-    * @param rootClass
+    * @param rootClass the target class for conversion
     */
    public synchronized void setRootClass( Class rootClass )
    {
@@ -238,8 +241,9 @@ public class JSONSerializer
     * Depending on the configured values for conversion this will return a
     * DynaBean, a bean, a List, or and array.
     *
-    * @param json
-    * @return
+    * @param json a JSON value
+    * @return depends on the nature of the source object (JSONObject, JSONArray,
+    *         JSONNull) and the configured rootClass, classMap and arrayMode
     */
    public synchronized Object toJava( JSON json )
    {

@@ -18,7 +18,7 @@ package net.sf.json;
 import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
- * The JSONException is thrown by the JSON.org classes then things are amiss.
+ * The JSONException is thrown when things are amiss.
  *
  * @author JSON.org
  * @version 4

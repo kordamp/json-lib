@@ -18,17 +18,24 @@ package net.sf.json;
 import java.io.Writer;
 
 /**
+ * Marker interface, identifies a valid JSON value.<br>
+ * A JSON value may be a {@link JSONObject}, a {@link JSONArray} or a
+ * {@link JSONNull}.
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public interface JSON
 {
+   /**
+    * Returns true if this object is a JSONArray, false otherwise.
+    */
    boolean isArray();
 
    /**
     * Make a prettyprinted JSON text.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    * 
+    *
     * @param indentFactor The number of spaces to add to each level of
     *        indentation.
     * @return a printable, displayable, portable, transmittable representation
@@ -43,7 +50,7 @@ public interface JSON
     * Make a prettyprinted JSON text.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    * 
+    *
     * @param indentFactor The number of spaces to add to each level of
     *        indentation.
     * @param indent The indentation of the top level.
@@ -59,7 +66,7 @@ public interface JSON
     * whitespace is added.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    * 
+    *
     * @return The writer.
     * @throws JSONException
     */
