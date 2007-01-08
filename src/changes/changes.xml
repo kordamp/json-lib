@@ -9,12 +9,28 @@
    <body>
       <release
          version="N/A"
-         date="2007-01-05"
+         date="2007-01-07"
          desc="Development version">
          <action
             dev="Andres Almiray"
             type="update">
             Updated javadocs.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Moved JSONTypes to net.sf.json.xml
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="delete">
+            Removed net.sf.json.util.CDL, repeated functionality.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1630258 ">
+            Validate ECMAScript max &amp; min Number values.
          </action>
          <action
             dev="Andres Almiray"

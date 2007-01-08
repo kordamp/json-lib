@@ -1033,9 +1033,8 @@ public class TestJSONObject extends TestCase
 
    public void testToBean_DynaBean__BigInteger_BigDecimal()
    {
-      BigInteger l = BigInteger.valueOf( Long.MAX_VALUE );
-      l = l.pow( 100 );
-      BigDecimal m = new BigDecimal( l.pow( 5 ) ).add( new BigDecimal( "0.001" ) );
+      BigInteger l = new BigDecimal( "1.7976931348623157E308" ).toBigInteger();
+      BigDecimal m = new BigDecimal( "1.7976931348623157E307" ).add( new BigDecimal( "0.0001" ) );
       JSONObject json = new JSONObject().put( "i", BigInteger.ZERO )
             .put( "d", MorphUtils.BIGDECIMAL_ONE )
             .put( "bi", l )

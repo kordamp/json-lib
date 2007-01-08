@@ -51,7 +51,8 @@ public final class JSONUtils
    private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*\\)[ ]?\\{.*\\}$";
    private static final MorpherRegistry morpherRegistry = new MorpherRegistry();
    private static final BigDecimal NUMBER_MAX_VALUE = new BigDecimal( "1.7976931348623157E308" );
-   private static final BigDecimal NUMBER_MIN_VALUE = new BigDecimal( "5E-324" );
+   private static final BigDecimal NUMBER_MIN_VALUE = NUMBER_MAX_VALUE.multiply( new BigDecimal(
+         "-1" ) );
 
    static{
       FUNCTION_HEADER_MATCHER = RegexpUtils.getMatcher( FUNCTION_HEADER_PATTERN );
@@ -151,12 +152,14 @@ public final class JSONUtils
             return Long.class;
          }else if( isFloat( n ) ){
             return Float.class;
-         }else if( isDouble( n ) ){
-            return Double.class;
          }else if( isBigInteger( n ) ){
             return BigInteger.class;
-         }else{
+         }else if( isBigDecimal( n ) ){
             return BigDecimal.class;
+         }else if( isDouble( n ) ){
+            return Double.class;
+         }else{
+            throw new JSONException( "Unsupported type" );
          }
       }else if( isString( obj ) ){
          return String.class;
@@ -484,16 +487,17 @@ public final class JSONUtils
                throw new JSONException( "JSON does not allow non-finite numbers." );
             }
          }else if( o instanceof BigDecimal ){
-            if( NUMBER_MAX_VALUE.compareTo( o ) == -1 ){
+            BigDecimal d = (BigDecimal) o;
+            if( d.compareTo( NUMBER_MAX_VALUE ) > 0 ){
                throw new JSONException( "Number is bigger than ECMAScript Number.MAX_VALUE" );
-            }else if( NUMBER_MIN_VALUE.compareTo( o ) == 1 ){
+            }else if( d.compareTo( NUMBER_MIN_VALUE ) < 0 ){
                throw new JSONException( "Number is smaller than ECMAScript Number.MIN_VALUE" );
             }
          }else if( o instanceof BigInteger ){
             BigDecimal d = new BigDecimal( (BigInteger) o );
-            if( NUMBER_MAX_VALUE.compareTo( d ) == -1 ){
+            if( d.compareTo( NUMBER_MAX_VALUE ) > 0 ){
                throw new JSONException( "Number is bigger than ECMAScript Number.MAX_VALUE" );
-            }else if( NUMBER_MIN_VALUE.compareTo( d ) == 1 ){
+            }else if( d.compareTo( NUMBER_MIN_VALUE ) < 0 ){
                throw new JSONException( "Number is smaller than ECMAScript Number.MIN_VALUE" );
             }
          }
@@ -607,6 +611,26 @@ public final class JSONUtils
          return ((JSONArray) value).toString( indentFactor, indent );
       }
       return quote( value.toString() );
+   }
+
+   /**
+    * Finds out if n represents a BigInteger
+    *
+    * @return true if n is instanceOf BigInteger or the literal value can be
+    *         evaluated as a BigInteger
+    */
+   private static boolean isBigDecimal( Number n )
+   {
+      if( n instanceof BigDecimal ){
+         return true;
+      }
+      try{
+         new BigDecimal( String.valueOf( n ) );
+         return true;
+      }
+      catch( NumberFormatException e ){
+         return false;
+      }
    }
 
    /**

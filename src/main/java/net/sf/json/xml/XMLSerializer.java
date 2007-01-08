@@ -28,7 +28,6 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONFunction;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
-import net.sf.json.util.JSONTypes;
 import net.sf.json.util.JSONUtils;
 import nu.xom.Attribute;
 import nu.xom.Builder;
