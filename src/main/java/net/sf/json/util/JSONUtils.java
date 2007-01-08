@@ -50,9 +50,6 @@ public final class JSONUtils
    private static final String FUNCTION_PARAMS_PATTERN = "^function[ ]?\\((.*?)\\)$";
    private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*\\)[ ]?\\{.*\\}$";
    private static final MorpherRegistry morpherRegistry = new MorpherRegistry();
-   private static final BigDecimal NUMBER_MAX_VALUE = new BigDecimal( "1.7976931348623157E308" );
-   private static final BigDecimal NUMBER_MIN_VALUE = NUMBER_MAX_VALUE.multiply( new BigDecimal(
-         "-1" ) );
 
    static{
       FUNCTION_HEADER_MATCHER = RegexpUtils.getMatcher( FUNCTION_HEADER_PATTERN );
@@ -486,20 +483,9 @@ public final class JSONUtils
             if( ((Float) o).isInfinite() || ((Float) o).isNaN() ){
                throw new JSONException( "JSON does not allow non-finite numbers." );
             }
-         }else if( o instanceof BigDecimal ){
-            BigDecimal d = (BigDecimal) o;
-            if( d.compareTo( NUMBER_MAX_VALUE ) > 0 ){
-               throw new JSONException( "Number is bigger than ECMAScript Number.MAX_VALUE" );
-            }else if( d.compareTo( NUMBER_MIN_VALUE ) < 0 ){
-               throw new JSONException( "Number is smaller than ECMAScript Number.MIN_VALUE" );
-            }
-         }else if( o instanceof BigInteger ){
-            BigDecimal d = new BigDecimal( (BigInteger) o );
-            if( d.compareTo( NUMBER_MAX_VALUE ) > 0 ){
-               throw new JSONException( "Number is bigger than ECMAScript Number.MAX_VALUE" );
-            }else if( d.compareTo( NUMBER_MIN_VALUE ) < 0 ){
-               throw new JSONException( "Number is smaller than ECMAScript Number.MIN_VALUE" );
-            }
+         }else if( o instanceof BigDecimal || o instanceof BigInteger ){
+            // ok
+            return;
          }
       }
    }
