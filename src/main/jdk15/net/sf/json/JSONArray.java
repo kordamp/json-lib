@@ -576,8 +576,11 @@ public final class JSONArray implements JSON
    private JSONArray( byte[] array )
    {
       this.elements = new ArrayList();
-      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
-      // TODO transformNumber
+      // this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      for( int i = 0; i < array.length; i++ ){
+         Byte b = new Byte( array[i] );
+         this.elements.add( JSONUtils.transformNumber( b ) );
+      }
    }
 
    /**
@@ -620,8 +623,14 @@ public final class JSONArray implements JSON
    private JSONArray( double[] array )
    {
       this.elements = new ArrayList();
-      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
-      // TODO testValidity
+      // this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      // addAll iterates over all values, might as well validate at the same
+      // time, no?
+      for( int i = 0; i < array.length; i++ ){
+         Double d = new Double( array[i] );
+         JSONUtils.testValidity( d );
+         this.elements.add( d );
+      }
    }
 
    /**
@@ -648,9 +657,14 @@ public final class JSONArray implements JSON
    private JSONArray( float[] array )
    {
       this.elements = new ArrayList();
-      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
-      // TODO testValidity
-      // TODO transformNumber
+      // this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      // addAll iterates over all values, might as well validate at the same
+      // time, no?
+      for( int i = 0; i < array.length; i++ ){
+         Float f = new Float( array[i] );
+         JSONUtils.testValidity( f );
+         this.elements.add( f );
+      }
    }
 
    /**
@@ -765,8 +779,11 @@ public final class JSONArray implements JSON
    private JSONArray( long[] array )
    {
       this.elements = new ArrayList();
-      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
-      // TODO transformNumber
+      // this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      for( int i = 0; i < array.length; i++ ){
+         Long l = new Long( array[i] );
+         this.elements.add( JSONUtils.transformNumber( l ) );
+      }
    }
 
    /**
@@ -797,8 +814,11 @@ public final class JSONArray implements JSON
    private JSONArray( short[] array )
    {
       this.elements = new ArrayList();
-      this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
-      // TODO transformNumber
+      // this.elements.addAll( Arrays.asList( ArrayUtils.toObject( array ) ) );
+      for( int i = 0; i < array.length; i++ ){
+         Short s = new Short( array[i] );
+         this.elements.add( JSONUtils.transformNumber( s ) );
+      }
    }
 
    /**

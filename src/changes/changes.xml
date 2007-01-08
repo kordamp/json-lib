@@ -9,7 +9,7 @@
    <body>
       <release
          version="N/A"
-         date="2007-01-07"
+         date="2007-01-08"
          desc="Development version">
          <action
             dev="Andres Almiray"
@@ -29,8 +29,21 @@
          <action
             dev="Andres Almiray"
             type="fix"
-            issue="1630258 ">
-            Validate ECMAScript max &amp; min Number values. (rolled-back)
+            issue="1630742">
+            JSONArray does not transforms byte[], short[] and long[]
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1630736">
+            JSONArray is missing validation on float[] and double[]
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1630258">
+            Validate ECMAScript max &amp; min Number values.
+            (rolled-back)
          </action>
          <action
             dev="Andres Almiray"

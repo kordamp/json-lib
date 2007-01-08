@@ -291,9 +291,69 @@ public class TestJSONArray extends TestCase
       testJSONArray( new double[] { 1.1, 2.2, 3.3 }, "[1.1,2.2,3.3]" );
    }
 
+   public void testConstructor_primitive_array_double_Infinity()
+   {
+      try{
+         JSONArray.fromObject( new double[] { Double.NEGATIVE_INFINITY } );
+         fail( "Should have thrown a JSONException" );
+      }
+      catch( JSONException expected ){
+         // OK
+      }
+
+      try{
+         JSONArray.fromObject( new double[] { Double.POSITIVE_INFINITY } );
+         fail( "Should have thrown a JSONException" );
+      }
+      catch( JSONException expected ){
+         // OK
+      }
+   }
+
+   public void testConstructor_primitive_array_double_NaNs()
+   {
+      try{
+         JSONArray.fromObject( new double[] { Double.NaN } );
+         fail( "Should have thrown a JSONException" );
+      }
+      catch( JSONException expected ){
+         // OK
+      }
+   }
+
    public void testConstructor_primitive_array_float()
    {
       testJSONArray( new float[] { 1.1f, 2.2f, 3.3f }, "[1.1,2.2,3.3]" );
+   }
+
+   public void testConstructor_primitive_array_float_Infinity()
+   {
+      try{
+         JSONArray.fromObject( new float[] { Float.NEGATIVE_INFINITY } );
+         fail( "Should have thrown a JSONException" );
+      }
+      catch( JSONException expected ){
+         // OK
+      }
+
+      try{
+         JSONArray.fromObject( new float[] { Float.POSITIVE_INFINITY } );
+         fail( "Should have thrown a JSONException" );
+      }
+      catch( JSONException expected ){
+         // OK
+      }
+   }
+
+   public void testConstructor_primitive_array_float_NaNs()
+   {
+      try{
+         JSONArray.fromObject( new float[] { Float.NaN } );
+         fail( "Should have thrown a JSONException" );
+      }
+      catch( JSONException expected ){
+         // OK
+      }
    }
 
    public void testConstructor_primitive_array_int()
@@ -1181,8 +1241,9 @@ public class TestJSONArray extends TestCase
 
    public void testToArray_byte()
    {
-      byte[] expected = new byte[] { 1, 2, 3, 4, 5, 6 };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      byte[] input = new byte[] { 1, 2, 3, 4, 5, 6 };
+      int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
+      JSONArray jsonArray = JSONArray.fromObject( input );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
@@ -1198,8 +1259,9 @@ public class TestJSONArray extends TestCase
 
    public void testToArray_byte_multi()
    {
-      byte[][] expected = new byte[][] { { 1, 2, 3 }, { 4, 5, 6 } };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      byte[][] input = new byte[][] { { 1, 2, 3 }, { 4, 5, 6 } };
+      int[][] expected = new int[][] { { 1, 2, 3 }, { 4, 5, 6 } };
+      JSONArray jsonArray = JSONArray.fromObject( input );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
@@ -1312,8 +1374,9 @@ public class TestJSONArray extends TestCase
 
    public void testToArray_long()
    {
-      long[] expected = new long[] { 1, 2, 3, 4, 5, 6 };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      long[] input = new long[] { 1, 2, 3, 4, 5, 6 };
+      int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
+      JSONArray jsonArray = JSONArray.fromObject( input );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
@@ -1329,8 +1392,9 @@ public class TestJSONArray extends TestCase
 
    public void testToArray_long_multi()
    {
-      long[][] expected = new long[][] { { 1, 2, 3 }, { 4, 5, 6 } };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      long[][] input = new long[][] { { 1, 2, 3 }, { 4, 5, 6 } };
+      int[][] expected = new int[][] { { 1, 2, 3 }, { 4, 5, 6 } };
+      JSONArray jsonArray = JSONArray.fromObject( input );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
@@ -1354,8 +1418,9 @@ public class TestJSONArray extends TestCase
 
    public void testToArray_short()
    {
-      short[] expected = new short[] { 1, 2, 3, 4, 5, 6 };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      short[] input = new short[] { 1, 2, 3, 4, 5, 6 };
+      int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
+      JSONArray jsonArray = JSONArray.fromObject( input );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
@@ -1371,8 +1436,9 @@ public class TestJSONArray extends TestCase
 
    public void testToArray_short_multi()
    {
-      short[][] expected = new short[][] { { 1, 2, 3 }, { 4, 5, 6 } };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      short[][] input = new short[][] { { 1, 2, 3 }, { 4, 5, 6 } };
+      int[][] expected = new int[][] { { 1, 2, 3 }, { 4, 5, 6 } };
+      JSONArray jsonArray = JSONArray.fromObject( input );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
