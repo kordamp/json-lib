@@ -172,7 +172,8 @@ public final class JSONUtils
     */
    public static boolean isArray( Class clazz )
    {
-      return clazz != null && (clazz.isArray() || Collection.class.isAssignableFrom( clazz ));
+      return clazz != null
+            && (clazz.isArray() || Collection.class.isAssignableFrom( clazz ) || (JSONArray.class.isAssignableFrom( clazz )));
    }
 
    /**
@@ -180,11 +181,8 @@ public final class JSONUtils
     */
    public static boolean isArray( Object obj )
    {
-      if( obj != null && obj.getClass()
-            .isArray() ){
-         return true;
-      }
-      if( obj instanceof Collection ){
+      if( (obj != null && obj.getClass()
+            .isArray()) || (obj instanceof Collection) || (obj instanceof JSONArray) ){
          return true;
       }
       return false;
@@ -204,10 +202,7 @@ public final class JSONUtils
     */
    public static boolean isBoolean( Object obj )
    {
-      if( obj instanceof Boolean ){
-         return true;
-      }
-      if( obj != null && obj.getClass() == Boolean.TYPE ){
+      if( (obj instanceof Boolean) || (obj != null && obj.getClass() == Boolean.TYPE) ){
          return true;
       }
       return false;
@@ -315,14 +310,9 @@ public final class JSONUtils
     */
    public static boolean isString( Object obj )
    {
-      if( obj instanceof String ){
-         return true;
-      }
-      if( obj instanceof Character ){
-         return true;
-      }
-      if( obj != null
-            && (obj.getClass() == Character.TYPE || String.class.isAssignableFrom( obj.getClass() )) ){
+      if( (obj instanceof String)
+            || (obj instanceof Character)
+            || (obj != null && (obj.getClass() == Character.TYPE || String.class.isAssignableFrom( obj.getClass() ))) ){
          return true;
       }
       return false;

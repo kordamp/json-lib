@@ -9,7 +9,7 @@
    <body>
       <release
          version="N/A"
-         date="2007-01-08"
+         date="2007-01-15"
          desc="Development version">
          <action
             dev="Andres Almiray"
@@ -19,12 +19,19 @@
          <action
             dev="Andres Almiray"
             type="update">
-            Moved JSONTypes to net.sf.json.xml
+            Moved interface JSONTypes to net.sf.json.xml
          </action>
          <action
             dev="Andres Almiray"
             type="delete">
             Removed net.sf.json.util.CDL, repeated functionality.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1635890">
+            JSONDynaBean nested arrays not treated as an array. Test
+            provided by arco.vandenheuvel[at]points[dot]com
          </action>
          <action
             dev="Andres Almiray"

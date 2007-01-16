@@ -19,6 +19,7 @@ package net.sf.json.util;
 import java.util.Collections;
 
 import junit.framework.TestCase;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONFunction;
 
@@ -52,7 +53,6 @@ public class TestJSONUtils extends TestCase
       assertEquals( "200", JSONUtils.doubleToString( 200.00000 ) );
    }
 
- 
    public void testGetFunctionParams()
    {
       assertEquals( "", JSONUtils.getFunctionParams( "function()" ) );
@@ -87,6 +87,9 @@ public class TestJSONUtils extends TestCase
       // collections
       assertTrue( JSONUtils.isArray( Collections.EMPTY_SET ) );
       assertTrue( JSONUtils.isArray( Collections.EMPTY_LIST ) );
+
+      // jsonArray
+      assertTrue( JSONUtils.isArray( new JSONArray() ) );
    }
 
    public void testIsFunction()

@@ -7,7 +7,7 @@
    <groupId>net.sf.json-lib</groupId>
    <artifactId>json-lib</artifactId>
    <packaging>jar</packaging>
-   <version>1.0b1</version>
+   <version>1.0b2</version>
    <name>json-lib</name>
 
    <url>http://json-lib.sourceforge.net</url>
@@ -128,7 +128,7 @@
       <dependency>
          <groupId>net.sf.ezmorph</groupId>
          <artifactId>ezmorph</artifactId>
-         <version>0.9.2</version>
+         <version>1.0</version>
          <scope>compile</scope>
       </dependency>
       <dependency>
