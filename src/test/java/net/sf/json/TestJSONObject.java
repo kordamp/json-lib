@@ -27,6 +27,8 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.ezmorph.MorphUtils;
+import net.sf.ezmorph.bean.MorphDynaBean;
+import net.sf.ezmorph.bean.MorphDynaClass;
 import net.sf.ezmorph.test.ArrayAssertions;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanB;
@@ -42,8 +44,6 @@ import net.sf.json.sample.ObjectBean;
 import net.sf.json.sample.ObjectJSONStringBean;
 import net.sf.json.sample.PropertyBean;
 import net.sf.json.sample.ValueBean;
-import net.sf.json.util.JSONDynaBean;
-import net.sf.json.util.JSONDynaClass;
 import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
 
@@ -225,8 +225,8 @@ public class TestJSONObject extends TestCase
       properties.put( "func", JSONFunction.class );
       properties.put( "boolean", Boolean.class );
       properties.put( "bean", BeanA.class );
-      JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
-      JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
+      MorphDynaClass dynaClass = new MorphDynaClass( "JSON", MorphDynaBean.class, properties );
+      MorphDynaBean dynaBean = (MorphDynaBean) dynaClass.newInstance();
       dynaBean.setDynaBeanClass( dynaClass );
       dynaBean.set( "string", "json" );
       dynaBean.set( "number", new Double( 2 ) );
@@ -479,7 +479,7 @@ public class TestJSONObject extends TestCase
       JSONObject jsonobj = JSONObject.fromString( jsondata );
       Object bean = JSONObject.toBean( jsonobj );
       // bean is a DynaBean
-      assertTrue( bean instanceof JSONDynaBean );
+      assertTrue( bean instanceof MorphDynaBean );
       // convert the DynaBean to a JSONObject again
       JSONObject jsonobj2 = JSONObject.fromBean( bean );
 
@@ -919,13 +919,13 @@ public class TestJSONObject extends TestCase
             .put( "bi", l )
             .put( "bd", m );
       Object bean = JSONObject.toBean( json );
-      Object i = ((JSONDynaBean) bean).get( "i" );
-      Object d = ((JSONDynaBean) bean).get( "d" );
+      Object i = ((MorphDynaBean) bean).get( "i" );
+      Object d = ((MorphDynaBean) bean).get( "d" );
       assertTrue( i instanceof Integer );
       assertTrue( d instanceof Integer );
 
-      Object bi = ((JSONDynaBean) bean).get( "bi" );
-      Object bd = ((JSONDynaBean) bean).get( "bd" );
+      Object bi = ((MorphDynaBean) bean).get( "bi" );
+      Object bd = ((MorphDynaBean) bean).get( "bd" );
       assertTrue( bi instanceof BigInteger );
       assertTrue( bd instanceof BigDecimal );
    }
@@ -1067,10 +1067,10 @@ public class TestJSONObject extends TestCase
       Object ba = attributes.get( 0 );
       Object bb = attributes.get( 1 );
 
-      assertTrue( ba instanceof JSONDynaBean );
-      assertTrue( bb instanceof JSONDynaBean );
-      assertEquals( new Integer( beanA1.getValue() ), ((JSONDynaBean) ba).get( "value" ) );
-      assertEquals( new Integer( beanA2.getValue() ), ((JSONDynaBean) bb).get( "value" ) );
+      assertTrue( ba instanceof MorphDynaBean );
+      assertTrue( bb instanceof MorphDynaBean );
+      assertEquals( new Integer( beanA1.getValue() ), ((MorphDynaBean) ba).get( "value" ) );
+      assertEquals( new Integer( beanA2.getValue() ), ((MorphDynaBean) bb).get( "value" ) );
    }
 
    public void testToBean_nested_beans_in_map__beans()
@@ -1122,10 +1122,10 @@ public class TestJSONObject extends TestCase
             .get( "beanA" );
       Object bb = mappingBean2.getAttributes()
             .get( "beanB" );
-      assertTrue( ba instanceof JSONDynaBean );
-      assertTrue( bb instanceof JSONDynaBean );
-      assertEquals( new Integer( beanA.getValue() ), ((JSONDynaBean) ba).get( "value" ) );
-      assertEquals( new Integer( beanB.getValue() ), ((JSONDynaBean) bb).get( "value" ) );
+      assertTrue( ba instanceof MorphDynaBean );
+      assertTrue( bb instanceof MorphDynaBean );
+      assertEquals( new Integer( beanA.getValue() ), ((MorphDynaBean) ba).get( "value" ) );
+      assertEquals( new Integer( beanB.getValue() ), ((MorphDynaBean) bb).get( "value" ) );
    }
 
    public void testToBean_nested_dynabeans__null_object() throws Exception
@@ -1281,7 +1281,7 @@ public class TestJSONObject extends TestCase
       l.add( "2" );
       ArrayAssertions.assertEquals( l.toArray(), (Object[]) obj.getPlist() );
       assertEquals( new BeanA(), obj.getPbean() );
-      assertTrue( obj.getPmap() instanceof JSONDynaBean );
+      assertTrue( obj.getPmap() instanceof MorphDynaBean );
    }
 
    public void testToBean_ObjectBean_empty() throws Exception
@@ -1311,7 +1311,7 @@ public class TestJSONObject extends TestCase
       assertTrue( jsonArray.getBoolean( 2 ) );
    }
 
-   private JSONDynaBean createDynaBean() throws Exception
+   private MorphDynaBean createDynaBean() throws Exception
    {
       Map properties = new HashMap();
       properties.put( "name", String.class );
@@ -1319,8 +1319,8 @@ public class TestJSONObject extends TestCase
       properties.put( "jsonstr", JSONString.class );
       properties.put( "json", JSON.class );
       properties.put( "str", String.class );
-      JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
-      JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
+      MorphDynaClass dynaClass = new MorphDynaClass( properties );
+      MorphDynaBean dynaBean = (MorphDynaBean) dynaClass.newInstance();
       dynaBean.setDynaBeanClass( dynaClass );
       dynaBean.set( "name", "json" );
       dynaBean.set( "func", new JSONFunction( "return this;" ) );

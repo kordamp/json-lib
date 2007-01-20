@@ -38,6 +38,7 @@ import org.apache.commons.beanutils.PropertyUtils;
  * for that type, the conversion will be aborted with a MorphException.
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @deprecated Use BeanMorpher (from EZMorph). Will be removed in 1.0
  */
 public class DynaBeanToBeanMorpher implements ObjectMorpher
 {

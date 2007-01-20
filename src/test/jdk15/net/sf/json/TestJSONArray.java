@@ -26,15 +26,16 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.ezmorph.MorphUtils;
+import net.sf.ezmorph.bean.MorphDynaBean;
+import net.sf.ezmorph.bean.MorphDynaClass;
 import net.sf.ezmorph.test.ArrayAssertions;
 import net.sf.json.sample.AnnotationBean;
 import net.sf.json.sample.ArrayJSONStringBean;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.JsonEnum;
-import net.sf.json.test.JSONAssert;
-import net.sf.json.util.JSONDynaBean;
-import net.sf.json.util.JSONDynaClass;
 import net.sf.json.util.JSONTokener;
+
+import org.apache.commons.beanutils.DynaBean;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -419,7 +420,7 @@ public class TestJSONArray extends TestCase
    {
       JSONArray actual = JSONArray.fromObject( JsonEnum.ARRAY );
       JSONArray expected = new JSONArray().put( "ARRAY" );
-      JSONAssert.assertEquals( expected, actual );
+      Assertions.assertEquals( expected, actual );
    }
 
    public void testFromObject_Float()
@@ -1317,7 +1318,7 @@ public class TestJSONArray extends TestCase
 
    public void testToArray_dynabean_element() throws Exception
    {
-      JSONDynaBean[] expected = new JSONDynaBean[] { createDynaBean() };
+      DynaBean[] expected = new DynaBean[] { createDynaBean() };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
@@ -1682,12 +1683,12 @@ public class TestJSONArray extends TestCase
       assertEquals( "[[],{},1,true,\"json\"]", sw.toString() );
    }
 
-   private JSONDynaBean createDynaBean() throws Exception
+   private MorphDynaBean createDynaBean() throws Exception
    {
       Map properties = new HashMap();
       properties.put( "name", String.class );
-      JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, properties );
-      JSONDynaBean dynaBean = (JSONDynaBean) dynaClass.newInstance();
+      MorphDynaClass dynaClass = new MorphDynaClass( properties );
+      MorphDynaBean dynaBean = (MorphDynaBean) dynaClass.newInstance();
       dynaBean.setDynaBeanClass( dynaClass );
       dynaBean.set( "name", "json" );
       // JSON Strings can not be null, only empty

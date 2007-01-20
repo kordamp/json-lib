@@ -132,9 +132,9 @@
 		 class conversion. The only possible solution is to postprocess the collection transforming each
 		 DynaBean into an specific bean.
 		 </p>
-		 <p>To ease the postprocessing scenarios, Json-lib provides a Morpher capable of
+		 <p>To ease the postprocessing scenarios, EZMorph provides a Morpher capable of
 		 transforming a DynaBean into an specific bean,
-       <a href="apidocs/net/sf/json/util/DynaBeanToBeanMorpher.html"><code>DynaBeanToBeanMorpher</code></a><br/>
+       <a href="http://ezmorph.sourceforge.net/apidocs/net/sf/ezmorph/bean/BeanMorpher.html"><code>BeanMorpher</code></a><br/>
        Example:</p>
 		 <textarea cols="70" rows="16" class="java:nocontrols:nogutter" name="srccode">
    class MyBean{
@@ -157,7 +157,7 @@
        the part of postprocessing, this can be done with an Iterator<br/>
        Example:</p>
 		 <textarea cols="70" rows="7" class="java:nocontrols:nogutter" name="srccode">
-   Morpher dynaMorpher = new DynaBeanToBeanMorpher( Person.class, JSONUtils.getMorpherRegistry() );
+   Morpher dynaMorpher = new BeanMorpher( Person.class, JSONUtils.getMorpherRegistry() );
    morpherRegistry.registerMorpher( dynaMorpher );
    List output = new ArrayList();
    for( Iterator i = bean.getData().iterator(); i.hasNext(); ){

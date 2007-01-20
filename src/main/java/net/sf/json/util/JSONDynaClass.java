@@ -34,6 +34,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @deprecated Use MorphDynaClass (from EZMorph). Will be removed in 1.0
  */
 public class JSONDynaClass implements DynaClass, Serializable
 {

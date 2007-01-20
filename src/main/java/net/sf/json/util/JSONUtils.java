@@ -26,6 +26,8 @@ import java.util.Map;
 
 import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.MorpherRegistry;
+import net.sf.ezmorph.bean.MorphDynaBean;
+import net.sf.ezmorph.bean.MorphDynaClass;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONFunction;
@@ -34,6 +36,8 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONString;
 import net.sf.json.regexp.RegexpMatcher;
 import net.sf.json.regexp.RegexpUtils;
+
+import org.apache.commons.beanutils.DynaBean;
 
 /**
  * Provides useful methods on java objects and JSON values.
@@ -335,17 +339,17 @@ public final class JSONUtils
    }
 
    /**
-    * Creates a new JSONDynaBean from a JSONObject. The JSONDynaBean will have
+    * Creates a new MorphDynaBean from a JSONObject. The MorphDynaBean will have
     * all the properties of the original JSONObject with the most accurate type.
     * Values of properties are not copied.
     */
-   public static JSONDynaBean newDynaBean( JSONObject jsonObject )
+   public static DynaBean newDynaBean( JSONObject jsonObject )
    {
       Map props = getProperties( jsonObject );
-      JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, props );
-      JSONDynaBean dynaBean = null;
+      MorphDynaClass dynaClass = new MorphDynaClass( props );
+      MorphDynaBean dynaBean = null;
       try{
-         dynaBean = (JSONDynaBean) dynaClass.newInstance();
+         dynaBean = (MorphDynaBean) dynaClass.newInstance();
          dynaBean.setDynaBeanClass( dynaClass );
       }
       catch( Exception e ){

@@ -21,13 +21,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.util.JSONDynaBean;
-import net.sf.json.util.JSONDynaClass;
+import net.sf.ezmorph.bean.MorphDynaBean;
+import net.sf.ezmorph.bean.MorphDynaClass;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class TestJSONArrayStaticBuilders_Collection_DynaBean extends AbstractJSONArrayStaticBuildersTestCase
+public class TestJSONArrayStaticBuilders_Collection_DynaBean extends
+      AbstractJSONArrayStaticBuildersTestCase
 {
    public static void main( String[] args )
    {
@@ -48,10 +49,10 @@ public class TestJSONArrayStaticBuilders_Collection_DynaBean extends AbstractJSO
       }
       map.put( "class", Class.class );
       map.put( "pexcluded", String.class );
-      JSONDynaClass dynaClass = new JSONDynaClass( "JSON", JSONDynaBean.class, map );
-      JSONDynaBean dynaBean = null;
+      MorphDynaClass dynaClass = new MorphDynaClass( map );
+      MorphDynaBean dynaBean = null;
       try{
-         dynaBean = (JSONDynaBean) dynaClass.newInstance();
+         dynaBean = (MorphDynaBean) dynaClass.newInstance();
          for( int i = 0; i < props.length; i++ ){
             dynaBean.set( props[i], PropertyConstants.getPropertyValue( props[i] ) );
          }
@@ -63,7 +64,7 @@ public class TestJSONArrayStaticBuilders_Collection_DynaBean extends AbstractJSO
       }
 
       List list = new ArrayList();
-      list.add(dynaBean);
+      list.add( dynaBean );
       return list;
    }
 }

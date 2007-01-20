@@ -35,6 +35,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @deprecated Use MorphDynaBean (from EZMorph). Will be removed in 1.0
  */
 public class JSONDynaBean implements DynaBean, Serializable
 {

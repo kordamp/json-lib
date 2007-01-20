@@ -20,7 +20,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
-import net.sf.json.util.JSONDynaBean;
+
+import org.apache.commons.beanutils.DynaBean;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -44,11 +45,11 @@ public class TestUserSubmitted extends TestCase
 
       String TEST_JSON_STRING = "{\"rateType\":\"HOTRATE\",\"rateBreakdown\":{\"rate\":[{\"amount\":\"109.74\",\"date\":{\"month\":\"01\",\"day\":\"15\",\"year\":\"2007\"}},{\"amount\":\"109.74\",\"date\":{\"month\":\"1\",\"day\":\"16\",\"year\":\"2007\"}}]}}";
 
-      JSONDynaBean jsonBean = (JSONDynaBean) JSONObject.toBean( JSONObject.fromString( TEST_JSON_STRING ) );
+      DynaBean jsonBean = (DynaBean) JSONObject.toBean( JSONObject.fromString( TEST_JSON_STRING ) );
       assertNotNull( jsonBean );
       assertEquals( "wrong rate Type", "HOTRATE", jsonBean.get( "rateType" ) );
       assertNotNull( "null rate breakdown", jsonBean.get( "rateBreakdown" ) );
-      JSONDynaBean jsonRateBreakdownBean = (JSONDynaBean) jsonBean.get( "rateBreakdown" );
+      DynaBean jsonRateBreakdownBean = (DynaBean) jsonBean.get( "rateBreakdown" );
       assertNotNull( "null rate breakdown ", jsonRateBreakdownBean );
       Object jsonRateBean = jsonRateBreakdownBean.get( "rate" );
       assertNotNull( "null rate ", jsonRateBean );

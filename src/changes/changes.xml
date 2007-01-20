@@ -9,7 +9,7 @@
    <body>
       <release
          version="N/A"
-         date="2007-01-15"
+         date="2007-01-20"
          desc="Development version">
          <action
             dev="Andres Almiray"
@@ -20,6 +20,14 @@
             dev="Andres Almiray"
             type="update">
             Moved interface JSONTypes to net.sf.json.xml
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Deprecated JSONDynaBean, JSONDynaClass &amp;
+            DynaBeanToBeanMorpher.
+            Use MorphDynaBean, MorphDynaClass &amp; BeanMorpher from
+            EZMorph instead.
          </action>
          <action
             dev="Andres Almiray"
