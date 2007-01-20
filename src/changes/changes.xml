@@ -8,7 +8,7 @@
    </properties>
    <body>
       <release
-         version="N/A"
+         version="1.0b2"
          date="2007-01-20"
          desc="Development version">
          <action
