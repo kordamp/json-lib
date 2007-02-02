@@ -366,7 +366,7 @@ public final class JSONArray implements JSON
    public static JSONArray fromString( String string, String[] excludes,
          boolean ignoreDefaultExcludes )
    {
-      return new JSONArray( string, excludes, ignoreDefaultExcludes );
+      return fromJSONTokener( new JSONTokener( string ), excludes, ignoreDefaultExcludes );
    }
 
    /**
@@ -513,9 +513,9 @@ public final class JSONArray implements JSON
     * @param tokener a JSONTokener
     */
    private static JSONArray fromJSONTokener( JSONTokener tokener, String[] excludes,
-         boolean ignoreDefaultValues )
+         boolean ignoreDefaultExcludes )
    {
-      return new JSONArray( tokener, excludes, ignoreDefaultValues );
+      return new JSONArray( tokener, excludes, ignoreDefaultExcludes );
    }
 
    private static void processArrayDimensions( JSONArray jsonArray, List dims, int index )
@@ -698,7 +698,12 @@ public final class JSONArray implements JSON
             x.back();
             Object v = x.nextValue( excludes, ignoreDefaultExcludes );
             if( !JSONUtils.isFunctionHeader( v ) ){
-               add( v, excludes, ignoreDefaultExcludes );
+               if( v instanceof String && JSONUtils.mayBeJSON( (String) v ) ){
+                  add( JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE, excludes,
+                        ignoreDefaultExcludes );
+               }else{
+                  add( v, excludes, ignoreDefaultExcludes );
+               }
             }else{
                // read params if any
                String params = JSONUtils.getFunctionParams( (String) v );
@@ -797,19 +802,6 @@ public final class JSONArray implements JSON
          Short s = new Short( array[i] );
          this.elements.add( JSONUtils.transformNumber( s ) );
       }
-   }
-
-   /**
-    * Construct a JSONArray from a source JSON text.
-    *
-    * @param string A string that begins with <code>[</code>&nbsp;<small>(left
-    *        bracket)</small> and ends with <code>]</code>&nbsp;<small>(right
-    *        bracket)</small>.
-    * @throws JSONException If there is a syntax error.
-    */
-   private JSONArray( String string, String[] excludes, boolean ignoreDefaultExcludes )
-   {
-      this( new JSONTokener( string ), excludes, ignoreDefaultExcludes );
    }
 
    /**
@@ -1512,10 +1504,15 @@ public final class JSONArray implements JSON
          }else if( JSONUtils.isString( value ) ){
             String str = String.valueOf( value );
             if( JSONUtils.mayBeJSON( str ) ){
-               this.elements.set( index, JSONSerializer.toJSON( str, excludes,
-                     ignoreDefaultExcludes ) );
+               try{
+                  this.elements.set( index, JSONSerializer.toJSON( str, excludes,
+                        ignoreDefaultExcludes ) );
+               }
+               catch( JSONException jsone ){
+                  this.elements.set( index, JSONUtils.stripQuotes( str ) );
+               }
             }else{
-               this.elements.set( index, str );
+               this.elements.set( index, JSONUtils.stripQuotes( str ) );
             }
          }else if( JSONUtils.isNumber( value ) || JSONUtils.isBoolean( value ) ){
             JSONUtils.testValidity( value );
@@ -1599,10 +1596,15 @@ public final class JSONArray implements JSON
          if( value == null ){
             this.elements.set( index, "" );
          }else if( JSONUtils.mayBeJSON( value ) ){
-            this.elements.set( index,
-                  JSONSerializer.toJSON( value, excludes, ignoreDefaultExcludes ) );
+            try{
+               this.elements.set( index, JSONSerializer.toJSON( value, excludes,
+                     ignoreDefaultExcludes ) );
+            }
+            catch( JSONException jsone ){
+               this.elements.set( index, JSONUtils.stripQuotes( value ) );
+            }
          }else{
-            this.elements.set( index, value );
+            this.elements.set( index, JSONUtils.stripQuotes( value ) );
          }
       }else{
          while( index != length() ){
@@ -1762,9 +1764,14 @@ public final class JSONArray implements JSON
       if( value == null ){
          this.elements.add( "" );
       }else if( JSONUtils.mayBeJSON( value ) ){
-         this.elements.add( JSONSerializer.toJSON( value ) );
+         try{
+            this.elements.add( JSONSerializer.toJSON( value ) );
+         }
+         catch( JSONException jsone ){
+            this.elements.add( JSONUtils.stripQuotes( value ) );
+         }
       }else{
-         this.elements.add( value );
+         this.elements.add( JSONUtils.stripQuotes( value ) );
       }
       return this;
    }
@@ -1948,9 +1955,14 @@ public final class JSONArray implements JSON
       }else if( JSONUtils.isString( value ) ){
          String str = String.valueOf( value );
          if( JSONUtils.mayBeJSON( str ) ){
-            this.elements.add( JSONSerializer.toJSON( str, excludes, ignoreDefaultValues ) );
+            try{
+               this.elements.add( JSONSerializer.toJSON( str, excludes, ignoreDefaultValues ) );
+            }
+            catch( JSONException jsone ){
+               this.elements.add( JSONUtils.stripQuotes( str ) );
+            }
          }else{
-            this.elements.add( str );
+            this.elements.add( JSONUtils.stripQuotes( str ) );
          }
       }else if( JSONUtils.isNumber( value ) ){
          JSONUtils.testValidity( value );

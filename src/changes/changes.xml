@@ -8,6 +8,19 @@
    </properties>
    <body>
       <release
+         version="N/A"
+         date="2007-02-02"
+         desc="Current development version">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1650535">
+            String property incorrectly parsed as an array. Tests
+            provided by paulfield[at]users[dot]sourceforge[dot]net &amp;
+            ekeogh[at]thoughtworks[dot]com
+         </action>
+      </release>
+      <release
          version="1.0b2"
          date="2007-01-20"
          desc="Second 1.0 beta release">
@@ -25,9 +38,8 @@
             dev="Andres Almiray"
             type="update">
             Deprecated JSONDynaBean, JSONDynaClass &amp;
-            DynaBeanToBeanMorpher.
-            Use MorphDynaBean, MorphDynaClass &amp; BeanMorpher from
-            EZMorph instead.
+            DynaBeanToBeanMorpher. Use MorphDynaBean, MorphDynaClass
+            &amp; BeanMorpher from EZMorph instead.
          </action>
          <action
             dev="Andres Almiray"

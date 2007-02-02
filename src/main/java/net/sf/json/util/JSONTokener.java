@@ -459,7 +459,34 @@ public class JSONTokener
             }
          }
       }
+
+      if( JSONUtils.isFunctionHeader( s ) || JSONUtils.isFunction( s )){
+         return s;
+      }
+      switch( peek() ){
+         case ',':
+         case '}':
+         case '{':
+         case '[':
+         case ']':
+            throw new JSONException("Unquotted string '"+s+"'");
+      }
+
       return s;
+   }
+
+   /**
+    * Look at the next character in the source string.
+    *
+    * @return The next character, or 0 if past the end of the source string.
+    */
+   public char peek()
+   {
+      if( more() ){
+         char c = this.mySource.charAt( this.myIndex );
+         return c;
+      }
+      return 0;
    }
 
    public void reset()

@@ -18,8 +18,11 @@ package net.sf.json;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
+import net.sf.json.sample.JSONTestBean;
 
 import org.apache.commons.beanutils.DynaBean;
 
@@ -55,5 +58,96 @@ public class TestUserSubmitted extends TestCase
       assertNotNull( "null rate ", jsonRateBean );
       assertTrue( "list", jsonRateBean instanceof ArrayList );
       assertNotNull( "null rate ", jsonRateBreakdownBean.get( "rate", 0 ) );
+   }
+
+   public void testBug_1650535_builders()
+   {
+      // submitted by Paul Field <paulfield[at]users[dot]sourceforge[dot]net>
+
+      String json = "{\"obj\":\"{}\",\"array\":\"[]\"}";
+      JSONObject object = JSONObject.fromString( json );
+      assertNotNull( object );
+      assertTrue( object.has( "obj" ) );
+      assertTrue( object.has( "array" ) );
+      Object obj = object.get( "obj" );
+      assertTrue( obj instanceof String );
+      Object array = object.get( "array" );
+      assertTrue( array instanceof String );
+
+      json = "{'obj':'{}','array':'[]'}";
+      object = JSONObject.fromString( json );
+      assertNotNull( object );
+      assertTrue( object.has( "obj" ) );
+      assertTrue( object.has( "array" ) );
+      obj = object.get( "obj" );
+      assertTrue( obj instanceof String );
+      array = object.get( "array" );
+      assertTrue( array instanceof String );
+
+      json = "[\"{}\",\"[]\"]";
+      JSONArray jarray = JSONArray.fromString( json );
+      assertNotNull( jarray );
+      obj = jarray.get( 0 );
+      assertTrue( obj instanceof String );
+      array = jarray.get( 1 );
+      assertTrue( array instanceof String );
+
+      json = "['{}','[]']";
+      jarray = JSONArray.fromString( json );
+      assertNotNull( jarray );
+      obj = jarray.get( 0 );
+      assertTrue( obj instanceof String );
+      array = jarray.get( 1 );
+      assertTrue( array instanceof String );
+
+
+      // submitted by Elizabeth Keogh <ekeogh[at]thoughtworks[dot]com>
+
+      Map map = new HashMap();
+      map.put( "address", "1 The flats [Upper floor]" );
+      map.put( "phoneNumber", "[+44] 582 401923" );
+      map.put( "info1", "[Likes coffee]" );
+      map.put( "info2", "[Likes coffee] [Likes tea]" );
+      map.put( "info3", "[Likes coffee [but not with sugar]]" );
+      object = JSONObject.fromObject( map );
+      assertNotNull( object );
+      assertTrue( object.has( "address" ) );
+      assertTrue( object.has( "phoneNumber" ) );
+      assertTrue( object.has( "info1" ) );
+      assertTrue( object.has( "info2" ) );
+      assertTrue( object.has( "info3" ) );
+      assertTrue( object.get( "address" ) instanceof String );
+      assertTrue( object.get( "phoneNumber" ) instanceof String );
+      assertTrue( object.get( "info1" ) instanceof String );
+      assertTrue( object.get( "info2" ) instanceof String );
+      assertTrue( object.get( "info3" ) instanceof String );
+   }
+
+   public void testBug_1650535_setters()
+   {
+      JSONObject object = new JSONObject();
+      object.put( "obj", "{}" );
+      object.put( "notobj", "{string}" );
+      object.put( "array", "[]" );
+      object.put( "notarray", "[string]" );
+      assertTrue( object.get( "obj" ) instanceof JSONObject );
+      assertTrue( object.get( "array" ) instanceof JSONArray );
+      assertTrue( object.get( "notobj" ) instanceof String );
+      assertTrue( object.get( "notarray" ) instanceof String );
+
+      object.put( "str", "json,json" );
+      assertTrue( object.get( "str" ) instanceof String );
+   }
+
+   public void testDynaBeanAttributeMap() throws NoSuchMethodException, IllegalAccessException,
+         InvocationTargetException
+   {
+      // submited by arco.vandenheuvel[at]points[dot].com
+
+      JSONObject jsonObject = JSONObject.fromObject( new JSONTestBean() );
+      String jsonString = jsonObject.toString();
+      DynaBean jsonBean = (DynaBean) JSONObject.toBean( JSONObject.fromString( jsonString ) );
+      assertNotNull( jsonBean );
+      assertEquals( "wrong inventoryID", "", jsonBean.get( "inventoryID" ) );
    }
 }

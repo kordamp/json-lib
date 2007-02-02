@@ -477,7 +477,7 @@ public final class JSONObject implements JSON
       if( str == null || "null".compareToIgnoreCase( str ) == 0 ){
          return new JSONObject( true );
       }
-      return new JSONObject( str, excludes, ignoreDefaultExcludes );
+      return fromJSONTokener( new JSONTokener( str ), excludes, ignoreDefaultExcludes );
    }
 
    /**
@@ -775,10 +775,15 @@ public final class JSONObject implements JSON
             if( value == null ){
                setProperty( object, key, "" );
             }else if( JSONUtils.mayBeJSON( str ) ){
-               setProperty( object, key, JSONSerializer.toJSON( str, excludes,
-                     ignoreDefaultExcludes ) );
+               try{
+                  setProperty( object, key, JSONSerializer.toJSON( str, excludes,
+                        ignoreDefaultExcludes ) );
+               }
+               catch( JSONException jsone ){
+                  setProperty( object, key, JSONUtils.stripQuotes( str ) );
+               }
             }else{
-               setProperty( object, key, str );
+               setProperty( object, key, JSONUtils.stripQuotes( str ) );
             }
          }else if( JSONUtils.isNumber( value ) ){
             JSONUtils.testValidity( value );
@@ -962,7 +967,11 @@ public final class JSONObject implements JSON
                }
                continue;
             }
-            set( key, v, excludes, ignoreDefaultExcludes );
+            if( v instanceof String && JSONUtils.mayBeJSON( (String) v ) ){
+               set( key, JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE );
+            }else{
+               set( key, v, excludes, ignoreDefaultExcludes );
+            }
          }else{
             // read params if any
             String params = JSONUtils.getFunctionParams( (String) v );
@@ -1048,20 +1057,6 @@ public final class JSONObject implements JSON
             setValue( this, key, value, value.getClass(), excludes, ignoreDefaultExcludes );
          }
       }
-   }
-
-   /**
-    * Construct a JSONObject from a string. This is the most commonly used
-    * JSONObject constructor.
-    *
-    * @param string A string beginning with <code>{</code>&nbsp;<small>(left
-    *        brace)</small> and ending with <code>}</code>&nbsp;<small>(right
-    *        brace)</small>.
-    * @exception JSONException If there is a syntax error in the source string.
-    */
-   private JSONObject( String string, String[] excludes, boolean ignoreDefaultExcludes )
-   {
-      this( new JSONTokener( string ), excludes, ignoreDefaultExcludes );
    }
 
    /**
@@ -2051,12 +2046,18 @@ public final class JSONObject implements JSON
       }else if( JSONUtils.isString( value ) ){
          String str = String.valueOf( value );
          if( JSONUtils.mayBeJSON( str ) ){
-            this.properties.put( key, JSONSerializer.toJSON( str, excludes, ignoreDefaultExcludes ) );
+            try{
+               this.properties.put( key, JSONSerializer.toJSON( str, excludes,
+                     ignoreDefaultExcludes ) );
+            }
+            catch( JSONException jsone ){
+               this.properties.put( key, JSONUtils.stripQuotes( str ) );
+            }
          }else{
             if( value == null ){
                this.properties.put( key, "" );
             }else{
-               this.properties.put( key, str );
+               this.properties.put( key, JSONUtils.stripQuotes( str ) );
             }
          }
       }else if( JSONUtils.isNumber( value ) ){

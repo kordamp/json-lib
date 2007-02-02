@@ -172,11 +172,11 @@ public class TestJSONSerializer extends TestCase
    public void testToJSON_JSONString_array()
    {
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
-      bean.setValue( "json,json" );
+      bean.setValue( "'json','json'" );
       JSON json = JSONSerializer.toJSON( bean );
       assertNotNull( json );
       assertTrue( json instanceof JSONArray );
-      Assertions.assertEquals( JSONArray.fromObject( "[json,json]" ), (JSONArray) json );
+      Assertions.assertEquals( JSONArray.fromObject( "['json','json']" ), (JSONArray) json );
    }
 
    public void testToJSON_JSONString_null()
@@ -231,10 +231,10 @@ public class TestJSONSerializer extends TestCase
 
    public void testToJSON_String_array()
    {
-      JSON json = JSONSerializer.toJSON( "[json,json]" );
+      JSON json = JSONSerializer.toJSON( "['json','json']" );
       assertNotNull( json );
       assertTrue( json instanceof JSONArray );
-      Assertions.assertEquals( JSONArray.fromObject( "[json,json]" ), (JSONArray) json );
+      Assertions.assertEquals( JSONArray.fromObject( "['json','json']" ), (JSONArray) json );
    }
 
    public void testToJSON_String_invalid()

@@ -47,12 +47,15 @@ import org.apache.commons.beanutils.DynaBean;
  */
 public final class JSONUtils
 {
+   public static final String DOUBLE_QUOTE = "\"";
+   public static final String SINGLE_QUOTE = "'";
    private static RegexpMatcher FUNCTION_HEADER_MATCHER;
    private static final String FUNCTION_HEADER_PATTERN = "^function[ ]?\\(.*\\)$";
    private static RegexpMatcher FUNCTION_MACTHER;
    private static RegexpMatcher FUNCTION_PARAMS_MATCHER;
    private static final String FUNCTION_PARAMS_PATTERN = "^function[ ]?\\((.*?)\\)$";
    private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*\\)[ ]?\\{.*\\}$";
+
    private static final MorpherRegistry morpherRegistry = new MorpherRegistry();
 
    static{
@@ -223,7 +226,7 @@ public final class JSONUtils
 
    /**
     * Tests if obj is javaScript function.<br>
-    * Obj must ba a non-null String and match <nowrap>"^function[ ]?\\(.*\\)[
+    * Obj must be a non-null String and match <nowrap>"^function[ ]?\\(.*\\)[
     * ]?\\{.*\\}$"</nowrap>
     */
    public static boolean isFunction( Object obj )
@@ -240,7 +243,7 @@ public final class JSONUtils
 
    /**
     * Tests if obj is javaScript function header.<br>
-    * Obj must ba a non-null String and match "^function[ ]?\\(.*\\)$"
+    * Obj must be a non-null String and match "^function[ ]?\\(.*\\)$"
     */
    public static boolean isFunctionHeader( Object obj )
    {
@@ -321,7 +324,6 @@ public final class JSONUtils
       }
       return false;
    }
-
    /**
     * Tests if the String possibly represents a valid JSON String.<br>
     * Valid JSON strings are:
@@ -458,6 +460,20 @@ public final class JSONUtils
       }
       sb.append( '"' );
       return sb.toString();
+   }
+
+   /**
+    * Strips any single-quotes or double-quotes from boths sides of the string.
+    */
+   public static String stripQuotes( String input )
+   {
+      if( input.startsWith( SINGLE_QUOTE ) && input.endsWith( SINGLE_QUOTE ) ){
+         return input.substring( 1, input.length() - 1 );
+      }else if( input.startsWith( DOUBLE_QUOTE ) && input.endsWith( DOUBLE_QUOTE ) ){
+         return input.substring( 1, input.length() - 1 );
+      }else{
+         return input;
+      }
    }
 
    /**

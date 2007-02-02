@@ -94,7 +94,7 @@ public class TestJSONArray extends TestCase
    public void testConstructor_Collection_JSONString()
    {
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
-      bean.setValue( "json,json" );
+      bean.setValue( "'json','json'" );
       List l = new ArrayList();
       l.add( bean );
       testJSONArray( l, "[[\"json\",\"json\"]]" );
@@ -259,7 +259,7 @@ public class TestJSONArray extends TestCase
    public void testConstructor_Object_Array_JSONString()
    {
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
-      bean.setValue( "json,json" );
+      bean.setValue( "'json','json'" );
       JSONArray expected = JSONArray.fromObject( "[[\"json\",\"json\"]]" );
       JSONArray actual = JSONArray.fromObject( new Object[] { bean } );
       Assertions.assertEquals( expected, actual );
@@ -454,7 +454,7 @@ public class TestJSONArray extends TestCase
    public void testFromObject_JSONString()
    {
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
-      bean.setValue( "json,json" );
+      bean.setValue( "'json','json'" );
       JSONArray actual = JSONArray.fromObject( bean );
       JSONArray expected = JSONArray.fromObject( "['json','json']" );
       Assertions.assertEquals( expected, actual );
@@ -856,7 +856,7 @@ public class TestJSONArray extends TestCase
    {
       JSONArray array = JSONArray.fromObject( "[null,null]" );
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
-      bean.setValue( "json,json" );
+      bean.setValue( "'json','json'" );
       array.put( 0, bean );
       Assertions.assertEquals( JSONArray.fromJSONString( bean ), array.getJSONArray( 0 ) );
    }
@@ -1005,7 +1005,7 @@ public class TestJSONArray extends TestCase
    {
       JSONArray array = new JSONArray();
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
-      bean.setValue( "json,json" );
+      bean.setValue( "'json','json'" );
       array.put( 1, bean );
       Assertions.assertEquals( JSONArray.fromJSONString( bean ), array.getJSONArray( 1 ) );
    }
@@ -1101,7 +1101,7 @@ public class TestJSONArray extends TestCase
    {
       JSONArray array = new JSONArray();
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
-      bean.setValue( "json,json" );
+      bean.setValue( "'json','json'" );
       array.put( bean );
       Assertions.assertEquals( JSONArray.fromJSONString( bean ), array.getJSONArray( 0 ) );
    }
@@ -1464,7 +1464,7 @@ public class TestJSONArray extends TestCase
    {
       JSONArray jsonArray = JSONArray.fromObject( "[\"json\",1,true]" );
       JSONObject expected = JSONObject.fromObject( "{\"string\":\"json\",\"int\":1,\"bool\":true}" );
-      JSONArray names = JSONArray.fromObject( "[string,int,bool]" );
+      JSONArray names = JSONArray.fromObject( "['string','int','bool']" );
 
       Assertions.assertEquals( expected, jsonArray.toJSONObject( names ) );
    }
@@ -1474,7 +1474,7 @@ public class TestJSONArray extends TestCase
       JSONArray jsonArray = new JSONArray();
       assertNull( jsonArray.toJSONObject( null ) );
       assertNull( jsonArray.toJSONObject( new JSONArray() ) );
-      assertNull( jsonArray.toJSONObject( JSONArray.fromObject( "[json]" ) ) );
+      assertNull( jsonArray.toJSONObject( JSONArray.fromObject( "['json']" ) ) );
    }
 
    public void testToList_bean_elements()
