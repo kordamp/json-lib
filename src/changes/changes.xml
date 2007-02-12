@@ -8,9 +8,14 @@
    </properties>
    <body>
       <release
-         version="N/A"
-         date="2007-02-02"
-         desc="Current development version">
+         version="1.0"
+         date="2007-02-11"
+         desc="The _1.0_ release">
+         <action
+            dev="Andres Almiray"
+            type="delete">
+            Removed deprecated classes.
+         </action>
          <action
             dev="Andres Almiray"
             type="fix"

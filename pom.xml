@@ -7,7 +7,7 @@
    <groupId>net.sf.json-lib</groupId>
    <artifactId>json-lib</artifactId>
    <packaging>jar</packaging>
-   <version>1.0b3</version>
+   <version>1.0</version>
    <name>json-lib</name>
 
    <url>http://json-lib.sourceforge.net</url>
@@ -110,6 +110,24 @@
          <artifactId>commons-logging</artifactId>
          <version>1.1</version>
          <scope>compile</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>log4j</groupId>
+               <artifactId>log4j</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>logkit</groupId>
+               <artifactId>logkit</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>avalon-framework</groupId>
+               <artifactId>avalon-framework</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>javax.servlet</groupId>
+               <artifactId>servlet-api</artifactId>
+            </exclusion>
+         </exclusions>
       </dependency>
       <dependency>
          <groupId>xom</groupId>
@@ -146,18 +164,6 @@
 
    <build>
       <defaultGoal>install</defaultGoal>
-      <!--
-      <pluginManagement>
-         <plugins>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-javadoc-plugin</artifactId>
-               <version>2.0</version>
-            </plugin>
-         </plugins>
-      </pluginManagement>
-      -->
-
       <plugins>
          <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
@@ -215,8 +221,12 @@
                <links>
                   <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
                   <link>http://www.junit.org/junit/javadoc/</link>
-                  <link>http://jakarta.apache.org/commons/beanutils/commons-beanutils-1.7.0/docs/api/</link>
-                  <link>http://jakarta.apache.org/commons/lang/api-2.2/</link>
+                  <link>
+                     http://jakarta.apache.org/commons/beanutils/commons-beanutils-1.7.0/docs/api/
+                  </link>
+                  <link>
+                     http://jakarta.apache.org/commons/lang/api-2.2/
+                  </link>
                   <link>http://ezmorph.sourceforge.net/apidocs/</link>
                </links>
             </configuration>
@@ -278,16 +288,23 @@
    </pluginRepositories>
 
    <distributionManagement>
+      <repository>
+         <id>sf_release</id>
+         <name>Json-lib repo @ sourceforge.net</name>
+         <url>
+            scp://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo/release
+         </url>
+      </repository>
       <snapshotRepository>
-         <id>sf_snapshots</id>
+         <id>sf_snapshot</id>
          <name>SourceForge Snapshot</name>
          <url>
-            scpexe://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo
+            scp://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo/snapshot
          </url>
       </snapshotRepository>
       <site>
          <id>sf_website</id>
-         <url>scpexe://ssh.sf.net/home/groups/j/js/json-lib/htdocs</url>
+         <url>scp://ssh.sf.net/home/groups/j/js/json-lib/htdocs</url>
       </site>
    </distributionManagement>
 

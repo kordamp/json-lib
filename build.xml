@@ -10,7 +10,7 @@
 	<property name="project.src.jdk15.dir" value="${basedir}/src/main/jdk15" />
 	<property name="project.test.jdk13.dir" value="${basedir}/src/test/java" />
 	<property name="project.test.jdk15.dir" value="${basedir}/src/test/jdk15" />
-	<property name="javadoc.jdk13.dir" value="$maven.build.directory}/site/apidocs" />
+	<property name="javadoc.jdk13.dir" value="${maven.build.directory}/site/apidocs" />
 	<property name="javadoc.jdk15.dir" value="${maven.build.directory}/site/apidocs/jdk15" />
 
 	<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
@@ -150,7 +150,7 @@
 				<include name="**/*.java" />
 			</fileset>
 		</copy>
-		<jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-sources-jdk13.jar" basedir="${maven.build.directory}/source/jdk13" />
+		<jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk13-sources.jar" basedir="${maven.build.directory}/source/jdk13" />
 	</target>
 
 	<target name="source.jar.jdk15" depends="clean" description="Source jar (jdk15)">
@@ -163,7 +163,34 @@
 				<include name="**/*.java" />
 			</fileset>
 		</copy>
-		<jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-sources-jdk15.jar" basedir="${maven.build.directory}/source/jdk15" />
+		<jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk15-sources.jar" basedir="${maven.build.directory}/source/jdk15" />
+	</target>
+
+	<target name="javadoc" description="Build javadocs (jdk13)" depends="setup">
+		<mkdir dir="${javadoc.jdk13.dir}" />
+		<mkdir dir="${maven.build.directory}/source/jdk13" />
+		<copy todir="${maven.build.directory}/source/jdk13">
+			<fileset dir="src/main/java">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<javadoc destdir="${javadoc.jdk13.dir}" windowtitle="Overview (json-lib jdk13 API)" useexternalfile="true">
+
+			<packageset dir="${maven.build.directory}/source/jdk13">
+				<include name="**/*" />
+			</packageset>
+
+			<classpath>
+				<path refid="build.classpath" />
+			</classpath>
+
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://www.junit.org/junit/javadoc/" />
+			<link href="http://jakarta.apache.org/commons/beanutils/commons-beanutils-1.7.0/docs/api/" />
+			<link href="http://jakarta.apache.org/commons/lang/api-2.2/" />
+			<link href="http://ezmorph.sourceforge.net/apidocs/" />
+		</javadoc>
+		<jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk13-javadoc.jar" basedir="${javadoc.jdk13.dir}" />
 	</target>
 
 	<target name="javadoc.jdk15" description="Build javadocs (jdk15)" depends="setup">
@@ -193,15 +220,12 @@
 			<link href="http://jakarta.apache.org/commons/lang/api-2.2/" />
 			<link href="http://ezmorph.sourceforge.net/apidocs/" />
 		</javadoc>
-		<jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-javadoc-jdk15.jar" basedir="${javadoc.jdk15.dir}" />
+		<jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk15-javadoc.jar" basedir="${javadoc.jdk15.dir}" />
 	</target>
 
 	<target name="setup" if="use.proxy">
-		<echo message="Setting proxy values [${maven.proxy.host}:${maven.proxy.port}]"/>
-		<setproxy proxyhost="${maven.proxy.host}"
-			proxyport="${maven.proxy.port}"
-			proxyuser="${maven.proxy.username}"
-			proxypassword="${maven.proxy.password}" />
+		<echo message="Setting proxy values [${maven.proxy.host}:${maven.proxy.port}]" />
+		<setproxy proxyhost="${maven.proxy.host}" proxyport="${maven.proxy.port}" proxyuser="${maven.proxy.username}" proxypassword="${maven.proxy.password}" />
 	</target>
 
 </project>
