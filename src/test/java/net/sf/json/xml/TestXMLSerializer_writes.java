@@ -32,6 +32,8 @@ public class TestXMLSerializer_writes extends XMLTestCase
       junit.textui.TestRunner.run( TestXMLSerializer_writes.class );
    }
 
+   private XMLSerializer xmlSerializer;
+
    public TestXMLSerializer_writes( String testName )
    {
       super( testName );
@@ -40,7 +42,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    public void testWrite_null() throws Exception
    {
       String expected = "<o null=\"true\"/>";
-      String xml = XMLSerializer.write( null );
+      String xml = xmlSerializer.write( null );
       assertXMLEqual( expected, xml );
    }
 
@@ -48,7 +50,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONArray jsonArray = JSONArray.fromObject( "[true,false]" );
       String expected = "<a><e type=\"boolean\">true</e><e type=\"boolean\">false</e></a>";
-      String xml = XMLSerializer.write( jsonArray );
+      String xml = xmlSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
 
@@ -56,7 +58,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONObject jsonObject = new JSONObject();
       String expected = "<o/>";
-      String xml = XMLSerializer.write( jsonObject );
+      String xml = xmlSerializer.write( jsonObject );
       assertXMLEqual( expected, xml );
    }
 
@@ -64,29 +66,52 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONArray jsonArray = JSONArray.fromObject( "[function(a){ return a; }]" );
       String expected = "<a><e type=\"function\" params=\"a\"><![CDATA[return a;]]></e></a>";
-      String xml = XMLSerializer.write( jsonArray );
+      String xml = xmlSerializer.write( jsonArray );
+      assertXMLEqual( expected, xml );
+   }
+
+   public void testWriteJSONArray_collapseProperties() throws Exception
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "duplicated", "json1" );
+      jsonObject.put( "duplicated", "json2" );
+      JSONArray jsonArray = new JSONArray().put( jsonObject );
+      String expected = "<a><e class=\"object\"><duplicated type=\"string\">json1</duplicated><duplicated type=\"string\">json2</duplicated></e></a>";
+      xmlSerializer.setExpandableProperties( new String[] { "duplicated" } );
+      String xml = xmlSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
 
    public void testWriteJSONNull() throws Exception
    {
       String expected = "<o null=\"true\"/>";
-      String xml = XMLSerializer.write( JSONNull.getInstance() );
+      String xml = xmlSerializer.write( JSONNull.getInstance() );
       assertXMLEqual( expected, xml );
    }
 
    public void testWriteJSONNull_encoding() throws Exception
    {
       String expected = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
-      String xml = XMLSerializer.write( JSONNull.getInstance(), "ISO-8859-1" );
+      String xml = xmlSerializer.write( JSONNull.getInstance(), "ISO-8859-1" );
       assertTrue( xml.startsWith( expected ) );
+   }
+
+   public void testWriteJSONObject_collapseProperties() throws Exception
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "duplicated", "json1" );
+      jsonObject.put( "duplicated", "json2" );
+      String expected = "<o><duplicated type=\"string\">json1</duplicated><duplicated type=\"string\">json2</duplicated></o>";
+      xmlSerializer.setExpandableProperties( new String[] { "duplicated" } );
+      String xml = xmlSerializer.write( jsonObject );
+      assertXMLEqual( expected, xml );
    }
 
    public void testWriteMultiBooleanArray() throws Exception
    {
       JSONArray jsonArray = JSONArray.fromObject( "[true,false,[true,false]]" );
       String expected = "<a><e type=\"boolean\">true</e><e type=\"boolean\">false</e><e class=\"array\"><e type=\"boolean\">true</e><e type=\"boolean\">false</e></e></a>";
-      String xml = XMLSerializer.write( jsonArray );
+      String xml = xmlSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
 
@@ -94,7 +119,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONArray jsonArray = JSONArray.fromObject( "[1.1,2,[3,4.4]]" );
       String expected = "<a><e type=\"number\">1.1</e><e type=\"number\">2</e><e class=\"array\"><e type=\"number\">3</e><e type=\"number\">4.4</e></e></a>";
-      String xml = XMLSerializer.write( jsonArray );
+      String xml = xmlSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
 
@@ -102,7 +127,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONArray jsonArray = JSONArray.fromObject( "['1.1','2',['3','4.4']]" );
       String expected = "<a><e type=\"string\">1.1</e><e type=\"string\">2</e><e class=\"array\"><e type=\"string\">3</e><e type=\"string\">4.4</e></e></a>";
-      String xml = XMLSerializer.write( jsonArray );
+      String xml = xmlSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
 
@@ -110,7 +135,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONObject jsonObject = JSONObject.fromObject( "{\"nested\":null}" );
       String expected = "<o><nested class=\"object\" null=\"true\"/></o>";
-      String xml = XMLSerializer.write( jsonObject );
+      String xml = xmlSerializer.write( jsonObject );
       assertXMLEqual( expected, xml );
    }
 
@@ -118,7 +143,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONObject jsonObject = new JSONObject( true );
       String expected = "<o null=\"true\"/>";
-      String xml = XMLSerializer.write( jsonObject );
+      String xml = xmlSerializer.write( jsonObject );
       assertXMLEqual( expected, xml );
    }
 
@@ -126,7 +151,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONArray jsonArray = JSONArray.fromObject( "[null,null]" );
       String expected = "<a><e class=\"object\" null=\"true\"/><e class=\"object\" null=\"true\"/></a>";
-      String xml = XMLSerializer.write( jsonArray );
+      String xml = xmlSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
 
@@ -134,7 +159,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONArray jsonArray = JSONArray.fromObject( "[1.1,2]" );
       String expected = "<a><e type=\"number\">1.1</e><e type=\"number\">2</e></a>";
-      String xml = XMLSerializer.write( jsonArray );
+      String xml = xmlSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
 
@@ -142,7 +167,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONObject jsonObject = JSONObject.fromObject( "{\"name\":\"json\"}" );
       String expected = "<o><name type=\"string\">json</name></o>";
-      String xml = XMLSerializer.write( jsonObject );
+      String xml = xmlSerializer.write( jsonObject );
       assertXMLEqual( expected, xml );
    }
 
@@ -155,7 +180,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
             + "<nested_null class=\"object\" null=\"true\"/>"
             + "<nested class=\"object\"><name type=\"string\">json</name></nested>"
             + "<func type=\"function\" params=\"a\"><![CDATA[return a;]]></func>" + "</o>";
-      String xml = XMLSerializer.write( jsonObject );
+      String xml = xmlSerializer.write( jsonObject );
       assertXMLEqual( expected, xml );
    }
 
@@ -163,7 +188,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONArray jsonArray = JSONArray.fromObject( "[{\"name\":\"json\"}]" );
       String expected = "<a><e class=\"object\"><name type=\"string\">json</name></e></a>";
-      String xml = XMLSerializer.write( jsonArray );
+      String xml = xmlSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }
 
@@ -171,7 +196,13 @@ public class TestXMLSerializer_writes extends XMLTestCase
    {
       JSONArray jsonArray = JSONArray.fromObject( "['1','2']" );
       String expected = "<a><e type=\"string\">1</e><e type=\"string\">2</e></a>";
-      String xml = XMLSerializer.write( jsonArray );
+      String xml = xmlSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
+   }
+
+   protected void setUp() throws Exception
+   {
+      super.setUp();
+      xmlSerializer = new XMLSerializer();
    }
 }

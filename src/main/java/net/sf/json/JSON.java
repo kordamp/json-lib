@@ -71,4 +71,12 @@ public interface JSON
     * @throws JSONException
     */
    Writer write( Writer writer );
+
+   /**
+    * Returns the number of properties in an object or the size of the array.
+    *
+    * @return the size of an json object or array
+    * @throws JSONException if called on a 'null' object
+    */
+   int length();
 }

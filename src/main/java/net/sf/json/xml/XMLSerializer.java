@@ -50,7 +50,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * <pre>
  * JSONObject json = JSONObject.fromObject("{\"name\":\"json\",\"bool\":true,\"int\":1}");
- * String xml = XMLSerializer.write( json );
+ * String xml = new XMLSerializer().write( json );
  * <xmp><o class="object">
  <name type="string">json</name>
  <bool type="boolean">true</bool>
@@ -58,7 +58,7 @@ import org.apache.commons.logging.LogFactory;
  </o></xmp>
  * </pre><pre>
  * JSONArray json = JSONArray.fromObject("[1,2,3]");
- * String xml = XMLSerializer.write( json );
+ * String xml = new XMLSerializer().write( json );
  * <xmp><a class="array">
  <e type="number">1</e>
  <e type="number">2</e>
@@ -70,6 +70,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class XMLSerializer
 {
+   private static final String[] EMPTY_ARRAY = new String[0];
    private static final Log log = LogFactory.getLog( XMLSerializer.class );
 
    /**
@@ -116,57 +117,6 @@ public class XMLSerializer
          throw new JSONException( e );
       }
       return jsonObject;
-   }
-
-   /**
-    * Writes a JSON value into a XML string with UTF-8 encoding.<br>
-    *
-    * @param json The JSON value to transform
-    * @return a String representation of a well-formed xml document.
-    * @throws JSONException if the conversion from JSON to XML can't be made for
-    *         I/O reasons.
-    */
-   public static String write( JSON json )
-   {
-      return write( json, null );
-   }
-
-   /**
-    * Writes a JSON value into a XML string with an specific encoding.<br>
-    * If the encoding string is null it will use UTF-8.
-    *
-    * @param json The JSON value to transform
-    * @param encoding The xml encoding to use
-    * @return a String representation of a well-formed xml document.
-    * @throws JSONException if the conversion from JSON to XML can't be made for
-    *         I/O reasons or the encoding is not supported.
-    */
-   public static String write( JSON json, String encoding )
-   {
-      if( JSONNull.getInstance()
-            .equals( json ) ){
-         Element root = null;
-         root = new Element( "o" );
-         root.addAttribute( new Attribute( "null", "true" ) );
-         Document doc = new Document( root );
-         return writeDocument( doc, encoding );
-      }else if( json instanceof JSONArray ){
-         JSONArray jsonArray = (JSONArray) json;
-         Element root = processJSONArray( new Element( "a" ), jsonArray );
-         Document doc = new Document( root );
-         return writeDocument( doc, encoding );
-      }else{
-         JSONObject jsonObject = (JSONObject) json;
-         Element root = null;
-         if( jsonObject.isNullObject() ){
-            root = new Element( "o" );
-            root.addAttribute( new Attribute( "null", "true" ) );
-         }else{
-            root = processJSONObject( jsonObject, new Element( "o" ) );
-         }
-         Document doc = new Document( root );
-         return writeDocument( doc, encoding );
-      }
    }
 
    private static String getClass( Element element )
@@ -232,90 +182,6 @@ public class XMLSerializer
          set( jsonArray, elements.get( i ), defaultType );
       }
       return jsonArray;
-   }
-
-   private static Element processJSONArray( Element root, JSONArray array )
-   {
-      for( int i = 0; i < array.length(); i++ ){
-         Element element = new Element( "e" );
-         Object el = array.get( i );
-         if( JSONUtils.isBoolean( el ) ){
-            element.addAttribute( new Attribute( "type", JSONTypes.BOOLEAN ) );
-            element.appendChild( el.toString() );
-         }else if( JSONUtils.isNumber( el ) ){
-            element.addAttribute( new Attribute( "type", JSONTypes.NUMBER ) );
-            element.appendChild( el.toString() );
-         }else if( JSONUtils.isFunction( el ) ){
-            JSONFunction func = (JSONFunction) el;
-            element.addAttribute( new Attribute( "type", JSONTypes.FUNCTION ) );
-            String params = ArrayUtils.toString( func.getParams() );
-            params = params.substring( 1 );
-            params = params.substring( 0, params.length() - 1 );
-            element.addAttribute( new Attribute( "params", params ) );
-            element.appendChild( new Text( "<![CDATA[" + func.getText() + "]]>" ) );
-         }else if( JSONUtils.isString( el ) ){
-            element.addAttribute( new Attribute( "type", JSONTypes.STRING ) );
-            element.appendChild( el.toString() );
-         }else if( el instanceof JSONArray ){
-            element.addAttribute( new Attribute( "class", JSONTypes.ARRAY ) );
-            element = processJSONArray( element, (JSONArray) el );
-         }else if( el instanceof JSONObject ){
-            element.addAttribute( new Attribute( "class", JSONTypes.OBJECT ) );
-            element = processJSONObject( (JSONObject) el, element );
-         }else if( JSONUtils.isNull( el ) ){
-            element.addAttribute( new Attribute( "class", JSONTypes.OBJECT ) );
-            element.addAttribute( new Attribute( "null", "true" ) );
-         }
-         root.appendChild( element );
-      }
-      return root;
-   }
-
-   private static Element processJSONObject( JSONObject jsonObject, Element root )
-   {
-      if( jsonObject.isNullObject() ){
-         root.addAttribute( new Attribute( "null", "true" ) );
-         return root;
-      }else if( jsonObject.isEmpty() ){
-         return root;
-      }
-
-      Object[] names = jsonObject.names()
-            .toArray();
-      for( int i = 0; i < names.length; i++ ){
-         String name = (String) names[i];
-         Object el = jsonObject.get( name );
-         Element element = new Element( name );
-         if( JSONUtils.isBoolean( el ) ){
-            element.addAttribute( new Attribute( "type", JSONTypes.BOOLEAN ) );
-            element.appendChild( el.toString() );
-         }else if( JSONUtils.isNumber( el ) ){
-            element.addAttribute( new Attribute( "type", JSONTypes.NUMBER ) );
-            element.appendChild( el.toString() );
-         }else if( JSONUtils.isFunction( el ) ){
-            JSONFunction func = (JSONFunction) el;
-            element.addAttribute( new Attribute( "type", JSONTypes.FUNCTION ) );
-            String params = ArrayUtils.toString( func.getParams() );
-            params = params.substring( 1 );
-            params = params.substring( 0, params.length() - 1 );
-            element.addAttribute( new Attribute( "params", params ) );
-            element.appendChild( new Text( "<![CDATA[" + func.getText() + "]]>" ) );
-         }else if( JSONUtils.isString( el ) ){
-            element.addAttribute( new Attribute( "type", JSONTypes.STRING ) );
-            element.appendChild( el.toString() );
-         }else if( el instanceof JSONArray ){
-            element.addAttribute( new Attribute( "class", JSONTypes.ARRAY ) );
-            element = processJSONArray( element, (JSONArray) el );
-         }else if( el instanceof JSONObject ){
-            element.addAttribute( new Attribute( "class", JSONTypes.OBJECT ) );
-            element = processJSONObject( (JSONObject) el, element );
-         }else if( JSONUtils.isNull( el ) ){
-            element.addAttribute( new Attribute( "class", JSONTypes.OBJECT ) );
-            element.addAttribute( new Attribute( "null", "true" ) );
-         }
-         root.appendChild( element );
-      }
-      return root;
    }
 
    private static JSONObject processObjectElement( Element element, String defaultType )
@@ -433,7 +299,312 @@ public class XMLSerializer
       }
    }
 
-   private static String writeDocument( Document doc, String encoding )
+   /** the name for an JSONArray Element */
+   private String arrayName;
+   /** the name for an JSONArray's element Element */
+   private String elementName;
+   /** list of properties to be expanded from child to parent */
+   private String[] expandableProperties;
+   /** flag to be tolerant for incomplete namespace prefixes */
+   private boolean namespaceLenient;
+   /** the name for an JSONObject Element */
+   private String objectName;
+   /** the name for the root Element */
+   private String rootName;
+   /** flag for adding JSON types hints as attributes */
+   private boolean typeHintsEnabled;
+
+   public XMLSerializer()
+   {
+      setObjectName( "o" );
+      setArrayName( "a" );
+      setElementName( "e" );
+      setTypeHintsEnabled( true );
+      setNamespaceLenient( false );
+      setExpandableProperties( EMPTY_ARRAY );
+   }
+
+   /**
+    * Returns the name used for JSONArray.
+    */
+   public String getArrayName()
+   {
+      return arrayName;
+   }
+
+   /**
+    * Returns the name used for JSONArray elements.
+    */
+   public String getElementName()
+   {
+      return elementName;
+   }
+
+   /**
+    * Returns a list of properties to be expanded from child to parent.
+    */
+   public String[] getExpandableProperties()
+   {
+      return expandableProperties;
+   }
+
+   /**
+    * Returns the name used for JSONArray.
+    */
+   public String getObjectName()
+   {
+      return objectName;
+   }
+
+   /**
+    * Returns the name used for the root element.
+    */
+   public String getRootName()
+   {
+      return rootName;
+   }
+
+   /**
+    * Returns wether this serializer is tolerant to namespaces without URIs or
+    * not.
+    */
+   public boolean isNamespaceLenient()
+   {
+      return namespaceLenient;
+   }
+
+   /**
+    * Returns true if JSON types will be included as attributes.
+    */
+   public boolean isTypeHintsEnabled()
+   {
+      return typeHintsEnabled;
+   }
+
+   /**
+    * Sets the name used for JSONArray.<br>
+    * Default is 'a'.
+    */
+   public void setArrayName( String arrayName )
+   {
+      this.arrayName = StringUtils.isBlank( arrayName ) ? "a" : arrayName;
+   }
+
+   /**
+    * Sets the name used for JSONArray elements.<br>
+    * Default is 'e'.
+    */
+   public void setElementName( String elementName )
+   {
+      this.elementName = StringUtils.isBlank( elementName ) ? "e" : elementName;
+   }
+
+   /**
+    * Sets the list of properties to be expanded from child to parent.
+    */
+   public void setExpandableProperties( String[] expandableProperties )
+   {
+      this.expandableProperties = expandableProperties == null ? EMPTY_ARRAY : expandableProperties;
+   }
+
+   /**
+    * Sets wether this serializer is tolerant to namespaces without URIs or not.
+    */
+   public void setNamespaceLenient( boolean namespaceLenient )
+   {
+      this.namespaceLenient = namespaceLenient;
+   }
+
+   /**
+    * Sets the name used for JSONObject.<br>
+    * Default is 'o'.
+    */
+   public void setObjectName( String objectName )
+   {
+      this.objectName = StringUtils.isBlank( objectName ) ? "o" : objectName;
+   }
+
+   /**
+    * Sets the name used for the root element.
+    */
+   public void setRootName( String rootName )
+   {
+      this.rootName = StringUtils.isBlank( rootName ) ? null : rootName;
+   }
+
+   /**
+    * Sets wether JSON types will be included as attributes.
+    */
+   public void setTypeHintsEnabled( boolean typeHintsEnabled )
+   {
+      this.typeHintsEnabled = typeHintsEnabled;
+   }
+
+   /**
+    * Writes a JSON value into a XML string with UTF-8 encoding.<br>
+    *
+    * @param json The JSON value to transform
+    * @return a String representation of a well-formed xml document.
+    * @throws JSONException if the conversion from JSON to XML can't be made for
+    *         I/O reasons.
+    */
+   public String write( JSON json )
+   {
+      return write( json, null );
+   }
+
+   /**
+    * Writes a JSON value into a XML string with an specific encoding.<br>
+    * If the encoding string is null it will use UTF-8.
+    *
+    * @param json The JSON value to transform
+    * @param encoding The xml encoding to use
+    * @return a String representation of a well-formed xml document.
+    * @throws JSONException if the conversion from JSON to XML can't be made for
+    *         I/O reasons or the encoding is not supported.
+    */
+   public String write( JSON json, String encoding )
+   {
+      if( JSONNull.getInstance()
+            .equals( json ) ){
+         Element root = null;
+         root = newElement( getRootName() == null ? getObjectName() : getRootName() );
+         root.addAttribute( new Attribute( "null", "true" ) );
+         Document doc = new Document( root );
+         return writeDocument( doc, encoding );
+      }else if( json instanceof JSONArray ){
+         JSONArray jsonArray = (JSONArray) json;
+         Element root = processJSONArray( jsonArray,
+               newElement( getRootName() == null ? getArrayName() : getRootName() ),
+               expandableProperties );
+         Document doc = new Document( root );
+         return writeDocument( doc, encoding );
+      }else{
+         JSONObject jsonObject = (JSONObject) json;
+         Element root = null;
+         if( jsonObject.isNullObject() ){
+            root = newElement( getObjectName() );
+            root.addAttribute( new Attribute( "null", "true" ) );
+         }else{
+            root = processJSONObject( jsonObject,
+                  newElement( getRootName() == null ? getObjectName() : getRootName() ),
+                  expandableProperties );
+         }
+         Document doc = new Document( root );
+         return writeDocument( doc, encoding );
+      }
+   }
+
+   private Element newElement( String name )
+   {
+      return namespaceLenient ? new CustomElement( name ) : new Element( name );
+   }
+
+   private Element processJSONArray( JSONArray array, Element root, String[] expandableProperties )
+   {
+      int l = array.length();
+      for( int i = 0; i < l; i++ ){
+         Object value = array.get( i );
+         Element element = processJSONValue( value, root, null, expandableProperties );
+         root.appendChild( element );
+      }
+      return root;
+   }
+
+   private Element processJSONObject( JSONObject jsonObject, Element root,
+         String[] expandableProperties )
+   {
+      if( jsonObject.isNullObject() ){
+         root.addAttribute( new Attribute( "null", "true" ) );
+         return root;
+      }else if( jsonObject.isEmpty() ){
+         return root;
+      }
+
+      Object[] names = jsonObject.names()
+            .toArray();
+      Element element = null;
+      for( int i = 0; i < names.length; i++ ){
+         String name = (String) names[i];
+         Object value = jsonObject.get( name );
+         if( value instanceof JSONArray
+               && (((JSONArray) value).isExpandElements() || ArrayUtils.contains(
+                     expandableProperties, name )) ){
+            JSONArray array = (JSONArray) value;
+            int l = array.length();
+            for( int j = 0; j < l; j++ ){
+               Object item = array.get( j );
+               element = newElement( name );
+               if( item instanceof JSONObject ){
+                  element = processJSONValue( (JSONObject) item, root, element,
+                        expandableProperties );
+               }else if( item instanceof JSONArray ){
+                  element = processJSONValue( (JSONArray) item, root, element, expandableProperties );
+               }else{
+                  element = processJSONValue( item, root, element, expandableProperties );
+               }
+               root.appendChild( element );
+            }
+         }else{
+            element = newElement( name );
+            element = processJSONValue( value, root, element, expandableProperties );
+            root.appendChild( element );
+         }
+      }
+      return root;
+   }
+
+   private Element processJSONValue( Object value, Element root, Element target,
+         String[] expandableProperties )
+   {
+      if( target == null ){
+         target = newElement( getElementName() );
+      }
+      if( JSONUtils.isBoolean( value ) ){
+         if( isTypeHintsEnabled() ){
+            target.addAttribute( new Attribute( "type", JSONTypes.BOOLEAN ) );
+         }
+         target.appendChild( value.toString() );
+      }else if( JSONUtils.isNumber( value ) ){
+         if( isTypeHintsEnabled() ){
+            target.addAttribute( new Attribute( "type", JSONTypes.NUMBER ) );
+         }
+         target.appendChild( value.toString() );
+      }else if( JSONUtils.isFunction( value ) ){
+         JSONFunction func = (JSONFunction) value;
+         if( isTypeHintsEnabled() ){
+            target.addAttribute( new Attribute( "type", JSONTypes.FUNCTION ) );
+         }
+         String params = ArrayUtils.toString( func.getParams() );
+         params = params.substring( 1 );
+         params = params.substring( 0, params.length() - 1 );
+         target.addAttribute( new Attribute( "params", params ) );
+         target.appendChild( new Text( "<![CDATA[" + func.getText() + "]]>" ) );
+      }else if( JSONUtils.isString( value ) ){
+         if( isTypeHintsEnabled() ){
+            target.addAttribute( new Attribute( "type", JSONTypes.STRING ) );
+         }
+         target.appendChild( value.toString() );
+      }else if( value instanceof JSONArray ){
+         if( isTypeHintsEnabled() ){
+            target.addAttribute( new Attribute( "class", JSONTypes.ARRAY ) );
+         }
+         target = processJSONArray( (JSONArray) value, target, expandableProperties );
+      }else if( value instanceof JSONObject ){
+         if( isTypeHintsEnabled() ){
+            target.addAttribute( new Attribute( "class", JSONTypes.OBJECT ) );
+         }
+         target = processJSONObject( (JSONObject) value, target, expandableProperties );
+      }else if( JSONUtils.isNull( value ) ){
+         if( isTypeHintsEnabled() ){
+            target.addAttribute( new Attribute( "class", JSONTypes.OBJECT ) );
+         }
+         target.addAttribute( new Attribute( "null", "true" ) );
+      }
+      return target;
+   }
+
+   private String writeDocument( Document doc, String encoding )
    {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       try{
@@ -447,7 +618,45 @@ public class XMLSerializer
       return baos.toString();
    }
 
-   private static class XomSerializer extends Serializer
+   private static class CustomElement extends Element
+   {
+      private static String getName( String name )
+      {
+         int colon = name.indexOf( ':' );
+         if( colon != -1 ){
+            return name.substring( colon + 1 );
+         }
+         return name;
+      }
+
+      private static String getPrefix( String name )
+      {
+         int colon = name.indexOf( ':' );
+         if( colon != -1 ){
+            return name.substring( 0, colon );
+         }
+         return "";
+      }
+
+      private String prefix;
+
+      public CustomElement( String name )
+      {
+         super( CustomElement.getName( name ) );
+         prefix = CustomElement.getPrefix( name );
+      }
+
+      public final String getQName()
+      {
+         if( prefix.length() == 0 ){
+            return getLocalName();
+         }else{
+            return prefix + ":" + getLocalName();
+         }
+      }
+   }
+
+   private class XomSerializer extends Serializer
    {
       public XomSerializer( OutputStream out )
       {
@@ -471,6 +680,45 @@ public class XMLSerializer
          }else{
             super.write( text );
          }
+      }
+
+      protected void writeEmptyElementTag( Element element ) throws IOException
+      {
+         if( element instanceof CustomElement && isNamespaceLenient() ){
+            writeTagBeginning( (CustomElement) element );
+            writeRaw( "/>" );
+         }else{
+            super.writeEmptyElementTag( element );
+         }
+      }
+
+      protected void writeEndTag( Element element ) throws IOException
+      {
+         if( element instanceof CustomElement && isNamespaceLenient() ){
+            writeRaw( "</" );
+            writeRaw( ((CustomElement) element).getQName() );
+            writeRaw( ">" );
+         }else{
+            super.writeEndTag( element );
+         }
+      }
+
+      protected void writeStartTag( Element element ) throws IOException
+      {
+         if( element instanceof CustomElement && isNamespaceLenient() ){
+            writeTagBeginning( (CustomElement) element );
+            writeRaw( ">" );
+         }else{
+            super.writeStartTag( element );
+         }
+      }
+
+      private void writeTagBeginning( CustomElement element ) throws IOException
+      {
+         writeRaw( "<" );
+         writeRaw( element.getQName() );
+         writeAttributes( element );
+         writeNamespaceDeclarations( element );
       }
    }
 }

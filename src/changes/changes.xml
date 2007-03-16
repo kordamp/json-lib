@@ -8,6 +8,45 @@
    </properties>
    <body>
       <release
+         version="1.1"
+         date="2007-03-16"
+         desc="Release 1.1">
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Promoted length() to JSON interface.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1679986">
+            Skip type information when writing XML
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1679985">
+            Move child properties to parent when writing XML
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1679982">
+            Allow parsing of duplicate properties
+         </action>
+      </release>
+      <release
+         version="1.0.1"
+         date="2007-02-27"
+         desc="Service release">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1670146">
+            [Compatibility] ConstructorJSONObject( String) does not work
+         </action>
+      </release>
+      <release
          version="1.0"
          date="2007-02-11"
          desc="The _1.0_ release">

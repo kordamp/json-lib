@@ -621,6 +621,28 @@ public class TestJSONObject extends TestCase
       assertEquals( "json", new JSONObject().optString( "any", "json" ) );
    }
 
+   public void testPut__duplicateProperty()
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put( "duplicated", "json1" );
+      jsonObject.put( "duplicated", "json2" );
+      Object o = jsonObject.get( "duplicated" );
+      assertTrue( o instanceof JSONArray );
+      JSONArray jsonArray = (JSONArray) o;
+      assertEquals( "json1", jsonArray.get( 0 ) );
+      assertEquals( "json2", jsonArray.get( 1 ) );
+   }
+
+   public void testPut__duplicateProperty_2()
+   {
+      JSONObject jsonObject = JSONObject.fromObject( "{'duplicated':'json1','duplicated':'json2'}" );
+      Object o = jsonObject.get( "duplicated" );
+      assertTrue( o instanceof JSONArray );
+      JSONArray jsonArray = (JSONArray) o;
+      assertEquals( "json1", jsonArray.get( 0 ) );
+      assertEquals( "json2", jsonArray.get( 1 ) );
+   }
+
    public void testPut_Bean()
    {
       JSONObject jsonObject = new JSONObject();

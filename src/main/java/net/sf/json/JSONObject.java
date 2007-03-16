@@ -738,11 +738,21 @@ public final class JSONObject implements JSON
     */
    private static void setProperty( Object bean, String key, Object value ) throws Exception
    {
+      setProperty( bean, key, value, null, false );
+   }
+
+   /**
+    * Sets a property on the target bean.<br>
+    * Bean may be a Map, a JSONObject, a DynaBean or a POJO.
+    */
+   private static void setProperty( Object bean, String key, Object value, String[] excludes,
+         boolean ignoreDefaultExcludes ) throws Exception
+   {
       if( bean instanceof Map ){
          ((Map) bean).put( key, value );
       }else if( bean instanceof JSONObject ){
          if( !((JSONObject) bean).isNullObject() ){
-            ((JSONObject) bean).set( key, value );
+            ((JSONObject) bean).put( key, value, excludes, ignoreDefaultExcludes );
          }
       }else{
          PropertyUtils.setProperty( bean, key, value );
@@ -760,54 +770,60 @@ public final class JSONObject implements JSON
       }
       try{
          if( (Class.class.isAssignableFrom( type ) && value != null) || value instanceof Class ){
-            setProperty( object, key, ((Class) value).getName() );
+            setProperty( object, key, ((Class) value).getName(), excludes, ignoreDefaultExcludes );
          }else if( JSONUtils.isFunction( value ) ){
-            setProperty( object, key, value );
+            setProperty( object, key, value, excludes, ignoreDefaultExcludes );
          }else if( value instanceof JSONString ){
             setProperty( object, key, JSONSerializer.toJSON( (JSONString) value, excludes,
-                  ignoreDefaultExcludes ) );
+                  ignoreDefaultExcludes ), excludes, ignoreDefaultExcludes );
          }else if( JSONUtils.isArray( value ) ){
-            setProperty( object, key, JSONArray.fromObject( value, excludes, ignoreDefaultExcludes ) );
+            setProperty( object, key,
+                  JSONArray.fromObject( value, excludes, ignoreDefaultExcludes ), excludes,
+                  ignoreDefaultExcludes );
          }else if( value instanceof JSON ){
-            setProperty( object, key, value );
+            setProperty( object, key, value, excludes, ignoreDefaultExcludes );
          }else if( String.class.isAssignableFrom( type ) || JSONUtils.isString( value ) ){
             String str = String.valueOf( value );
             if( value == null ){
-               setProperty( object, key, "" );
+               setProperty( object, key, "", excludes, ignoreDefaultExcludes );
             }else if( JSONUtils.mayBeJSON( str ) ){
                try{
                   setProperty( object, key, JSONSerializer.toJSON( str, excludes,
-                        ignoreDefaultExcludes ) );
+                        ignoreDefaultExcludes ), excludes, ignoreDefaultExcludes );
                }
                catch( JSONException jsone ){
-                  setProperty( object, key, JSONUtils.stripQuotes( str ) );
+                  setProperty( object, key, JSONUtils.stripQuotes( str ), excludes,
+                        ignoreDefaultExcludes );
                }
             }else{
-               setProperty( object, key, JSONUtils.stripQuotes( str ) );
+               setProperty( object, key, JSONUtils.stripQuotes( str ), excludes,
+                     ignoreDefaultExcludes );
             }
          }else if( JSONUtils.isNumber( value ) ){
             JSONUtils.testValidity( value );
-            setProperty( object, key, value );
+            setProperty( object, key, value, excludes, ignoreDefaultExcludes );
          }else if( JSONUtils.isBoolean( value ) ){
-            setProperty( object, key, value );
+            setProperty( object, key, value, excludes, ignoreDefaultExcludes );
          }else if( value == null ){
             if( JSONUtils.isArray( type ) ){
-               setProperty( object, key, JSONSerializer.toJSON( "[]" ) );
+               setProperty( object, key, JSONSerializer.toJSON( "[]" ), excludes,
+                     ignoreDefaultExcludes );
             }else if( JSONUtils.isNumber( type ) ){
                if( JSONUtils.isDouble( type ) ){
-                  setProperty( object, key, new Double( 0 ) );
+                  setProperty( object, key, new Double( 0 ), excludes, ignoreDefaultExcludes );
                }else{
-                  setProperty( object, key, new Integer( 0 ) );
+                  setProperty( object, key, new Integer( 0 ), excludes, ignoreDefaultExcludes );
                }
             }else if( JSONUtils.isBoolean( type ) ){
-               setProperty( object, key, "false" );
+               setProperty( object, key, "false", excludes, ignoreDefaultExcludes );
             }else if( JSONUtils.isString( type ) ){
-               setProperty( object, key, "" );
+               setProperty( object, key, "", excludes, ignoreDefaultExcludes );
             }else{
-               setProperty( object, key, JSONNull.getInstance() );
+               setProperty( object, key, JSONNull.getInstance(), excludes, ignoreDefaultExcludes );
             }
          }else{
-            setProperty( object, key, fromObject( value, excludes, ignoreDefaultExcludes ) );
+            setProperty( object, key, fromObject( value, excludes, ignoreDefaultExcludes ),
+                  excludes, ignoreDefaultExcludes );
          }
       }
       catch( JSONException jsone ){
@@ -842,6 +858,59 @@ public final class JSONObject implements JSON
    {
       this();
       this.nullObject = isNull;
+   }
+
+   /**
+    * Construct a JSONObject from a DynaBean.<br>
+    * Assumes the object hierarchy is acyclical.
+    *
+    * @param dynaBean A DynaBean that can be used to initialize the contents of
+    *        the JSONObject.
+    * @deprecated use {@link fromObject} instead
+    */
+   public JSONObject( DynaBean dynaBean )
+   {
+      this( dynaBean, null, false );
+   }
+
+   /**
+    * Construct a JSONObject from a subset of another JSONObject.
+    *
+    * @param jo A JSONObject.
+    * @exception JSONException If a value is a non-finite number.
+    * @deprecated use {@link fromObject} instead
+    */
+   public JSONObject( JSONObject jo )
+   {
+      this( jo, null, false );
+   }
+
+   /**
+    * Construct a JSONObject from a Map.<br>
+    * Assumes the object hierarchy is acyclical.
+    *
+    * @param map A map object that can be used to initialize the contents of the
+    *        JSONObject.
+    * @deprecated use {@link fromObject} instead
+    */
+   public JSONObject( Map map )
+   {
+      this( map, null, false );
+   }
+
+   /**
+    * Construct a JSONObject from a string. This is the most commonly used
+    * JSONObject constructor.
+    *
+    * @param string A string beginning with <code>{</code>&nbsp;<small>(left
+    *        brace)</small> and ending with <code>}</code>&nbsp;<small>(right
+    *        brace)</small>.
+    * @exception JSONException If there is a syntax error in the source string.
+    * @deprecated use {@link fromObject} instead
+    */
+   public JSONObject( String string )
+   {
+      this( new JSONTokener( string ), null, false );
    }
 
    /**
@@ -968,9 +1037,9 @@ public final class JSONObject implements JSON
                continue;
             }
             if( v instanceof String && JSONUtils.mayBeJSON( (String) v ) ){
-               set( key, JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE );
+               put( key, JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE );
             }else{
-               set( key, v, excludes, ignoreDefaultExcludes );
+               put( key, v, excludes, ignoreDefaultExcludes );
             }
          }else{
             // read params if any
@@ -1001,7 +1070,7 @@ public final class JSONObject implements JSON
             String text = sb.toString();
             text = text.substring( 1, text.length() - 1 )
                   .trim();
-            set( key, new JSONFunction( (params != null) ? StringUtils.split( params, "," ) : null,
+            put( key, new JSONFunction( (params != null) ? StringUtils.split( params, "," ) : null,
                   text ) );
          }
 
@@ -1074,6 +1143,47 @@ public final class JSONObject implements JSON
     */
    public JSONObject accumulate( String key, Object value )
    {
+      return accumulate( key, value, null, false );
+   }
+
+   /**
+    * Accumulate values under a key. It is similar to the put method except that
+    * if there is already an object stored under the key then a JSONArray is
+    * stored under the key to hold all of the accumulated values. If there is
+    * already a JSONArray, then the new value is appended to it. In contrast,
+    * the put method replaces the previous value.
+    *
+    * @param key A key string.
+    * @param value An object to be accumulated under the key.
+    * @param excludes A group of property names to be excluded
+    * @return this.
+    * @throws JSONException If the value is an invalid number or if the key is
+    *         null.
+    */
+   public JSONObject accumulate( String key, Object value, String[] excludes )
+   {
+      return accumulate( key, value, excludes, false );
+   }
+
+   /**
+    * Accumulate values under a key. It is similar to the put method except that
+    * if there is already an object stored under the key then a JSONArray is
+    * stored under the key to hold all of the accumulated values. If there is
+    * already a JSONArray, then the new value is appended to it. In contrast,
+    * the put method replaces the previous value.
+    *
+    * @param key A key string.
+    * @param value An object to be accumulated under the key.@param excludes A
+    *        group of property names to be excluded
+    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
+    *        property names
+    * @return this.
+    * @throws JSONException If the value is an invalid number or if the key is
+    *         null.
+    */
+   public JSONObject accumulate( String key, Object value, String[] excludes,
+         boolean ignoreDefaultExcludes )
+   {
       if( isNullObject() ){
          throw new JSONException( "Can't accumulate on null object" );
       }
@@ -1081,12 +1191,12 @@ public final class JSONObject implements JSON
       JSONUtils.testValidity( value );
       Object o = opt( key );
       if( o == null ){
-         put( key, value );
+         set( key, value, excludes, ignoreDefaultExcludes );
       }else if( o instanceof JSONArray ){
-         ((JSONArray) o).put( value );
+         ((JSONArray) o).put( value, excludes, ignoreDefaultExcludes );
       }else{
-         put( key, new JSONArray().put( o )
-               .put( value ) );
+         set( key, new JSONArray().put( o )
+               .put( value, excludes, ignoreDefaultExcludes ) );
       }
 
       return this;
@@ -1725,7 +1835,12 @@ public final class JSONObject implements JSON
          throw new JSONException( "Null key." );
       }
       if( value != null ){
-         set( key, value, excludes, ignoreDefaultExcludes );
+         if( this.properties.containsKey( key ) ){
+            accumulate( key, value, excludes, ignoreDefaultExcludes );
+            getJSONArray( key ).setExpandElements( true );
+         }else{
+            set( key, value, excludes, ignoreDefaultExcludes );
+         }
       }else{
          remove( key );
       }
@@ -2031,6 +2146,7 @@ public final class JSONObject implements JSON
       if( key == null ){
          throw new JSONException( "Null key." );
       }
+
       if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
             || value instanceof Class ){
          this.properties.put( key, ((Class) value).getName() );

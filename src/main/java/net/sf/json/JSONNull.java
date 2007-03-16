@@ -93,6 +93,11 @@ public final class JSONNull implements JSON
       return false;
    }
 
+   public int length()
+   {
+      throw new JSONException("Object is null");
+   }
+
    /**
     * Get the "null" string value.
     *

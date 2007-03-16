@@ -50,6 +50,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONException;
 import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
 
@@ -550,11 +551,41 @@ public final class JSONArray implements JSON
    private List elements;
 
    /**
+    * A flag for XML processing.
+    */
+   private boolean expandElements;
+
+   /**
     * Construct an empty JSONArray.
     */
    public JSONArray()
    {
       this.elements = new ArrayList();
+   }
+
+   /**
+    * Construct a JSONArray from a Collection.
+    *
+    * @param collection A Collection.
+    * @deprecated use {@link fromObject} instead
+    */
+   public JSONArray( Collection collection )
+   {
+      this( collection, null, false );
+   }
+
+   /**
+    * Construct a JSONArray from a source JSON text.
+    *
+    * @param string A string that begins with <code>[</code>&nbsp;<small>(left
+    *        bracket)</small> and ends with <code>]</code>&nbsp;<small>(right
+    *        bracket)</small>.
+    * @throws JSONException If there is a syntax error.
+    * @deprecated use {@link fromObject} instead
+    */
+   public JSONArray( String string )
+   {
+      this( new JSONTokener( string ), null, false );
    }
 
    /**
@@ -979,6 +1010,11 @@ public final class JSONArray implements JSON
    public boolean isEmpty()
    {
       return this.elements.isEmpty();
+   }
+
+   public boolean isExpandElements()
+   {
+      return expandElements;
    }
 
    /**
@@ -1811,6 +1847,11 @@ public final class JSONArray implements JSON
          this.elements.add( JSONUtils.stripQuotes( value ) );
       }
       return this;
+   }
+
+   public void setExpandElements( boolean expandElements )
+   {
+      this.expandElements = expandElements;
    }
 
    /**
