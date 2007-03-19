@@ -1000,6 +1000,20 @@ public final class JSONArray implements JSON
     */
    public String join( String separator )
    {
+      return join(separator,false);
+   }
+
+   /**
+    * Make a string from the contents of this JSONArray. The
+    * <code>separator</code> string is inserted between each element. Warning:
+    * This method assumes that the data structure is acyclical.
+    *
+    * @param separator A string that will be inserted between the elements.
+    * @return a string.
+    * @throws JSONException If the array contains an invalid number.
+    */
+   public String join( String separator, boolean stripQuotes )
+   {
       int len = length();
       StringBuffer sb = new StringBuffer();
 
@@ -1007,7 +1021,8 @@ public final class JSONArray implements JSON
          if( i > 0 ){
             sb.append( separator );
          }
-         sb.append( JSONUtils.valueToString( this.elements.get( i ) ) );
+         String value = JSONUtils.valueToString( this.elements.get( i ) );
+         sb.append( stripQuotes?JSONUtils.stripQuotes( value ):value );
       }
       return sb.toString();
    }

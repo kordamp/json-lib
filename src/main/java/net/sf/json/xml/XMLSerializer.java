@@ -34,6 +34,7 @@ import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
+import nu.xom.Node;
 import nu.xom.Serializer;
 import nu.xom.Text;
 
@@ -74,49 +75,80 @@ public class XMLSerializer
    private static final Log log = LogFactory.getLog( XMLSerializer.class );
 
    /**
-    * Creates a JSONArray from a XML string.
+    * Creates a JSON value from a XML string.
     *
     * @param xml A well-formed xml document in a String
-    * @return a JSONArray
+    * @return a JSONNull, JSONObject or JSONArray
     * @throws JSONException if the conversion from XML to JSON can't be made for
     *         I/O or format reasons.
     */
-   public static JSONArray readArray( String xml )
+   public static JSON read( String xml )
    {
-      JSONArray jsonArray = null;
+      JSON json = null;
       try{
          Document doc = new Builder().build( new StringReader( xml ) );
          Element root = doc.getRootElement();
+         if( isNullObject( root ) ){
+            return JSONNull.getInstance();
+         }
          String defaultType = getType( root, JSONTypes.STRING );
-         jsonArray = processArrayElement( root, defaultType );
+         if( isArray( root ) ){
+            json = processArrayElement( root, defaultType );
+         }else{
+            json = processObjectElement( root, defaultType );
+         }
       }
       catch( Exception e ){
          throw new JSONException( e );
       }
-      return jsonArray;
+      return json;
    }
 
-   /**
-    * Creates a JSONObject from a XML string.
-    *
-    * @param xml A well-formed xml document in a String
-    * @return a JSONObject
-    * @throws JSONException if the conversion from XML to JSON can't be made for
-    *         I/O or format reasons.
-    */
-   public static JSONObject readObject( String xml )
+   private static boolean checkChildElementsOfArray( Element element )
    {
-      JSONObject jsonObject = null;
-      try{
-         Document doc = new Builder().build( new StringReader( xml ) );
-         Element root = doc.getRootElement();
-         String defaultType = getType( root, JSONTypes.STRING );
-         jsonObject = processObjectElement( root, defaultType );
+      int childCount = element.getChildCount();
+      Elements elements = element.getChildElements();
+      int elementCount = elements.size();
+
+      if( childCount == 1 && element.getChild( 0 ) instanceof Text ){
+         return true;
       }
-      catch( Exception e ){
-         throw new JSONException( e );
+
+      if( childCount == elementCount ){
+         if( elementCount == 0 ){
+            return true;
+         }
+         if( elementCount == 1 ){
+            if( element.getChild( 0 ) instanceof Text ){
+               return true;
+            }else{
+               return false;
+            }
+         }
       }
-      return jsonObject;
+
+      if( childCount > elementCount ){
+         for( int i = 0; i < childCount; i++ ){
+            Node node = element.getChild( i );
+            if( node instanceof Text ){
+               Text text = (Text) node;
+               if( StringUtils.isNotBlank( StringUtils.strip( text.getValue() ) ) ){
+                  return false;
+               }
+            }
+         }
+      }
+
+      String childName = elements.get( 0 )
+            .getQualifiedName();
+      for( int i = 1; i < elementCount; i++ ){
+         if( childName.compareTo( elements.get( i )
+               .getQualifiedName() ) != 0 ){
+            return false;
+         }
+      }
+
+      return true;
    }
 
    private static String getClass( Element element )
@@ -173,30 +205,95 @@ public class XMLSerializer
       return type;
    }
 
-   private static JSONArray processArrayElement( Element element, String defaultType )
+   private static boolean isArray( Element element )
+   {
+      String clazz = getClass( element );
+      if( clazz != null && clazz.equals( JSONTypes.ARRAY ) ){
+         return true;
+      }else if( element.getAttributeCount() == 0 ){
+         return checkChildElementsOfArray( element );
+      }else if( element.getAttributeCount() == 1
+            && (element.getAttribute( "class" ) != null || element.getAttribute( "type" ) != null) ){
+         return checkChildElementsOfArray( element );
+      }else if( element.getAttributeCount() == 2
+            && (element.getAttribute( "class" ) != null && element.getAttribute( "type" ) != null) ){
+         return checkChildElementsOfArray( element );
+      }
+
+      return false;
+   }
+
+   private static boolean isNullObject( Element element )
+   {
+      if( element.getChildCount() == 0 ){
+         if( element.getAttributeCount() == 0 ){
+            return true;
+         }else if( element.getAttribute( "null" ) != null ){
+            return true;
+         }else if( element.getAttributeCount() == 1
+               && (element.getAttribute( "class" ) != null || element.getAttribute( "type" ) != null) ){
+            return true;
+         }else if( element.getAttributeCount() == 2
+               && (element.getAttribute( "class" ) != null && element.getAttribute( "type" ) != null) ){
+            return true;
+         }
+      }
+      return false;
+   }
+
+   private static JSON processArrayElement( Element element, String defaultType )
    {
       JSONArray jsonArray = new JSONArray();
-      Elements elements = element.getChildElements();
-      int max = elements.size();
-      for( int i = 0; i < max; i++ ){
-         set( jsonArray, elements.get( i ), defaultType );
+      // process children (including text)
+      int childCount = element.getChildCount();
+      for( int i = 0; i < childCount; i++ ){
+         Node child = element.getChild( i );
+         if( child instanceof Text ){
+            Text text = (Text) child;
+            if( StringUtils.isNotBlank( StringUtils.strip( text.getValue() ) ) ){
+               jsonArray.put( text.getValue() );
+            }
+         }else if( child instanceof Element ){
+            set( jsonArray, (Element) child, defaultType );
+         }
       }
       return jsonArray;
    }
 
-   private static JSONObject processObjectElement( Element element, String defaultType )
+   private static JSON processObjectElement( Element element, String defaultType )
    {
-      Attribute nullAttribute = element.getAttribute( "null" );
-      if( nullAttribute != null && nullAttribute.getValue()
-            .compareToIgnoreCase( "true" ) == 0 ){
-         return new JSONObject( true );
+      if( isNullObject( element ) ){
+         return JSONNull.getInstance();
       }
       JSONObject jsonObject = new JSONObject();
-      Elements elements = element.getChildElements();
-      int max = elements.size();
-      for( int i = 0; i < max; i++ ){
-         set( jsonObject, elements.get( i ), defaultType );
+
+      // process attributes first
+      int attrCount = element.getAttributeCount();
+      for( int i = 0; i < attrCount; i++ ){
+         Attribute attr = element.getAttribute( i );
+         String attrname = attr.getQualifiedName();
+         if( "class".compareToIgnoreCase( attrname ) == 0
+               || "type".compareToIgnoreCase( attrname ) == 0 ){
+            continue;
+         }
+         String attrvalue = attr.getValue();
+         jsonObject.put( "@" + attrname, attrvalue );
       }
+
+      // process children (including text)
+      int childCount = element.getChildCount();
+      for( int i = 0; i < childCount; i++ ){
+         Node child = element.getChild( i );
+         if( child instanceof Text ){
+            Text text = (Text) child;
+            if( StringUtils.isNotBlank( StringUtils.strip( text.getValue() ) ) ){
+               jsonObject.put( "#text", text.getValue() );
+            }
+         }else if( child instanceof Element ){
+            set( jsonObject, (Element) child, defaultType );
+         }
+      }
+
       return jsonObject;
    }
 
@@ -231,8 +328,6 @@ public class XMLSerializer
             jsonArray.put( Integer.valueOf( element.getValue() ) );
          }else if( type.compareToIgnoreCase( JSONTypes.FLOAT ) == 0 ){
             jsonArray.put( Double.valueOf( element.getValue() ) );
-         }else if( type.compareToIgnoreCase( JSONTypes.STRING ) == 0 ){
-            jsonArray.put( element.getValue() );
          }else if( type.compareToIgnoreCase( JSONTypes.FUNCTION ) == 0 ){
             String[] params = null;
             String text = element.getValue();
@@ -241,6 +336,17 @@ public class XMLSerializer
                params = StringUtils.split( paramsAttribute.getValue(), "," );
             }
             jsonArray.put( new JSONFunction( params, text ) );
+         }else if( type.compareToIgnoreCase( JSONTypes.STRING ) == 0 ){
+            // see if by any chance has a 'params' attribute
+            Attribute paramsAttribute = element.getAttribute( "params" );
+            if( paramsAttribute != null ){
+               String[] params = null;
+               String text = element.getValue();
+               params = StringUtils.split( paramsAttribute.getValue(), "," );
+               jsonArray.put( new JSONFunction( params, text ) );
+            }else{
+               jsonArray.put( element.getValue() );
+            }
          }
       }
    }
@@ -254,28 +360,28 @@ public class XMLSerializer
       boolean classProcessed = false;
       if( clazz != null ){
          if( clazz.compareToIgnoreCase( JSONTypes.ARRAY ) == 0 ){
-            jsonObject.put( element.getLocalName(), processArrayElement( element, type ) );
+            jsonObject.put( element.getQualifiedName(), processArrayElement( element, type ) );
             classProcessed = true;
          }else if( clazz.compareToIgnoreCase( JSONTypes.OBJECT ) == 0 ){
-            jsonObject.put( element.getLocalName(), processObjectElement( element, type ) );
+            jsonObject.put( element.getQualifiedName(), processObjectElement( element, type ) );
             classProcessed = true;
          }
       }
       if( !classProcessed ){
          if( type.compareToIgnoreCase( JSONTypes.BOOLEAN ) == 0 ){
-            jsonObject.put( element.getLocalName(), Boolean.valueOf( element.getValue() ) );
+            jsonObject.put( element.getQualifiedName(), Boolean.valueOf( element.getValue() ) );
          }else if( type.compareToIgnoreCase( JSONTypes.NUMBER ) == 0 ){
             // try integer first
             try{
-               jsonObject.put( element.getLocalName(), Integer.valueOf( element.getValue() ) );
+               jsonObject.put( element.getQualifiedName(), Integer.valueOf( element.getValue() ) );
             }
             catch( NumberFormatException e ){
-               jsonObject.put( element.getLocalName(), Double.valueOf( element.getValue() ) );
+               jsonObject.put( element.getQualifiedName(), Double.valueOf( element.getValue() ) );
             }
          }else if( type.compareToIgnoreCase( JSONTypes.INTEGER ) == 0 ){
-            jsonObject.put( element.getLocalName(), Integer.valueOf( element.getValue() ) );
+            jsonObject.put( element.getQualifiedName(), Integer.valueOf( element.getValue() ) );
          }else if( type.compareToIgnoreCase( JSONTypes.FLOAT ) == 0 ){
-            jsonObject.put( element.getLocalName(), Double.valueOf( element.getValue() ) );
+            jsonObject.put( element.getQualifiedName(), Double.valueOf( element.getValue() ) );
          }else if( type.compareToIgnoreCase( JSONTypes.FUNCTION ) == 0 ){
             String[] params = null;
             String text = element.getValue();
@@ -283,7 +389,7 @@ public class XMLSerializer
             if( paramsAttribute != null ){
                params = StringUtils.split( paramsAttribute.getValue(), "," );
             }
-            jsonObject.put( element.getLocalName(), new JSONFunction( params, text ) );
+            jsonObject.put( element.getQualifiedName(), new JSONFunction( params, text ) );
          }else if( type.compareToIgnoreCase( JSONTypes.STRING ) == 0 ){
             // see if by any chance has a 'params' attribute
             Attribute paramsAttribute = element.getAttribute( "params" );
@@ -291,26 +397,29 @@ public class XMLSerializer
                String[] params = null;
                String text = element.getValue();
                params = StringUtils.split( paramsAttribute.getValue(), "," );
-               jsonObject.put( element.getLocalName(), new JSONFunction( params, text ) );
+               jsonObject.put( element.getQualifiedName(), new JSONFunction( params, text ) );
             }else{
-               jsonObject.put( element.getLocalName(), element.getValue() );
+               jsonObject.put( element.getQualifiedName(), element.getValue() );
             }
          }
       }
    }
-
    /** the name for an JSONArray Element */
    private String arrayName;
    /** the name for an JSONArray's element Element */
    private String elementName;
    /** list of properties to be expanded from child to parent */
    private String[] expandableProperties;
+
    /** flag to be tolerant for incomplete namespace prefixes */
    private boolean namespaceLenient;
+
    /** the name for an JSONObject Element */
    private String objectName;
+
    /** the name for the root Element */
    private String rootName;
+
    /** flag for adding JSON types hints as attributes */
    private boolean typeHintsEnabled;
 
@@ -527,7 +636,15 @@ public class XMLSerializer
       for( int i = 0; i < names.length; i++ ){
          String name = (String) names[i];
          Object value = jsonObject.get( name );
-         if( value instanceof JSONArray
+         if( name.startsWith( "@" ) ){
+            root.addAttribute( new Attribute( name.substring( 1 ), String.valueOf( value ) ) );
+         }else if( name.equals( "#text" ) ){
+            if( value instanceof JSONArray ){
+               root.appendChild( ((JSONArray) value).join( "", true ) );
+            }else{
+               root.appendChild( String.valueOf( value ) );
+            }
+         }else if( value instanceof JSONArray
                && (((JSONArray) value).isExpandElements() || ArrayUtils.contains(
                      expandableProperties, name )) ){
             JSONArray array = (JSONArray) value;

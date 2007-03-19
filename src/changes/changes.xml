@@ -9,8 +9,14 @@
    <body>
       <release
          version="1.1"
-         date="2007-03-16"
+         date="2007-03-19"
          desc="Release 1.1">
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1656551">
+            Upgrade XML support.
+         </action>
          <action
             dev="Andres Almiray"
             type="update">
@@ -20,13 +26,13 @@
             dev="Andres Almiray"
             type="add"
             issue="1679986">
-            Skip type information when writing XML
+            Skip type information when writing XML.
          </action>
          <action
             dev="Andres Almiray"
             type="add"
             issue="1679985">
-            Move child properties to parent when writing XML
+            Move child properties to parent when writing XML.
          </action>
          <action
             dev="Andres Almiray"

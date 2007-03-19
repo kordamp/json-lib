@@ -184,6 +184,42 @@ public class TestXMLSerializer_writes extends XMLTestCase
       assertXMLEqual( expected, xml );
    }
 
+   public void testWriteObject_withAttributes() throws Exception
+   {
+      JSONObject jsonObject = new JSONObject().put( "@name", "json" )
+            .put( "string", "json" );
+      String expected = "<o name=\"json\"><string type=\"string\">json</string></o>";
+      String xml = xmlSerializer.write( jsonObject );
+      assertXMLEqual( expected, xml );
+   }
+
+   public void testWriteObject_withNamespacePrefix() throws Exception
+   {
+      JSONObject jsonObject = JSONObject.fromObject( "{\"ns:name\":\"json\"}" );
+      String expected = "<o><ns:name type=\"string\">json</ns:name></o>";
+      xmlSerializer.setNamespaceLenient( true );
+      String xml = xmlSerializer.write( jsonObject );
+      assertTrue( xml.trim().endsWith( expected ));
+   }
+
+   public void testWriteObject_withText() throws Exception
+   {
+      JSONObject jsonObject = new JSONObject().put( "#text", "json" )
+            .put( "string", "json" );
+      String expected = "<o>json<string type=\"string\">json</string></o>";
+      String xml = xmlSerializer.write( jsonObject );
+      assertXMLEqual( expected, xml );
+   }
+
+   public void testWriteObject_withText_2() throws Exception
+   {
+      JSONObject jsonObject = new JSONObject().put( "#text", "['json','json']" )
+            .put( "string", "json" );
+      String expected = "<o>jsonjson<string type=\"string\">json</string></o>";
+      String xml = xmlSerializer.write( jsonObject );
+       assertXMLEqual( expected, xml );
+   }
+
    public void testWriteObjectArray() throws Exception
    {
       JSONArray jsonArray = JSONArray.fromObject( "[{\"name\":\"json\"}]" );
