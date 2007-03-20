@@ -14,26 +14,44 @@
  * limitations under the License.
  */
 
-package net.sf.json.util;
-
-import junit.framework.TestSuite;
+package net.sf.json.sample;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class AllTests extends TestSuite
+public class JavaIdentifierBean
 {
-   public static TestSuite suite() throws Exception
+   private String camelCase;
+   private String under_score;
+   private String whitespace;
+
+   public String getCamelCase()
    {
-      TestSuite suite = new TestSuite();
-      suite.setName( "util" );
+      return camelCase;
+   }
 
-      suite.addTest( new TestSuite( TestJavaIdentifierTransformer.class ) );
-      suite.addTest( new TestSuite( TestJSONUtils.class ) );
-      suite.addTest( new TestSuite( TestJSONTokener.class ) );
-      suite.addTest( new TestSuite( TestJSONBuilder.class ) );
-      suite.addTest( new TestSuite( TestJSONStringer.class ) );
+   public String getUnder_score()
+   {
+      return under_score;
+   }
 
-      return suite;
+   public String getWhitespace()
+   {
+      return whitespace;
+   }
+
+   public void setCamelCase( String camelCase )
+   {
+      this.camelCase = camelCase;
+   }
+
+   public void setUnder_score( String under_score )
+   {
+      this.under_score = under_score;
+   }
+
+   public void setWhitespace( String whitespace )
+   {
+      this.whitespace = whitespace;
    }
 }

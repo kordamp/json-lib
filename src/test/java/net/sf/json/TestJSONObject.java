@@ -37,6 +37,7 @@ import net.sf.json.sample.BeanFoo;
 import net.sf.json.sample.BeanWithFunc;
 import net.sf.json.sample.ClassBean;
 import net.sf.json.sample.EmptyBean;
+import net.sf.json.sample.JavaIdentifierBean;
 import net.sf.json.sample.ListingBean;
 import net.sf.json.sample.MappingBean;
 import net.sf.json.sample.NumberBean;
@@ -46,6 +47,7 @@ import net.sf.json.sample.PropertyBean;
 import net.sf.json.sample.ValueBean;
 import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
+import net.sf.json.util.JavaIdentifierTransformer;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -1320,6 +1322,36 @@ public class TestJSONObject extends TestCase
       for( int i = 0; i < keys.length; i++ ){
          assertNull( PropertyUtils.getProperty( obj, keys[i] ) );
       }
+   }
+
+   public void testToBean_withNonJavaIdentifier_camelCase_Strategy()
+   {
+      JSONObject json = new JSONObject().put( "camel case", "json" );
+      JSONUtils.setJavaIdentifierTransformer( JavaIdentifierTransformer.CAMEL_CASE );
+      JavaIdentifierBean bean = (JavaIdentifierBean) JSONObject.toBean( json,
+            JavaIdentifierBean.class );
+      assertNotNull( bean );
+      assertEquals( "json", bean.getCamelCase() );
+   }
+
+   public void testToBean_withNonJavaIdentifier_underScore_Strategy()
+   {
+      JSONObject json = new JSONObject().put( "under score", "json" );
+      JSONUtils.setJavaIdentifierTransformer( JavaIdentifierTransformer.UNDERSCORE );
+      JavaIdentifierBean bean = (JavaIdentifierBean) JSONObject.toBean( json,
+            JavaIdentifierBean.class );
+      assertNotNull( bean );
+      assertEquals( "json", bean.getUnder_score() );
+   }
+
+   public void testToBean_withNonJavaIdentifier_whitespace_Strategy()
+   {
+      JSONObject json = new JSONObject().put( " white space ", "json" );
+      JSONUtils.setJavaIdentifierTransformer( JavaIdentifierTransformer.WHITESPACE );
+      JavaIdentifierBean bean = (JavaIdentifierBean) JSONObject.toBean( json,
+            JavaIdentifierBean.class );
+      assertNotNull( bean );
+      assertEquals( "json", bean.getWhitespace() );
    }
 
    public void testToJSONArray()

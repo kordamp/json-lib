@@ -768,6 +768,9 @@ public final class JSONObject implements JSON
             ((JSONObject) bean).put( key, value, excludes, ignoreDefaultExcludes );
          }
       }else{
+         if( !JSONUtils.isJavaIdentifier( key )){
+            key = JSONUtils.convertToJavaIdentifier(key);
+         }
          PropertyUtils.setProperty( bean, key, value );
       }
    }

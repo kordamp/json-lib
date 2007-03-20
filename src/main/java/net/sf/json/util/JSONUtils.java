@@ -49,12 +49,16 @@ public final class JSONUtils
 {
    public static final String DOUBLE_QUOTE = "\"";
    public static final String SINGLE_QUOTE = "'";
+
+   private static final JavaIdentifierTransformer DEFAULT_JAVA_IDENTIFIER_TRANSFORMER = JavaIdentifierTransformer.CAMEL_CASE;
+
    private static RegexpMatcher FUNCTION_HEADER_MATCHER;
    private static final String FUNCTION_HEADER_PATTERN = "^function[ ]?\\(.*\\)$";
    private static RegexpMatcher FUNCTION_MACTHER;
    private static RegexpMatcher FUNCTION_PARAMS_MATCHER;
    private static final String FUNCTION_PARAMS_PATTERN = "^function[ ]?\\((.*?)\\)$";
    private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*\\)[ ]?\\{.*\\}$";
+   private static JavaIdentifierTransformer javaIdentifierTransformer;
 
    private static final MorpherRegistry morpherRegistry = new MorpherRegistry();
 
@@ -65,6 +69,21 @@ public final class JSONUtils
 
       // register standard morphers
       MorphUtils.registerStandardMorphers( morpherRegistry );
+   }
+
+   /**
+    * Transformes the string into a valid Java Identifier.<br>
+    * The default strategy is JavaIdentifierTransformer.CAMEL_CASE
+    *
+    * @throws JSONException if the string can not be transformed.
+    */
+   public static String convertToJavaIdentifier( String key )
+   {
+      JavaIdentifierTransformer jit = JSONUtils.javaIdentifierTransformer;
+      if( jit == null ){
+         jit = JSONUtils.DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
+      }
+      return jit.convertToJavaIdentifier( key );
    }
 
    /**
@@ -111,6 +130,11 @@ public final class JSONUtils
          return type;
       }
       return getInnerComponentType( type.getComponentType() );
+   }
+
+   public static JavaIdentifierTransformer getJavaIdentifierTransformer()
+   {
+      return javaIdentifierTransformer;
    }
 
    /**
@@ -255,6 +279,22 @@ public final class JSONUtils
    }
 
    /**
+    * Returns trus if str represents a valid Java identifier.
+    */
+   public static boolean isJavaIdentifier( String str )
+   {
+      if( str.length() == 0 || !Character.isJavaIdentifierStart( str.charAt( 0 ) ) ){
+         return false;
+      }
+      for( int i = 1; i < str.length(); i++ ){
+         if( !Character.isJavaIdentifierPart( str.charAt( i ) ) ){
+            return false;
+         }
+      }
+      return true;
+   }
+
+   /**
     * Tests if the obj is a javaScript null.
     */
    public static boolean isNull( Object obj )
@@ -324,6 +364,7 @@ public final class JSONUtils
       }
       return false;
    }
+
    /**
     * Tests if the String possibly represents a valid JSON String.<br>
     * Valid JSON strings are:
@@ -460,6 +501,12 @@ public final class JSONUtils
       }
       sb.append( '"' );
       return sb.toString();
+   }
+
+   public static void setJavaIdentifierTransformer(
+         JavaIdentifierTransformer javaIdentifierTransformer )
+   {
+      JSONUtils.javaIdentifierTransformer = javaIdentifierTransformer;
    }
 
    /**
