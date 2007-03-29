@@ -100,7 +100,6 @@ public class TestUserSubmitted extends TestCase
       array = jarray.get( 1 );
       assertTrue( array instanceof String );
 
-
       // submitted by Elizabeth Keogh <ekeogh[at]thoughtworks[dot]com>
 
       Map map = new HashMap();
@@ -149,5 +148,20 @@ public class TestUserSubmitted extends TestCase
       DynaBean jsonBean = (DynaBean) JSONObject.toBean( JSONObject.fromString( jsonString ) );
       assertNotNull( jsonBean );
       assertEquals( "wrong inventoryID", "", jsonBean.get( "inventoryID" ) );
+   }
+
+   public void testJsonWithNamespaceToDynaBean()
+   {
+      // submited by Girish Ipadi
+
+      String str = "{'version':'1.0'," + "'sid':'AmazonDocStyle',    'svcVersion':'0.1',"
+            + "'oid':'ItemLookup',    'params':[{            'ns:ItemLookup': {"
+            + "'ns:SubscriptionId':'0525E2PQ81DD7ZTWTK82'," + "'ns:Validate':'False',"
+            + "'ns:Request':{" + "'ns:ItemId':'SDGKJSHDGAJSGL'," + "'ns:IdType':'ASIN',"
+            + "'ns:ResponseGroup':'Large'" + "}," + "'ns:Request':{" + "'ns:ItemId':'XXXXXXXXXX',"
+            + "'ns:IdType':'ASIN'," + "'ns:ResponseGroup':'Large'" + "}" + "}" + "}]" + "} ";
+      JSONObject json = JSONObject.fromString( str );
+      Object bean = JSONObject.toBean( (JSONObject) json );
+      // TODO add assertions
    }
 }

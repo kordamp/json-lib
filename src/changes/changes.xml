@@ -9,8 +9,26 @@
    <body>
       <release
          version="1.1"
-         date="2007-03-19"
+         date="2007-03-29"
          desc="Release 1.1">
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Added NoopJavaIdentifierTransformer and made it the default
+            (performs no conversion).
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1690942">
+            XMLSerializer can not handle namespace declarations.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1690941">
+            [Regression] toBean() fails with namespaced properties.
+         </action>
          <action
             dev="Andres Almiray"
             type="add"

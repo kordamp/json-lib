@@ -39,6 +39,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.Writer;
@@ -493,12 +494,12 @@ public final class JSONObject implements JSON
       try{
          Map props = JSONUtils.getProperties( jsonObject );
          dynaBean = JSONUtils.newDynaBean( jsonObject );
-         for( Iterator entries = props.entrySet()
+         for( Iterator entries = jsonObject.names()
                .iterator(); entries.hasNext(); ){
-            Map.Entry entry = (Map.Entry) entries.next();
-            String key = (String) entry.getKey();
-            Class type = (Class) entry.getValue();
-            Object value = jsonObject.get( key );
+            String name = (String) entries.next();
+            String key = JSONUtils.convertToJavaIdentifier( name );
+            Class type = (Class) props.get( key );
+            Object value = jsonObject.get( name );
 
             if( !JSONUtils.isNull( value ) ){
                if( value instanceof JSONArray ){
@@ -578,12 +579,13 @@ public final class JSONObject implements JSON
             bean = beanClass.newInstance();
          }
          Map props = JSONUtils.getProperties( jsonObject );
-         for( Iterator entries = props.entrySet()
+         for( Iterator entries = jsonObject.names()
                .iterator(); entries.hasNext(); ){
-            Map.Entry entry = (Map.Entry) entries.next();
-            String key = (String) entry.getKey();
-            Class type = (Class) entry.getValue();
-            Object value = jsonObject.get( key );
+            String name = (String) entries.next();
+            String key = JSONUtils.convertToJavaIdentifier( name );
+            Class type = (Class) props.get( key );
+            Object value = jsonObject.get( name );
+
             PropertyDescriptor pd = PropertyUtils.getPropertyDescriptor( bean, key );
             if( pd != null && pd.getWriteMethod() == null ){
                log.warn( "Property '" + key + "' has no write method. SKIPPED." );
@@ -594,6 +596,8 @@ public final class JSONObject implements JSON
                if( value instanceof JSONArray ){
                   if( List.class.isAssignableFrom( pd.getPropertyType() ) ){
                      Class targetClass = findTargetClass( key, classMap );
+                     targetClass = targetClass == null ? findTargetClass( name, classMap )
+                           : targetClass;
                      // if targetClass is null the outcome will be a List of
                      // DynaBeans
                      // targetClass = (targetClass != null) ? targetClass :
@@ -632,10 +636,14 @@ public final class JSONObject implements JSON
                      Class targetClass = pd.getPropertyType();
                      if( targetClass == Object.class ){
                         targetClass = findTargetClass( key, classMap );
+                        targetClass = targetClass == null ? findTargetClass( name, classMap )
+                              : targetClass;
                      }
                      setProperty( bean, key, toBean( (JSONObject) value, targetClass, classMap ) );
                   }else{
                      Class targetClass = findTargetClass( key, classMap );
+                     targetClass = targetClass == null ? findTargetClass( name, classMap )
+                           : targetClass;
                      if( targetClass != null ){
                         setProperty( bean, key, toBean( (JSONObject) value, targetClass, classMap ) );
                      }else{
@@ -755,8 +763,8 @@ public final class JSONObject implements JSON
             ((JSONObject) bean).put( key, value, excludes, ignoreDefaultExcludes );
          }
       }else{
-         if( !JSONUtils.isJavaIdentifier( key )){
-            key = JSONUtils.convertToJavaIdentifier(key);
+         if( !JSONUtils.isJavaIdentifier( key ) ){
+            key = JSONUtils.convertToJavaIdentifier( key );
          }
          PropertyUtils.setProperty( bean, key, value );
       }

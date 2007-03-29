@@ -50,7 +50,7 @@ public final class JSONUtils
    public static final String DOUBLE_QUOTE = "\"";
    public static final String SINGLE_QUOTE = "'";
 
-   private static final JavaIdentifierTransformer DEFAULT_JAVA_IDENTIFIER_TRANSFORMER = JavaIdentifierTransformer.CAMEL_CASE;
+   private static final JavaIdentifierTransformer DEFAULT_JAVA_IDENTIFIER_TRANSFORMER = JavaIdentifierTransformer.NOOP;
 
    private static RegexpMatcher FUNCTION_HEADER_MATCHER;
    private static final String FUNCTION_HEADER_PATTERN = "^function[ ]?\\(.*\\)$";
@@ -153,7 +153,11 @@ public final class JSONUtils
       Map properties = new HashMap();
       for( Iterator keys = jsonObject.keys(); keys.hasNext(); ){
          String key = (String) keys.next();
-         properties.put( key, getTypeClass( jsonObject.get( key ) ) );
+         String parsedKey = key;
+         if( !JSONUtils.isJavaIdentifier( parsedKey )){
+            parsedKey = JSONUtils.convertToJavaIdentifier(key);
+         }
+         properties.put( parsedKey, getTypeClass( jsonObject.get( key ) ) );
       }
       return properties;
    }

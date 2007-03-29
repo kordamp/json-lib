@@ -21,6 +21,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
@@ -207,20 +211,31 @@ public class XMLSerializer
 
    private static boolean isArray( Element element )
    {
+      boolean isArray = false;
       String clazz = getClass( element );
       if( clazz != null && clazz.equals( JSONTypes.ARRAY ) ){
-         return true;
+         isArray = true;
       }else if( element.getAttributeCount() == 0 ){
-         return checkChildElementsOfArray( element );
+         isArray = checkChildElementsOfArray( element );
       }else if( element.getAttributeCount() == 1
             && (element.getAttribute( "class" ) != null || element.getAttribute( "type" ) != null) ){
-         return checkChildElementsOfArray( element );
+         isArray = checkChildElementsOfArray( element );
       }else if( element.getAttributeCount() == 2
             && (element.getAttribute( "class" ) != null && element.getAttribute( "type" ) != null) ){
-         return checkChildElementsOfArray( element );
+         isArray = checkChildElementsOfArray( element );
+      }
+      if( isArray ){
+         // check namespace
+         for( int j = 0; j < element.getNamespaceDeclarationCount(); j++ ){
+            String prefix = element.getNamespacePrefix( j );
+            String uri = element.getNamespaceURI( prefix );
+            if( !StringUtils.isBlank( uri ) ){
+               return false;
+            }
+         }
       }
 
-      return false;
+      return isArray;
    }
 
    private static boolean isNullObject( Element element )
@@ -266,6 +281,18 @@ public class XMLSerializer
          return JSONNull.getInstance();
       }
       JSONObject jsonObject = new JSONObject();
+
+      for( int j = 0; j < element.getNamespaceDeclarationCount(); j++ ){
+         String prefix = element.getNamespacePrefix( j );
+         String uri = element.getNamespaceURI( prefix );
+         if( StringUtils.isBlank( uri ) ){
+            continue;
+         }
+         if( !StringUtils.isBlank( prefix ) ){
+            prefix = ":" + prefix;
+         }
+         jsonObject.put( "@xmlns" + prefix, uri );
+      }
 
       // process attributes first
       int attrCount = element.getAttributeCount();
@@ -414,11 +441,15 @@ public class XMLSerializer
    /** flag to be tolerant for incomplete namespace prefixes */
    private boolean namespaceLenient;
 
+   private Map nameSpacesPerElement = new TreeMap();
+
    /** the name for an JSONObject Element */
    private String objectName;
 
    /** the name for the root Element */
    private String rootName;
+
+   private Map rootNameSpace = new TreeMap();
 
    /** flag for adding JSON types hints as attributes */
    private boolean typeHintsEnabled;
@@ -431,6 +462,46 @@ public class XMLSerializer
       setTypeHintsEnabled( true );
       setNamespaceLenient( false );
       setExpandableProperties( EMPTY_ARRAY );
+   }
+
+   public void addNamespace( String prefix, String uri )
+   {
+      addNamespace( prefix, uri, null );
+   }
+
+   public void addNamespace( String prefix, String uri, String elementName )
+   {
+      if( StringUtils.isBlank( uri ) ){
+         return;
+      }
+      if( prefix == null ){
+         prefix = "";
+      }
+      if( StringUtils.isBlank( elementName ) ){
+         rootNameSpace.put( prefix.trim(), uri.trim() );
+      }else{
+         Map nameSpaces = (Map) nameSpacesPerElement.get( elementName );
+         if( nameSpaces == null ){
+            nameSpaces = new TreeMap();
+            nameSpacesPerElement.put( elementName, nameSpaces );
+         }
+         nameSpaces.put( prefix, uri );
+      }
+   }
+
+   public void clearNamespaces()
+   {
+      rootNameSpace.clear();
+      nameSpacesPerElement.clear();
+   }
+
+   public void clearNamespaces( String elementName )
+   {
+      if( StringUtils.isBlank( elementName ) ){
+         rootNameSpace.clear();
+      }else{
+         nameSpacesPerElement.remove( elementName );
+      }
    }
 
    /**
@@ -490,6 +561,24 @@ public class XMLSerializer
       return typeHintsEnabled;
    }
 
+   public void removeNamespace( String prefix )
+   {
+      removeNamespace( prefix, null );
+   }
+
+   public void removeNamespace( String prefix, String elementName )
+   {
+      if( prefix == null ){
+         prefix = "";
+      }
+      if( StringUtils.isBlank( elementName ) ){
+         rootNameSpace.remove( prefix.trim() );
+      }else{
+         Map nameSpaces = (Map) nameSpacesPerElement.get( elementName );
+         nameSpaces.remove( prefix );
+      }
+   }
+
    /**
     * Sets the name used for JSONArray.<br>
     * Default is 'a'.
@@ -514,6 +603,33 @@ public class XMLSerializer
    public void setExpandableProperties( String[] expandableProperties )
    {
       this.expandableProperties = expandableProperties == null ? EMPTY_ARRAY : expandableProperties;
+   }
+
+   public void setNamespace( String prefix, String uri )
+   {
+      setNamespace( prefix, uri, null );
+   }
+
+   public void setNamespace( String prefix, String uri, String elementName )
+   {
+      if( StringUtils.isBlank( uri ) ){
+         return;
+      }
+      if( prefix == null ){
+         prefix = "";
+      }
+      if( StringUtils.isBlank( elementName ) ){
+         rootNameSpace.clear();
+         rootNameSpace.put( prefix.trim(), uri.trim() );
+      }else{
+         Map nameSpaces = (Map) nameSpacesPerElement.get( elementName );
+         if( nameSpaces == null ){
+            nameSpaces = new TreeMap();
+            nameSpacesPerElement.put( elementName, nameSpaces );
+         }
+         nameSpaces.clear();
+         nameSpaces.put( prefix, uri );
+      }
    }
 
    /**
@@ -597,15 +713,43 @@ public class XMLSerializer
          }else{
             root = processJSONObject( jsonObject,
                   newElement( getRootName() == null ? getObjectName() : getRootName() ),
-                  expandableProperties );
+                  expandableProperties, true );
          }
          Document doc = new Document( root );
          return writeDocument( doc, encoding );
       }
    }
 
+   private void addNameSpaceToElement( Element element )
+   {
+      String elementName = null;
+      if( element instanceof CustomElement ){
+         elementName = ((CustomElement) element).getQName();
+      }else{
+         elementName = element.getQualifiedName();
+      }
+      Map nameSpaces = (Map) nameSpacesPerElement.get( elementName );
+      if( nameSpaces != null && !nameSpaces.isEmpty() ){
+         setNamespaceLenient( true );
+         for( Iterator entries = nameSpaces.entrySet()
+               .iterator(); entries.hasNext(); ){
+            Map.Entry entry = (Map.Entry) entries.next();
+            String prefix = (String) entry.getKey();
+            String uri = (String) entry.getValue();
+            if( StringUtils.isBlank( prefix ) ){
+               element.setNamespaceURI( uri );
+            }else{
+               element.addNamespaceDeclaration( prefix, uri );
+            }
+         }
+      }
+   }
+
    private Element newElement( String name )
    {
+      if( name.indexOf( ':' ) != -1 ){
+         namespaceLenient = true;
+      }
       return namespaceLenient ? new CustomElement( name ) : new Element( name );
    }
 
@@ -621,7 +765,7 @@ public class XMLSerializer
    }
 
    private Element processJSONObject( JSONObject jsonObject, Element root,
-         String[] expandableProperties )
+         String[] expandableProperties, boolean isRoot )
    {
       if( jsonObject.isNullObject() ){
          root.addAttribute( new Attribute( "null", "true" ) );
@@ -630,13 +774,47 @@ public class XMLSerializer
          return root;
       }
 
+      if( isRoot ){
+         if( !rootNameSpace.isEmpty() ){
+            setNamespaceLenient( true );
+            for( Iterator entries = rootNameSpace.entrySet()
+                  .iterator(); entries.hasNext(); ){
+               Map.Entry entry = (Map.Entry) entries.next();
+               String prefix = (String) entry.getKey();
+               String uri = (String) entry.getValue();
+               if( StringUtils.isBlank( prefix ) ){
+                  root.setNamespaceURI( uri );
+               }else{
+                  root.addNamespaceDeclaration( prefix, uri );
+               }
+            }
+         }
+      }
+
+      addNameSpaceToElement( root );
+
       Object[] names = jsonObject.names()
             .toArray();
+      Arrays.sort( names );
       Element element = null;
       for( int i = 0; i < names.length; i++ ){
          String name = (String) names[i];
          Object value = jsonObject.get( name );
-         if( name.startsWith( "@" ) ){
+         if( name.startsWith( "@xmlns" ) ){
+            setNamespaceLenient( true );
+            int colon = name.indexOf( ':' );
+            if( colon == -1 ){
+               // do not override if already defined by nameSpaceMaps
+               if( StringUtils.isBlank( root.getNamespaceURI() ) ){
+                  root.setNamespaceURI( String.valueOf( value ) );
+               }
+            }else{
+               String prefix = name.substring( colon + 1 );
+               if( StringUtils.isBlank( root.getNamespaceURI( prefix ) ) ){
+                  root.addNamespaceDeclaration( prefix, String.valueOf( value ) );
+               }
+            }
+         }else if( name.startsWith( "@" ) ){
             root.addAttribute( new Attribute( name.substring( 1 ), String.valueOf( value ) ) );
          }else if( name.equals( "#text" ) ){
             if( value instanceof JSONArray ){
@@ -660,11 +838,13 @@ public class XMLSerializer
                }else{
                   element = processJSONValue( item, root, element, expandableProperties );
                }
+               addNameSpaceToElement( element );
                root.appendChild( element );
             }
          }else{
             element = newElement( name );
             element = processJSONValue( value, root, element, expandableProperties );
+            addNameSpaceToElement( element );
             root.appendChild( element );
          }
       }
@@ -711,7 +891,7 @@ public class XMLSerializer
          if( isTypeHintsEnabled() ){
             target.addAttribute( new Attribute( "class", JSONTypes.OBJECT ) );
          }
-         target = processJSONObject( (JSONObject) value, target, expandableProperties );
+         target = processJSONObject( (JSONObject) value, target, expandableProperties, false );
       }else if( JSONUtils.isNull( value ) ){
          if( isTypeHintsEnabled() ){
             target.addAttribute( new Attribute( "class", JSONTypes.OBJECT ) );
@@ -817,6 +997,13 @@ public class XMLSerializer
             writeRaw( ">" );
          }else{
             super.writeEndTag( element );
+         }
+      }
+
+      protected void writeNamespaceDeclaration( String prefix, String uri ) throws IOException
+      {
+         if( !StringUtils.isBlank( uri ) ){
+            super.writeNamespaceDeclaration( prefix, uri );
          }
       }
 

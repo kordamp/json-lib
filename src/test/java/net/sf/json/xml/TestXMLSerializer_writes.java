@@ -199,7 +199,30 @@ public class TestXMLSerializer_writes extends XMLTestCase
       String expected = "<o><ns:name type=\"string\">json</ns:name></o>";
       xmlSerializer.setNamespaceLenient( true );
       String xml = xmlSerializer.write( jsonObject );
-      assertTrue( xml.trim().endsWith( expected ));
+      assertTrue( xml.trim()
+            .endsWith( expected ) );
+   }
+
+   public void testWriteObject_withNamespaces() throws Exception
+   {
+      JSONObject jsonObject = JSONObject.fromObject( "{\"ns:name\":\"json\"}" );
+      String expected = "<o xmlns=\"http://json.org\" "
+            + "xmlns:ns=\"http://json.org/ns-schema\"><ns:name type=\"string\" >json</ns:name></o>";
+      xmlSerializer.setNamespace( null, "http://json.org" );
+      xmlSerializer.addNamespace( "ns", "http://json.org/ns-schema" );
+      String xml = xmlSerializer.write( jsonObject );
+      assertXMLEqual( expected, xml );
+   }
+
+   public void testWriteObject_withNamespaces_element() throws Exception
+   {
+      JSONObject jsonObject = JSONObject.fromObject( "{\"ns:name\":\"json\"}" );
+      String expected = "<o><ns:name xmlns=\"http://json.org\" "
+            + "xmlns:ns=\"http://json.org/ns-schema\" type=\"string\" >json</ns:name></o>";
+      xmlSerializer.setNamespace( null, "http://json.org", "ns:name" );
+      xmlSerializer.addNamespace( "ns", "http://json.org/ns-schema", "ns:name" );
+      String xml = xmlSerializer.write( jsonObject );
+      assertXMLEqual( expected, xml );
    }
 
    public void testWriteObject_withText() throws Exception
@@ -217,7 +240,7 @@ public class TestXMLSerializer_writes extends XMLTestCase
             .put( "string", "json" );
       String expected = "<o>jsonjson<string type=\"string\">json</string></o>";
       String xml = xmlSerializer.write( jsonObject );
-       assertXMLEqual( expected, xml );
+      assertXMLEqual( expected, xml );
    }
 
    public void testWriteObjectArray() throws Exception
@@ -233,6 +256,19 @@ public class TestXMLSerializer_writes extends XMLTestCase
       JSONArray jsonArray = JSONArray.fromObject( "['1','2']" );
       String expected = "<a><e type=\"string\">1</e><e type=\"string\">2</e></a>";
       String xml = xmlSerializer.write( jsonArray );
+      assertXMLEqual( expected, xml );
+   }
+
+   public void testWriteWithNamespace() throws Exception
+   {
+      JSONObject jsonObject = new JSONObject().put( "@xmlns", "http://json.org/json/1.0" )
+            .put( "@xmlns:ns", "http://www.w3.org/2001/XMLSchema-instance" )
+            .put( "ns:string", "json" )
+            .put( "ns:number", "1" );
+      String expected = "<o xmlns=\"http://json.org/json/1.0\""
+            + " xmlns:ns=\"http://www.w3.org/2001/XMLSchema-instance\">"
+            + "<ns:number type=\"string\">1</ns:number><ns:string type=\"string\">json</ns:string></o>";
+      String xml = xmlSerializer.write( jsonObject );
       assertXMLEqual( expected, xml );
    }
 

@@ -374,4 +374,26 @@ public class TestXMLSerializer_reads extends TestCase
       JSON expected = JSONArray.fromObject( "[\"1.1\",\"2.2\",\"3\"]" );
       Assertions.assertEquals( expected, actual );
    }
+
+   public void testReadWithNamespace_array()
+   {
+      String xml = "<a xmlns=\"http://json.org/json/1.0\" xmlns:ns=\"http://www.w3.org/2001/XMLSchema-instance\"><ns:string>json</ns:string><ns:string>1</ns:string></a>";
+      JSON actual = XMLSerializer.read( xml );
+      JSONObject expected = new JSONObject().put( "@xmlns", "http://json.org/json/1.0" )
+            .put( "@xmlns:ns", "http://www.w3.org/2001/XMLSchema-instance" )
+            .put( "ns:string", "json" )
+            .put( "ns:string", "1" );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testReadWithNamespace_object()
+   {
+      String xml = "<o xmlns=\"http://json.org/json/1.0\" xmlns:ns=\"http://www.w3.org/2001/XMLSchema-instance\"><ns:string>json</ns:string><ns:number>1</ns:number></o>";
+      JSON actual = XMLSerializer.read( xml );
+      JSONObject expected = new JSONObject().put( "@xmlns", "http://json.org/json/1.0" )
+            .put( "@xmlns:ns", "http://www.w3.org/2001/XMLSchema-instance" )
+            .put( "ns:string", "json" )
+            .put( "ns:number", "1" );
+      Assertions.assertEquals( expected, actual );
+   }
 }

@@ -37,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 public abstract class JavaIdentifierTransformer
 {
    public static final JavaIdentifierTransformer CAMEL_CASE = new CamelCaseJavaIdentifierTransformer();
+   public static final JavaIdentifierTransformer NOOP = new NoopJavaIdentifierTransformer();
    public static final JavaIdentifierTransformer STRICT = new StrictJavaIdentifierTransformer();
    public static final JavaIdentifierTransformer UNDERSCORE = new UnderscoreJavaIdentifierTransformer();
    public static final JavaIdentifierTransformer WHITESPACE = new WhiteSpaceJavaIdentifierTransformer();
@@ -90,6 +91,14 @@ public abstract class JavaIdentifierTransformer
             pos++;
          }
          return buf.toString();
+      }
+   }
+
+   private static final class NoopJavaIdentifierTransformer extends JavaIdentifierTransformer
+   {
+      public String convertToJavaIdentifier( String str )
+      {
+         return str;
       }
    }
 
