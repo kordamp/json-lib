@@ -171,9 +171,20 @@
 
        <a name="xml"/>
        <subsection name="Working with XML">
+       <p>Working with XML has become easier since version 1.1. Transforming JSONObjects and JSONArrays from and to XML 
+            is done through the XMLSerializer.</p>
           <subsection name="From JSON to XML">
-            <p>Transforming JSONObjects and JSONArrays to XML is as simple as a call to <code>XMLSerializer.write()</code>.<br/>
-            XMLSerializer will append special attributes to each xml element for easing the transformation back to JSON.</p>
+            <p>Writing to JSON to XML is as simple as calling <code>XMLSerializer.write()</code>, but there are a lot 
+            of options that you may configure to get better control of the XML output. For example you may change the
+            default names for the root element ('o' if object, 'a' if array), the default name for object (an object inside
+            an array is "anonymous"), the default name for array (for the same reason as object), the default name for
+            element (array items have no name). If you'd like to output namescape information but your JSON does not
+            includes it, no problem, you have 8 methods that will let you register and manage namespaces; namespaces
+            defined this way have precedence on any namespace declaration that may be inside the JSON. By default
+            XMLSerializer will append special attributes to each xml element for easing the transformation back to JSON
+            but you may configure it to skip appending those attributes. Any property on a JSONObject that begins
+            with '@' will be treated as an attribute, any property named '#text' will be treated as a Text node.</p>
+            <p>Please review the javadoc for XMLSerializer to know more about the configurable options.</p>
    <table>
       <tr>
          <th>Code</th>
@@ -224,7 +235,10 @@
           </subsection>
           <subsection name="From XML to JSON">
              <p>XMLSerializer treats each element as a <code>string</code> unless a type parameter is specified.<br/>
-             JSONFunction needs an additional parameter that specifies that function's params.</p>
+             JSONFunction needs an additional parameter that specifies that function's params.<br/>All xml attributes
+             will have the prefix '@' and text nodes will have the property name '#text'. XMLSerializer supports
+             the rules outlined at 
+             <a href="http://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html">Converting Between XML and JSON</a></p>
    <table>
       <tr>
 	 <th>XML input</th>
@@ -241,7 +255,7 @@
    </textarea>
          </td><td valign="top">
 		 <textarea cols="70" rows="3" class="java:nocontrols:nogutter" name="srccode">
-   JSONArray json = XMLSerializer.read( xml );
+   JSONArray json = (JSONArray) XMLSerializer.read( xml );
    System.out.println( json );
    // prints [function(i,j){ return matrix[i][j]; }]
    </textarea>

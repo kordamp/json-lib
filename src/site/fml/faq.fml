@@ -45,5 +45,30 @@
       </p></answer>
     </faq>
 
+    <faq id="maven2">
+      <question>
+        <strong>How do I configure Json-lib as a dependency with Maven2 ?</strong>
+      </question>
+      <answer><p>As Json-lib comes in two flavors (for the time being) you'll have to add &lt;classifier&gt; to
+      your dependency declaration, like the following:
+      </p><p><textarea name="srcode" class="xml:nocontrols:nogutter" cols="80" rows="6">
+<dependency> 
+   <groupId>net.sf.json</groupId> 
+   <artifactId>json-lib</artifactId> 
+   <version>1.0</version> 
+   <classifier>jdk15</classifier> 
+</dependency></textarea></p></answer>
+    </faq>
+    
+    <faq id="enum">
+      <question>
+        <strong>How can I transform a JSON string into a bean with an Enum property ?</strong>
+      </question>
+      <answer><p>You'll have to register a Morpher that can handle your Enum. Json-lib conveniently includes
+      such a Morpher, so the only thing left to do is configure it and register the Morpher into the MorpherRegistry
+      as follows <code>JSONUtils.getMorpherRegistry().registerMorpher( new EnumMorpher( MyEnum.class ) ); </code>
+      </p></answer>
+    </faq>
+
   </part>
 </faqs>

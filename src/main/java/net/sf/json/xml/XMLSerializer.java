@@ -431,29 +431,37 @@ public class XMLSerializer
          }
       }
    }
+
    /** the name for an JSONArray Element */
    private String arrayName;
    /** the name for an JSONArray's element Element */
    private String elementName;
    /** list of properties to be expanded from child to parent */
    private String[] expandableProperties;
-
    /** flag to be tolerant for incomplete namespace prefixes */
    private boolean namespaceLenient;
-
+   /** Map of namespaces per element */
    private Map nameSpacesPerElement = new TreeMap();
-
    /** the name for an JSONObject Element */
    private String objectName;
-
    /** the name for the root Element */
    private String rootName;
-
+   /** Map of namespaces for root element */
    private Map rootNameSpace = new TreeMap();
-
    /** flag for adding JSON types hints as attributes */
    private boolean typeHintsEnabled;
 
+   /**
+    * Creates a new XMLSerializer with default options.<br>
+    * <ul>
+    * <li><code>objectName</code>: 'o'</li>
+    * <li><code>arrayName</code>: 'a'</li>
+    * <li><code>elementName</code>: 'e'</li>
+    * <li><code>typeHinstEnabled</code>: true</li>
+    * <li><code>namespaceLenient</code>: false</li>
+    * <li><code>expandableProperties</code>: []</li>
+    * </ul>
+    */
    public XMLSerializer()
    {
       setObjectName( "o" );
@@ -464,11 +472,26 @@ public class XMLSerializer
       setExpandableProperties( EMPTY_ARRAY );
    }
 
+   /**
+    * Adds a namespace declaration to the root element.
+    *
+    * @param prefix namespace prefix
+    * @param uri namespace uri
+    */
    public void addNamespace( String prefix, String uri )
    {
       addNamespace( prefix, uri, null );
    }
 
+   /**
+    * Adds a namespace declaration to an element.<br>
+    * If the elementName param is null or blank, the namespace declaration will
+    * be added to the root element.
+    *
+    * @param prefix namespace prefix
+    * @param uri namespace uri
+    * @param elementName name of target element
+    */
    public void addNamespace( String prefix, String uri, String elementName )
    {
       if( StringUtils.isBlank( uri ) ){
@@ -489,12 +512,22 @@ public class XMLSerializer
       }
    }
 
+   /**
+    * Removes all namespaces declarations (from root an elements).
+    */
    public void clearNamespaces()
    {
       rootNameSpace.clear();
       nameSpacesPerElement.clear();
    }
 
+   /**
+    * Removes all namespace declarations from an element.<br>
+    * If the elementName param is null or blank, the declarations will be
+    * removed from the root element.
+    *
+    * @param elementName name of target element
+    */
    public void clearNamespaces( String elementName )
    {
       if( StringUtils.isBlank( elementName ) ){
@@ -561,11 +594,24 @@ public class XMLSerializer
       return typeHintsEnabled;
    }
 
+   /**
+    * Removes a namespace from the root element.
+    *
+    * @param prefix namespace prefix
+    */
    public void removeNamespace( String prefix )
    {
       removeNamespace( prefix, null );
    }
 
+   /**
+    * Removes a namespace from the root element.<br>
+    * If the elementName is null or blank, the namespace will be removed from
+    * the root element.
+    *
+    * @param prefix namespace prefix
+    * @param elementName name of target element
+    */
    public void removeNamespace( String prefix, String elementName )
    {
       if( prefix == null ){
@@ -605,11 +651,27 @@ public class XMLSerializer
       this.expandableProperties = expandableProperties == null ? EMPTY_ARRAY : expandableProperties;
    }
 
+   /**
+    * Sets the namespace declaration to the root element.<br>
+    * Any previous values are discarded.
+    *
+    * @param prefix namespace prefix
+    * @param uri namespace uri
+    */
    public void setNamespace( String prefix, String uri )
    {
       setNamespace( prefix, uri, null );
    }
 
+   /**
+    * Adds a namespace declaration to an element.<br>
+    * Any previous values are discarded. If the elementName param is null or
+    * blank, the namespace declaration will be added to the root element.
+    *
+    * @param prefix namespace prefix
+    * @param uri namespace uri
+    * @param elementName name of target element
+    */
    public void setNamespace( String prefix, String uri, String elementName )
    {
       if( StringUtils.isBlank( uri ) ){

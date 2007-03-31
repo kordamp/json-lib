@@ -47,7 +47,9 @@ import org.apache.commons.beanutils.DynaBean;
  */
 public final class JSONUtils
 {
+   /** Constant for char " */
    public static final String DOUBLE_QUOTE = "\"";
+   /** Constant for char ' */
    public static final String SINGLE_QUOTE = "'";
 
    private static final JavaIdentifierTransformer DEFAULT_JAVA_IDENTIFIER_TRANSFORMER = JavaIdentifierTransformer.NOOP;
@@ -69,21 +71,18 @@ public final class JSONUtils
 
       // register standard morphers
       MorphUtils.registerStandardMorphers( morpherRegistry );
+      javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
    }
 
    /**
     * Transformes the string into a valid Java Identifier.<br>
-    * The default strategy is JavaIdentifierTransformer.CAMEL_CASE
+    * The default strategy is JavaIdentifierTransformer.NOOP
     *
     * @throws JSONException if the string can not be transformed.
     */
    public static String convertToJavaIdentifier( String key )
    {
-      JavaIdentifierTransformer jit = JSONUtils.javaIdentifierTransformer;
-      if( jit == null ){
-         jit = JSONUtils.DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
-      }
-      return jit.convertToJavaIdentifier( key );
+      return JSONUtils.javaIdentifierTransformer.transformToJavaIdentifier( key );
    }
 
    /**
@@ -132,6 +131,10 @@ public final class JSONUtils
       return getInnerComponentType( type.getComponentType() );
    }
 
+   /**
+    * Returns the JavaIdentifierTransformer strategy currently configured.<br>
+    * Default value is JavaIdentifierTransformer.NOOP;
+    */
    public static JavaIdentifierTransformer getJavaIdentifierTransformer()
    {
       return javaIdentifierTransformer;
@@ -154,8 +157,8 @@ public final class JSONUtils
       for( Iterator keys = jsonObject.keys(); keys.hasNext(); ){
          String key = (String) keys.next();
          String parsedKey = key;
-         if( !JSONUtils.isJavaIdentifier( parsedKey )){
-            parsedKey = JSONUtils.convertToJavaIdentifier(key);
+         if( !JSONUtils.isJavaIdentifier( parsedKey ) ){
+            parsedKey = JSONUtils.convertToJavaIdentifier( key );
          }
          properties.put( parsedKey, getTypeClass( jsonObject.get( key ) ) );
       }
@@ -507,10 +510,16 @@ public final class JSONUtils
       return sb.toString();
    }
 
+   /**
+    * Sets the JavaIdentifierTransformer strategy to use.<br>
+    * If the parameter is null, JavaIdentifierTransformer.NOOP will be used
+    * instead.
+    */
    public static void setJavaIdentifierTransformer(
          JavaIdentifierTransformer javaIdentifierTransformer )
    {
-      JSONUtils.javaIdentifierTransformer = javaIdentifierTransformer;
+      JSONUtils.javaIdentifierTransformer = javaIdentifierTransformer == null ? DEFAULT_JAVA_IDENTIFIER_TRANSFORMER
+            : javaIdentifierTransformer;
    }
 
    /**

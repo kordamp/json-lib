@@ -9,8 +9,13 @@
    <body>
       <release
          version="1.1"
-         date="2007-03-29"
+         date="2007-03-31"
          desc="Release 1.1">
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Updated FAQ and Getting Started guide.
+         </action>
          <action
             dev="Andres Almiray"
             type="update">
@@ -74,7 +79,7 @@
             dev="Andres Almiray"
             type="fix"
             issue="1670146">
-            [Compatibility] ConstructorJSONObject( String) does not work
+            [Compatibility] Constructor JSONObject( String) does not work
          </action>
       </release>
       <release

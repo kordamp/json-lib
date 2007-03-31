@@ -19,12 +19,14 @@ package net.sf.json;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.json.sample.JSONTestBean;
 
 import org.apache.commons.beanutils.DynaBean;
+import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -145,12 +147,12 @@ public class TestUserSubmitted extends TestCase
 
       JSONObject jsonObject = JSONObject.fromObject( new JSONTestBean() );
       String jsonString = jsonObject.toString();
-      DynaBean jsonBean = (DynaBean) JSONObject.toBean( JSONObject.fromString( jsonString ) );
+      DynaBean jsonBean = (DynaBean) JSONObject.toBean( JSONObject.fromObject( jsonString ) );
       assertNotNull( jsonBean );
       assertEquals( "wrong inventoryID", "", jsonBean.get( "inventoryID" ) );
    }
 
-   public void testJsonWithNamespaceToDynaBean()
+   public void testJsonWithNamespaceToDynaBean() throws Exception
    {
       // submited by Girish Ipadi
 
@@ -160,8 +162,13 @@ public class TestUserSubmitted extends TestCase
             + "'ns:Request':{" + "'ns:ItemId':'SDGKJSHDGAJSGL'," + "'ns:IdType':'ASIN',"
             + "'ns:ResponseGroup':'Large'" + "}," + "'ns:Request':{" + "'ns:ItemId':'XXXXXXXXXX',"
             + "'ns:IdType':'ASIN'," + "'ns:ResponseGroup':'Large'" + "}" + "}" + "}]" + "} ";
-      JSONObject json = JSONObject.fromString( str );
+      JSONObject json = JSONObject.fromObject( str );
       Object bean = JSONObject.toBean( (JSONObject) json );
-      // TODO add assertions
+      assertNotNull( bean );
+      List params = (List) PropertyUtils.getProperty( bean, "params" );
+      DynaBean param0 = (DynaBean) params.get( 0 );
+      DynaBean itemLookup = (DynaBean) param0.get( "ns:ItemLookup" );
+      assertNotNull( itemLookup );
+      assertEquals( "0525E2PQ81DD7ZTWTK82", itemLookup.get( "ns:SubscriptionId" ) );
    }
 }

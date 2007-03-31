@@ -22,28 +22,39 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Transforms a string into a valid Java identifier.<br>
- * There are four predefined strategies:
+ * There are five predefined strategies:
  * <ul>
+ * <li>NOOP: does not perform transformation.</li>
  * <li>CAMEL_CASE: follows the camel case convention, deletes non
  * JavaIndentifierPart chars.</li>
  * <li>UNDERSCORE: transform whitespace and non JavaIdentifierPart chars to
  * '_'.</li>
  * <li>WHITESPACE: deletes whitespace and non JavaIdentifierPart chars.</li>
- * <li>STRICT: always throws a JSONException, do not performs transformation.</li>
+ * <li>STRICT: always throws a JSONException, does not perform transformation.</li>
  * </ul>
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class JavaIdentifierTransformer
 {
+   /** CamelCase transformer 'camel case' => 'camelCase' */
    public static final JavaIdentifierTransformer CAMEL_CASE = new CamelCaseJavaIdentifierTransformer();
+   /** Noop transformer '@invalid' => '@invalid' */
    public static final JavaIdentifierTransformer NOOP = new NoopJavaIdentifierTransformer();
+   /** Strict transformer '@invalid' => JSONException */
    public static final JavaIdentifierTransformer STRICT = new StrictJavaIdentifierTransformer();
+   /** Underscore transformer 'under score' => 'under_score' */
    public static final JavaIdentifierTransformer UNDERSCORE = new UnderscoreJavaIdentifierTransformer();
+   /** Whitespace transformer 'white space' => 'whitespace' */
    public static final JavaIdentifierTransformer WHITESPACE = new WhiteSpaceJavaIdentifierTransformer();
 
-   public abstract String convertToJavaIdentifier( String str );
+   public abstract String transformToJavaIdentifier( String str );
 
+   /**
+    * Removes all non JavaIdentifier chars from the start of the string.
+    *
+    * @throws JSONException if the resulting string has zero length.
+    */
    protected final String shaveOffNonJavaIdentifierStartChars( String str )
    {
       String str2 = str;
@@ -64,7 +75,7 @@ public abstract class JavaIdentifierTransformer
 
    private static final class CamelCaseJavaIdentifierTransformer extends JavaIdentifierTransformer
    {
-      public String convertToJavaIdentifier( String str )
+      public String transformToJavaIdentifier( String str )
       {
          if( str == null ){
             return null;
@@ -96,7 +107,7 @@ public abstract class JavaIdentifierTransformer
 
    private static final class NoopJavaIdentifierTransformer extends JavaIdentifierTransformer
    {
-      public String convertToJavaIdentifier( String str )
+      public String transformToJavaIdentifier( String str )
       {
          return str;
       }
@@ -104,14 +115,14 @@ public abstract class JavaIdentifierTransformer
 
    private static final class StrictJavaIdentifierTransformer extends JavaIdentifierTransformer
    {
-      public String convertToJavaIdentifier( String str )
+      public String transformToJavaIdentifier( String str )
       {
          throw new JSONException( "'" + str + "' is not a valid Java identifier." );
       }
    }
    private static final class UnderscoreJavaIdentifierTransformer extends JavaIdentifierTransformer
    {
-      public String convertToJavaIdentifier( String str )
+      public String transformToJavaIdentifier( String str )
       {
          if( str == null ){
             return null;
@@ -143,7 +154,7 @@ public abstract class JavaIdentifierTransformer
    }
    private static final class WhiteSpaceJavaIdentifierTransformer extends JavaIdentifierTransformer
    {
-      public String convertToJavaIdentifier( String str )
+      public String transformToJavaIdentifier( String str )
       {
          if( str == null ){
             return null;
