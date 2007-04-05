@@ -8,6 +8,29 @@
    </properties>
    <body>
       <release
+         version="N/A"
+         date="2007-04-06"
+         desc="Current development release">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1693658">
+            Optional space trimming when reading XML.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1693654">
+            Optional removal of namespace prefixes when reading XML.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1693652">
+            Skip namespaces when reading from XML.
+         </action>
+      </release>
+      <release
          version="1.1"
          date="2007-03-31"
          desc="Release 1.1">
@@ -79,7 +102,8 @@
             dev="Andres Almiray"
             type="fix"
             issue="1670146">
-            [Compatibility] Constructor JSONObject( String) does not work
+            [Compatibility] Constructor JSONObject( String) does not
+            work
          </action>
       </release>
       <release
