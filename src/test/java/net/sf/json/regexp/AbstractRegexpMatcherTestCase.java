@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,22 +21,18 @@ import junit.framework.TestCase;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public abstract class AbstractRegexpMatcherTestCase extends TestCase
-{
-   public AbstractRegexpMatcherTestCase( String name )
-   {
+public abstract class AbstractRegexpMatcherTestCase extends TestCase {
+   public AbstractRegexpMatcherTestCase( String name ) {
       super( name );
    }
 
-   public void testGetGroupIfMatches()
-   {
+   public void testGetGroupIfMatches() {
       RegexpMatcher regexpMatcher = getRegexpMatcher( "[a-z]*([0-9]+)[a-z]*" );
       assertEquals( "123", regexpMatcher.getGroupIfMatches( "abc123edf", 1 ) );
       assertEquals( "", regexpMatcher.getGroupIfMatches( "abcedf", 1 ) );
    }
 
-   public void testMatches()
-   {
+   public void testMatches() {
       assertTrue( getRegexpMatcher( ".*" ).matches( "everything" ) );
       assertTrue( getRegexpMatcher( "^json$" ).matches( "json" ) );
       assertFalse( getRegexpMatcher( "^json$" ).matches( "json " ) );

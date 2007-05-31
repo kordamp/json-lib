@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package net.sf.json.xml;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public interface JSONTypes
-{
+public interface JSONTypes {
    String ARRAY = "array";
    String BOOLEAN = "boolean";
    String FLOAT = "float";

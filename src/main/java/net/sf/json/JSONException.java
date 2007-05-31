@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,31 +19,26 @@ import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
  * The JSONException is thrown when things are amiss.
- *
+ * 
  * @author JSON.org
  * @version 4
  */
-public class JSONException extends NestableRuntimeException
-{
+public class JSONException extends NestableRuntimeException {
    private static final long serialVersionUID = 6995087065217051815L;
 
-   public JSONException()
-   {
+   public JSONException() {
       super();
    }
 
-   public JSONException( String msg )
-   {
+   public JSONException( String msg ) {
       super( msg, null );
    }
 
-   public JSONException( String msg, Throwable cause )
-   {
+   public JSONException( String msg, Throwable cause ) {
       super( msg, cause );
    }
 
-   public JSONException( Throwable cause )
-   {
+   public JSONException( Throwable cause ) {
       super( (cause == null ? null : cause.toString()), cause );
    }
 }

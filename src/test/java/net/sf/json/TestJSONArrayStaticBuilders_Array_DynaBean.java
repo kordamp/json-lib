@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,20 +26,16 @@ import net.sf.ezmorph.bean.MorphDynaClass;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONArrayStaticBuilders_Array_DynaBean extends
-      AbstractJSONArrayStaticBuildersTestCase
-{
-   public static void main( String[] args )
-   {
+      AbstractJSONArrayStaticBuildersTestCase {
+   public static void main( String[] args ) {
       junit.textui.TestRunner.run( TestJSONArrayStaticBuilders_Array_DynaBean.class );
    }
 
-   public TestJSONArrayStaticBuilders_Array_DynaBean( String name )
-   {
+   public TestJSONArrayStaticBuilders_Array_DynaBean( String name ) {
       super( name );
    }
 
-   protected Object getSource()
-   {
+   protected Object getSource() {
       Map map = new HashMap();
       String[] props = getProperties();
       for( int i = 0; i < props.length; i++ ){
@@ -56,8 +52,7 @@ public class TestJSONArrayStaticBuilders_Array_DynaBean extends
          }
          dynaBean.set( "class", Object.class );
          dynaBean.set( "pexcluded", "" );
-      }
-      catch( Exception e ){
+      }catch( Exception e ){
          throw new RuntimeException( e );
       }
 

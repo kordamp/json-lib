@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,22 +34,24 @@ import org.apache.commons.beanutils.PropertyUtils;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class TestJSONSerializer extends TestCase
-{
-   public static void main( String[] args )
-   {
+public class TestJSONSerializer extends TestCase {
+   public static void main( String[] args ) {
       junit.textui.TestRunner.run( TestJSONSerializer.class );
    }
 
    private JSONSerializer jsonSerializer = new JSONSerializer();
 
-   public TestJSONSerializer( String name )
-   {
+   public TestJSONSerializer( String name ) {
       super( name );
    }
 
-   public void testToJava_JSONArray_1()
-   {
+   protected void setUp() throws Exception {
+      super.setUp();
+      JsonConfig.getInstance()
+            .reset();
+   }
+
+   public void testToJava_JSONArray_1() {
       setName( "JSONArray('[]') -&gt; ToJava[default]" );
       JSONArray jsonArray = JSONArray.fromObject( "[]" );
       Object java = jsonSerializer.toJava( jsonArray );
@@ -59,8 +61,7 @@ public class TestJSONSerializer extends TestCase
       assertEquals( 0, list.size() );
    }
 
-   public void testToJava_JSONArray_2()
-   {
+   public void testToJava_JSONArray_2() {
       setName( "JSONArray('[]') -&gt; ToJava[arrayMode:OBJECT_ARRAY]" );
       JSONArray jsonArray = JSONArray.fromObject( "[]" );
       jsonSerializer.setArrayMode( JSONSerializer.MODE_OBJECT_ARRAY );
@@ -71,22 +72,19 @@ public class TestJSONSerializer extends TestCase
       assertEquals( 0, array.length );
    }
 
-   public void testToJava_JSONNull_1()
-   {
+   public void testToJava_JSONNull_1() {
       setName( "JSONNull -&gt; ToJava[default]" );
       Object java = jsonSerializer.toJava( JSONNull.getInstance() );
       assertNull( java );
    }
 
-   public void testToJava_JSONObject_1()
-   {
+   public void testToJava_JSONObject_1() {
       setName( "JSONObject(null:true) -&gt; ToJava[default]" );
       Object java = jsonSerializer.toJava( new JSONObject( true ) );
       assertNull( java );
    }
 
-   public void testToJava_JSONObject_2() throws Exception
-   {
+   public void testToJava_JSONObject_2() throws Exception {
       setName( "JSONObject -&gt; ToJava[default]" );
       String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
       JSONObject jsonObject = JSONObject.fromObject( json );
@@ -102,8 +100,7 @@ public class TestJSONSerializer extends TestCase
       Assertions.assertEquals( expected, (List) PropertyUtils.getProperty( bean, "array" ) );
    }
 
-   public void testToJava_JSONObject_3() throws Exception
-   {
+   public void testToJava_JSONObject_3() throws Exception {
       setName( "JSONObject -&gt; ToJava[rootClass:BeanA]" );
       String json = "{bool:true,integer:1,string:\"json\"}";
       JSONObject jsonObject = JSONObject.fromObject( json );
@@ -117,8 +114,7 @@ public class TestJSONSerializer extends TestCase
       assertEquals( jsonObject.get( "string" ), bean.getString() );
    }
 
-   public void testToJava_JSONObject_4()
-   {
+   public void testToJava_JSONObject_4() {
       setName( "JSONObject -&gt; ToJava[rootClass:BeanA,classMap]" );
 
       MappingBean mappingBean = new MappingBean();
@@ -149,8 +145,7 @@ public class TestJSONSerializer extends TestCase
       assertEquals( beanB.getValue(), ((ValueBean) bb).getValue() );
    }
 
-   public void testToJava_JSONObject_and_reset() throws Exception
-   {
+   public void testToJava_JSONObject_and_reset() throws Exception {
       String json = "{bool:true,integer:1,string:\"json\"}";
       JSONObject jsonObject = JSONObject.fromObject( json );
       jsonSerializer.setRootClass( BeanA.class );
@@ -169,8 +164,7 @@ public class TestJSONSerializer extends TestCase
       assertEquals( jsonObject.get( "string" ), PropertyUtils.getProperty( java, "string" ) );
    }
 
-   public void testToJSON_JSONString_array()
-   {
+   public void testToJSON_JSONString_array() {
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
       bean.setValue( "'json','json'" );
       JSON json = JSONSerializer.toJSON( bean );
@@ -179,16 +173,14 @@ public class TestJSONSerializer extends TestCase
       Assertions.assertEquals( JSONArray.fromObject( "['json','json']" ), (JSONArray) json );
    }
 
-   public void testToJSON_JSONString_null()
-   {
+   public void testToJSON_JSONString_null() {
       JSON json = JSONSerializer.toJSON( (JSONString) null );
       assertNotNull( json );
       assertTrue( JSONNull.getInstance()
             .equals( json ) );
    }
 
-   public void testToJSON_JSONString_object()
-   {
+   public void testToJSON_JSONString_object() {
       ObjectJSONStringBean bean = new ObjectJSONStringBean();
       bean.setName( "json" );
       JSON json = JSONSerializer.toJSON( bean );
@@ -197,75 +189,65 @@ public class TestJSONSerializer extends TestCase
       Assertions.assertEquals( JSONObject.fromObject( "{\"name\":\"json\"}" ), (JSONObject) json );
    }
 
-   public void testToJSON_Object_array()
-   {
+   public void testToJSON_Object_array() {
       JSON json = JSONSerializer.toJSON( new int[] { 1, 2 } );
       assertNotNull( json );
       assertTrue( json instanceof JSONArray );
       Assertions.assertEquals( JSONArray.fromObject( "[1,2]" ), (JSONArray) json );
    }
 
-   public void testToJSON_Object_JSONTokener_array()
-   {
+   public void testToJSON_Object_JSONTokener_array() {
       JSON json = JSONSerializer.toJSON( new JSONTokener( "[1,2]" ) );
       assertNotNull( json );
       assertTrue( json instanceof JSONArray );
       Assertions.assertEquals( JSONArray.fromObject( "[1,2]" ), (JSONArray) json );
    }
 
-   public void testToJSON_Object_null()
-   {
+   public void testToJSON_Object_null() {
       JSON json = JSONSerializer.toJSON( (Object) null );
       assertNotNull( json );
       assertTrue( JSONNull.getInstance()
             .equals( json ) );
    }
 
-   public void testToJSON_Object_object()
-   {
+   public void testToJSON_Object_object() {
       JSON json = JSONSerializer.toJSON( new BeanA() );
       assertNotNull( json );
       assertTrue( json instanceof JSONObject );
-      Assertions.assertEquals( JSONObject.fromBean( new BeanA() ), (JSONObject) json );
+      Assertions.assertEquals( JSONObject.fromObject( new BeanA() ), (JSONObject) json );
    }
 
-   public void testToJSON_String_array()
-   {
+   public void testToJSON_String_array() {
       JSON json = JSONSerializer.toJSON( "['json','json']" );
       assertNotNull( json );
       assertTrue( json instanceof JSONArray );
       Assertions.assertEquals( JSONArray.fromObject( "['json','json']" ), (JSONArray) json );
    }
 
-   public void testToJSON_String_invalid()
-   {
+   public void testToJSON_String_invalid() {
       try{
          JSONSerializer.toJSON( "garbage" );
          fail( "Should have throwed a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // ok
       }
    }
 
-   public void testToJSON_String_null()
-   {
+   public void testToJSON_String_null() {
       JSON json = JSONSerializer.toJSON( (String) null );
       assertNotNull( json );
       assertTrue( JSONNull.getInstance()
             .equals( json ) );
    }
 
-   public void testToJSON_String_null_literal()
-   {
+   public void testToJSON_String_null_literal() {
       JSON json = JSONSerializer.toJSON( "null" );
       assertNotNull( json );
       assertTrue( JSONNull.getInstance()
             .equals( json ) );
    }
 
-   public void testToJSON_String_object()
-   {
+   public void testToJSON_String_object() {
       JSON json = JSONSerializer.toJSON( "{'name':'json'}" );
       assertNotNull( json );
       assertTrue( json instanceof JSONObject );

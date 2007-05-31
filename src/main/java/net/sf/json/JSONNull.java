@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.sf.json;
 
 import java.io.IOException;
@@ -47,10 +48,8 @@ SOFTWARE.
  * null is equivalent to the value that JavaScript calls undefined.
  *
  * @author JSON.org
- * @version 2
  */
-public final class JSONNull implements JSON
-{
+public final class JSONNull implements JSON {
    /** singleton instance */
    private static JSONNull instance;
 
@@ -61,13 +60,11 @@ public final class JSONNull implements JSON
    /**
     * Returns the singleton instance of JSONNull
     */
-   public static JSONNull getInstance()
-   {
+   public static JSONNull getInstance() {
       return instance;
    }
 
-   private JSONNull()
-   {
+   private JSONNull() {
 
    }
 
@@ -78,24 +75,31 @@ public final class JSONNull implements JSON
     * @return true if the object parameter is the JSONObject.NULL object or
     *         null.
     */
-   public boolean equals( Object object )
-   {
+   public boolean equals( Object object ) {
       return object == null || object == this || object == instance;
    }
 
-   public int hashCode()
-   {
-      return 42 + "null".hashCode();
+   public int hashCode() {
+      return 37 + "null".hashCode();
    }
 
-   public boolean isArray()
-   {
+   public boolean isArray() {
       return false;
    }
 
-   public int length()
-   {
-      throw new JSONException("Object is null");
+   public boolean isEmpty() {
+      throw new JSONException( "Object is null" );
+   }
+
+   /**
+    * @deprecated use size() instead
+    */
+   public int length() {
+      throw new JSONException( "Object is null" );
+   }
+
+   public int size() {
+      throw new JSONException( "Object is null" );
    }
 
    /**
@@ -103,18 +107,15 @@ public final class JSONNull implements JSON
     *
     * @return The string "null".
     */
-   public String toString()
-   {
+   public String toString() {
       return "null";
    }
 
-   public String toString( int indentFactor )
-   {
+   public String toString( int indentFactor ) {
       return toString();
    }
 
-   public String toString( int indentFactor, int indent )
-   {
+   public String toString( int indentFactor, int indent ) {
       StringBuffer sb = new StringBuffer();
       for( int i = 0; i < indent; i += 1 ){
          sb.append( ' ' );
@@ -123,13 +124,11 @@ public final class JSONNull implements JSON
       return sb.toString();
    }
 
-   public Writer write( Writer writer )
-   {
+   public Writer write( Writer writer ) {
       try{
          writer.write( toString() );
          return writer;
-      }
-      catch( IOException e ){
+      }catch( IOException e ){
          throw new JSONException( e );
       }
    }

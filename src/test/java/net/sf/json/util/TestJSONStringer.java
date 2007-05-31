@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,20 +23,16 @@ import net.sf.json.JSONObject;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class TestJSONStringer extends TestCase
-{
-   public static void main( String[] args )
-   {
+public class TestJSONStringer extends TestCase {
+   public static void main( String[] args ) {
       junit.textui.TestRunner.run( TestJSONStringer.class );
    }
 
-   public TestJSONStringer( String testName )
-   {
+   public TestJSONStringer( String testName ) {
       super( testName );
    }
 
-   public void testCreateArray()
-   {
+   public void testCreateArray() {
       JSONBuilder b = new JSONStringer().array()
             .value( true )
             .value( 1.1d )
@@ -46,15 +42,13 @@ public class TestJSONStringer extends TestCase
       assertEquals( "[true,1.1,2,\"text\"]", b.toString() );
    }
 
-   public void testCreateEmptyArray()
-   {
+   public void testCreateEmptyArray() {
       JSONBuilder b = new JSONStringer().array()
             .endArray();
       assertEquals( "[]", b.toString() );
    }
 
-   public void testCreateEmptyArrayWithNullObjects()
-   {
+   public void testCreateEmptyArrayWithNullObjects() {
       JSONBuilder b = new JSONStringer().array()
             .value( null )
             .value( null )
@@ -62,15 +56,13 @@ public class TestJSONStringer extends TestCase
       assertEquals( "[null,null]", b.toString() );
    }
 
-   public void testCreateEmptyObject()
-   {
+   public void testCreateEmptyObject() {
       JSONBuilder b = new JSONStringer().object()
             .endObject();
       assertEquals( "{}", b.toString() );
    }
 
-   public void testCreateFunctionArray()
-   {
+   public void testCreateFunctionArray() {
       JSONBuilder b = new JSONStringer().array()
             .value( new JSONFunction( "var a = 1;" ) )
             .value( new JSONFunction( "var b = 2;" ) )
@@ -78,8 +70,7 @@ public class TestJSONStringer extends TestCase
       assertEquals( "[function(){ var a = 1; },function(){ var b = 2; }]", b.toString() );
    }
 
-   public void testCreateSimpleObject()
-   {
+   public void testCreateSimpleObject() {
       JSONBuilder b = new JSONStringer().object()
             .key( "bool" )
             .value( true )

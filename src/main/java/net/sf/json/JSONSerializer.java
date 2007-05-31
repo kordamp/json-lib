@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@ import net.sf.json.util.JSONUtils;
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class JSONSerializer
-{
+public class JSONSerializer {
    public static final int MODE_LIST = 1;
    public static final int MODE_OBJECT_ARRAY = 2;
 
@@ -42,52 +41,24 @@ public class JSONSerializer
     * @param object any java Object
     * @throws JSONException if the object can not be converted
     */
-   public static JSON toJSON( Object object )
-   {
-      return toJSON( object, null, false );
-   }
-
-   /**
-    * Creates a JSONObject, JSONArray or a JSONNull from object.
-    *
-    * @param object any java Object
-    * @param excludes A group of property names to be excluded
-    * @throws JSONException if the object can not be converted
-    */
-   public static JSON toJSON( Object object, String[] excludes )
-   {
-      return toJSON( object, excludes, false );
-   }
-
-   /**
-    * Creates a JSONObject, JSONArray or a JSONNull from object.
-    *
-    * @param object any java Object
-    * @param excludes A group of property names to be excluded
-    * @param ignoreDefaultExcludes A flag for ignoring the default exclusions of
-    *        property names
-    * @throws JSONException if the object can not be converted
-    */
-   public static JSON toJSON( Object object, String[] excludes, boolean ignoreDefaultExcludes )
-   {
+   public static JSON toJSON( Object object ) {
       JSON json = null;
       if( object == null ){
          json = JSONNull.getInstance();
       }else if( object instanceof JSONString ){
-         json = toJSON( (JSONString) object, excludes, ignoreDefaultExcludes );
+         json = toJSON( (JSONString) object );
       }else if( object instanceof String ){
-         json = toJSON( (String) object, excludes, ignoreDefaultExcludes );
+         json = toJSON( (String) object );
       }else if( JSONUtils.isArray( object ) ){
-         json = JSONArray.fromObject( object, excludes, ignoreDefaultExcludes );
+         json = JSONArray.fromObject( object );
       }else{
          try{
-            json = JSONObject.fromObject( object, excludes, ignoreDefaultExcludes );
-         }
-         catch( JSONException e ){
+            json = JSONObject.fromObject( object );
+         }catch( JSONException e ){
             if( object instanceof JSONTokener ){
                ((JSONTokener) object).reset();
             }
-            json = JSONArray.fromObject( object, excludes, ignoreDefaultExcludes );
+            json = JSONArray.fromObject( object );
          }
       }
 
@@ -99,9 +70,8 @@ public class JSONSerializer
     *
     * @throws JSONException if the string is not a valid JSON string
     */
-   private static JSON toJSON( JSONString string, String[] excludes, boolean ignoreDefaultExcludes )
-   {
-      return toJSON( string.toJSONString(), excludes, ignoreDefaultExcludes );
+   private static JSON toJSON( JSONString string ) {
+      return toJSON( string.toJSONString() );
    }
 
    /**
@@ -109,13 +79,12 @@ public class JSONSerializer
     *
     * @throws JSONException if the string is not a valid JSON string
     */
-   private static JSON toJSON( String string, String[] excludes, boolean ignoreDefaultExcludes )
-   {
+   private static JSON toJSON( String string ) {
       JSON json = null;
       if( string.startsWith( "[" ) ){
-         json = JSONArray.fromString( string, excludes, ignoreDefaultExcludes );
+         json = JSONArray.fromObject( string );
       }else if( string.startsWith( "{" ) ){
-         json = JSONObject.fromString( string, excludes, ignoreDefaultExcludes );
+         json = JSONObject.fromObject( string );
       }else if( "null".equalsIgnoreCase( string ) ){
          json = JSONNull.getInstance();
       }else{
@@ -135,8 +104,7 @@ public class JSONSerializer
    /**
     * Default constructor
     */
-   public JSONSerializer()
-   {
+   public JSONSerializer() {
    }
 
    /**
@@ -148,8 +116,7 @@ public class JSONSerializer
     * @param arrayMode array mode for conversion, either MODE_OBJECT_ARRAY or
     *        MODE_LIST
     */
-   public JSONSerializer( Class rootClass, Map classMap, int arrayMode )
-   {
+   public JSONSerializer( Class rootClass, Map classMap, int arrayMode ) {
       super();
       this.rootClass = rootClass;
       this.classMap = classMap;
@@ -161,8 +128,7 @@ public class JSONSerializer
     *
     * @return either MODE_OBJECT_ARRAY or MODE_LIST
     */
-   public synchronized int getArrayMode()
-   {
+   public synchronized int getArrayMode() {
       return arrayMode;
    }
 
@@ -171,8 +137,7 @@ public class JSONSerializer
     *
     * @return a Map of classes, every key identifies a property or a regexp
     */
-   public synchronized Map getClassMap()
-   {
+   public synchronized Map getClassMap() {
       return classMap;
    }
 
@@ -181,8 +146,7 @@ public class JSONSerializer
     *
     * @return the target class for conversion
     */
-   public synchronized Class getRootClass()
-   {
+   public synchronized Class getRootClass() {
       return rootClass;
    }
 
@@ -192,8 +156,7 @@ public class JSONSerializer
     * classMap = null<br>
     * arrayMode = MODE_LIST<br>
     */
-   public synchronized void reset()
-   {
+   public synchronized void reset() {
       arrayMode = MODE_LIST;
       rootClass = null;
       classMap = null;
@@ -206,8 +169,7 @@ public class JSONSerializer
     *
     * @param arrayMode array mode for conversion
     */
-   public synchronized void setArrayMode( int arrayMode )
-   {
+   public synchronized void setArrayMode( int arrayMode ) {
       if( arrayMode != MODE_LIST && arrayMode != MODE_OBJECT_ARRAY ){
          this.arrayMode = MODE_LIST;
       }else{
@@ -221,8 +183,7 @@ public class JSONSerializer
     * @param classMap a Map of classes, every key identifies a property or a
     *        regexp
     */
-   public synchronized void setClassMap( Map classMap )
-   {
+   public synchronized void setClassMap( Map classMap ) {
       this.classMap = classMap;
    }
 
@@ -231,8 +192,7 @@ public class JSONSerializer
     *
     * @param rootClass the target class for conversion
     */
-   public synchronized void setRootClass( Class rootClass )
-   {
+   public synchronized void setRootClass( Class rootClass ) {
       this.rootClass = rootClass;
    }
 
@@ -245,8 +205,7 @@ public class JSONSerializer
     * @return depends on the nature of the source object (JSONObject, JSONArray,
     *         JSONNull) and the configured rootClass, classMap and arrayMode
     */
-   public synchronized Object toJava( JSON json )
-   {
+   public synchronized Object toJava( JSON json ) {
       if( JSONUtils.isNull( json ) ){
          return null;
       }

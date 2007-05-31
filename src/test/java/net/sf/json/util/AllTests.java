@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,8 @@ import junit.framework.TestSuite;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class AllTests extends TestSuite
-{
-   public static TestSuite suite() throws Exception
-   {
+public class AllTests extends TestSuite {
+   public static TestSuite suite() throws Exception {
       TestSuite suite = new TestSuite();
       suite.setName( "util" );
 
@@ -33,6 +31,7 @@ public class AllTests extends TestSuite
       suite.addTest( new TestSuite( TestJSONTokener.class ) );
       suite.addTest( new TestSuite( TestJSONBuilder.class ) );
       suite.addTest( new TestSuite( TestJSONStringer.class ) );
+      suite.addTest( new TestSuite( TestWebUtils.class ) );
 
       return suite;
    }

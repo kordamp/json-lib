@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,53 +19,43 @@ package net.sf.json;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class TestJSONArrayAsJSON extends AbstractJSONTest
-{
-   public static void main( String[] args )
-   {
+public class TestJSONArrayAsJSON extends AbstractJSONTest {
+   public static void main( String[] args ) {
       junit.textui.TestRunner.run( TestJSONArrayAsJSON.class );
    }
 
-   public TestJSONArrayAsJSON( String name )
-   {
+   public TestJSONArrayAsJSON( String name ) {
       super( name );
    }
 
-   protected int getIndent()
-   {
+   protected int getIndent() {
       return 2;
    }
 
-   protected int getIndentFactor()
-   {
+   protected int getIndentFactor() {
       return 2;
    }
 
-   protected Object[] getIsArrayExpectations()
-   {
+   protected Object[] getIsArrayExpectations() {
       return new Object[] { Boolean.TRUE, new JSONArray() };
    }
 
-   protected Object[] getToStringExpectations1()
-   {
-      return new Object[] { "[1,true,\"json\"]", JSONArray.fromObject("[1,true,'json']") };
+   protected Object[] getToStringExpectations1() {
+      return new Object[] { "[1,true,\"json\"]", JSONArray.fromObject( "[1,true,'json']" ) };
    }
 
-   protected Object[] getToStringExpectations2()
-   {
-      return new Object[] { "[\n" + "  1,\n" + "  true,\n"+ "  \"json\"\n" + "]",
+   protected Object[] getToStringExpectations2() {
+      return new Object[] { "[\n" + "  1,\n" + "  true,\n" + "  \"json\"\n" + "]",
             JSONArray.fromObject( "[1,true,'json']" ) };
    }
 
-   protected Object[] getToStringExpectations3()
-   {
-      return new Object[] { "  [\n" + "    1,\n" + "    true,\n"+ "    \"json\"\n" + "  ]",
+   protected Object[] getToStringExpectations3() {
+      return new Object[] { "  [\n" + "    1,\n" + "    true,\n" + "    \"json\"\n" + "  ]",
             JSONArray.fromObject( "[1,true,'json']" ) };
 
    }
 
-   protected Object[] getWriteExpectations()
-   {
+   protected Object[] getWriteExpectations() {
       return new Object[] { "[1,true,\"json\"]", JSONArray.fromObject( "[1,true,'json']" ) };
    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.json.sample.JSONTestBean;
+import net.sf.json.util.JavaIdentifierTransformer;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -31,26 +32,22 @@ import org.apache.commons.beanutils.PropertyUtils;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class TestUserSubmitted extends TestCase
-{
-   public static void main( String[] args )
-   {
+public class TestUserSubmitted extends TestCase {
+   public static void main( String[] args ) {
       junit.textui.TestRunner.run( TestUserSubmitted.class );
    }
 
-   public TestUserSubmitted( String name )
-   {
+   public TestUserSubmitted( String name ) {
       super( name );
    }
 
    public void testBug_1635890() throws NoSuchMethodException, IllegalAccessException,
-         InvocationTargetException
-   {
+         InvocationTargetException {
       // submited by arco.vandenheuvel[at]points[dot].com
 
       String TEST_JSON_STRING = "{\"rateType\":\"HOTRATE\",\"rateBreakdown\":{\"rate\":[{\"amount\":\"109.74\",\"date\":{\"month\":\"01\",\"day\":\"15\",\"year\":\"2007\"}},{\"amount\":\"109.74\",\"date\":{\"month\":\"1\",\"day\":\"16\",\"year\":\"2007\"}}]}}";
 
-      DynaBean jsonBean = (DynaBean) JSONObject.toBean( JSONObject.fromString( TEST_JSON_STRING ) );
+      DynaBean jsonBean = (DynaBean) JSONObject.toBean( JSONObject.fromObject( TEST_JSON_STRING ) );
       assertNotNull( jsonBean );
       assertEquals( "wrong rate Type", "HOTRATE", jsonBean.get( "rateType" ) );
       assertNotNull( "null rate breakdown", jsonBean.get( "rateBreakdown" ) );
@@ -62,12 +59,11 @@ public class TestUserSubmitted extends TestCase
       assertNotNull( "null rate ", jsonRateBreakdownBean.get( "rate", 0 ) );
    }
 
-   public void testBug_1650535_builders()
-   {
+   public void testBug_1650535_builders() {
       // submitted by Paul Field <paulfield[at]users[dot]sourceforge[dot]net>
 
       String json = "{\"obj\":\"{}\",\"array\":\"[]\"}";
-      JSONObject object = JSONObject.fromString( json );
+      JSONObject object = JSONObject.fromObject( json );
       assertNotNull( object );
       assertTrue( object.has( "obj" ) );
       assertTrue( object.has( "array" ) );
@@ -77,7 +73,7 @@ public class TestUserSubmitted extends TestCase
       assertTrue( array instanceof String );
 
       json = "{'obj':'{}','array':'[]'}";
-      object = JSONObject.fromString( json );
+      object = JSONObject.fromObject( json );
       assertNotNull( object );
       assertTrue( object.has( "obj" ) );
       assertTrue( object.has( "array" ) );
@@ -87,7 +83,7 @@ public class TestUserSubmitted extends TestCase
       assertTrue( array instanceof String );
 
       json = "[\"{}\",\"[]\"]";
-      JSONArray jarray = JSONArray.fromString( json );
+      JSONArray jarray = JSONArray.fromObject( json );
       assertNotNull( jarray );
       obj = jarray.get( 0 );
       assertTrue( obj instanceof String );
@@ -95,7 +91,7 @@ public class TestUserSubmitted extends TestCase
       assertTrue( array instanceof String );
 
       json = "['{}','[]']";
-      jarray = JSONArray.fromString( json );
+      jarray = JSONArray.fromObject( json );
       assertNotNull( jarray );
       obj = jarray.get( 0 );
       assertTrue( obj instanceof String );
@@ -124,25 +120,23 @@ public class TestUserSubmitted extends TestCase
       assertTrue( object.get( "info3" ) instanceof String );
    }
 
-   public void testBug_1650535_setters()
-   {
+   public void testBug_1650535_setters() {
       JSONObject object = new JSONObject();
-      object.put( "obj", "{}" );
-      object.put( "notobj", "{string}" );
-      object.put( "array", "[]" );
-      object.put( "notarray", "[string]" );
+      object.element( "obj", "{}" );
+      object.element( "notobj", "{string}" );
+      object.element( "array", "[]" );
+      object.element( "notarray", "[string]" );
       assertTrue( object.get( "obj" ) instanceof JSONObject );
       assertTrue( object.get( "array" ) instanceof JSONArray );
       assertTrue( object.get( "notobj" ) instanceof String );
       assertTrue( object.get( "notarray" ) instanceof String );
 
-      object.put( "str", "json,json" );
+      object.element( "str", "json,json" );
       assertTrue( object.get( "str" ) instanceof String );
    }
 
    public void testDynaBeanAttributeMap() throws NoSuchMethodException, IllegalAccessException,
-         InvocationTargetException
-   {
+         InvocationTargetException {
       // submited by arco.vandenheuvel[at]points[dot].com
 
       JSONObject jsonObject = JSONObject.fromObject( new JSONTestBean() );
@@ -152,10 +146,10 @@ public class TestUserSubmitted extends TestCase
       assertEquals( "wrong inventoryID", "", jsonBean.get( "inventoryID" ) );
    }
 
-   public void testJsonWithNamespaceToDynaBean() throws Exception
-   {
+   public void testJsonWithNamespaceToDynaBean() throws Exception {
       // submited by Girish Ipadi
 
+      JsonConfig.getInstance().setJavaIdentifierTransformer( JavaIdentifierTransformer.NOOP );
       String str = "{'version':'1.0'," + "'sid':'AmazonDocStyle',    'svcVersion':'0.1',"
             + "'oid':'ItemLookup',    'params':[{            'ns:ItemLookup': {"
             + "'ns:SubscriptionId':'0525E2PQ81DD7ZTWTK82'," + "'ns:Validate':'False',"

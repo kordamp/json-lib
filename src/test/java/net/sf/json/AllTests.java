@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@ import junit.framework.TestSuite;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class AllTests extends TestSuite
-{
-   public static TestSuite suite() throws Exception
-   {
+public class AllTests extends TestSuite {
+   public static TestSuite suite() throws Exception {
       TestSuite suite = new TestSuite();
       suite.setName( "core" );
 
       suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_ObjectBean.class ) );
+      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_PrimitiveBean.class ) );
       suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_DynaBean.class ) );
       suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_JSONObject.class ) );
       suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_JSONString.class ) );
@@ -47,6 +46,11 @@ public class AllTests extends TestSuite
       suite.addTest( new TestSuite( TestJSONSerializer.class ) );
       suite.addTest( new TestSuite( TestJSONArrayAsJSON.class ) );
       suite.addTest( new TestSuite( TestJSONNullAsJSON.class ) );
+      suite.addTest( new TestSuite( TestJSONObjectWithProcessors.class ) );
+      suite.addTest( new TestSuite( TestJSONObjectEqualsHashCodeCompareTo.class ) );
+      suite.addTest( new TestSuite( TestJSONArrayEqualsHashCodeCompareTo.class ) );
+      suite.addTest( new TestSuite( TestJSONObjectEvents.class ) );
+      suite.addTest( new TestSuite( TestJSONArrayEvents.class ) );
 
       suite.addTest( new TestSuite( TestUserSubmitted.class ) );
 

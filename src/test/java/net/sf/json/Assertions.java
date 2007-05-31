@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,12 @@ import net.sf.json.test.JSONAssert;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class Assertions extends JSONAssert
-{
-   public static void assertEquals( List expecteds, List actuals )
-   {
+public class Assertions extends JSONAssert {
+   public static void assertEquals( List expecteds, List actuals ) {
       assertEquals( null, expecteds, actuals );
    }
 
-   public static void assertEquals( String message, List expecteds, List actuals )
-   {
+   public static void assertEquals( String message, List expecteds, List actuals ) {
       String header = message == null ? "" : message + ": ";
       if( expecteds == null ){
          fail( header + "expected array was null" );

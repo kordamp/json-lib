@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,30 +20,25 @@ package net.sf.json;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONObjectStaticBuilders_JSONObject extends
-      AbstractJSONObjectStaticBuildersTestCase
-{
-   public static void main( String[] args )
-   {
+      AbstractJSONObjectStaticBuildersTestCase {
+   public static void main( String[] args ) {
       junit.textui.TestRunner.run( TestJSONObjectStaticBuilders_JSONObject.class );
    }
 
-   public TestJSONObjectStaticBuilders_JSONObject( String name )
-   {
+   public TestJSONObjectStaticBuilders_JSONObject( String name ) {
       super( name );
    }
 
-   protected Object getSource()
-   {
+   protected Object getSource() {
       String[] props = getProperties();
       JSONObject jsonObject = new JSONObject();
       try{
          for( int i = 0; i < props.length; i++ ){
-            jsonObject.put( props[i], PropertyConstants.getPropertyValue( props[i] ) );
+            jsonObject.element( props[i], PropertyConstants.getPropertyValue( props[i] ) );
          }
-         jsonObject.put( "class", Object.class );
-         jsonObject.put( "pexcluded", "" );
-      }
-      catch( Exception e ){
+         jsonObject.element( "class", Object.class );
+         jsonObject.element( "pexcluded", "" );
+      }catch( Exception e ){
          throw new RuntimeException( e );
       }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,20 +37,16 @@ import org.apache.commons.beanutils.DynaBean;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class TestJSONArray extends TestCase
-{
-   public static void main( String[] args )
-   {
+public class TestJSONArray extends TestCase {
+   public static void main( String[] args ) {
       junit.textui.TestRunner.run( TestJSONArray.class );
    }
 
-   public TestJSONArray( String testName )
-   {
+   public TestJSONArray( String testName ) {
       super( testName );
    }
 
-   public void testConstructor_Collection()
-   {
+   public void testConstructor_Collection() {
       List l = new ArrayList();
       l.add( Boolean.TRUE );
       l.add( new Integer( 1 ) );
@@ -59,22 +55,19 @@ public class TestJSONArray extends TestCase
       testJSONArray( l, "[true,1,\"string\",\"java.lang.Object\"]" );
    }
 
-   public void testConstructor_Collection_JSONArray()
-   {
+   public void testConstructor_Collection_JSONArray() {
       List l = new ArrayList();
       l.add( JSONArray.fromObject( new int[] { 1, 2 } ) );
       testJSONArray( l, "[[1,2]]" );
    }
 
-   public void testConstructor_Collection_JSONFunction()
-   {
+   public void testConstructor_Collection_JSONFunction() {
       List l = new ArrayList();
       l.add( new JSONFunction( new String[] { "a" }, "return a;" ) );
       testJSONArray( l, "[function(a){ return a; }]" );
    }
 
-   public void testConstructor_Collection_JSONString()
-   {
+   public void testConstructor_Collection_JSONString() {
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
       bean.setValue( "'json','json'" );
       List l = new ArrayList();
@@ -82,74 +75,63 @@ public class TestJSONArray extends TestCase
       testJSONArray( l, "[[\"json\",\"json\"]]" );
    }
 
-   public void testConstructor_Collection_nulls()
-   {
+   public void testConstructor_Collection_nulls() {
       List l = new ArrayList();
       l.add( null );
       l.add( null );
       testJSONArray( l, "[null,null]" );
    }
 
-   public void testConstructor_func()
-   {
+   public void testConstructor_func() {
       JSONArray expected = JSONArray.fromObject( new String[] { "'"
             + new JSONFunction( new String[] { "a" }, "return a;" ).toString() + "'" } );
       JSONArray actual = JSONArray.fromObject( new String[] { "'function(a){ return a; }'" } );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testConstructor_func2()
-   {
+   public void testConstructor_func2() {
       JSONArray expected = JSONArray.fromObject( new String[] { "\""
             + new JSONFunction( new String[] { "a" }, "return a;" ).toString() + "\"" } );
       JSONArray actual = JSONArray.fromObject( new String[] { "\"function(a){ return a; }\"" } );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testConstructor_JSONArray()
-   {
+   public void testConstructor_JSONArray() {
       JSONArray expected = JSONArray.fromObject( "[1,2]" );
       JSONArray actual = JSONArray.fromObject( JSONArray.fromObject( "[1,2]" ) );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testConstructor_JSONTokener_functions()
-   {
+   public void testConstructor_JSONTokener_functions() {
       testJSONArray( new JSONTokener( "[function(a){ return a; }]" ), "[function(a){ return a; }]" );
    }
 
-   public void testConstructor_JSONTokener_nulls()
-   {
+   public void testConstructor_JSONTokener_nulls() {
       testJSONArray( new JSONTokener( "[,,]" ), "[null,null]" );
    }
 
-   public void testConstructor_JSONTokener_syntax_errors()
-   {
+   public void testConstructor_JSONTokener_syntax_errors() {
       try{
          JSONArray.fromObject( "" );
          fail( "Expected a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // ok
       }
    }
 
-   public void testConstructor_Object_Array()
-   {
+   public void testConstructor_Object_Array() {
       JSONArray expected = JSONArray.fromObject( "[\"json\",1]" );
       JSONArray actual = JSONArray.fromObject( new Object[] { "json", new Integer( 1 ) } );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testConstructor_Object_Array_Array()
-   {
+   public void testConstructor_Object_Array_Array() {
       JSONArray expected = JSONArray.fromObject( "[[1,2]]" );
       JSONArray actual = JSONArray.fromObject( new Object[] { new int[] { 1, 2 } } );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testConstructor_Object_Array_BigDecimal()
-   {
+   public void testConstructor_Object_Array_BigDecimal() {
       // bug 1596168
 
       // an array of BigDecimals
@@ -160,7 +142,7 @@ public class TestJSONArray extends TestCase
       assertEquals( "-1.0", numberArray[1].toString() );
       assertEquals( "9.999", numberArray[2].toString() );
 
-      JSONArray jsonNumArray = JSONArray.fromArray( numberArray );
+      JSONArray jsonNumArray = JSONArray.fromObject( numberArray );
 
       assertEquals( "1.0000000000", jsonNumArray.get( 0 )
             .toString() );
@@ -170,8 +152,7 @@ public class TestJSONArray extends TestCase
             .toString() );
    }
 
-   public void testConstructor_Object_Array_BigInteger()
-   {
+   public void testConstructor_Object_Array_BigInteger() {
       // bug 1596168
 
       Number[] numberArray = new Number[] { new BigInteger( "18437736874454810627" ),
@@ -180,7 +161,7 @@ public class TestJSONArray extends TestCase
       assertEquals( "18437736874454810627", numberArray[0].toString() );
       assertEquals( "9007199254740990", numberArray[1].toString() );
 
-      JSONArray jsonNumArray = JSONArray.fromArray( numberArray );
+      JSONArray jsonNumArray = JSONArray.fromObject( numberArray );
 
       assertEquals( "18437736874454810627", jsonNumArray.get( 0 )
             .toString() );
@@ -188,46 +169,40 @@ public class TestJSONArray extends TestCase
             .toString() );
    }
 
-   public void testConstructor_Object_Array_Class()
-   {
+   public void testConstructor_Object_Array_Class() {
       JSONArray expected = JSONArray.fromObject( "[\"java.lang.Object\"]" );
       JSONArray actual = JSONArray.fromObject( new Object[] { Object.class } );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testConstructor_Object_Array_functions()
-   {
+   public void testConstructor_Object_Array_functions() {
       JSONArray expected = JSONArray.fromObject( "[function(a){ return a; }]" );
       JSONArray actual = JSONArray.fromObject( new JSONFunction[] { new JSONFunction(
             new String[] { "a" }, "return a;" ) } );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testConstructor_Object_Array_functions_2()
-   {
+   public void testConstructor_Object_Array_functions_2() {
       JSONArray expected = JSONArray.fromObject( new JSONFunction[] { new JSONFunction(
             new String[] { "a" }, "return a;" ) } );
       JSONArray actual = JSONArray.fromObject( "[function(a){ return a; }]" );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testConstructor_Object_Array_functions_3()
-   {
+   public void testConstructor_Object_Array_functions_3() {
       JSONArray expected = JSONArray.fromObject( new JSONFunction[] { new JSONFunction(
             new String[] { "a" }, "return a;" ) } );
       JSONArray actual = JSONArray.fromObject( new String[] { "function(a){ return a; }" } );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testConstructor_Object_Array_JSONArray()
-   {
+   public void testConstructor_Object_Array_JSONArray() {
       JSONArray expected = JSONArray.fromObject( "[[1,2]]" );
       JSONArray actual = JSONArray.fromObject( new Object[] { JSONArray.fromObject( "[1,2]" ) } );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testConstructor_Object_Array_JSONString()
-   {
+   public void testConstructor_Object_Array_JSONString() {
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
       bean.setValue( "'json','json'" );
       JSONArray expected = JSONArray.fromObject( "[[\"json\",\"json\"]]" );
@@ -235,187 +210,510 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testConstructor_Object_Array_nulls()
-   {
+   public void testConstructor_Object_Array_nulls() {
       JSONArray expected = JSONArray.fromObject( "[null,null]" );
       JSONArray actual = JSONArray.fromObject( new Object[] { null, null } );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testConstructor_primitive_array_boolean()
-   {
+   public void testConstructor_primitive_array_boolean() {
       testJSONArray( new boolean[] { true, false }, "[true,false]" );
    }
 
-   public void testConstructor_primitive_array_byte()
-   {
+   public void testConstructor_primitive_array_byte() {
       testJSONArray( new byte[] { 1, 2, 3 }, "[1,2,3]" );
    }
 
-   public void testConstructor_primitive_array_char()
-   {
+   public void testConstructor_primitive_array_char() {
       testJSONArray( new char[] { 'a', 'b', 'c' }, "[\"a\",\"b\",\"c\"]" );
    }
 
-   public void testConstructor_primitive_array_double()
-   {
+   public void testConstructor_primitive_array_double() {
       testJSONArray( new double[] { 1.1, 2.2, 3.3 }, "[1.1,2.2,3.3]" );
    }
 
-   public void testConstructor_primitive_array_double_Infinity()
-   {
+   public void testConstructor_primitive_array_double_Infinity() {
       try{
          JSONArray.fromObject( new double[] { Double.NEGATIVE_INFINITY } );
          fail( "Should have thrown a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
 
       try{
          JSONArray.fromObject( new double[] { Double.POSITIVE_INFINITY } );
          fail( "Should have thrown a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
    }
 
-   public void testConstructor_primitive_array_double_NaNs()
-   {
+   public void testConstructor_primitive_array_double_NaNs() {
       try{
          JSONArray.fromObject( new double[] { Double.NaN } );
          fail( "Should have thrown a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
    }
 
-   public void testConstructor_primitive_array_float()
-   {
+   public void testConstructor_primitive_array_float() {
       testJSONArray( new float[] { 1.1f, 2.2f, 3.3f }, "[1.1,2.2,3.3]" );
    }
 
-   public void testConstructor_primitive_array_float_Infinity()
-   {
+   public void testConstructor_primitive_array_float_Infinity() {
       try{
          JSONArray.fromObject( new float[] { Float.NEGATIVE_INFINITY } );
          fail( "Should have thrown a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
 
       try{
          JSONArray.fromObject( new float[] { Float.POSITIVE_INFINITY } );
          fail( "Should have thrown a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
    }
 
-   public void testConstructor_primitive_array_float_NaNs()
-   {
+   public void testConstructor_primitive_array_float_NaNs() {
       try{
          JSONArray.fromObject( new float[] { Float.NaN } );
          fail( "Should have thrown a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
    }
 
-   public void testConstructor_primitive_array_int()
-   {
+   public void testConstructor_primitive_array_int() {
       testJSONArray( new int[] { 1, 2, 3 }, "[1,2,3]" );
    }
 
-   public void testConstructor_primitive_array_long()
-   {
+   public void testConstructor_primitive_array_long() {
       testJSONArray( new long[] { 1, 2, 3 }, "[1,2,3]" );
    }
 
-   public void testConstructor_primitive_array_short()
-   {
+   public void testConstructor_primitive_array_short() {
       testJSONArray( new short[] { 1, 2, 3 }, "[1,2,3]" );
    }
 
-   public void testConstructor_String_functions()
-   {
+   public void testConstructor_String_functions() {
       testJSONArray( "[function(a){ return a; }]", "[function(a){ return a; }]" );
    }
 
-   public void testConstructor_String_functions_multi()
-   {
+   public void testConstructor_String_functions_multi() {
       testJSONArray( "[function(a){ return a; },[function(b){ return b; }]]",
             "[function(a){ return a; },[function(b){ return b; }]]" );
    }
 
-   public void testFromObject_BigDecimal()
-   {
+   public void testElement_Array() {
+      JSONArray array = new JSONArray();
+      int[] ints = { 1, 2 };
+      array.element( ints );
+      Assertions.assertEquals( JSONArray.fromObject( ints ), array.getJSONArray( 0 ) );
+   }
+
+   public void testElement_boolean() {
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( true );
+      assertEquals( 1, jsonArray.size() );
+      assertTrue( jsonArray.getBoolean( 0 ) );
+   }
+
+   public void testElement_Boolean() {
+      JSONArray array = new JSONArray();
+      array.element( Boolean.TRUE );
+      Assertions.assertTrue( array.getBoolean( 0 ) );
+   }
+
+   public void testElement_Collection() {
+      List l = new ArrayList();
+      l.add( Boolean.TRUE );
+      l.add( new Integer( 1 ) );
+      l.add( "string" );
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( l );
+      assertEquals( 1, jsonArray.size() );
+      Assertions.assertEquals( JSONArray.fromObject( "[true,1,\"string\"]" ),
+            jsonArray.getJSONArray( 0 ) );
+   }
+
+   public void testElement_double() {
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( 2.0d );
+      assertEquals( 1, jsonArray.size() );
+      assertEquals( 2.0d, jsonArray.getDouble( 0 ), 0d );
+   }
+
+   public void testElement_index_0_Array() {
+      JSONArray array = JSONArray.fromObject( "[null,null]" );
+      ;
+      int[] ints = { 0, 2 };
+      array.element( 0, ints );
+      Assertions.assertEquals( JSONArray.fromObject( ints ), array.getJSONArray( 0 ) );
+   }
+
+   public void testElement_index_0_Boolean() {
+      JSONArray array = JSONArray.fromObject( "[null,null]" );
+      ;
+      array.element( 0, Boolean.TRUE );
+      Assertions.assertTrue( array.getBoolean( 0 ) );
+   }
+
+   public void testElement_index_0_Class() {
+      JSONArray array = JSONArray.fromObject( "[null,null]" );
+      array.element( 0, Object.class );
+      Assertions.assertEquals( "java.lang.Object", array.getString( 0 ) );
+   }
+
+   public void testElement_index_0_JSON() {
+      JSONArray array = JSONArray.fromObject( "[null,null]" );
+      array.element( 0, JSONNull.getInstance() );
+      Assertions.assertEquals( JSONNull.getInstance(), array.get( 0 ) );
+   }
+
+   public void testElement_index_0_JSONFunction() {
+      JSONArray array = JSONArray.fromObject( "[null,null]" );
+      JSONFunction f = new JSONFunction( "return this;" );
+      array.element( 0, f );
+      Assertions.assertEquals( f, (JSONFunction) array.get( 0 ) );
+   }
+
+   public void testElement_index_0_JSONString() {
+      JSONArray array = JSONArray.fromObject( "[null,null]" );
+      ArrayJSONStringBean bean = new ArrayJSONStringBean();
+      bean.setValue( "'json','json'" );
+      array.element( 0, bean );
+      Assertions.assertEquals( JSONArray.fromObject( bean ), array.getJSONArray( 0 ) );
+   }
+
+   public void testElement_index_0_JSONTokener() {
+      JSONArray array = JSONArray.fromObject( "[null,null]" );
+      JSONTokener tok = new JSONTokener( "[0,2]" );
+      array.element( 0, tok );
+      tok.reset();
+      Assertions.assertEquals( JSONArray.fromObject( tok ), array.getJSONArray( 0 ) );
+   }
+
+   public void testElement_index_0_Number() {
+      JSONArray array = JSONArray.fromObject( "[null,null]" );
+      array.element( 0, new Double( 2 ) );
+      Assertions.assertEquals( new Double( 2 ).doubleValue(), array.getDouble( 0 ), 0d );
+   }
+
+   public void testElement_index_0_Object() {
+      JSONArray array = JSONArray.fromObject( "[null,null]" );
+      array.element( 0, new BeanA() );
+      Assertions.assertEquals( JSONObject.fromObject( new BeanA() ), array.getJSONObject( 0 ) );
+   }
+
+   public void testElement_index_0_String() {
+      JSONArray array = JSONArray.fromObject( "[null,null]" );
+      array.element( 0, "json" );
+      Assertions.assertEquals( "json", array.getString( 0 ) );
+   }
+
+   public void testElement_index_0_String_JSON() {
+      JSONArray array = JSONArray.fromObject( "[null,null]" );
+      array.element( 0, "[]" );
+      Assertions.assertEquals( new JSONArray().toString(), array.getString( 0 ) );
+   }
+
+   public void testElement_index_0_String_null() {
+      JSONArray array = JSONArray.fromObject( "[null,null]" );
+      array.element( 0, (String) null );
+      Assertions.assertEquals( "", array.getString( 0 ) );
+   }
+
+   public void testElement_index_1_Array() {
+      JSONArray array = new JSONArray();
+      int[] ints = { 1, 2 };
+      array.element( 1, ints );
+      Assertions.assertEquals( JSONArray.fromObject( ints ), array.getJSONArray( 1 ) );
+   }
+
+   public void testElement_index_1_boolean() {
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( 1, true );
+      assertEquals( 2, jsonArray.size() );
+      assertEquals( JSONNull.getInstance(), jsonArray.get( 0 ) );
+      assertTrue( jsonArray.getBoolean( 1 ) );
+   }
+
+   public void testElement_index_1_Boolean() {
+      JSONArray array = new JSONArray();
+      array.element( 1, Boolean.TRUE );
+      Assertions.assertTrue( array.getBoolean( 1 ) );
+   }
+
+   public void testElement_index_1_Class() {
+      JSONArray array = new JSONArray();
+      array.element( 1, Object.class );
+      Assertions.assertEquals( "java.lang.Object", array.getString( 1 ) );
+   }
+
+   public void testElement_index_1_Collection() {
+      List l = new ArrayList();
+      l.add( Boolean.TRUE );
+      l.add( new Integer( 1 ) );
+      l.add( "string" );
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( 1, l );
+      assertEquals( 2, jsonArray.size() );
+      assertEquals( JSONNull.getInstance(), jsonArray.get( 0 ) );
+      Assertions.assertEquals( JSONArray.fromObject( "[true,1,\"string\"]" ),
+            jsonArray.getJSONArray( 1 ) );
+   }
+
+   public void testElement_index_1_double() {
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( 1, 2.0d );
+      assertEquals( 2, jsonArray.size() );
+      assertEquals( JSONNull.getInstance(), jsonArray.get( 0 ) );
+      assertEquals( 2.0d, jsonArray.getDouble( 1 ), 0d );
+   }
+
+   public void testElement_index_1_int() {
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( 1, 1 );
+      assertEquals( 2, jsonArray.size() );
+      assertEquals( JSONNull.getInstance(), jsonArray.get( 0 ) );
+      assertEquals( 1, jsonArray.getInt( 1 ) );
+   }
+
+   public void testElement_index_1_JSON() {
+      JSONArray array = new JSONArray();
+      array.element( 1, JSONNull.getInstance() );
+      Assertions.assertEquals( JSONNull.getInstance(), array.get( 1 ) );
+   }
+
+   public void testElement_index_1_JSONFunction() {
+      JSONArray array = new JSONArray();
+      JSONFunction f = new JSONFunction( "return this;" );
+      array.element( 1, f );
+      Assertions.assertEquals( f, (JSONFunction) array.get( 1 ) );
+   }
+
+   public void testElement_index_1_JSONString() {
+      JSONArray array = new JSONArray();
+      ArrayJSONStringBean bean = new ArrayJSONStringBean();
+      bean.setValue( "'json','json'" );
+      array.element( 1, bean );
+      Assertions.assertEquals( JSONArray.fromObject( bean ), array.getJSONArray( 1 ) );
+   }
+
+   public void testElement_index_1_JSONTokener() {
+      JSONArray array = new JSONArray();
+      JSONTokener tok = new JSONTokener( "[1,2]" );
+      array.element( 1, tok );
+      tok.reset();
+      Assertions.assertEquals( JSONArray.fromObject( tok ), array.getJSONArray( 1 ) );
+   }
+
+   public void testElement_index_1_long() {
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( 1, 1L );
+      assertEquals( 2, jsonArray.size() );
+      assertEquals( JSONNull.getInstance(), jsonArray.get( 0 ) );
+      assertEquals( 1L, jsonArray.getLong( 1 ) );
+   }
+
+   public void testElement_index_1_Map() {
+      Map map = new HashMap();
+      map.put( "name", "json" );
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( 1, map );
+      assertEquals( 2, jsonArray.size() );
+      assertEquals( JSONNull.getInstance(), jsonArray.get( 0 ) );
+      Assertions.assertEquals( JSONObject.fromObject( map ), jsonArray.getJSONObject( 1 ) );
+   }
+
+   public void testElement_index_1_Number() {
+      JSONArray array = new JSONArray();
+      array.element( 1, new Double( 2 ) );
+      Assertions.assertEquals( new Double( 2 ).doubleValue(), array.getDouble( 1 ), 1d );
+   }
+
+   public void testElement_index_1_Object() {
+      JSONArray array = new JSONArray();
+      array.element( 1, new BeanA() );
+      Assertions.assertEquals( JSONObject.fromObject( new BeanA() ), array.getJSONObject( 1 ) );
+   }
+
+   public void testElement_index_1_String() {
+      JSONArray array = new JSONArray();
+      array.element( 1, "json" );
+      Assertions.assertEquals( "json", array.getString( 1 ) );
+   }
+
+   public void testElement_index_1_String_JSON() {
+      JSONArray array = new JSONArray();
+      array.element( 1, "[]" );
+      Assertions.assertEquals( new JSONArray().toString(), array.getString( 1 ) );
+   }
+
+   public void testElement_index_1_String_null() {
+      JSONArray array = new JSONArray();
+      array.element( 1, (String) null );
+      Assertions.assertEquals( "", array.getString( 1 ) );
+   }
+
+   public void testElement_int() {
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( 1 );
+      assertEquals( 1, jsonArray.size() );
+      assertEquals( 1, jsonArray.getInt( 0 ) );
+   }
+
+   public void testElement_JSON() {
+      JSONArray array = new JSONArray();
+      array.element( JSONNull.getInstance() );
+      Assertions.assertEquals( JSONNull.getInstance(), array.get( 0 ) );
+   }
+
+   public void testElement_JSONFunction() {
+      JSONArray array = new JSONArray();
+      JSONFunction f = new JSONFunction( "return this;" );
+      array.element( f );
+      Assertions.assertEquals( f, (JSONFunction) array.get( 0 ) );
+   }
+
+   public void testElement_JSONString() {
+      JSONArray array = new JSONArray();
+      ArrayJSONStringBean bean = new ArrayJSONStringBean();
+      bean.setValue( "'json','json'" );
+      array.element( bean );
+      Assertions.assertEquals( JSONArray.fromObject( bean ), array.getJSONArray( 0 ) );
+   }
+
+   public void testElement_JSONTokener() {
+      JSONArray array = new JSONArray();
+      JSONTokener tok = new JSONTokener( "[1,2]" );
+      array.element( tok );
+      tok.reset();
+      Assertions.assertEquals( JSONArray.fromObject( tok ), array.getJSONArray( 0 ) );
+   }
+
+   public void testElement_long() {
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( 1L );
+      assertEquals( 1, jsonArray.size() );
+      assertEquals( 1L, jsonArray.getLong( 0 ) );
+   }
+
+   public void testElement_Map() {
+      Map map = new HashMap();
+      map.put( "name", "json" );
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( map );
+      assertEquals( 1, jsonArray.size() );
+      Assertions.assertEquals( JSONObject.fromObject( map ), jsonArray.getJSONObject( 0 ) );
+   }
+
+   public void testElement_negativeIndex() {
+      try{
+         JSONArray jsonArray = new JSONArray();
+         jsonArray.element( -1, JSONNull.getInstance() );
+         fail( "Expected a JSONException" );
+      }catch( JSONException expected ){
+         // OK
+      }
+   }
+
+   public void testElement_Number() {
+      JSONArray array = new JSONArray();
+      array.element( new Double( 2 ) );
+      Assertions.assertEquals( new Double( 2 ).doubleValue(), array.getDouble( 0 ), 0d );
+   }
+
+   public void testElement_Object() {
+      JSONArray array = new JSONArray();
+      array.element( new BeanA() );
+      Assertions.assertEquals( JSONObject.fromObject( new BeanA() ), array.getJSONObject( 0 ) );
+   }
+
+   public void testElement_replace() {
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.element( true );
+      assertEquals( 1, jsonArray.size() );
+      assertTrue( jsonArray.getBoolean( 0 ) );
+      jsonArray.element( 0, false );
+      assertEquals( 1, jsonArray.size() );
+      assertFalse( jsonArray.getBoolean( 0 ) );
+   }
+
+   public void testElement_String() {
+      JSONArray array = new JSONArray();
+      array.element( "json" );
+      Assertions.assertEquals( "json", array.getString( 0 ) );
+   }
+
+   public void testElement_String_JSON() {
+      JSONArray array = new JSONArray();
+      array.element( "[]" );
+      Assertions.assertEquals( new JSONArray().toString(), array.getString( 0 ) );
+   }
+
+   public void testElement_String_null() {
+      JSONArray array = new JSONArray();
+      array.element( (String) null );
+      Assertions.assertEquals( "", array.getString( 0 ) );
+   }
+
+   public void testFromObject_BigDecimal() {
       JSONArray actual = JSONArray.fromObject( new BigDecimal( "12345678901234567890.1234567890" ) );
       assertTrue( actual.get( 0 ) instanceof BigDecimal );
    }
 
-   public void testFromObject_BigInteger()
-   {
+   public void testFromObject_BigInteger() {
       JSONArray actual = JSONArray.fromObject( new BigInteger( "123456789012345678901234567890" ) );
       assertTrue( actual.get( 0 ) instanceof BigInteger );
    }
 
-   public void testFromObject_Boolean()
-   {
+   public void testFromObject_Boolean() {
       JSONArray expected = JSONArray.fromObject( "[true]" );
       JSONArray actual = JSONArray.fromObject( Boolean.TRUE );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testFromObject_Byte()
-   {
+   public void testFromObject_Byte() {
       JSONArray expected = JSONArray.fromObject( "[1]" );
       JSONArray actual = JSONArray.fromObject( new Byte( (byte) 1 ) );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testFromObject_Double()
-   {
+   public void testFromObject_Double() {
       JSONArray expected = JSONArray.fromObject( "[1.0]" );
       JSONArray actual = JSONArray.fromObject( new Double( 1d ) );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testFromObject_Float()
-   {
+   public void testFromObject_Float() {
       JSONArray expected = JSONArray.fromObject( "[1.0]" );
       JSONArray actual = JSONArray.fromObject( new Float( 1f ) );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testFromObject_Integer()
-   {
+   public void testFromObject_Integer() {
       JSONArray expected = JSONArray.fromObject( "[1]" );
       JSONArray actual = JSONArray.fromObject( new Integer( 1 ) );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testFromObject_JSONArray()
-   {
+   public void testFromObject_JSONArray() {
       JSONArray expected = JSONArray.fromObject( "[1,2]" );
       JSONArray actual = JSONArray.fromObject( JSONArray.fromObject( "[1,2]" ) );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testFromObject_JSONFunction()
-   {
+   public void testFromObject_JSONFunction() {
       JSONArray expected = JSONArray.fromObject( "[function(a){ return a; }]" );
       JSONArray actual = JSONArray.fromObject( new JSONFunction( new String[] { "a" }, "return a;" ) );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testFromObject_JSONString()
-   {
+   public void testFromObject_JSONString() {
       ArrayJSONStringBean bean = new ArrayJSONStringBean();
       bean.setValue( "'json','json'" );
       JSONArray actual = JSONArray.fromObject( bean );
@@ -423,86 +721,73 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testFromObject_Long()
-   {
+   public void testFromObject_Long() {
       JSONArray expected = JSONArray.fromObject( "[1]" );
       JSONArray actual = JSONArray.fromObject( new Long( 1L ) );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testFromObject_Map()
-   {
+   public void testFromObject_Map() {
       JSONArray expected = JSONArray.fromObject( "[{}]" );
       JSONArray actual = JSONArray.fromObject( new HashMap() );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testFromObject_Short()
-   {
+   public void testFromObject_Short() {
       JSONArray expected = JSONArray.fromObject( "[1]" );
       JSONArray actual = JSONArray.fromObject( new Short( (short) 1 ) );
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testGet_exception()
-   {
+   public void testGet_exception() {
       try{
          JSONArray jsonArray = JSONArray.fromObject( "[]" );
          jsonArray.get( 0 );
          fail( "Expected a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
    }
 
-   public void testGetBoolean_exception()
-   {
+   public void testGetBoolean_exception() {
       try{
          JSONArray jsonArray = JSONArray.fromObject( "[[]]" );
          jsonArray.getBoolean( 0 );
          fail( "Expected a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
    }
 
-   public void testGetBoolean_false()
-   {
+   public void testGetBoolean_false() {
       JSONArray jsonArray = JSONArray.fromObject( "[false]" );
       assertFalse( jsonArray.getBoolean( 0 ) );
    }
 
-   public void testGetBoolean_true()
-   {
+   public void testGetBoolean_true() {
       JSONArray jsonArray = JSONArray.fromObject( "[true]" );
       assertTrue( jsonArray.getBoolean( 0 ) );
    }
 
-   public void testGetDimensions_empty_array()
-   {
+   public void testGetDimensions_empty_array() {
       int[] dims = JSONArray.getDimensions( new JSONArray() );
       assertEquals( 1, dims.length );
       assertEquals( 0, dims[0] );
    }
 
-   public void testGetDimensions_null_array()
-   {
+   public void testGetDimensions_null_array() {
       int[] dims = JSONArray.getDimensions( null );
       assertEquals( 1, dims.length );
       assertEquals( 0, dims[0] );
    }
 
-   public void testGetDimensions_one_dimension()
-   {
+   public void testGetDimensions_one_dimension() {
       int[] dims = JSONArray.getDimensions( JSONArray.fromObject( "[1,2,3]" ) );
       assertEquals( 1, dims.length );
       assertEquals( 3, dims[0] );
    }
 
-   public void testGetDimensions_pyramid()
-   {
+   public void testGetDimensions_pyramid() {
       int[] dims = JSONArray.getDimensions( JSONArray.fromObject( "[1,[2,[3,[4]]]]" ) );
       assertEquals( 4, dims.length );
       assertEquals( 2, dims[0] );
@@ -518,8 +803,7 @@ public class TestJSONArray extends TestCase
       assertEquals( 1, dims[3] );
    }
 
-   public void testGetDimensions_two_dimension()
-   {
+   public void testGetDimensions_two_dimension() {
       int[] dims = JSONArray.getDimensions( JSONArray.fromObject( "[[1,2,3],[4,5,6]]" ) );
       assertEquals( 2, dims.length );
       assertEquals( 2, dims[0] );
@@ -536,137 +820,115 @@ public class TestJSONArray extends TestCase
       assertEquals( 3, dims[1] );
    }
 
-   public void testGetDouble_exception()
-   {
+   public void testGetDouble_exception() {
       try{
          JSONArray jsonArray = JSONArray.fromObject( "[[]]" );
          jsonArray.getDouble( 0 );
          fail( "Expected a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
    }
 
-   public void testGetDouble_Number()
-   {
+   public void testGetDouble_Number() {
       JSONArray jsonArray = JSONArray.fromObject( "[2.0]" );
       assertEquals( 2.0d, jsonArray.getDouble( 0 ), 0d );
    }
 
-   public void testGetDouble_String()
-   {
+   public void testGetDouble_String() {
       JSONArray jsonArray = JSONArray.fromObject( "[\"2.0\"]" );
       assertEquals( 2.0d, jsonArray.getDouble( 0 ), 0d );
    }
 
-   public void testGetInt_exception()
-   {
+   public void testGetInt_exception() {
       try{
          JSONArray jsonArray = JSONArray.fromObject( "[[]]" );
          jsonArray.getInt( 0 );
          fail( "Expected a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
    }
 
-   public void testGetInt_Number()
-   {
+   public void testGetInt_Number() {
       JSONArray jsonArray = JSONArray.fromObject( "[2.0]" );
       assertEquals( 2, jsonArray.getInt( 0 ) );
    }
 
-   public void testGetInt_String()
-   {
+   public void testGetInt_String() {
       JSONArray jsonArray = JSONArray.fromObject( "[\"2.0\"]" );
       assertEquals( 2, jsonArray.getInt( 0 ) );
    }
 
-   public void testGetJSONArray()
-   {
+   public void testGetJSONArray() {
       JSONArray jsonArray = JSONArray.fromObject( "[[1,2]]" );
       Assertions.assertEquals( JSONArray.fromObject( "[1,2]" )
             .toString(), jsonArray.getJSONArray( 0 )
             .toString() );
    }
 
-   public void testGetJSONArray_exception()
-   {
+   public void testGetJSONArray_exception() {
       try{
          JSONArray jsonArray = JSONArray.fromObject( "[1]" );
          jsonArray.getJSONArray( 0 );
          fail( "Expected a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
    }
 
-   public void testGetJSONObject()
-   {
+   public void testGetJSONObject() {
       JSONArray jsonArray = JSONArray.fromObject( "[{\"name\":\"json\"}]" );
       Assertions.assertEquals( JSONObject.fromObject( "{\"name\":\"json\"}" ),
             jsonArray.getJSONObject( 0 ) );
    }
 
-   public void testGetJSONObject_exception()
-   {
+   public void testGetJSONObject_exception() {
       try{
          JSONArray jsonArray = JSONArray.fromObject( "[1]" );
          jsonArray.getJSONObject( 0 );
          fail( "Expected a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
    }
 
-   public void testGetLong_exception()
-   {
+   public void testGetLong_exception() {
       try{
          JSONArray jsonArray = JSONArray.fromObject( "[[]]" );
          jsonArray.getLong( 0 );
          fail( "Expected a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
    }
 
-   public void testGetLong_Number()
-   {
+   public void testGetLong_Number() {
       JSONArray jsonArray = JSONArray.fromObject( "[2.0]" );
       assertEquals( 2, jsonArray.getLong( 0 ) );
    }
 
-   public void testGetLong_String()
-   {
+   public void testGetLong_String() {
       JSONArray jsonArray = JSONArray.fromObject( "[\"2.0\"]" );
       assertEquals( 2, jsonArray.getLong( 0 ) );
    }
 
-   public void testGetString()
-   {
+   public void testGetString() {
       JSONArray jsonArray = JSONArray.fromObject( "[\"2.0\"]" );
       assertEquals( "2.0", jsonArray.getString( 0 ) );
    }
 
-   public void testGetString_exception()
-   {
+   public void testGetString_exception() {
       try{
          JSONArray jsonArray = JSONArray.fromObject( "[]" );
          jsonArray.getString( 0 );
          fail( "Expected a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // OK
       }
    }
 
-   public void testOptionalGet()
-   {
+   public void testOptionalGet() {
       Object[] params = new Object[] { new JSONArray(), JSONObject.fromObject( "{\"int\":1}" ) };
       JSONArray jsonArray = JSONArray.fromObject( params );
       assertFalse( jsonArray.optBoolean( 0 ) );
@@ -685,420 +947,14 @@ public class TestJSONArray extends TestCase
       assertEquals( "json", jsonArray.optString( 3, "json" ) );
    }
 
-   public void testPut_Array()
-   {
-      JSONArray array = new JSONArray();
-      int[] ints = { 1, 2 };
-      array.put( ints );
-      Assertions.assertEquals( JSONArray.fromObject( ints ), array.getJSONArray( 0 ) );
-   }
-
-   public void testPut_boolean()
-   {
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( true );
-      assertEquals( 1, jsonArray.length() );
-      assertTrue( jsonArray.getBoolean( 0 ) );
-   }
-
-   public void testPut_Boolean()
-   {
-      JSONArray array = new JSONArray();
-      array.put( Boolean.TRUE );
-      Assertions.assertTrue( array.getBoolean( 0 ) );
-   }
-
-   public void testPut_Collection()
-   {
-      List l = new ArrayList();
-      l.add( Boolean.TRUE );
-      l.add( new Integer( 1 ) );
-      l.add( "string" );
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( l );
-      assertEquals( 1, jsonArray.length() );
-      Assertions.assertEquals( JSONArray.fromObject( "[true,1,\"string\"]" ),
-            jsonArray.getJSONArray( 0 ) );
-   }
-
-   public void testPut_double()
-   {
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( 2.0d );
-      assertEquals( 1, jsonArray.length() );
-      assertEquals( 2.0d, jsonArray.getDouble( 0 ), 0d );
-   }
-
-   public void testPut_index_0_Array()
-   {
-      JSONArray array = JSONArray.fromObject( "[null,null]" );
-      ;
-      int[] ints = { 0, 2 };
-      array.put( 0, ints );
-      Assertions.assertEquals( JSONArray.fromObject( ints ), array.getJSONArray( 0 ) );
-   }
-
-   public void testPut_index_0_Boolean()
-   {
-      JSONArray array = JSONArray.fromObject( "[null,null]" );
-      ;
-      array.put( 0, Boolean.TRUE );
-      Assertions.assertTrue( array.getBoolean( 0 ) );
-   }
-
-   public void testPut_index_0_Class()
-   {
-      JSONArray array = JSONArray.fromObject( "[null,null]" );
-      array.put( 0, Object.class );
-      Assertions.assertEquals( "java.lang.Object", array.getString( 0 ) );
-   }
-
-   public void testPut_index_0_JSON()
-   {
-      JSONArray array = JSONArray.fromObject( "[null,null]" );
-      array.put( 0, JSONNull.getInstance() );
-      Assertions.assertEquals( JSONNull.getInstance(), array.get( 0 ) );
-   }
-
-   public void testPut_index_0_JSONFunction()
-   {
-      JSONArray array = JSONArray.fromObject( "[null,null]" );
-      JSONFunction f = new JSONFunction( "return this;" );
-      array.put( 0, f );
-      Assertions.assertEquals( f, (JSONFunction) array.get( 0 ) );
-   }
-
-   public void testPut_index_0_JSONString()
-   {
-      JSONArray array = JSONArray.fromObject( "[null,null]" );
-      ArrayJSONStringBean bean = new ArrayJSONStringBean();
-      bean.setValue( "'json','json'" );
-      array.put( 0, bean );
-      Assertions.assertEquals( JSONArray.fromJSONString( bean ), array.getJSONArray( 0 ) );
-   }
-
-   public void testPut_index_0_JSONTokener()
-   {
-      JSONArray array = JSONArray.fromObject( "[null,null]" );
-      JSONTokener tok = new JSONTokener( "[0,2]" );
-      array.put( 0, tok );
-      tok.reset();
-      Assertions.assertEquals( JSONArray.fromObject( tok ), array.getJSONArray( 0 ) );
-   }
-
-   public void testPut_index_0_Number()
-   {
-      JSONArray array = JSONArray.fromObject( "[null,null]" );
-      array.put( 0, new Double( 2 ) );
-      Assertions.assertEquals( new Double( 2 ).doubleValue(), array.getDouble( 0 ), 0d );
-   }
-
-   public void testPut_index_0_Object()
-   {
-      JSONArray array = JSONArray.fromObject( "[null,null]" );
-      array.put( 0, new BeanA() );
-      Assertions.assertEquals( JSONObject.fromBean( new BeanA() ), array.getJSONObject( 0 ) );
-   }
-
-   public void testPut_index_0_String()
-   {
-      JSONArray array = JSONArray.fromObject( "[null,null]" );
-      array.put( 0, "json" );
-      Assertions.assertEquals( "json", array.getString( 0 ) );
-   }
-
-   public void testPut_index_0_String_JSON()
-   {
-      JSONArray array = JSONArray.fromObject( "[null,null]" );
-      array.put( 0, "[]" );
-      Assertions.assertEquals( new JSONArray().toString(), array.getString( 0 ) );
-   }
-
-   public void testPut_index_0_String_null()
-   {
-      JSONArray array = JSONArray.fromObject( "[null,null]" );
-      array.put( 0, (String) null );
-      Assertions.assertEquals( "", array.getString( 0 ) );
-   }
-
-   public void testPut_index_1_Array()
-   {
-      JSONArray array = new JSONArray();
-      int[] ints = { 1, 2 };
-      array.put( 1, ints );
-      Assertions.assertEquals( JSONArray.fromObject( ints ), array.getJSONArray( 1 ) );
-   }
-
-   public void testPut_index_1_boolean()
-   {
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( 1, true );
-      assertEquals( 2, jsonArray.length() );
-      assertEquals( JSONNull.getInstance(), jsonArray.get( 0 ) );
-      assertTrue( jsonArray.getBoolean( 1 ) );
-   }
-
-   public void testPut_index_1_Boolean()
-   {
-      JSONArray array = new JSONArray();
-      array.put( 1, Boolean.TRUE );
-      Assertions.assertTrue( array.getBoolean( 1 ) );
-   }
-
-   public void testPut_index_1_Class()
-   {
-      JSONArray array = new JSONArray();
-      array.put( 1, Object.class );
-      Assertions.assertEquals( "java.lang.Object", array.getString( 1 ) );
-   }
-
-   public void testPut_index_1_Collection()
-   {
-      List l = new ArrayList();
-      l.add( Boolean.TRUE );
-      l.add( new Integer( 1 ) );
-      l.add( "string" );
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( 1, l );
-      assertEquals( 2, jsonArray.length() );
-      assertEquals( JSONNull.getInstance(), jsonArray.get( 0 ) );
-      Assertions.assertEquals( JSONArray.fromObject( "[true,1,\"string\"]" ),
-            jsonArray.getJSONArray( 1 ) );
-   }
-
-   public void testPut_index_1_double()
-   {
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( 1, 2.0d );
-      assertEquals( 2, jsonArray.length() );
-      assertEquals( JSONNull.getInstance(), jsonArray.get( 0 ) );
-      assertEquals( 2.0d, jsonArray.getDouble( 1 ), 0d );
-   }
-
-   public void testPut_index_1_int()
-   {
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( 1, 1 );
-      assertEquals( 2, jsonArray.length() );
-      assertEquals( JSONNull.getInstance(), jsonArray.get( 0 ) );
-      assertEquals( 1, jsonArray.getInt( 1 ) );
-   }
-
-   public void testPut_index_1_JSON()
-   {
-      JSONArray array = new JSONArray();
-      array.put( 1, JSONNull.getInstance() );
-      Assertions.assertEquals( JSONNull.getInstance(), array.get( 1 ) );
-   }
-
-   public void testPut_index_1_JSONFunction()
-   {
-      JSONArray array = new JSONArray();
-      JSONFunction f = new JSONFunction( "return this;" );
-      array.put( 1, f );
-      Assertions.assertEquals( f, (JSONFunction) array.get( 1 ) );
-   }
-
-   public void testPut_index_1_JSONString()
-   {
-      JSONArray array = new JSONArray();
-      ArrayJSONStringBean bean = new ArrayJSONStringBean();
-      bean.setValue( "'json','json'" );
-      array.put( 1, bean );
-      Assertions.assertEquals( JSONArray.fromJSONString( bean ), array.getJSONArray( 1 ) );
-   }
-
-   public void testPut_index_1_JSONTokener()
-   {
-      JSONArray array = new JSONArray();
-      JSONTokener tok = new JSONTokener( "[1,2]" );
-      array.put( 1, tok );
-      tok.reset();
-      Assertions.assertEquals( JSONArray.fromObject( tok ), array.getJSONArray( 1 ) );
-   }
-
-   public void testPut_index_1_long()
-   {
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( 1, 1L );
-      assertEquals( 2, jsonArray.length() );
-      assertEquals( JSONNull.getInstance(), jsonArray.get( 0 ) );
-      assertEquals( 1L, jsonArray.getLong( 1 ) );
-   }
-
-   public void testPut_index_1_Map()
-   {
-      Map map = new HashMap();
-      map.put( "name", "json" );
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( 1, map );
-      assertEquals( 2, jsonArray.length() );
-      assertEquals( JSONNull.getInstance(), jsonArray.get( 0 ) );
-      Assertions.assertEquals( JSONObject.fromObject( map ), jsonArray.getJSONObject( 1 ) );
-   }
-
-   public void testPut_index_1_Number()
-   {
-      JSONArray array = new JSONArray();
-      array.put( 1, new Double( 2 ) );
-      Assertions.assertEquals( new Double( 2 ).doubleValue(), array.getDouble( 1 ), 1d );
-   }
-
-   public void testPut_index_1_Object()
-   {
-      JSONArray array = new JSONArray();
-      array.put( 1, new BeanA() );
-      Assertions.assertEquals( JSONObject.fromBean( new BeanA() ), array.getJSONObject( 1 ) );
-   }
-
-   public void testPut_index_1_String()
-   {
-      JSONArray array = new JSONArray();
-      array.put( 1, "json" );
-      Assertions.assertEquals( "json", array.getString( 1 ) );
-   }
-
-   public void testPut_index_1_String_JSON()
-   {
-      JSONArray array = new JSONArray();
-      array.put( 1, "[]" );
-      Assertions.assertEquals( new JSONArray().toString(), array.getString( 1 ) );
-   }
-
-   public void testPut_index_1_String_null()
-   {
-      JSONArray array = new JSONArray();
-      array.put( 1, (String) null );
-      Assertions.assertEquals( "", array.getString( 1 ) );
-   }
-
-   public void testPut_int()
-   {
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( 1 );
-      assertEquals( 1, jsonArray.length() );
-      assertEquals( 1, jsonArray.getInt( 0 ) );
-   }
-
-   public void testPut_JSON()
-   {
-      JSONArray array = new JSONArray();
-      array.put( JSONNull.getInstance() );
-      Assertions.assertEquals( JSONNull.getInstance(), array.get( 0 ) );
-   }
-
-   public void testPut_JSONFunction()
-   {
-      JSONArray array = new JSONArray();
-      JSONFunction f = new JSONFunction( "return this;" );
-      array.put( f );
-      Assertions.assertEquals( f, (JSONFunction) array.get( 0 ) );
-   }
-
-   public void testPut_JSONString()
-   {
-      JSONArray array = new JSONArray();
-      ArrayJSONStringBean bean = new ArrayJSONStringBean();
-      bean.setValue( "'json','json'" );
-      array.put( bean );
-      Assertions.assertEquals( JSONArray.fromJSONString( bean ), array.getJSONArray( 0 ) );
-   }
-
-   public void testPut_JSONTokener()
-   {
-      JSONArray array = new JSONArray();
-      JSONTokener tok = new JSONTokener( "[1,2]" );
-      array.put( tok );
-      tok.reset();
-      Assertions.assertEquals( JSONArray.fromObject( tok ), array.getJSONArray( 0 ) );
-   }
-
-   public void testPut_long()
-   {
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( 1L );
-      assertEquals( 1, jsonArray.length() );
-      assertEquals( 1L, jsonArray.getLong( 0 ) );
-   }
-
-   public void testPut_Map()
-   {
-      Map map = new HashMap();
-      map.put( "name", "json" );
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( map );
-      assertEquals( 1, jsonArray.length() );
-      Assertions.assertEquals( JSONObject.fromObject( map ), jsonArray.getJSONObject( 0 ) );
-   }
-
-   public void testPut_negativeIndex()
-   {
-      try{
-         JSONArray jsonArray = new JSONArray();
-         jsonArray.put( -1, JSONNull.getInstance() );
-         fail( "Expected a JSONException" );
-      }
-      catch( JSONException expected ){
-         // OK
-      }
-   }
-
-   public void testPut_Number()
-   {
-      JSONArray array = new JSONArray();
-      array.put( new Double( 2 ) );
-      Assertions.assertEquals( new Double( 2 ).doubleValue(), array.getDouble( 0 ), 0d );
-   }
-
-   public void testPut_Object()
-   {
-      JSONArray array = new JSONArray();
-      array.put( new BeanA() );
-      Assertions.assertEquals( JSONObject.fromBean( new BeanA() ), array.getJSONObject( 0 ) );
-   }
-
-   public void testPut_replace()
-   {
-      JSONArray jsonArray = new JSONArray();
-      jsonArray.put( true );
-      assertEquals( 1, jsonArray.length() );
-      assertTrue( jsonArray.getBoolean( 0 ) );
-      jsonArray.put( 0, false );
-      assertEquals( 1, jsonArray.length() );
-      assertFalse( jsonArray.getBoolean( 0 ) );
-   }
-
-   public void testPut_String()
-   {
-      JSONArray array = new JSONArray();
-      array.put( "json" );
-      Assertions.assertEquals( "json", array.getString( 0 ) );
-   }
-
-   public void testPut_String_JSON()
-   {
-      JSONArray array = new JSONArray();
-      array.put( "[]" );
-      Assertions.assertEquals( new JSONArray().toString(), array.getString( 0 ) );
-   }
-
-   public void testPut_String_null()
-   {
-      JSONArray array = new JSONArray();
-      array.put( (String) null );
-      Assertions.assertEquals( "", array.getString( 0 ) );
-   }
-
-   public void testToArray_bean_element()
-   {
+   public void testToArray_bean_element() {
       BeanA[] expected = new BeanA[] { new BeanA() };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray, BeanA.class );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_BigDecimal()
-   {
+   public void testToArray_BigDecimal() {
       BigDecimal[] expected = new BigDecimal[] { MorphUtils.BIGDECIMAL_ZERO,
             MorphUtils.BIGDECIMAL_ONE };
       JSONArray jsonArray = JSONArray.fromObject( expected );
@@ -1106,40 +962,35 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_BigInteger()
-   {
+   public void testToArray_BigInteger() {
       BigInteger[] expected = new BigInteger[] { BigInteger.ZERO, BigInteger.ONE };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_boolean()
-   {
+   public void testToArray_boolean() {
       boolean[] expected = new boolean[] { true, false };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_Boolean()
-   {
+   public void testToArray_Boolean() {
       Boolean[] expected = new Boolean[] { Boolean.TRUE, Boolean.FALSE };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_boolean_multi()
-   {
+   public void testToArray_boolean_multi() {
       boolean[][] expected = new boolean[][] { { true, false }, { false, true } };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_byte()
-   {
+   public void testToArray_byte() {
       byte[] input = new byte[] { 1, 2, 3, 4, 5, 6 };
       int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
       JSONArray jsonArray = JSONArray.fromObject( input );
@@ -1147,8 +998,7 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_Byte()
-   {
+   public void testToArray_Byte() {
       Integer[] expected = new Integer[] { new Integer( 1 ), new Integer( 2 ) };
       Byte[] bytes = new Byte[] { new Byte( (byte) 1 ), new Byte( (byte) 2 ) };
       JSONArray jsonArray = JSONArray.fromObject( bytes );
@@ -1156,8 +1006,7 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_byte_multi()
-   {
+   public void testToArray_byte_multi() {
       byte[][] input = new byte[][] { { 1, 2, 3 }, { 4, 5, 6 } };
       int[][] expected = new int[][] { { 1, 2, 3 }, { 4, 5, 6 } };
       JSONArray jsonArray = JSONArray.fromObject( input );
@@ -1165,24 +1014,21 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_char()
-   {
+   public void testToArray_char() {
       char[] expected = new char[] { 'A', 'B' };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_char_multi()
-   {
+   public void testToArray_char_multi() {
       char[][] expected = new char[][] { { 'a', 'b' }, { 'c', 'd' } };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_Character()
-   {
+   public void testToArray_Character() {
       String[] expected = { "A", "B" };
       Character[] chars = new Character[] { new Character( 'A' ), new Character( 'B' ) };
       JSONArray jsonArray = JSONArray.fromObject( chars );
@@ -1190,48 +1036,42 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_double()
-   {
+   public void testToArray_double() {
       double[] expected = new double[] { 1, 2, 3, 4, 5, 6 };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_Double()
-   {
+   public void testToArray_Double() {
       Double[] expected = new Double[] { new Double( 1d ), new Double( 2d ) };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_double_multi()
-   {
+   public void testToArray_double_multi() {
       double[][] expected = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_dynabean_element() throws Exception
-   {
+   public void testToArray_dynabean_element() throws Exception {
       DynaBean[] expected = new DynaBean[] { createDynaBean() };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_float()
-   {
+   public void testToArray_float() {
       float[] expected = new float[] { 1, 2, 3, 4, 5, 6 };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_Float()
-   {
+   public void testToArray_Float() {
       Double[] expected = new Double[] { new Double( 1d ), new Double( 2d ) };
       Float[] floats = new Float[] { new Float( 1f ), new Float( 2f ) };
       JSONArray jsonArray = JSONArray.fromObject( floats );
@@ -1239,40 +1079,35 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_float_multi()
-   {
+   public void testToArray_float_multi() {
       float[][] expected = new float[][] { { 1, 2, 3 }, { 4, 5, 6 } };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_int()
-   {
+   public void testToArray_int() {
       int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_int_multi()
-   {
+   public void testToArray_int_multi() {
       int[][] expected = new int[][] { { 1, 2, 3 }, { 4, 5, 6 } };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_Integer()
-   {
+   public void testToArray_Integer() {
       Integer[] expected = new Integer[] { new Integer( 1 ), new Integer( 2 ) };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_long()
-   {
+   public void testToArray_long() {
       long[] input = new long[] { 1, 2, 3, 4, 5, 6 };
       int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
       JSONArray jsonArray = JSONArray.fromObject( input );
@@ -1280,8 +1115,7 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_Long()
-   {
+   public void testToArray_Long() {
       Integer[] expected = new Integer[] { new Integer( 1 ), new Integer( 2 ) };
       Long[] longs = new Long[] { new Long( 1L ), new Long( 2L ) };
       JSONArray jsonArray = JSONArray.fromObject( longs );
@@ -1289,8 +1123,7 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_long_multi()
-   {
+   public void testToArray_long_multi() {
       long[][] input = new long[][] { { 1, 2, 3 }, { 4, 5, 6 } };
       int[][] expected = new int[][] { { 1, 2, 3 }, { 4, 5, 6 } };
       JSONArray jsonArray = JSONArray.fromObject( input );
@@ -1298,8 +1131,7 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_Long2()
-   {
+   public void testToArray_Long2() {
       Long[] expected = new Long[] { new Long( Integer.MAX_VALUE + 1L ),
             new Long( Integer.MAX_VALUE + 2L ) };
       JSONArray jsonArray = JSONArray.fromObject( expected );
@@ -1307,16 +1139,14 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_null_elements()
-   {
+   public void testToArray_null_elements() {
       String[] expected = new String[] { null, null, null };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_short()
-   {
+   public void testToArray_short() {
       short[] input = new short[] { 1, 2, 3, 4, 5, 6 };
       int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
       JSONArray jsonArray = JSONArray.fromObject( input );
@@ -1324,8 +1154,7 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_Short()
-   {
+   public void testToArray_Short() {
       Integer[] expected = new Integer[] { new Integer( 1 ), new Integer( 2 ) };
       Short[] shorts = new Short[] { new Short( (short) 1 ), new Short( (short) 2 ) };
       JSONArray jsonArray = JSONArray.fromObject( shorts );
@@ -1333,8 +1162,7 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_short_multi()
-   {
+   public void testToArray_short_multi() {
       short[][] input = new short[][] { { 1, 2, 3 }, { 4, 5, 6 } };
       int[][] expected = new int[][] { { 1, 2, 3 }, { 4, 5, 6 } };
       JSONArray jsonArray = JSONArray.fromObject( input );
@@ -1342,24 +1170,21 @@ public class TestJSONArray extends TestCase
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_String()
-   {
+   public void testToArray_String() {
       String[] expected = new String[] { "1", "2", "3", "4", "5", "6" };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToArray_String_multi()
-   {
+   public void testToArray_String_multi() {
       String[][] expected = new String[][] { { "1", "2", "3" }, { "4", "5", "6" } };
       JSONArray jsonArray = JSONArray.fromObject( expected );
       Object[] actual = JSONArray.toArray( jsonArray );
       ArrayAssertions.assertEquals( expected, actual );
    }
 
-   public void testToJSONObject()
-   {
+   public void testToJSONObject() {
       JSONArray jsonArray = JSONArray.fromObject( "[\"json\",1,true]" );
       JSONObject expected = JSONObject.fromObject( "{\"string\":\"json\",\"int\":1,\"bool\":true}" );
       JSONArray names = JSONArray.fromObject( "['string','int','bool']" );
@@ -1367,16 +1192,14 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, jsonArray.toJSONObject( names ) );
    }
 
-   public void testToJSONObject_null_object()
-   {
+   public void testToJSONObject_null_object() {
       JSONArray jsonArray = new JSONArray();
       assertNull( jsonArray.toJSONObject( null ) );
       assertNull( jsonArray.toJSONObject( new JSONArray() ) );
       assertNull( jsonArray.toJSONObject( JSONArray.fromObject( "['json']" ) ) );
    }
 
-   public void testToList_bean_elements()
-   {
+   public void testToList_bean_elements() {
       List expected = new ArrayList();
       expected.add( new BeanA() );
       JSONArray jsonArray = JSONArray.fromObject( expected );
@@ -1384,8 +1207,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_BigDecimal()
-   {
+   public void testToList_BigDecimal() {
       List expected = new ArrayList();
       expected.add( MorphUtils.BIGDECIMAL_ZERO );
       expected.add( MorphUtils.BIGDECIMAL_ONE );
@@ -1394,8 +1216,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_BigInteger()
-   {
+   public void testToList_BigInteger() {
       List expected = new ArrayList();
       expected.add( BigInteger.ZERO );
       expected.add( BigInteger.ONE );
@@ -1404,8 +1225,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_Boolean()
-   {
+   public void testToList_Boolean() {
       List expected = new ArrayList();
       expected.add( Boolean.TRUE );
       expected.add( Boolean.FALSE );
@@ -1414,8 +1234,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_Byte()
-   {
+   public void testToList_Byte() {
       List expected = new ArrayList();
       expected.add( new Integer( 1 ) );
       expected.add( new Integer( 2 ) );
@@ -1427,8 +1246,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_Character()
-   {
+   public void testToList_Character() {
       List expected = new ArrayList();
       expected.add( "A" );
       expected.add( "B" );
@@ -1440,8 +1258,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_Double()
-   {
+   public void testToList_Double() {
       List expected = new ArrayList();
       expected.add( new Double( 1d ) );
       expected.add( new Double( 2d ) );
@@ -1450,8 +1267,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_dynaBean_elements() throws Exception
-   {
+   public void testToList_dynaBean_elements() throws Exception {
       List expected = new ArrayList();
       expected.add( createDynaBean() );
       JSONArray jsonArray = JSONArray.fromObject( expected );
@@ -1459,8 +1275,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_Float()
-   {
+   public void testToList_Float() {
       List expected = new ArrayList();
       expected.add( new Double( 1d ) );
       expected.add( new Double( 2d ) );
@@ -1472,8 +1287,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_Integer()
-   {
+   public void testToList_Integer() {
       List expected = new ArrayList();
       expected.add( new Integer( 1 ) );
       expected.add( new Integer( 2 ) );
@@ -1482,8 +1296,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_JSONFunction_elements()
-   {
+   public void testToList_JSONFunction_elements() {
       List expected = new ArrayList();
       expected.add( new JSONFunction( new String[] { "a" }, "return a;" ) );
       JSONArray jsonArray = JSONArray.fromObject( expected );
@@ -1491,8 +1304,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_JSONFunction_elements_2()
-   {
+   public void testToList_JSONFunction_elements_2() {
       List expected = new ArrayList();
       expected.add( "function(a){ return a; }" );
       JSONArray jsonArray = JSONArray.fromObject( expected );
@@ -1500,8 +1312,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_Long()
-   {
+   public void testToList_Long() {
       List expected = new ArrayList();
       expected.add( new Integer( 1 ) );
       expected.add( new Integer( 2 ) );
@@ -1513,8 +1324,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_Long2()
-   {
+   public void testToList_Long2() {
       List expected = new ArrayList();
       expected.add( new Long( Integer.MAX_VALUE + 1L ) );
       expected.add( new Long( Integer.MAX_VALUE + 2L ) );
@@ -1523,8 +1333,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_null_elements()
-   {
+   public void testToList_null_elements() {
       List expected = new ArrayList();
       expected.add( null );
       expected.add( null );
@@ -1534,8 +1343,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_Short()
-   {
+   public void testToList_Short() {
       List expected = new ArrayList();
       expected.add( new Integer( 1 ) );
       expected.add( new Integer( 2 ) );
@@ -1547,8 +1355,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_String()
-   {
+   public void testToList_String() {
       List expected = new ArrayList();
       expected.add( "A" );
       expected.add( "B" );
@@ -1557,8 +1364,7 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testToList_String_multi()
-   {
+   public void testToList_String_multi() {
       List a = new ArrayList();
       a.add( "a" );
       a.add( "b" );
@@ -1573,16 +1379,20 @@ public class TestJSONArray extends TestCase
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testWrite()
-   {
+   public void testWrite() {
       JSONArray jsonArray = JSONArray.fromObject( "[[],{},1,true,\"json\"]" );
       StringWriter sw = new StringWriter();
       jsonArray.write( sw );
       assertEquals( "[[],{},1,true,\"json\"]", sw.toString() );
    }
 
-   private MorphDynaBean createDynaBean() throws Exception
-   {
+   protected void setUp() throws Exception {
+      super.setUp();
+      JsonConfig.getInstance()
+            .reset();
+   }
+
+   private MorphDynaBean createDynaBean() throws Exception {
       Map properties = new HashMap();
       properties.put( "name", String.class );
       MorphDynaClass dynaClass = new MorphDynaClass( properties );
@@ -1593,13 +1403,11 @@ public class TestJSONArray extends TestCase
       return dynaBean;
    }
 
-   private void testJSONArray( Object array, String expected )
-   {
+   private void testJSONArray( Object array, String expected ) {
       try{
          JSONArray jsonArray = JSONArray.fromObject( array );
          assertEquals( expected, jsonArray.toString() );
-      }
-      catch( JSONException jsone ){
+      }catch( JSONException jsone ){
          fail( jsone.getMessage() );
       }
    }

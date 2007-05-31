@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,16 @@ package net.sf.json.regexp;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class TestPerl5RegexpMatcher extends AbstractRegexpMatcherTestCase
-{
-   public static void main( String[] args )
-   {
+public class TestPerl5RegexpMatcher extends AbstractRegexpMatcherTestCase {
+   public static void main( String[] args ) {
       junit.textui.TestRunner.run( TestPerl5RegexpMatcher.class );
    }
 
-   public TestPerl5RegexpMatcher( String name )
-   {
+   public TestPerl5RegexpMatcher( String name ) {
       super( name );
    }
 
-   protected RegexpMatcher getRegexpMatcher( String pattern )
-   {
+   protected RegexpMatcher getRegexpMatcher( String pattern ) {
       return new Perl5RegexpMatcher( pattern );
    }
 }

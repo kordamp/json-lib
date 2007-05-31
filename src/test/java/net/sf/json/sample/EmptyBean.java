@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@ import java.util.List;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class EmptyBean
-{
+public class EmptyBean {
    private Object[] arrayp;
    private Byte bytep;
    private Character charp;
@@ -34,103 +33,83 @@ public class EmptyBean
    private Short shortp;
    private String stringp;
 
-   public Object[] getArrayp()
-   {
+   public Object[] getArrayp() {
       return arrayp;
    }
 
-   public Byte getBytep()
-   {
+   public Byte getBytep() {
       return bytep;
    }
 
-   public Character getCharp()
-   {
+   public Character getCharp() {
       return charp;
    }
 
-   public Double getDoublep()
-   {
+   public Double getDoublep() {
       return doublep;
    }
 
-   public Float getFloatp()
-   {
+   public Float getFloatp() {
       return floatp;
    }
 
-   public Integer getIntp()
-   {
+   public Integer getIntp() {
       return intp;
    }
 
-   public List getListp()
-   {
+   public List getListp() {
       return listp;
    }
 
-   public Long getLongp()
-   {
+   public Long getLongp() {
       return longp;
    }
 
-   public Short getShortp()
-   {
+   public Short getShortp() {
       return shortp;
    }
 
-   public String getStringp()
-   {
+   public String getStringp() {
       return stringp;
    }
 
-   public void setArrayp( Object[] arrayp )
-   {
+   public void setArrayp( Object[] arrayp ) {
       this.arrayp = arrayp;
    }
 
-   public void setBytep( Byte bytep )
-   {
+   public void setBytep( Byte bytep ) {
       this.bytep = bytep;
    }
 
-   public void setCharp( Character charp )
-   {
+   public void setCharp( Character charp ) {
       this.charp = charp;
    }
 
-   public void setDoublep( Double doublep )
-   {
+   public void setDoublep( Double doublep ) {
       this.doublep = doublep;
    }
 
-   public void setFloatp( Float floatp )
-   {
+   public void setFloatp( Float floatp ) {
       this.floatp = floatp;
    }
 
-   public void setIntp( Integer intp )
-   {
+   public void setIntp( Integer intp ) {
       this.intp = intp;
    }
 
-   public void setListp( List listp )
-   {
+   public void setListp( List listp ) {
       this.listp = listp;
    }
 
-   public void setLongp( Long longp )
-   {
+   public void setLongp( Long longp ) {
       this.longp = longp;
    }
 
-   public void setShortp( Short shortp )
-   {
+   public void setShortp( Short shortp ) {
       this.shortp = shortp;
    }
 
-   public void setStringp( String stringp )
-   {
+   public void setStringp( String stringp ) {
       this.stringp = stringp;
    }
 }

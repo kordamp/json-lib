@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,27 +21,22 @@ import net.sf.json.JSONFunction;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class BeanWithFunc
-{
+public class BeanWithFunc {
    private JSONFunction function;
 
-   public BeanWithFunc( JSONFunction function )
-   {
+   public BeanWithFunc( JSONFunction function ) {
       this.function = function;
    }
 
-   public BeanWithFunc( String function )
-   {
+   public BeanWithFunc( String function ) {
       this.function = new JSONFunction( function );
    }
 
-   public JSONFunction getFunction()
-   {
+   public JSONFunction getFunction() {
       return function;
    }
 
-   public void setFunction( JSONFunction function )
-   {
+   public void setFunction( JSONFunction function ) {
       this.function = function;
    }
 }

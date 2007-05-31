@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * JSONFunction represents a javaScript function's text.
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
- * @version 4
  */
-public class JSONFunction implements Serializable
-{
+public class JSONFunction implements Serializable {
    /** constant array for empty parameters */
    private static final String[] EMPTY_PARAM_ARRAY = new String[0];
 
@@ -41,16 +39,14 @@ public class JSONFunction implements Serializable
    /**
     * Constructs a JSONFunction from a text representation
     */
-   public static JSONFunction parse( String str )
-   {
+   public static JSONFunction parse( String str ) {
       return parse( new JSONTokener( str ) );
    }
 
    /**
     * Constructs a JSONFunction from a text representation
     */
-   private static JSONFunction parse( JSONTokener x )
-   {
+   private static JSONFunction parse( JSONTokener x ) {
       Object v = x.nextValue();
       if( !JSONUtils.isFunctionHeader( v ) ){
          throw new JSONException( "String is not a function. " + v );
@@ -98,8 +94,7 @@ public class JSONFunction implements Serializable
     *
     * @param text The text of the function
     */
-   public JSONFunction( String text )
-   {
+   public JSONFunction( String text ) {
       this( null, text );
    }
 
@@ -109,8 +104,7 @@ public class JSONFunction implements Serializable
     * @param params The parameters of the function
     * @param text The text of the function
     */
-   public JSONFunction( String[] params, String text )
-   {
+   public JSONFunction( String[] params, String text ) {
       this.text = (text != null) ? text.trim() : "";
       if( params != null ){
          if( params.length == 1 && params[0].trim()
@@ -129,8 +123,7 @@ public class JSONFunction implements Serializable
       }
    }
 
-   public boolean equals( Object obj )
-   {
+   public boolean equals( Object obj ) {
       if( this == obj ){
          return true;
       }
@@ -160,21 +153,18 @@ public class JSONFunction implements Serializable
    /**
     * Returns the parameters of this function.
     */
-   public String[] getParams()
-   {
+   public String[] getParams() {
       return params;
    }
 
    /**
     * Reeturns the text of this function.
     */
-   public String getText()
-   {
+   public String getText() {
       return text;
    }
 
-   public int hashCode()
-   {
+   public int hashCode() {
       HashCodeBuilder builder = new HashCodeBuilder();
       for( int i = 0; i < params.length; i++ ){
          builder.append( params[i] );
@@ -186,8 +176,7 @@ public class JSONFunction implements Serializable
    /**
     * Returns the string representation of this function.
     */
-   public String toString()
-   {
+   public String toString() {
       StringBuffer b = new StringBuffer( "function(" );
       if( params.length > 0 ){
          for( int i = 0; i < params.length - 1; i++ ){

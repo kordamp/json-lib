@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,10 @@ import org.apache.commons.lang.StringUtils;
  * <li>WHITESPACE: deletes whitespace and non JavaIdentifierPart chars.</li>
  * <li>STRICT: always throws a JSONException, does not perform transformation.</li>
  * </ul>
- *
+ * 
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public abstract class JavaIdentifierTransformer
-{
+public abstract class JavaIdentifierTransformer {
    /** CamelCase transformer 'camel case' => 'camelCase' */
    public static final JavaIdentifierTransformer CAMEL_CASE = new CamelCaseJavaIdentifierTransformer();
    /** Noop transformer '@invalid' => '@invalid' */
@@ -52,11 +51,10 @@ public abstract class JavaIdentifierTransformer
 
    /**
     * Removes all non JavaIdentifier chars from the start of the string.
-    *
+    * 
     * @throws JSONException if the resulting string has zero length.
     */
-   protected final String shaveOffNonJavaIdentifierStartChars( String str )
-   {
+   protected final String shaveOffNonJavaIdentifierStartChars( String str ) {
       String str2 = str;
       // shave off first char if not valid
       boolean ready = false;
@@ -73,10 +71,8 @@ public abstract class JavaIdentifierTransformer
       return str2;
    }
 
-   private static final class CamelCaseJavaIdentifierTransformer extends JavaIdentifierTransformer
-   {
-      public String transformToJavaIdentifier( String str )
-      {
+   private static final class CamelCaseJavaIdentifierTransformer extends JavaIdentifierTransformer {
+      public String transformToJavaIdentifier( String str ) {
          if( str == null ){
             return null;
          }
@@ -105,25 +101,19 @@ public abstract class JavaIdentifierTransformer
       }
    }
 
-   private static final class NoopJavaIdentifierTransformer extends JavaIdentifierTransformer
-   {
-      public String transformToJavaIdentifier( String str )
-      {
+   private static final class NoopJavaIdentifierTransformer extends JavaIdentifierTransformer {
+      public String transformToJavaIdentifier( String str ) {
          return str;
       }
    }
 
-   private static final class StrictJavaIdentifierTransformer extends JavaIdentifierTransformer
-   {
-      public String transformToJavaIdentifier( String str )
-      {
+   private static final class StrictJavaIdentifierTransformer extends JavaIdentifierTransformer {
+      public String transformToJavaIdentifier( String str ) {
          throw new JSONException( "'" + str + "' is not a valid Java identifier." );
       }
    }
-   private static final class UnderscoreJavaIdentifierTransformer extends JavaIdentifierTransformer
-   {
-      public String transformToJavaIdentifier( String str )
-      {
+   private static final class UnderscoreJavaIdentifierTransformer extends JavaIdentifierTransformer {
+      public String transformToJavaIdentifier( String str ) {
          if( str == null ){
             return null;
          }
@@ -152,10 +142,8 @@ public abstract class JavaIdentifierTransformer
          return buf.toString();
       }
    }
-   private static final class WhiteSpaceJavaIdentifierTransformer extends JavaIdentifierTransformer
-   {
-      public String transformToJavaIdentifier( String str )
-      {
+   private static final class WhiteSpaceJavaIdentifierTransformer extends JavaIdentifierTransformer {
+      public String transformToJavaIdentifier( String str ) {
          if( str == null ){
             return null;
          }

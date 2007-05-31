@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ package net.sf.json;
  * behavior of using the Object's <code>toString()</code> method and quoting
  * the result.
  */
-public interface JSONString
-{
+public interface JSONString {
    /**
     * The <code>toJSONString</code> method allows a class to produce its own
     * JSON serialization.

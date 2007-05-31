@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,20 +21,17 @@ import java.util.regex.Pattern;
 
 /**
  * JDK 1.4+ RegexpMatcher implementation.
- *
+ * 
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class JdkRegexpMatcher implements RegexpMatcher
-{
+public class JdkRegexpMatcher implements RegexpMatcher {
    private final Pattern pattern;
 
-   public JdkRegexpMatcher( String pattern )
-   {
+   public JdkRegexpMatcher( String pattern ) {
       this.pattern = Pattern.compile( pattern );
    }
 
-   public String getGroupIfMatches( String str, int group )
-   {
+   public String getGroupIfMatches( String str, int group ) {
       Matcher matcher = pattern.matcher( str );
       if( matcher.matches() ){
          return matcher.group( group );
@@ -42,8 +39,7 @@ public class JdkRegexpMatcher implements RegexpMatcher
       return "";
    }
 
-   public boolean matches( String str )
-   {
+   public boolean matches( String str ) {
       return pattern.matcher( str )
             .matches();
    }

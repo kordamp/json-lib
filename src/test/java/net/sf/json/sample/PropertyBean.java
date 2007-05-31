@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,23 +19,19 @@ package net.sf.json.sample;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class PropertyBean
-{
+public class PropertyBean {
    private String propertyWithNoReadMethod;
    private final String propertyWithNoWriteMethod = "json";
 
-   public String getPropertyWithNoWriteMethod()
-   {
+   public String getPropertyWithNoWriteMethod() {
       return propertyWithNoWriteMethod;
    }
 
-   public void setPropertyWithNoReadMethod( String propertyWithNoReadMethod )
-   {
+   public void setPropertyWithNoReadMethod( String propertyWithNoReadMethod ) {
       this.propertyWithNoReadMethod = propertyWithNoReadMethod;
    }
 
-   public String valueOfPropertyWithNoReadMethod()
-   {
+   public String valueOfPropertyWithNoReadMethod() {
       return propertyWithNoReadMethod;
    }
 }

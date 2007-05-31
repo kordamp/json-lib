@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,33 +22,27 @@ import org.apache.commons.lang.builder.ToStringStyle;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class BeanC
-{
+public class BeanC {
    private BeanA beanA = new BeanA();
    private BeanB beanB = new BeanB();
 
-   public BeanA getBeanA()
-   {
+   public BeanA getBeanA() {
       return beanA;
    }
 
-   public BeanB getBeanB()
-   {
+   public BeanB getBeanB() {
       return beanB;
    }
 
-   public void setBeanA( BeanA beanA )
-   {
+   public void setBeanA( BeanA beanA ) {
       this.beanA = beanA;
    }
 
-   public void setBeanB( BeanB beanB )
-   {
+   public void setBeanB( BeanB beanB ) {
       this.beanB = beanB;
    }
 
-   public String toString()
-   {
+   public String toString() {
       return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
    }
 }

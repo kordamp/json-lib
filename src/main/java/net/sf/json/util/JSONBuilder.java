@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 /**
  * JSONBuilder provides a quick and convenient way of producing JSON text. The
  * texts produced strictly conform to JSON syntax rules. No whitespace is added,
@@ -56,8 +55,8 @@ SOFTWARE.
  * values in objects. There are <code>array</code> and <code>endArray</code>
  * methods that make and bound array values, and <code>object</code> and
  * <code>endObject</code> methods which make and bound object values. All of
- * these methods return the JSONBuilder instance, permitting a cascade style. For
- * example,
+ * these methods return the JSONBuilder instance, permitting a cascade style.
+ * For example,
  *
  * <pre>
  * new JSONBuilder(myWriter)
@@ -81,8 +80,7 @@ SOFTWARE.
  * @author JSON.org
  * @version 1
  */
-public class JSONBuilder
-{
+public class JSONBuilder {
    private static final int MAXDEPTH = 20;
 
    /**
@@ -115,8 +113,7 @@ public class JSONBuilder
    /**
     * Make a fresh JSONBuilder. It can be used to build one JSON text.
     */
-   public JSONBuilder( Writer w )
-   {
+   public JSONBuilder( Writer w ) {
       this.comma = false;
       this.mode = 'i';
       this.stack = new char[MAXDEPTH];
@@ -131,8 +128,7 @@ public class JSONBuilder
     * @return this
     * @throws JSONException If the value is out of sequence.
     */
-   private JSONBuilder append( String s )
-   {
+   private JSONBuilder append( String s ) {
       if( s == null ){
          throw new JSONException( "Null pointer" );
       }
@@ -142,8 +138,7 @@ public class JSONBuilder
                this.writer.write( ',' );
             }
             this.writer.write( s );
-         }
-         catch( IOException e ){
+         }catch( IOException e ){
             throw new JSONException( e );
          }
          if( this.mode == 'o' ){
@@ -165,8 +160,7 @@ public class JSONBuilder
     *         started in the wrong place (for example as a key or after the end
     *         of the outermost array or object).
     */
-   public JSONBuilder array()
-   {
+   public JSONBuilder array() {
       if( this.mode == 'i' || this.mode == 'o' || this.mode == 'a' ){
          this.push( 'a' );
          this.append( "[" );
@@ -184,16 +178,14 @@ public class JSONBuilder
     * @return this
     * @throws JSONException If unbalanced.
     */
-   private JSONBuilder end( char m, char c )
-   {
+   private JSONBuilder end( char m, char c ) {
       if( this.mode != m ){
          throw new JSONException( m == 'o' ? "Misplaced endObject." : "Misplaced endArray." );
       }
       this.pop( m );
       try{
          this.writer.write( c );
-      }
-      catch( IOException e ){
+      }catch( IOException e ){
          throw new JSONException( e );
       }
       this.comma = true;
@@ -207,8 +199,7 @@ public class JSONBuilder
     * @return this
     * @throws JSONException If incorrectly nested.
     */
-   public JSONBuilder endArray()
-   {
+   public JSONBuilder endArray() {
       return this.end( 'a', ']' );
    }
 
@@ -219,8 +210,7 @@ public class JSONBuilder
     * @return this
     * @throws JSONException If incorrectly nested.
     */
-   public JSONBuilder endObject()
-   {
+   public JSONBuilder endObject() {
       return this.end( 'k', '}' );
    }
 
@@ -233,8 +223,7 @@ public class JSONBuilder
     * @throws JSONException If the key is out of place. For example, keys do not
     *         belong in arrays or if the key is null.
     */
-   public JSONBuilder key( String s )
-   {
+   public JSONBuilder key( String s ) {
       if( s == null ){
          throw new JSONException( "Null key." );
       }
@@ -248,8 +237,7 @@ public class JSONBuilder
             this.comma = false;
             this.mode = 'o';
             return this;
-         }
-         catch( IOException e ){
+         }catch( IOException e ){
             throw new JSONException( e );
          }
       }
@@ -266,8 +254,7 @@ public class JSONBuilder
     *         started in the wrong place (for example as a key or after the end
     *         of the outermost array or object).
     */
-   public JSONBuilder object()
-   {
+   public JSONBuilder object() {
       if( this.mode == 'i' ){
          this.mode = 'o';
       }
@@ -287,8 +274,7 @@ public class JSONBuilder
     * @param c The scope to close.
     * @throws JSONException If nesting is wrong.
     */
-   private void pop( char c )
-   {
+   private void pop( char c ) {
       if( this.top <= 0 || this.stack[this.top - 1] != c ){
          throw new JSONException( "Nesting error." );
       }
@@ -302,8 +288,7 @@ public class JSONBuilder
     * @param c The scope to open.
     * @throws JSONException If nesting is too deep.
     */
-   private void push( char c )
-   {
+   private void push( char c ) {
       if( this.top >= MAXDEPTH ){
          throw new JSONException( "Nesting too deep." );
       }
@@ -320,8 +305,7 @@ public class JSONBuilder
     * @return this
     * @throws JSONException
     */
-   public JSONBuilder value( boolean b )
-   {
+   public JSONBuilder value( boolean b ) {
       return this.append( b ? "true" : "false" );
    }
 
@@ -332,8 +316,7 @@ public class JSONBuilder
     * @return this
     * @throws JSONException If the number is not finite.
     */
-   public JSONBuilder value( double d )
-   {
+   public JSONBuilder value( double d ) {
       return this.value( new Double( d ) );
    }
 
@@ -344,8 +327,7 @@ public class JSONBuilder
     * @return this
     * @throws JSONException
     */
-   public JSONBuilder value( long l )
-   {
+   public JSONBuilder value( long l ) {
       return this.append( Long.toString( l ) );
    }
 
@@ -358,8 +340,7 @@ public class JSONBuilder
     * @return this
     * @throws JSONException If the value is out of sequence.
     */
-   public JSONBuilder value( Object o )
-   {
+   public JSONBuilder value( Object o ) {
       return this.append( JSONUtils.valueToString( o ) );
    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,33 +21,27 @@ import net.sf.json.JSONString;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class ObjectJSONStringBean implements JSONString
-{
+public class ObjectJSONStringBean implements JSONString {
    private int id;
    private String name;
 
-   public int getId()
-   {
+   public int getId() {
       return id;
    }
 
-   public String getName()
-   {
+   public String getName() {
       return name;
    }
 
-   public void setId( int id )
-   {
+   public void setId( int id ) {
       this.id = id;
    }
 
-   public void setName( String name )
-   {
+   public void setName( String name ) {
       this.name = name;
    }
 
-   public String toJSONString()
-   {
+   public String toJSONString() {
       return new StringBuffer().append( "{" )
             .append( "\"name\":\"" )
             .append( (name == null) ? "" : name )

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,35 @@ import java.io.Writer;
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public interface JSON
-{
+public interface JSON {
    /**
     * Returns true if this object is a JSONArray, false otherwise.
     */
    boolean isArray();
+
+   /**
+    * Returns true if this object has no elements or keys.
+    *
+    * @throws JSONException if called on a 'null' object
+    */
+   boolean isEmpty();
+
+   /**
+    * Returns the number of properties in an object or the size of the array.
+    *
+    * @return the size of an json object or array
+    * @throws JSONException if called on a 'null' object
+    * @deprecated use size() instead
+    */
+   int length();
+
+   /**
+    * Returns the number of properties in an object or the size of the array.
+    *
+    * @return the size of an json object or array
+    * @throws JSONException if called on a 'null' object
+    */
+   int size();
 
    /**
     * Make a prettyprinted JSON text.
@@ -71,12 +94,4 @@ public interface JSON
     * @throws JSONException
     */
    Writer write( Writer writer );
-
-   /**
-    * Returns the number of properties in an object or the size of the array.
-    *
-    * @return the size of an json object or array
-    * @throws JSONException if called on a 'null' object
-    */
-   int length();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class PrimitiveBean
-{
+public class PrimitiveBean {
    private int[] parray;
    private ObjectBean pbean;
    private boolean pboolean;
@@ -46,168 +45,135 @@ public class PrimitiveBean
    private short pshort;
    private String pstring;
 
-   public int[] getParray()
-   {
+   public int[] getParray() {
       return parray;
    }
 
-   public ObjectBean getPbean()
-   {
+   public ObjectBean getPbean() {
       return pbean;
    }
 
-   public byte getPbyte()
-   {
+   public byte getPbyte() {
       return pbyte;
    }
 
-   public char getPchar()
-   {
+   public char getPchar() {
       return pchar;
    }
 
-   public Class getPclass()
-   {
+   public Class getPclass() {
       return pclass;
    }
 
-   public double getPdouble()
-   {
+   public double getPdouble() {
       return pdouble;
    }
 
-   public String getPexcluded()
-   {
+   public String getPexcluded() {
       return pexcluded;
    }
 
-   public float getPfloat()
-   {
+   public float getPfloat() {
       return pfloat;
    }
 
-   public JSONFunction getPfunction()
-   {
+   public JSONFunction getPfunction() {
       return pfunction;
    }
 
-   public int getPint()
-   {
+   public int getPint() {
       return pint;
    }
 
-   public List getPlist()
-   {
+   public List getPlist() {
       return plist;
    }
 
-   public long getPlong()
-   {
+   public long getPlong() {
       return plong;
    }
 
-   public Map getPmap()
-   {
+   public Map getPmap() {
       return pmap;
    }
 
-   public short getPshort()
-   {
+   public short getPshort() {
       return pshort;
    }
 
-   public String getPstring()
-   {
+   public String getPstring() {
       return pstring;
    }
 
-   public boolean isPboolean()
-   {
+   public boolean isPboolean() {
       return pboolean;
    }
 
-   public void setParray( int[] parray )
-   {
+   public void setParray( int[] parray ) {
       this.parray = parray;
    }
 
-   public void setPbean( ObjectBean pbean )
-   {
+   public void setPbean( ObjectBean pbean ) {
       this.pbean = pbean;
    }
 
-   public void setPboolean( boolean pboolean )
-   {
+   public void setPboolean( boolean pboolean ) {
       this.pboolean = pboolean;
    }
 
-   public void setPbyte( byte pbyte )
-   {
+   public void setPbyte( byte pbyte ) {
       this.pbyte = pbyte;
    }
 
-   public void setPchar( char pchar )
-   {
+   public void setPchar( char pchar ) {
       this.pchar = pchar;
    }
 
-   public void setPclass( Class pclass )
-   {
+   public void setPclass( Class pclass ) {
       this.pclass = pclass;
    }
 
-   public void setPdouble( double pdouble )
-   {
+   public void setPdouble( double pdouble ) {
       this.pdouble = pdouble;
    }
 
-   public void setPexcluded( String pexcluded )
-   {
+   public void setPexcluded( String pexcluded ) {
       this.pexcluded = pexcluded;
    }
 
-   public void setPfloat( float pfloat )
-   {
+   public void setPfloat( float pfloat ) {
       this.pfloat = pfloat;
    }
 
-   public void setPfunction( JSONFunction pfunction )
-   {
+   public void setPfunction( JSONFunction pfunction ) {
       this.pfunction = pfunction;
    }
 
-   public void setPint( int pint )
-   {
+   public void setPint( int pint ) {
       this.pint = pint;
    }
 
-   public void setPlist( List plist )
-   {
+   public void setPlist( List plist ) {
       this.plist = plist;
    }
 
-   public void setPlong( long plong )
-   {
+   public void setPlong( long plong ) {
       this.plong = plong;
    }
 
-   public void setPmap( Map pmap )
-   {
+   public void setPmap( Map pmap ) {
       this.pmap = pmap;
    }
 
-   public void setPshort( short pshort )
-   {
+   public void setPshort( short pshort ) {
       this.pshort = pshort;
    }
 
-   public void setPstring( String pstring )
-   {
+   public void setPstring( String pstring ) {
       this.pstring = pstring;
    }
 
-   public String toString()
-   {
+   public String toString() {
       return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
    }
 }

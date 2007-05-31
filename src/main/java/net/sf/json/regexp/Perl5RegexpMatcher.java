@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,26 +27,22 @@ import org.apache.oro.text.regex.Perl5Matcher;
  * Jakarta-oro RegexpMatcher Implementation.<br>
  * Runs on older JVMs (1.3.1). You must have oro-2.0.8.jar configured in your
  * classpath.
- *
+ * 
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class Perl5RegexpMatcher implements RegexpMatcher
-{
+public class Perl5RegexpMatcher implements RegexpMatcher {
    private static final Perl5Compiler compiler = new Perl5Compiler();
    private Pattern pattern;
 
-   public Perl5RegexpMatcher( String pattern )
-   {
+   public Perl5RegexpMatcher( String pattern ) {
       try{
          this.pattern = compiler.compile( pattern, Perl5Compiler.READ_ONLY_MASK );
-      }
-      catch( MalformedPatternException mpe ){
+      }catch( MalformedPatternException mpe ){
          throw new NestableRuntimeException( mpe );
       }
    }
 
-   public String getGroupIfMatches( String str, int group )
-   {
+   public String getGroupIfMatches( String str, int group ) {
       PatternMatcher matcher = new Perl5Matcher();
       if( matcher.matches( str, pattern ) ){
          return matcher.getMatch()
@@ -55,8 +51,7 @@ public class Perl5RegexpMatcher implements RegexpMatcher
       return "";
    }
 
-   public boolean matches( String str )
-   {
+   public boolean matches( String str ) {
       return new Perl5Matcher().matches( str, pattern );
    }
 }

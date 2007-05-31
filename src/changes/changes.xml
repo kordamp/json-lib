@@ -8,28 +8,152 @@
    </properties>
    <body>
       <release
-         version="N/A"
-         date="2007-04-06"
+         version="2.0a2"
+         date="N/a"
          desc="Current development release">
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1656301">
+            Add a JSONBuilder (like Grails)
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1728997">
+            Add leftShift (Groovy) operator support
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1728993">
+            Make JSONObject/JSONArray Comparable
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1693562">
+            Support for preventing JavaScript Hijacking in web env
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1681775">
+            Add SAX-like event support
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added primitive support for JSONObject.accumulate()
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            JSONObject.element() will not call accumulate() as it
+            previously did
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Removed duplicated code on JSONObject and JSONArray
+         </action>
+      </release>
+
+      <release
+         version="2.0a1"
+         date="2007-05-22"
+         desc="First 2.0 Alpha release">
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Renamed JSONObject.putOpt to JSONObject.elementOpt
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Renamed JSONObject.put to JSONObject.element
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Renamed JSONArray.put to JSONArray.element
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="update">
+            Added assertNull and assertNotNull to JSONAssert
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1715483">
+            Skip transient field in a class
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1656299">
+            Make JSONArray an implementation of java.util.List
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1656297">
+            Make JSONObject an implementation of java.util.Map
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1636658">
+            Add type handler support
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1656300">
+            Add POGO support
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1694877">
+            option to remove the double-quote around the property name
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1713184">
+            JSONAssert accepts unequal JSONArrays, JSONObjects. Thanks
+            to dcrosta[at]users[dot]sourceforge[dot]net (provided a
+            patch)
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1719662">
+            JSONUtils.stripQuotes generates an Exception. Thanks to
+            Rodrigo Pantoni and Thomas Spiegl
+         </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1693658">
-            Optional space trimming when reading XML.
+            Optional space trimming when reading XML
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1693654">
-            Optional removal of namespace prefixes when reading XML.
+            Optional removal of namespace prefixes when reading XML
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1693652">
-            Skip namespaces when reading from XML.
+            Skip namespaces when reading from XML
          </action>
       </release>
+
       <release
          version="1.1"
          date="2007-03-31"
@@ -37,55 +161,54 @@
          <action
             dev="Andres Almiray"
             type="update">
-            Updated FAQ and Getting Started guide.
+            Updated FAQ and Getting Started guide
          </action>
          <action
             dev="Andres Almiray"
             type="update">
             Added NoopJavaIdentifierTransformer and made it the default
-            (performs no conversion).
+            (performs no conversion)
          </action>
          <action
             dev="Andres Almiray"
             type="add"
             issue="1690942">
-            XMLSerializer can not handle namespace declarations.
+            XMLSerializer can not handle namespace declarations
          </action>
          <action
             dev="Andres Almiray"
             type="add"
             issue="1690941">
-            [Regression] toBean() fails with namespaced properties.
+            [Regression] toBean() fails with namespaced properties
          </action>
          <action
             dev="Andres Almiray"
             type="add"
             issue="1684034">
-            Allow transformation of key values to proper Java
-            identifier.
+            Allow transformation of key values to proper Java identifier
          </action>
          <action
             dev="Andres Almiray"
             type="add"
             issue="1656551">
-            Upgrade XML support.
+            Upgrade XML support
          </action>
          <action
             dev="Andres Almiray"
             type="update">
-            Promoted length() to JSON interface.
+            Promoted length() to JSON interface
          </action>
          <action
             dev="Andres Almiray"
             type="add"
             issue="1679986">
-            Skip type information when writing XML.
+            Skip type information when writing XML
          </action>
          <action
             dev="Andres Almiray"
             type="add"
             issue="1679985">
-            Move child properties to parent when writing XML.
+            Move child properties to parent when writing XML
          </action>
          <action
             dev="Andres Almiray"
@@ -94,6 +217,7 @@
             Allow parsing of duplicate properties
          </action>
       </release>
+
       <release
          version="1.0.1"
          date="2007-02-27"
@@ -106,6 +230,7 @@
             work
          </action>
       </release>
+
       <release
          version="1.0"
          date="2007-02-11"
@@ -113,7 +238,7 @@
          <action
             dev="Andres Almiray"
             type="delete">
-            Removed deprecated classes.
+            Removed deprecated classes
          </action>
          <action
             dev="Andres Almiray"
@@ -124,6 +249,7 @@
             ekeogh[at]thoughtworks[dot]com
          </action>
       </release>
+
       <release
          version="1.0b2"
          date="2007-01-20"
@@ -131,7 +257,7 @@
          <action
             dev="Andres Almiray"
             type="update">
-            Updated javadocs.
+            Updated javadocs
          </action>
          <action
             dev="Andres Almiray"
@@ -143,12 +269,12 @@
             type="update">
             Deprecated JSONDynaBean, JSONDynaClass &amp;
             DynaBeanToBeanMorpher. Use MorphDynaBean, MorphDynaClass
-            &amp; BeanMorpher from EZMorph instead.
+            &amp; BeanMorpher from EZMorph instead
          </action>
          <action
             dev="Andres Almiray"
             type="delete">
-            Removed net.sf.json.util.CDL, repeated functionality.
+            Removed net.sf.json.util.CDL, repeated functionality
          </action>
          <action
             dev="Andres Almiray"
@@ -180,19 +306,19 @@
             dev="Andres Almiray"
             type="fix"
             issue="1622676">
-            JSONArray.put does not use excludes.
+            JSONArray.put does not use excludes
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1622675">
-            JSONObject.put does not use excludes.
+            JSONObject.put does not use excludes
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1622674">
-            JSONArray does not pass excludes.
+            JSONArray does not pass excludes
          </action>
       </release>
 
@@ -203,109 +329,109 @@
          <action
             dev="Andres Almiray"
             type="add">
-            Added JSONAssert for easy JSON testing.
+            Added JSONAssert for easy JSON testing
          </action>
          <action
             dev="Andres Almiray"
             type="add">
             Updated JSONFunction constructor for correct length of
-            parameters.
+            parameters
          </action>
          <action
             dev="Andres Almiray"
             type="update">
-            Updated javadocs and site docs.
+            Updated javadocs and site docs
          </action>
          <action
             dev="Andres Almiray"
             type="update">
             Only default constructors are public (JSONObject &amp;
-            JSONArray).
+            JSONArray)
          </action>
          <action
             dev="Andres Almiray"
             type="update">
             Class objects are converted to Strings (toJSON) and back
-            (toJava).
+            (toJava)
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1614276">
-            Skip a property without write method.
+            Skip a property without write method
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1614275">
-            Skip a property without read method.
+            Skip a property without read method
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1614273">
-            Annotation should not be transformed.
+            Annotation should not be transformed
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1614278">
-            Change IAEs for JSONException.
+            Change IAEs for JSONException
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1613402">
-            JSONObject tries to access Enum.getDeclaringClass().
+            JSONObject tries to access Enum.getDeclaringClass()
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1611204">
-            Inspect property's value type in factory methods.
+            Inspect property's value type in factory methods
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1610979">
-            Support different encodings on XmlSerializer.
+            Support different encodings on XmlSerializer
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1608212">
-            JSONDynaClass allows multidimensional arrays.
+            JSONDynaClass allows multidimensional arrays
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1607448">
-            Primitives support for JSONDynaBean.
+            Primitives support for JSONDynaBean
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1557286">
-            Support Java 1.5 Enum in JSONObject and JSONArray.
+            Support Java 1.5 Enum in JSONObject and JSONArray
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1606609">
-            JDK 1.3 RuntimeException is not nestable.
+            JDK 1.3 RuntimeException is not nestable
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1602386">
-            Add printer friendly methods to JSON interface.
+            Add printer friendly methods to JSON interface
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1596168">
             JSONArray fails to convert an array of
-            BigDecimals/BigInteger.
+            BigDecimals/BigInteger
          </action>
          <action
             dev="Andres Almiray"
@@ -323,24 +449,24 @@
          <action
             dev="Andres Almiray"
             type="add">
-            Added FAQ and "Who is using it" sections.
+            Added FAQ and "Who is using it" sections
          </action>
          <action
             dev="Andres Almiray"
             type="add">
-            Added new JSONSerializer utility class.
+            Added new JSONSerializer utility class
          </action>
          <action
             dev="Andres Almiray"
             type="add">
             Added new interface JSON to identify a valid JSON type
-            (JSONObject, JSONArray, JSONNull).
+            (JSONObject, JSONArray, JSONNull)
          </action>
          <action
             dev="Andres Almiray"
-            type="add">
-            Added support for JSONString in builders and value setters.
-            FR 1557286.
+            type="add"
+            fixes="1557286">
+            Added support for JSONString in builders and value setters
          </action>
          <action
             dev="Andres Almiray"
@@ -352,13 +478,13 @@
             dev="Andres Almiray"
             type="update">
             JSONObject and JSONarray will convert Byte/Short/Long to
-            Integer, Float to Double when needed.
+            Integer, Float to Double when needed
          </action>
          <action
             dev="Andres Almiray"
             type="update">
             JSONArray.fromObject now allows creation of a single element
-            array (all valid types).
+            array (all valid types)
          </action>
          <action
             dev="Andres Almiray"
@@ -369,19 +495,19 @@
          <action
             dev="Andres Almiray"
             type="update">
-            Updated front page and howto documentation.
+            Updated front page and howto documentation
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1564992">
-            Multiple nested JSONException.
+            Multiple nested JSONException
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1553617">
-            JSONObject.toBean() generates a ClassCastException.
+            JSONObject.toBean() generates a ClassCastException
          </action>
       </release>
 
@@ -393,22 +519,22 @@
             dev="Andres Almiray"
             type="add">
             Refactored converter package into EZMorph
-            (http://ezmorph.sourceforge.net).
+            (http://ezmorph.sourceforge.net)
          </action>
          <action
             dev="Andres Almiray"
             type="add">
-            Added RegexpUtils for easy regexp handling.
+            Added RegexpUtils for easy regexp handling
          </action>
          <action
             dev="Andres Almiray"
             type="add">
-            Added more tests.
+            Added more tests
          </action>
          <action
             dev="Andres Almiray"
             type="update">
-            Updated "Getting Started" documentation.
+            Updated "Getting Started" documentation
          </action>
          <action
             dev="Andres Almiray"
@@ -419,25 +545,25 @@
             dev="Andres Almiray"
             type="fix"
             issue="1543117">
-            Perl5RegexpMatcher is missing a return statement.
+            Perl5RegexpMatcher is missing a return statement
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1542104">
-            JSONObject.toBean must handle interfaces.
+            JSONObject.toBean must handle interfaces
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1542092">
-            JSONObject.toBean can not process all nested beans.
+            JSONObject.toBean can not process all nested beans
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1540196">
-            JSONArray did not create multidimensional arrays correctly.
+            JSONArray did not create multidimensional arrays correctly
          </action>
          <action
             dev="Andres Almiray"
@@ -450,7 +576,7 @@
             dev="Andres Almiray"
             type="fix"
             issue="1538330">
-            XmlSerializer writes wrong JSONFunction data.
+            XmlSerializer writes wrong JSONFunction data
          </action>
          <action
             dev="Andres Almiray"
@@ -481,7 +607,7 @@
             dev="Andres Almiray"
             type="fix"
             issue="1529946">
-            Make Json-lib JDK 1.3.1 compatible. FR 1529946.
+            Make Json-lib JDK 1.3.1 compatible
          </action>
       </release>
 
@@ -492,20 +618,20 @@
          <action
             dev="Andres Almiray"
             type="add">
-            Added support for DynaBean and java bean conversions.
+            Added support for DynaBean and java bean conversions
          </action>
          <action
             dev="Andres Almiray"
             type="update">
-            Updated the XML generated by XMLSerializer.
+            Updated the XML generated by XMLSerializer
             <br />
             JSONArray uses &lt;a&gt; for root element, JSONObject uses
-            &lt;o&gt; for root element.
+            &lt;o&gt; for root element
          </action>
          <action
             dev="Andres Almiray"
             type="update">
-            Updated usage documentation.
+            Updated usage documentation
          </action>
       </release>
 
@@ -516,34 +642,34 @@
          <action
             dev="Andres Almiray"
             type="add">
-            Added test suites for each package and for full project.
+            Added test suites for each package and for full project
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1516306">
-            Support js functions as type. FR 1516306.
+            Support js functions as type
          </action>
          <action
             dev="Andres Almiray"
             type="update">
-            Moved common methods of JSONObject, JSONArray to JSONUtils.
+            Moved common methods of JSONObject, JSONArray to JSONUtils
          </action>
          <action
             dev="Andres Almiray"
             type="update">
             Renamed XML to XMLSerializer. Now uses XOM to parse
-            documents.
+            documents
          </action>
          <action
             dev="Andres Almiray"
             type="update">
-            Moved common assertion methods to Assertions (tests).
+            Moved common assertion methods to Assertions (tests)
          </action>
          <action
             dev="Andres Almiray"
             type="delete">
-            Deleted HTTP related classes.
+            Deleted HTTP related classes
          </action>
       </release>
 
@@ -554,7 +680,7 @@
          <action
             dev="Andres Almiray"
             type="add">
-            First release.
+            First release
          </action>
       </release>
    </body>

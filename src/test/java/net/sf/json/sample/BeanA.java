@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,12 @@ import org.apache.commons.lang.builder.ToStringStyle;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class BeanA
-{
+public class BeanA {
    private boolean bool = true;
    private int integer = 42;
    private String string = "json";
 
-   public boolean equals( Object obj )
-   {
+   public boolean equals( Object obj ) {
       if( obj == this ){
          return true;
       }
@@ -44,43 +42,35 @@ public class BeanA
       return EqualsBuilder.reflectionEquals( this, obj );
    }
 
-   public int getInteger()
-   {
+   public int getInteger() {
       return integer;
    }
 
-   public String getString()
-   {
+   public String getString() {
       return string;
    }
 
-   public int hashCode()
-   {
+   public int hashCode() {
       return HashCodeBuilder.reflectionHashCode( this );
    }
 
-   public boolean isBool()
-   {
+   public boolean isBool() {
       return bool;
    }
 
-   public void setBool( boolean bool )
-   {
+   public void setBool( boolean bool ) {
       this.bool = bool;
    }
 
-   public void setInteger( int integer )
-   {
+   public void setInteger( int integer ) {
       this.integer = integer;
    }
 
-   public void setString( String string )
-   {
+   public void setString( String string ) {
       this.string = string;
    }
 
-   public String toString()
-   {
+   public String toString() {
       return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 import java.io.StringWriter;
-
 
 /**
  * JSONStringer provides a quick and convenient way of producing JSON text. The
@@ -56,7 +54,7 @@ import java.io.StringWriter;
  * <code>endObject</code> methods which make and bound object values. All of
  * these methods return the JSONWriter instance, permitting cascade style. For
  * example,
- * 
+ *
  * <pre>
  * myString = new JSONStringer()
  *     .object()
@@ -64,29 +62,27 @@ import java.io.StringWriter;
  *         .value("Hello, World!")
  *     .endObject()
  *     .toString();</pre>
- * 
+ *
  * which produces the string
- * 
+ *
  * <pre>
  * {"JSON":"Hello, World!"}</pre>
- * 
+ *
  * <p>
  * The first method called must be <code>array</code> or <code>object</code>.
  * There are no methods for adding commas or colons. JSONStringer adds them for
  * you. Objects and arrays can be nested up to 20 levels deep.
  * <p>
  * This can sometimes be easier than using a JSONObject to build a string.
- * 
+ *
  * @author JSON.org
  * @version 2
  */
-public class JSONStringer extends JSONBuilder
-{
+public class JSONStringer extends JSONBuilder {
    /**
     * Make a fresh JSONStringer. It can be used to build one JSON text.
     */
-   public JSONStringer()
-   {
+   public JSONStringer() {
       super( new StringWriter() );
    }
 
@@ -96,11 +92,10 @@ public class JSONStringer extends JSONBuilder
     * problem in the construction of the JSON text (such as the calls to
     * <code>array</code> were not properly balanced with calls to
     * <code>endArray</code>).
-    * 
+    *
     * @return The JSON text.
     */
-   public String toString()
-   {
+   public String toString() {
       return this.mode == 'd' ? this.writer.toString() : null;
    }
 }

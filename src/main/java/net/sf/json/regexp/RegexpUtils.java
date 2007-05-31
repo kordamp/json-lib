@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,10 @@ package net.sf.json.regexp;
 
 /**
  * Convenience utility for working withRegexpMatcher.<br>
- *
+ * 
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class RegexpUtils
-{
+public class RegexpUtils {
    private static String javaVersion = "1.3.1";
    static{
       javaVersion = System.getProperty( "java.version" );
@@ -33,8 +32,7 @@ public class RegexpUtils
     * When in a JVM 1.3.1 it will return a Perl5RegexpMatcher, if the JVM is
     * younger (1.4+) it will return a JdkRegexpMatcher.
     */
-   public static RegexpMatcher getMatcher( String pattern )
-   {
+   public static RegexpMatcher getMatcher( String pattern ) {
       if( isJDK13() ){
          return new Perl5RegexpMatcher( pattern );
       }else{
@@ -45,13 +43,11 @@ public class RegexpUtils
    /**
     * Queries the environment for the supported JDK version.
     */
-   public static boolean isJDK13()
-   {
+   public static boolean isJDK13() {
       return javaVersion.indexOf( "1.3" ) != -1;
    }
 
-   private RegexpUtils()
-   {
+   private RegexpUtils() {
 
    }
 }

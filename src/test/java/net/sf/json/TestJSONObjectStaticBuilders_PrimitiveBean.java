@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,20 +23,17 @@ import org.apache.commons.beanutils.PropertyUtils;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class TestJSONObjectStaticBuilders_PrimitiveBean extends AbstractJSONObjectStaticBuildersTestCase
-{
-   public static void main( String[] args )
-   {
+public class TestJSONObjectStaticBuilders_PrimitiveBean extends
+      AbstractJSONObjectStaticBuildersTestCase {
+   public static void main( String[] args ) {
       junit.textui.TestRunner.run( TestJSONObjectStaticBuilders_PrimitiveBean.class );
    }
 
-   public TestJSONObjectStaticBuilders_PrimitiveBean( String name )
-   {
+   public TestJSONObjectStaticBuilders_PrimitiveBean( String name ) {
       super( name );
    }
 
-   protected Object getSource()
-   {
+   protected Object getSource() {
       PrimitiveBean bean = new PrimitiveBean();
       String[] props = getProperties();
       try{
@@ -44,8 +41,7 @@ public class TestJSONObjectStaticBuilders_PrimitiveBean extends AbstractJSONObje
             PropertyUtils.setProperty( bean, props[i],
                   PropertyConstants.getPropertyValue( props[i] ) );
          }
-      }
-      catch( Exception e ){
+      }catch( Exception e ){
          throw new RuntimeException( e );
       }
       return bean;

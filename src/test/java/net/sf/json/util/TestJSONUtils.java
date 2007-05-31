@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,43 +26,35 @@ import net.sf.json.JSONFunction;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class TestJSONUtils extends TestCase
-{
-   public static void main( String[] args )
-   {
+public class TestJSONUtils extends TestCase {
+   public static void main( String[] args ) {
       junit.textui.TestRunner.run( TestJSONUtils.class );
    }
 
-   public TestJSONUtils( String name )
-   {
+   public TestJSONUtils( String name ) {
       super( name );
    }
 
-   public void testDoubleToString_infinite()
-   {
+   public void testDoubleToString_infinite() {
       assertEquals( "null", JSONUtils.doubleToString( Double.POSITIVE_INFINITY ) );
    }
 
-   public void testDoubleToString_nan()
-   {
+   public void testDoubleToString_nan() {
       assertEquals( "null", JSONUtils.doubleToString( Double.NaN ) );
    }
 
-   public void testDoubleToString_trailingZeros()
-   {
+   public void testDoubleToString_trailingZeros() {
       assertEquals( "200", JSONUtils.doubleToString( 200.00000 ) );
    }
 
-   public void testGetFunctionParams()
-   {
+   public void testGetFunctionParams() {
       assertEquals( "", JSONUtils.getFunctionParams( "function()" ) );
       assertEquals( "a", JSONUtils.getFunctionParams( "function(a)" ) );
       assertEquals( "a,b", JSONUtils.getFunctionParams( "function(a,b)" ) );
       assertEquals( "", JSONUtils.getFunctionParams( "notAFunction" ) );
    }
 
-   public void testIsArray()
-   {
+   public void testIsArray() {
       assertTrue( JSONUtils.isArray( new Object[0] ) );
       assertTrue( JSONUtils.isArray( new boolean[0] ) );
       assertTrue( JSONUtils.isArray( new byte[0] ) );
@@ -92,8 +84,7 @@ public class TestJSONUtils extends TestCase
       assertTrue( JSONUtils.isArray( new JSONArray() ) );
    }
 
-   public void testIsFunction()
-   {
+   public void testIsFunction() {
       assertTrue( JSONUtils.isFunction( "function(){ return a; }" ) );
       assertTrue( JSONUtils.isFunction( "function (){ return a; }" ) );
       assertTrue( JSONUtils.isFunction( "function() { return a; }" ) );
@@ -101,78 +92,88 @@ public class TestJSONUtils extends TestCase
       assertTrue( JSONUtils.isFunction( "function(a){ return a; }" ) );
    }
 
-   public void testNumberToString_null()
-   {
+   public void testNumberToString_null() {
       try{
          JSONUtils.numberToString( null );
          fail( "Should have thrown a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // ok
       }
    }
 
-   public void testQuote_emptyString()
-   {
+   public void testQuote_emptyString() {
       assertEquals( "\"\"", JSONUtils.quote( "" ) );
    }
 
-   public void testQuote_escapeChars()
-   {
+   public void testQuote_escapeChars() {
       assertEquals( "\"\\b\\t\\n\\r\\f\"", JSONUtils.quote( "\b\t\n\r\f" ) );
    }
 
-   public void testQuote_jsonFunction()
-   {
+   public void testQuote_jsonFunction() {
       JSONFunction jsonFunction = new JSONFunction( "a" );
       assertEquals( "function(){ a }", JSONUtils.quote( jsonFunction.toString() ) );
    }
 
-   public void testQuote_nullString()
-   {
+   public void testQuote_nullString() {
       assertEquals( "\"\"", JSONUtils.quote( null ) );
    }
 
-   public void testValidity_inifiniteDouble()
-   {
+   public void testStripQuotes_singleChar_doubleeQuote() {
+      String quoted = "\"";
+      String actual = JSONUtils.stripQuotes( quoted );
+      assertEquals( quoted, actual );
+   }
+
+   public void testStripQuotes_singleChar_singleQuote() {
+      String quoted = "'";
+      String actual = JSONUtils.stripQuotes( quoted );
+      assertEquals( quoted, actual );
+   }
+
+   public void testStripQuotes_twoChars_doubleeQuote() {
+      String quoted = "\"\"";
+      String actual = JSONUtils.stripQuotes( quoted );
+      assertEquals( "", actual );
+   }
+
+   public void testStripQuotes_twoChars_singleQuote() {
+      String quoted = "''";
+      String actual = JSONUtils.stripQuotes( quoted );
+      assertEquals( "", actual );
+   }
+
+   public void testValidity_inifiniteDouble() {
       try{
          JSONUtils.testValidity( new Double( Double.POSITIVE_INFINITY ) );
          fail( "Should have thrown a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // ok
       }
    }
 
-   public void testValidity_inifiniteFloat()
-   {
+   public void testValidity_inifiniteFloat() {
       try{
          JSONUtils.testValidity( new Float( Float.POSITIVE_INFINITY ) );
          fail( "Should have thrown a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // ok
       }
    }
 
-   public void testValidity_nanDouble()
-   {
+   public void testValidity_nanDouble() {
       try{
          JSONUtils.testValidity( new Double( Double.NaN ) );
          fail( "Should have thrown a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // ok
       }
    }
 
-   public void testValidity_nanFloat()
-   {
+   public void testValidity_nanFloat() {
       try{
          JSONUtils.testValidity( new Float( Float.NaN ) );
          fail( "Should have thrown a JSONException" );
-      }
-      catch( JSONException expected ){
+      }catch( JSONException expected ){
          // ok
       }
    }

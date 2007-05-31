@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,22 +22,18 @@ import java.util.List;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class ListingBean
-{
+public class ListingBean {
    private List attributes = new ArrayList();
 
-   public void addAttribute( Object value )
-   {
+   public void addAttribute( Object value ) {
       this.attributes.add( value );
    }
 
-   public List getAttributes()
-   {
+   public List getAttributes() {
       return attributes;
    }
 
-   public void setAttributes( List attributes )
-   {
+   public void setAttributes( List attributes ) {
       this.attributes = attributes;
    }
 }

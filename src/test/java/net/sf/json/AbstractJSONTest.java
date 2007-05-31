@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,43 +23,36 @@ import junit.framework.TestCase;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public abstract class AbstractJSONTest extends TestCase
-{
-   public AbstractJSONTest( String name )
-   {
+public abstract class AbstractJSONTest extends TestCase {
+   public AbstractJSONTest( String name ) {
       super( name );
    }
 
-   public void testIsArray()
-   {
+   public void testIsArray() {
       boolean isArray = ((Boolean) getIsArrayExpectations()[0]).booleanValue();
       JSON json = (JSON) getIsArrayExpectations()[1];
       assertEquals( isArray, json.isArray() );
    }
 
-   public void testToString()
-   {
+   public void testToString() {
       String expected = (String) getToStringExpectations1()[0];
       JSON json = (JSON) getToStringExpectations1()[1];
       assertEquals( expected, json.toString() );
    }
 
-   public void testToString_indentFactor()
-   {
+   public void testToString_indentFactor() {
       String expected = (String) getToStringExpectations2()[0];
       JSON json = (JSON) getToStringExpectations2()[1];
       assertEquals( expected, json.toString( getIndentFactor() ) );
    }
 
-   public void testToString_indentFactor_indent()
-   {
+   public void testToString_indentFactor_indent() {
       String expected = (String) getToStringExpectations3()[0];
       JSON json = (JSON) getToStringExpectations3()[1];
       assertEquals( expected, json.toString( getIndentFactor(), getIndent() ) );
    }
 
-   public void testWrite()
-   {
+   public void testWrite() {
       StringWriter w = new StringWriter();
       String expected = (String) getWriteExpectations()[0];
       JSON json = (JSON) getWriteExpectations()[1];
@@ -81,4 +74,10 @@ public abstract class AbstractJSONTest extends TestCase
    protected abstract Object[] getToStringExpectations3();
 
    protected abstract Object[] getWriteExpectations();
+
+   protected void setUp() throws Exception {
+      super.setUp();
+      JsonConfig.getInstance()
+            .reset();
+   }
 }

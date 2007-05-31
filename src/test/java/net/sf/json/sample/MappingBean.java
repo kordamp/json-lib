@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,22 +22,18 @@ import java.util.Map;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class MappingBean
-{
+public class MappingBean {
    private Map attributes = new HashMap();
 
-   public void addAttribute( Object key, Object value )
-   {
+   public void addAttribute( Object key, Object value ) {
       this.attributes.put( key, value );
    }
 
-   public Map getAttributes()
-   {
+   public Map getAttributes() {
       return attributes;
    }
 
-   public void setAttributes( Map attributes )
-   {
+   public void setAttributes( Map attributes ) {
       this.attributes = attributes;
    }
 }

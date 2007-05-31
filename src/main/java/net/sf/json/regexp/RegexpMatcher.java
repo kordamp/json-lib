@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2006 the original author or authors.
+ * Copyright 2002-2007 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,10 @@ package net.sf.json.regexp;
 
 /**
  * Abstraction for regexp handling.
- *
+ * 
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public interface RegexpMatcher
-{
+public interface RegexpMatcher {
    /**
     * Returns the specified group if the string matches the Pattern.<br>
     * The Pattern will be managed internally by the RegexpMatcher

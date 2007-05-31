@@ -100,7 +100,7 @@
        <p>Convert to DynaBean:</p>
 		 <textarea cols="70" rows="10" class="java:nocontrols:nogutter" name="srccode">
    String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
-   JSONObject jsonObject = new JSONObject( json );
+   JSONObject jsonObject = JSONObject.fromObject( json );
    Object bean = JSONObject.toBean( jsonObject );
    assertEquals( jsonObject.get( "name" ), PropertyUtils.getProperty( bean, "name" ) );
    assertEquals( jsonObject.get( "bool" ), PropertyUtils.getProperty( bean, "bool" ) );
@@ -113,7 +113,7 @@
           <p>Convert to Bean:</p>
 		 <textarea cols="70" rows="6" class="java:nocontrols:nogutter" name="srccode">
    String json = "{bool:true,integer:1,string:\"json\"}";
-   JSONObject jsonObject = new JSONObject( json );
+   JSONObject jsonObject = JSONObject.fromObject( json );
    BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
    assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
    assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
