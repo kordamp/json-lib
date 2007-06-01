@@ -203,13 +203,13 @@
                <excludes>
                   <exclude>**/Abstract*.java</exclude>
                   <exclude>**/AllTests.java</exclude>
+                  <exclude>**/*closure*</exclude>
                </excludes>
                <includes>
                   <include>**/Test*.java</include>
                </includes>
             </configuration>
          </plugin>
-	 <!--
          <plugin>
             <groupId>org.codehaus.mojo.groovy</groupId>
             <artifactId>groovy-maven-plugin</artifactId>
@@ -217,11 +217,11 @@
                <execution>
                   <goals>
                      <goal>compile</goal>
+                     <goal>testCompile</goal>
                   </goals>
                </execution>
             </executions>
          </plugin>
-	 -->
       </plugins>
    </build>
 

@@ -348,7 +348,7 @@ public final class JSONUtils {
     */
    public static boolean isObject( Object obj ) {
       return !isNumber( obj ) && !isString( obj ) && !isBoolean( obj ) && !isArray( obj )
-            || isNull( obj );
+            && !isFunction( obj ) || isNull( obj );
    }
 
    /**

@@ -994,6 +994,26 @@ public final class JSONObject implements JSON, Map, Comparable {
       return _accumulate( key, value );
    }
 
+   public void accumulateAll( Map map ) {
+      if( map instanceof JSONObject ){
+         for( Iterator entries = map.entrySet()
+               .iterator(); entries.hasNext(); ){
+            Map.Entry entry = (Map.Entry) entries.next();
+            String key = (String) entry.getKey();
+            Object value = entry.getValue();
+            accumulate( key, value );
+         }
+      }else{
+         for( Iterator entries = map.entrySet()
+               .iterator(); entries.hasNext(); ){
+            Map.Entry entry = (Map.Entry) entries.next();
+            String key = String.valueOf( entry.getKey() );
+            Object value = entry.getValue();
+            accumulate( key, value );
+         }
+      }
+   }
+
    public void clear() {
       properties.clear();
    }
@@ -1047,17 +1067,7 @@ public final class JSONObject implements JSON, Map, Comparable {
    public JSONObject element( String key, Collection value ) {
       verifyIsNull();
       if( value instanceof JSONArray ){
-         Object o = opt( key );
-         if( JSONNull.getInstance()
-               .equals( o ) || (o instanceof JSONObject && ((JSONObject) o).isNullObject()) ){
-            setInternal( key, value );
-         }else if( o instanceof JSONArray ){
-            ((JSONArray) o).element( value );
-         }else{
-            setInternal( key, new JSONArray().element( o )
-                  .element( value ) );
-         }
-         return this;
+         return setInternal( key, value );
       }else{
          return element( key, JSONArray.fromObject( value ) );
       }
@@ -1116,17 +1126,7 @@ public final class JSONObject implements JSON, Map, Comparable {
    public JSONObject element( String key, Map value ) {
       verifyIsNull();
       if( value instanceof JSONObject ){
-         Object o = opt( key );
-         if( JSONNull.getInstance()
-               .equals( o ) || (o instanceof JSONObject && ((JSONObject) o).isNullObject()) ){
-            setInternal( key, value );
-         }else if( o instanceof JSONArray ){
-            ((JSONArray) o).element( value );
-         }else{
-            setInternal( key, new JSONArray().element( o )
-                  .element( value ) );
-         }
-         return this;
+         return setInternal( key, value );
       }else{
          return element( key, JSONObject.fromObject( value ) );
       }
@@ -1740,17 +1740,7 @@ public final class JSONObject implements JSON, Map, Comparable {
             Map.Entry entry = (Map.Entry) entries.next();
             String key = (String) entry.getKey();
             Object value = entry.getValue();
-            if( !has( key ) ){
-               setInternal( key, value );
-            }else{
-               Object o = opt( key );
-               if( o instanceof JSONArray ){
-                  ((JSONArray) o).element( value );
-               }else{
-                  setInternal( key, new JSONArray().element( o )
-                        .element( value ) );
-               }
-            }
+            setInternal( key, value );
          }
       }else{
          for( Iterator entries = map.entrySet()
@@ -1758,7 +1748,7 @@ public final class JSONObject implements JSON, Map, Comparable {
             Map.Entry entry = (Map.Entry) entries.next();
             String key = String.valueOf( entry.getKey() );
             Object value = entry.getValue();
-            accumulate( key, value );
+            element( key, value );
          }
       }
    }
@@ -1989,18 +1979,17 @@ public final class JSONObject implements JSON, Map, Comparable {
          throw new JSONException( "Can't accumulate on null object" );
       }
 
-      JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
-            .findJsonValueProcessor( value.getClass(), key );
-      if( jsonValueProcessor != null ){
-         value = jsonValueProcessor.processObjectValue( key, value );
-         if( !JsonVerifier.isValidJsonValue( value ) ){
-            throw new JSONException( "Value is not a valid JSON value. " + value );
-         }
-      }
-
-      JSONUtils.testValidity( value );
       if( !has( key ) ){
-         setInternal( key, value );
+         JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
+               .findJsonValueProcessor( value.getClass(), key );
+         if( jsonValueProcessor != null ){
+            value = jsonValueProcessor.processObjectValue( key, value );
+            if( !JsonVerifier.isValidJsonValue( value ) ){
+               throw new JSONException( "Value is not a valid JSON value. " + value );
+            }
+         }
+
+         _setInternal( key, value );
       }else{
          Object o = opt( key );
          if( o instanceof JSONArray ){

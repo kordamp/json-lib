@@ -1,8 +1,27 @@
+/*
+ * Copyright 2002-2007 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.sf.json.groovy
 
 import net.sf.json.*
 import net.sf.json.test.JSONAssert
 
+/**
+ * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ */
 public class TestJsonGroovyBuilder extends GroovyTestCase {
     JsonGroovyBuilder builder
 
@@ -74,13 +93,31 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
              key = "second"
           },
           [key:'third'],
-          [1,2,3]
+          [1,2,3],
+          new Book(title: "Groovy in Action", author: "Dierk Konig"),
+          "json"
        )
        def expected = new JSONArray()
           .element( new JSONObject().element("key","first") )
           .element( new JSONObject().element("key","second") )
           .element( new JSONObject().element("key","third") )
           .element( JSONArray.fromObject([1,2,3]) )
+          .element( new JSONObject()
+             .element("title", "Groovy in Action")
+             .element("author", "Dierk Konig")
+          )
+          .element( "json")
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    public void testBuildDefaultRootArrayWithMultipleArgs2(){
+       def actual = builder.json([key:'first'],[1,2,3]) {
+          key = "third"
+       }
+       def expected = new JSONArray()
+          .element( new JSONObject().element("key","first") )
+          .element( JSONArray.fromObject([1,2,3]) )
+          .element( new JSONObject().element("key","third") )
        JSONAssert.assertEquals( expected, actual )
     }
 
@@ -90,13 +127,32 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
           book = [title: "Groovy in Action", author: "Dierk Konig"]
        }
        def expected = new JSONObject()
-          .element( "books", new JSONObject() )
-       expected["books"].element( "book", new JSONObject()
-          .element("title", "The Definitive Guide to Grails")
-          .element("author", "Graeme Rocher") )
-       expected["books"].element( "book", new JSONObject()
-          .element("title", "Groovy in Action")
-          .element("author", "Dierk Konig") )
+          .element( "books", new JSONObject()
+             .element( "book", new JSONObject()
+                .element("title", "The Definitive Guide to Grails")
+                .element("author", "Graeme Rocher") )
+             .accumulate( "book", new JSONObject()
+                .element("title", "Groovy in Action")
+                .element("author", "Dierk Konig") )
+          )
+
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    public void testBuildObjectWithBeans(){
+       def actual = builder.books {
+          book = new Book(title: "The Definitive Guide to Grails", author: "Graeme Rocher")
+          book = new Book(title: "Groovy in Action", author: "Dierk Konig")
+       }
+       def expected = new JSONObject()
+          .element( "books", new JSONObject()
+             .element( "book", new JSONObject()
+                .element("title", "The Definitive Guide to Grails")
+                .element("author", "Graeme Rocher") )
+             .accumulate( "book", new JSONObject()
+                .element("title", "Groovy in Action")
+                .element("author", "Dierk Konig") )
+          )
 
        JSONAssert.assertEquals( expected, actual )
     }
@@ -117,7 +173,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
              .element( "book", new JSONObject()
                 .element("title", "The Definitive Guide to Grails")
                 .element("author", "Graeme Rocher") )
-             .element( "book", new JSONObject()
+             .accumulate( "book", new JSONObject()
                 .element("title", "Groovy in Action")
                 .element("author", "Dierk Konig") )
           )
@@ -139,11 +195,55 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
              .element( "book", new JSONObject()
                 .element("title", "The Definitive Guide to Grails")
                 .element("author", "Graeme Rocher") )
-             .element( "book", new JSONObject()
+             .accumulate( "book", new JSONObject()
                 .element("title", "The Definitive Guide to Grails")
                 .element("author", "Graeme Rocher") )
           )
 
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    public void testBuildObjectWithClosures3(){
+       def actual = builder.books {
+          2.times {
+             book {
+                title = "The Definitive Guide to Grails"
+                author= "Graeme Rocher"
+             }
+          }
+       }
+       def expected = new JSONObject()
+          .element( "books", new JSONObject()
+             .element( "book", new JSONObject()
+                .element("title", "The Definitive Guide to Grails")
+                .element("author", "Graeme Rocher") )
+             .accumulate( "book", new JSONObject()
+                .element("title", "The Definitive Guide to Grails")
+                .element("author", "Graeme Rocher") )
+          )
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    public void testBuildObjectWithClosures4(){
+       def actual = builder.books {
+          book {
+             title = "The Definitive Guide to Grails"
+             author= "Graeme Rocher"
+          }
+          book {
+             title = "The Definitive Guide to Grails"
+             author= "Graeme Rocher"
+          }
+       }
+       def expected = new JSONObject()
+          .element( "books", new JSONObject()
+             .element( "book", new JSONObject()
+                .element("title", "The Definitive Guide to Grails")
+                .element("author", "Graeme Rocher") )
+             .accumulate( "book", new JSONObject()
+                .element("title", "The Definitive Guide to Grails")
+                .element("author", "Graeme Rocher") )
+          )
        JSONAssert.assertEquals( expected, actual )
     }
 

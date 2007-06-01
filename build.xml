@@ -94,6 +94,7 @@
    </target>
 
    <target name="compile-tests.groovy" depends="compile.groovy" description="Compile the test code (Groovy)">
+      <mkdir dir="${maven.test.output}" />
       <groovyc srcdir="${project.test.groovy.dir}" destdir="${maven.test.output}">
          <classpath>
             <path refid="build.classpath" />

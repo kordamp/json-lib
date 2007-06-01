@@ -43,10 +43,14 @@ class JSONObjectMetaClass extends groovy.lang.DelegatingMetaClass {
    private Object leftShift( instance, args ){
       if( args instanceof Map ){
          instance.putAll( args )
+         instance
       }else if( args instanceof List && args.size() >= 2 ){
          def key = args.remove(0)
-         instance.accumulate( key, args )
+         if( args.size() == 1 ){
+            instance.element( key, args.get(0) )
+         }else{
+            instance.element( key, args )
+         }
       }
-      instance
    }
 }

@@ -38,9 +38,9 @@ import net.sf.json.JSONSerializer;
  */
 public class JsonGroovyBuilder extends GroovyObjectSupport {
    private static final String JSON = "json";
+   private JSON current;
    private Map properties;
    private Stack stack;
-   private JSON current;
 
    public JsonGroovyBuilder() {
       stack = new Stack();
@@ -75,26 +75,42 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
          throw new MissingMethodException( name, getClass(), args );
       }
 
-      JSONObject object = new JSONObject();
-
       if( args.length > 1 ){
-         stack.push( new JSONArray() );
+         JSONArray array = new JSONArray();
+         stack.push( array );
+         for( int i = 0; i < args.length; i++ ){
+            if( args[i] instanceof Closure ){
+               append( name, createObject( (Closure) args[i] ) );
+            }else if( args[i] instanceof Map ){
+               append( name, createObject( (Map) args[i] ) );
+            }else if( args[i] instanceof List ){
+               append( name, createArray( (List) args[i] ) );
+            }else{
+               _append( name, args[i], (JSON)stack.peek() );
+            }
+         }
+         stack.pop();
+      }else{
+         if( args[0] instanceof Closure ){
+            createObject( (Closure) args[0] );
+         }else if( args[0] instanceof Map ){
+            createObject( (Map) args[0] );
+         }else if( args[0] instanceof List ){
+            createArray( (List) args[0] );
+         }
+
       }
-      for( int i = 0; i < args.length; i++ ){
-         if( args[i] instanceof Closure ){
-            append( name, createObject( (Closure) args[i] ) );
-         }else if( args[i] instanceof Map ){
-            append( name, createObject( (Map) args[i] ) );
-         }else if( args[i] instanceof List ){
-            append( name, createArray( (List) args[i] ) );
+
+      if( stack.isEmpty() ){
+         JSONObject object = new JSONObject();
+         object.accumulate( name, current );
+         current = object;
+      }else{
+         JSON top = (JSON) stack.peek();
+         if( top instanceof JSONObject ){
+            append( name, current );
          }
       }
-      if( args.length > 1 ){
-         current = (JSON) stack.pop();
-      }
-
-      object.element( name, current );
-      current = object;
 
       return current;
    }
@@ -130,14 +146,18 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
       Object target = null;
       if( !stack.isEmpty() ){
          target = stack.peek();
-         current = (JSON)target;
-         if( target instanceof JSONObject ){
-            ((JSONObject) target).accumulate( key, value );
-         }else if( target instanceof JSONArray ){
-            ((JSONArray) target).element( value );
-         }
+         current = (JSON) target;
+         _append( key, value, current );
       }else{
          properties.put( key, value );
+      }
+   }
+
+   private void _append( String key, Object value, JSON target ){
+      if( target instanceof JSONObject ){
+         ((JSONObject) target).accumulate( key, value );
+      }else if( target instanceof JSONArray ){
+         ((JSONArray) target).element( value );
       }
    }
 
@@ -203,7 +223,7 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
          }else if( args[0] instanceof List ){
             return createArray( (List) args[0] );
          }else{
-            throw new JSONException( "!!!" );
+            throw new JSONException( "Unsupported type" );
          }
       }else{
          JSONArray array = new JSONArray();
@@ -216,7 +236,7 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
             }else if( args[i] instanceof List ){
                append( name, createArray( (List) args[i] ) );
             }else{
-               throw new JSONException( "!!!" );
+               _append( name, args[i], (JSON)stack.peek() );
             }
          }
          stack.pop();
