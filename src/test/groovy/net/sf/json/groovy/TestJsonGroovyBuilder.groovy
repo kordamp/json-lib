@@ -25,18 +25,18 @@ import net.sf.json.test.JSONAssert
 public class TestJsonGroovyBuilder extends GroovyTestCase {
     JsonGroovyBuilder builder
 
-    public void testBuildDefaultRootEmptyObject(){
+    void testBuildDefaultRootEmptyObject(){
        def actual = builder.json {}
        JSONAssert.assertEquals( new JSONObject(), actual )
     }
 
-    public void testBuildDefaultRootEmptyArray(){
+    void testBuildDefaultRootEmptyArray(){
        builder.json = []
        def actual = builder.json
        JSONAssert.assertEquals( new JSONArray(), actual )
     }
 
-    public void testBuildDefaultRootObjectWithClosure(){
+    void testBuildDefaultRootObjectWithClosure(){
        def actual = builder.json {
           string = "json"
           integer = 1
@@ -49,7 +49,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        JSONAssert.assertEquals( expected, actual )
     }
 
-    public void testBuildDefaultRootObjectWithMap(){
+    void testBuildDefaultRootObjectWithMap(){
        def actual = builder.json([
           'string': "json",
           'integer': 1,
@@ -62,7 +62,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        JSONAssert.assertEquals( expected, actual )
     }
 
-    public void testBuildDefaultRootArrayWithList(){
+    void testBuildDefaultRootArrayWithList(){
        def actual = builder.json(["json", 1, true])
        def expected = new JSONArray()
            .element("json")
@@ -71,7 +71,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        JSONAssert.assertEquals( expected, actual )
     }
 
-    public void testBuildDefaultRootNestedObjects(){
+    void testBuildDefaultRootNestedObjects(){
        def actual = builder.json {
           first = {
              integer = 42
@@ -86,7 +86,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        JSONAssert.assertEquals( expected, actual )
     }
 
-    public void testBuildDefaultRootArrayWithMultipleArgs(){
+    void testBuildDefaultRootArrayWithMultipleArgs(){
        def actual = builder.json( {
              key = "first"
           }, {
@@ -110,7 +110,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        JSONAssert.assertEquals( expected, actual )
     }
 
-    public void testBuildDefaultRootArrayWithMultipleArgs2(){
+    void testBuildDefaultRootArrayWithMultipleArgs2(){
        def actual = builder.json([key:'first'],[1,2,3]) {
           key = "third"
        }
@@ -121,7 +121,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        JSONAssert.assertEquals( expected, actual )
     }
 
-    public void testBuildObjectWithMaps(){
+    void testBuildObjectWithMaps(){
        def actual = builder.books {
           book = [title: "The Definitive Guide to Grails", author: "Graeme Rocher"]
           book = [title: "Groovy in Action", author: "Dierk Konig"]
@@ -139,7 +139,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        JSONAssert.assertEquals( expected, actual )
     }
 
-    public void testBuildObjectWithBeans(){
+    void testBuildObjectWithBeans(){
        def actual = builder.books {
           book = new Book(title: "The Definitive Guide to Grails", author: "Graeme Rocher")
           book = new Book(title: "Groovy in Action", author: "Dierk Konig")
@@ -157,7 +157,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        JSONAssert.assertEquals( expected, actual )
     }
 
-    public void testBuildObjectWithClosures(){
+    void testBuildObjectWithClosures(){
        def actual = builder.books {
           book = {
              title = "The Definitive Guide to Grails"
@@ -181,7 +181,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        JSONAssert.assertEquals( expected, actual )
     }
 
-    public void testBuildObjectWithClosures2(){
+    void testBuildObjectWithClosures2(){
        def actual = builder.books {
           2.times {
              book = {
@@ -203,7 +203,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        JSONAssert.assertEquals( expected, actual )
     }
 
-    public void testBuildObjectWithClosures3(){
+    void testBuildObjectWithClosures3(){
        def actual = builder.books {
           2.times {
              book {
@@ -224,7 +224,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        JSONAssert.assertEquals( expected, actual )
     }
 
-    public void testBuildObjectWithClosures4(){
+    void testBuildObjectWithClosures4(){
        def actual = builder.books {
           book {
              title = "The Definitive Guide to Grails"
@@ -247,7 +247,7 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        JSONAssert.assertEquals( expected, actual )
     }
 
-    public void testBuildObjectWithMultipleClosures(){
+    void testBuildObjectWithMultipleClosures(){
        def actual = builder.books( {
              title = "The Definitive Guide to Grails"
              author= "Graeme Rocher"
@@ -266,6 +266,122 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
                 .element("author", "Dierk Konig") )
           )
 
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    void testBuildObject_Map_with_Closure(){
+       def actual = builder.json([object:{key = "value"}])
+       def expected = new JSONObject()
+          .element( "object", new JSONObject()
+             .element( "key", "value" )
+          )
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    void testBuildObject_Map_with_Map(){
+       def actual = builder.json([object:[key:"value"]])
+       def expected = new JSONObject()
+          .element( "object", new JSONObject()
+             .element( "key", "value" )
+          )
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    void testBuildObject_Map_with_List(){
+       def actual = builder.json([object: [1,2,3]])
+       def expected = new JSONObject()
+          .element( "object", [1,2,3] )
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    void testBuildObject_List_with_Closure(){
+       def actual = builder.json([{key = "value"}])
+       def expected = new JSONArray()
+          .element( new JSONObject()
+             .element( "key", "value" )
+          )
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    void testBuildObject_List_with_Map(){
+       def actual = builder.json([[key:"value"]])
+       def expected = new JSONArray()
+          .element( new JSONObject()
+             .element( "key", "value" )
+          )
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    void testBuildObject_List_with_List(){
+       def actual = builder.json([[1,2,3]])
+       def expected = new JSONArray()
+          .element( [1,2,3] )
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    void testBuildObject_GString_with_JSON(){
+       def actual = builder.json {
+          json = """{
+             'object': {'key':'value'},
+             'array': [1,2,3]
+          }"""
+       }
+       def expected = new JSONObject()
+          .element( "json", new JSONObject()
+             .element( "object", new JSONObject().element("key","value") )
+             .element( "array", [1,2,3] )
+       )
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    void testBuildObject_GString_text(){
+       def actual = builder.json {
+          func = """function(){ return this; }"""
+       }
+       def expected = new JSONObject()
+          .element( "func", new JSONFunction("return this;") )
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    void testBuildObject_Method_with_Map(){
+       def actual = builder.json {
+          node( ['key':"value"] )
+       }
+       def expected = new JSONObject()
+          .element( "node", new JSONObject().element("key","value") )
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    void testBuildObject_Method_with_List(){
+       def actual = builder.json {
+          node( [1,2,3] )
+       }
+       def expected = new JSONObject()
+          .element( "node", JSONArray.fromObject([1,2,3]) )
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    void testBuildObject_Method_with_Map_multipleArgs(){
+       def actual = builder.json {
+          node( ['key':"value"], ['key':"value"] )
+       }
+       def expected = new JSONObject()
+          .element( "node", new JSONArray()
+             .element( new JSONObject().element("key","value") )
+             .element( new JSONObject().element("key","value") )
+          )
+       JSONAssert.assertEquals( expected, actual )
+    }
+
+    void testBuildObject_Method_with_List_multipleArgs(){
+       def actual = builder.json {
+          node( [1,2,3], [4,5,6] )
+       }
+       def expected = new JSONObject()
+          .element( "node", new JSONArray()
+             .element( JSONArray.fromObject([1,2,3]) )
+             .element( JSONArray.fromObject([4,5,6]) )
+       )
        JSONAssert.assertEquals( expected, actual )
     }
 

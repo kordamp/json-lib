@@ -35,6 +35,8 @@ class JSONObjectMetaClass extends groovy.lang.DelegatingMetaClass {
    {
        if( methodName == "leftShift" && args?.length == 1 ){
           return leftShift( instance, args[0] )
+       }else if( methodName == "get" && args?.length == 2 ){
+          return getWithDefaultValue( instance, args[0], args[1] )
        }else{
           return super.invokeMethod( instance, methodName, args )
        }
@@ -52,5 +54,14 @@ class JSONObjectMetaClass extends groovy.lang.DelegatingMetaClass {
             instance.element( key, args )
          }
       }
+   }
+
+   private Object getWithDefaultValue( instance, key, defaultValue ){
+      def previousValue = instance.opt( key )
+      if( !previousValue ){
+         instance.put( key,  defaultValue )
+         previousValue = instance.get( key )
+      }
+      previousValue
    }
 }

@@ -80,6 +80,12 @@ public abstract class AbstractJSONArrayStaticBuildersTestCase extends TestCase {
             .reset();
    }
 
+   protected void tearDown() throws Exception {
+      super.tearDown();
+      JsonConfig.getInstance()
+            .reset();
+   }
+
    private void assertJSONObject( JSONObject json, String[] properties ) {
       assertNotNull( json );
       for( int i = 0; i < properties.length; i++ ){

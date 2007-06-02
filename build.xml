@@ -173,7 +173,7 @@
          </classpath>
          <batchtest todir="${maven.test.reports}">
             <fileset dir="${maven.test.output}">
-               <include name="net/sf/json/groovy/TestJsonGroovyBuilder.class" />
+               <include name="net/sf/json/groovy/AllTests.class" />
             </fileset>
          </batchtest>
       </junit>

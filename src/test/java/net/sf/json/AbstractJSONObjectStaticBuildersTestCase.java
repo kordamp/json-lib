@@ -65,16 +65,22 @@ public abstract class AbstractJSONObjectStaticBuildersTestCase extends TestCase 
 
    protected abstract Object getSource();
 
+   protected void setUp() throws Exception {
+      super.setUp();
+      JsonConfig.getInstance()
+            .reset();
+   }
+
+   protected void tearDown() throws Exception {
+      super.tearDown();
+      JsonConfig.getInstance()
+            .reset();
+   }
+
    private void assertJSONObject( JSONObject json, String[] properties ) {
       assertNotNull( json );
       for( int i = 0; i < properties.length; i++ ){
          assertTrue( json.has( properties[i] ) );
       }
-   }
-
-   protected void setUp() throws Exception {
-      super.setUp();
-      JsonConfig.getInstance()
-            .reset();
    }
 }

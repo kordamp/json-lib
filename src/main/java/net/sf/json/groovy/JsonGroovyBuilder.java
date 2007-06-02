@@ -75,6 +75,7 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
          throw new MissingMethodException( name, getClass(), args );
       }
 
+      Object value = null;
       if( args.length > 1 ){
          JSONArray array = new JSONArray();
          stack.push( array );
@@ -86,19 +87,18 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
             }else if( args[i] instanceof List ){
                append( name, createArray( (List) args[i] ) );
             }else{
-               _append( name, args[i], (JSON)stack.peek() );
+               _append( name, args[i], (JSON) stack.peek() );
             }
          }
          stack.pop();
       }else{
          if( args[0] instanceof Closure ){
-            createObject( (Closure) args[0] );
+            value = createObject( (Closure) args[0] );
          }else if( args[0] instanceof Map ){
-            createObject( (Map) args[0] );
+            value = createObject( (Map) args[0] );
          }else if( args[0] instanceof List ){
-            createArray( (List) args[0] );
+            value = createArray( (List) args[0] );
          }
-
       }
 
       if( stack.isEmpty() ){
@@ -108,7 +108,7 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
       }else{
          JSON top = (JSON) stack.peek();
          if( top instanceof JSONObject ){
-            append( name, current );
+            append( name, current == null ? value : current );
          }
       }
 
@@ -153,7 +153,7 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
       }
    }
 
-   private void _append( String key, Object value, JSON target ){
+   private void _append( String key, Object value, JSON target ) {
       if( target instanceof JSONObject ){
          ((JSONObject) target).accumulate( key, value );
       }else if( target instanceof JSONArray ){
@@ -161,7 +161,7 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
       }
    }
 
-   private JSONArray createArray( List list ) {
+   private JSON createArray( List list ) {
       JSONArray array = new JSONArray();
       stack.push( array );
       for( Iterator elements = list.iterator(); elements.hasNext(); ){
@@ -179,7 +179,7 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
       return array;
    }
 
-   private JSONObject createObject( Closure closure ) {
+   private JSON createObject( Closure closure ) {
       JSONObject object = new JSONObject();
       stack.push( object );
       closure.setDelegate( this );
@@ -188,7 +188,7 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
       return object;
    }
 
-   private JSONObject createObject( Map map ) {
+   private JSON createObject( Map map ) {
       JSONObject object = new JSONObject();
       stack.push( object );
       for( Iterator properties = map.entrySet()
@@ -209,7 +209,7 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
       return object;
    }
 
-   private Object createObject( String name, Object arg ) {
+   private JSON createObject( String name, Object arg ) {
       Object[] args = (Object[]) arg;
       if( args.length == 0 ){
          throw new MissingMethodException( name, getClass(), args );
@@ -236,7 +236,7 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
             }else if( args[i] instanceof List ){
                append( name, createArray( (List) args[i] ) );
             }else{
-               _append( name, args[i], (JSON)stack.peek() );
+               _append( name, args[i], (JSON) stack.peek() );
             }
          }
          stack.pop();

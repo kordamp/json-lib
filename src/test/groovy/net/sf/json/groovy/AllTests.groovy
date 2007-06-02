@@ -29,6 +29,7 @@ class AllTests extends GroovyTestCase {
       suite.addTest( new TestSuite( TestJsonGroovyBuilder ) )
       suite.addTest( new TestSuite( TestJSONObjectGroovy ) )
       suite.addTest( new TestSuite( TestJSONArrayGroovy ) )
+      suite.addTest( new TestSuite( TestMetaClasses ) )
 
       return suite
    }

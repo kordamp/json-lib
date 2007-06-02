@@ -1980,15 +1980,16 @@ public final class JSONObject implements JSON, Map, Comparable {
       }
 
       if( !has( key ) ){
-         JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
-               .findJsonValueProcessor( value.getClass(), key );
-         if( jsonValueProcessor != null ){
-            value = jsonValueProcessor.processObjectValue( key, value );
-            if( !JsonVerifier.isValidJsonValue( value ) ){
-               throw new JSONException( "Value is not a valid JSON value. " + value );
+         if( value != null ){
+            JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
+                  .findJsonValueProcessor( value.getClass(), key );
+            if( jsonValueProcessor != null ){
+               value = jsonValueProcessor.processObjectValue( key, value );
+               if( !JsonVerifier.isValidJsonValue( value ) ){
+                  throw new JSONException( "Value is not a valid JSON value. " + value );
+               }
             }
          }
-
          _setInternal( key, value );
       }else{
          Object o = opt( key );

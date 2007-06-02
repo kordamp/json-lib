@@ -13,6 +13,21 @@
          desc="Current development release">
          <action
             dev="Andres Almiray"
+            type="add">
+            Added StringMetaClass for type conversion
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added ArrayListMetaClass for type conversion
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added HashMapMetaClass for type conversion
+         </action>
+         <action
+            dev="Andres Almiray"
             type="add"
             issue="1656301">
             Add a JSONBuilder (like Grails)
