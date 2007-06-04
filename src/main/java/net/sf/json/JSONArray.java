@@ -364,17 +364,7 @@ public final class JSONArray implements JSON, List {
       try{
          for( int i = 0; i < array.length; i++ ){
             Object element = array[i];
-            if( element != null ){
-               JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
-                     .findJsonValueProcessor( element.getClass() );
-               if( jsonValueProcessor != null ){
-                  element = jsonValueProcessor.processArrayValue( element );
-                  if( !JsonVerifier.isValidJsonValue( element ) ){
-                     throw new JSONException( "Element is not a valid JSON value. " + element );
-                  }
-               }
-            }
-            jsonArray._addValue( element );
+            jsonArray.addValue( element );
             jsonConfig.fireElementAddedEvent( i, jsonArray.get( i ) );
          }
       }catch( JSONException jsone ){
@@ -395,17 +385,7 @@ public final class JSONArray implements JSON, List {
          int i = 0;
          for( Iterator elements = collection.iterator(); elements.hasNext(); ){
             Object element = elements.next();
-            if( element != null ){
-               JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
-                     .findJsonValueProcessor( element.getClass() );
-               if( jsonValueProcessor != null ){
-                  element = jsonValueProcessor.processArrayValue( element );
-                  if( !JsonVerifier.isValidJsonValue( element ) ){
-                     throw new JSONException( "Element is not a valid JSON value. " + element );
-                  }
-               }
-            }
-            jsonArray._addValue( element );
+            jsonArray.addValue( element );
             jsonConfig.fireElementAddedEvent( i, jsonArray.get( i++ ) );
          }
       }catch( JSONException jsone ){
@@ -703,7 +683,7 @@ public final class JSONArray implements JSON, List {
    }
 
    public void add( int index, Object value ) {
-      element( index, value );
+      this.elements.add( index, processValue( value ) );
    }
 
    public boolean add( Object value ) {
@@ -727,7 +707,7 @@ public final class JSONArray implements JSON, List {
       }
       int offset = 0;
       for( Iterator i = collection.iterator(); i.hasNext(); ){
-         element( index + (offset++), i.next() );
+         this.elements.add( index + (offset++), processValue( i.next() ) );
       }
       return true;
    }
@@ -753,11 +733,11 @@ public final class JSONArray implements JSON, List {
    }
 
    public boolean contains( Object o ) {
-      return elements.contains( o );
+      return elements.contains( processValue( o ) );
    }
 
    public boolean containsAll( Collection collection ) {
-      return elements.containsAll( collection );
+      return elements.containsAll( fromObject( collection ) );
    }
 
    /**
@@ -943,55 +923,7 @@ public final class JSONArray implements JSON, List {
          throw new JSONException( "JSONArray[" + index + "] not found." );
       }
       if( index < size() ){
-         if( value != null ){
-            JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
-                  .findJsonValueProcessor( value.getClass() );
-            if( jsonValueProcessor != null ){
-               value = jsonValueProcessor.processArrayValue( value );
-               if( !JsonVerifier.isValidJsonValue( value ) ){
-                  throw new JSONException( "Value is not a valid JSON value. " + value );
-               }
-            }
-         }
-
-         if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
-               || value instanceof Class ){
-            this.elements.set( index, ((Class) value).getName() );
-         }else if( JSONUtils.isFunction( value ) ){
-            if( value instanceof String ){
-               value = JSONFunction.parse( (String) value );
-            }
-            this.elements.set( index, value );
-         }else if( value instanceof JSONString ){
-            this.elements.set( index, JSONSerializer.toJSON( (JSONString) value ) );
-         }else if( value instanceof JSON ){
-            this.elements.set( index, value );
-         }else if( JSONUtils.isArray( value ) ){
-            this.elements.set( index, JSONArray.fromObject( value ) );
-         }else if( value instanceof JSONTokener ){
-            this.elements.set( index, _fromJSONTokener( (JSONTokener) value ) );
-         }else if( JSONUtils.isString( value ) ){
-            String str = String.valueOf( value );
-            if( JSONUtils.mayBeJSON( str ) ){
-               try{
-                  this.elements.set( index, JSONSerializer.toJSON( str ) );
-               }catch( JSONException jsone ){
-                  this.elements.set( index, JSONUtils.stripQuotes( str ) );
-               }
-            }else{
-               this.elements.set( index, JSONUtils.stripQuotes( str ) );
-            }
-         }else if( JSONUtils.isNumber( value ) || JSONUtils.isBoolean( value ) ){
-            JSONUtils.testValidity( value );
-            this.elements.set( index, value );
-         }else{
-            JSONObject jsonObject = JSONObject.fromObject( value );
-            if( jsonObject.isNullObject() ){
-               this.elements.set( index, JSONNull.getInstance() );
-            }else{
-               this.elements.set( index, jsonObject );
-            }
-         }
+         this.elements.set( index, processValue( value ) );
       }else{
          while( index != size() ){
             element( JSONNull.getInstance() );
@@ -1624,11 +1556,11 @@ public final class JSONArray implements JSON, List {
    }
 
    public boolean removeAll( Collection collection ) {
-      return elements.removeAll( collection );
+      return elements.removeAll( fromObject( collection ) );
    }
 
    public boolean retainAll( Collection collection ) {
-      return elements.retainAll( collection );
+      return elements.retainAll( fromObject( collection ) );
    }
 
    public Object set( int index, Object value ) {
@@ -1817,48 +1749,51 @@ public final class JSONArray implements JSON, List {
     * @return this.
     */
    private JSONArray _addValue( Object value ) {
+      this.elements.add( _processValue( value ) );
+      return this;
+   }
+
+   private Object _processValue( Object value ) {
       if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
             || value instanceof Class ){
-         this.elements.add( ((Class) value).getName() );
+         return ((Class) value).getName();
       }else if( JSONUtils.isFunction( value ) ){
          if( value instanceof String ){
             value = JSONFunction.parse( (String) value );
          }
-         this.elements.add( value );
+         return value;
       }else if( value instanceof JSONString ){
-         this.elements.add( JSONSerializer.toJSON( (JSONString) value ) );
+         return JSONSerializer.toJSON( (JSONString) value );
       }else if( value instanceof JSON ){
-         this.elements.add( value );
+         return value;
       }else if( JSONUtils.isArray( value ) ){
-         this.elements.add( JSONArray.fromObject( value ) );
+         return JSONArray.fromObject( value );
       }else if( value instanceof JSONTokener ){
-         this.elements.add( _fromJSONTokener( (JSONTokener) value ) );
+         return _fromJSONTokener( (JSONTokener) value );
       }else if( JSONUtils.isString( value ) ){
          String str = String.valueOf( value );
          if( JSONUtils.mayBeJSON( str ) ){
             try{
-               this.elements.add( JSONSerializer.toJSON( str ) );
+               return JSONSerializer.toJSON( str );
             }catch( JSONException jsone ){
-               this.elements.add( JSONUtils.stripQuotes( str ) );
+               return JSONUtils.stripQuotes( str );
             }
          }else{
-            this.elements.add( JSONUtils.stripQuotes( str ) );
+            return str;
          }
       }else if( JSONUtils.isNumber( value ) ){
          JSONUtils.testValidity( value );
-         this.elements.add( JSONUtils.transformNumber( (Number) value ) );
+         return JSONUtils.transformNumber( (Number) value );
       }else if( JSONUtils.isBoolean( value ) ){
-         this.elements.add( value );
+         return value;
       }else{
          JSONObject jsonObject = JSONObject.fromObject( value );
          if( jsonObject.isNullObject() ){
-            this.elements.add( JSONNull.getInstance() );
+            return JSONNull.getInstance();
          }else{
-            this.elements.add( jsonObject );
+            return jsonObject;
          }
       }
-
-      return this;
    }
 
    /**
@@ -1870,13 +1805,20 @@ public final class JSONArray implements JSON, List {
     * @return this.
     */
    private JSONArray addValue( Object value ) {
+      return _addValue( processValue( value ) );
+   }
+
+   private Object processValue( Object value ) {
       if( value != null ){
          JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
                .findJsonValueProcessor( value.getClass() );
          if( jsonValueProcessor != null ){
             value = jsonValueProcessor.processArrayValue( value );
+            if( !JsonVerifier.isValidJsonValue( value ) ){
+               throw new JSONException( "Value is not a valid JSON value. " + value );
+            }
          }
       }
-      return _addValue( value );
+      return _processValue( value );
    }
 }

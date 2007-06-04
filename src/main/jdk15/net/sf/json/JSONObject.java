@@ -56,10 +56,6 @@ import java.util.Set;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
@@ -616,8 +612,8 @@ public final class JSONObject implements JSON, Map, Comparable {
             jsonConfig.fireObjectEndEvent();
             return new JSONObject( true );
          }
-         JSONObject jsonObject = new JSONObject();
 
+         JSONObject jsonObject = new JSONObject();
          if( tokener.nextClean() != '{' ){
             throw tokener.syntaxError( "A JSONObject text must begin with '{'" );
          }
@@ -1054,6 +1050,12 @@ public final class JSONObject implements JSON, Map, Comparable {
    }
 
    public boolean containsValue( Object value ) {
+      try{
+
+         value = processValue( value );
+      }catch( JSONException e ){
+         return false;
+      }
       return properties.containsValue( value );
    }
 
@@ -1166,14 +1168,7 @@ public final class JSONObject implements JSON, Map, Comparable {
          throw new JSONException( "Null key." );
       }
       if( value != null ){
-         JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
-               .findJsonValueProcessor( value.getClass(), key );
-         if( jsonValueProcessor != null ){
-            value = jsonValueProcessor.processObjectValue( key, value );
-            if( !JsonVerifier.isValidJsonValue( value ) ){
-               throw new JSONException( "Value is not a valid JSON value. " + value );
-            }
-         }
+         value = processValue( key, value );
          setInternal( key, value );
       }else{
          remove( key );
@@ -1195,14 +1190,14 @@ public final class JSONObject implements JSON, Map, Comparable {
    public JSONObject elementOpt( String key, Object value ) {
       verifyIsNull();
       if( key != null && value != null ){
-         JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
-               .findJsonValueProcessor( value.getClass(), key );
-         if( jsonValueProcessor != null ){
-            value = jsonValueProcessor.processObjectValue( key, value );
-            if( !JsonVerifier.isValidJsonValue( value ) ){
-               throw new JSONException( "Value is not a valid JSON value. " + value );
-            }
-         }
+         /*
+          * JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
+          * .findJsonValueProcessor( value.getClass(), key ); if(
+          * jsonValueProcessor != null ){ value =
+          * jsonValueProcessor.processObjectValue( key, value ); if(
+          * !JsonVerifier.isValidJsonValue( value ) ){ throw new JSONException(
+          * "Value is not a valid JSON value. " + value ); } }
+          */
          element( key, value );
       }
       return this;
@@ -1755,7 +1750,7 @@ public final class JSONObject implements JSON, Map, Comparable {
             Map.Entry entry = (Map.Entry) entries.next();
             String key = (String) entry.getKey();
             Object value = entry.getValue();
-            setInternal( key, value );
+            this.properties.put( key, value );
          }
       }else{
          for( Iterator entries = map.entrySet()
@@ -1995,17 +1990,7 @@ public final class JSONObject implements JSON, Map, Comparable {
       }
 
       if( !has( key ) ){
-         if( value != null ){
-            JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
-                  .findJsonValueProcessor( value.getClass(), key );
-            if( jsonValueProcessor != null ){
-               value = jsonValueProcessor.processObjectValue( key, value );
-               if( !JsonVerifier.isValidJsonValue( value ) ){
-                  throw new JSONException( "Value is not a valid JSON value. " + value );
-               }
-            }
-         }
-         _setInternal( key, value );
+         setInternal( key, value );
       }else{
          Object o = opt( key );
          if( o instanceof JSONArray ){
@@ -2017,6 +2002,48 @@ public final class JSONObject implements JSON, Map, Comparable {
       }
 
       return this;
+   }
+
+   private Object _processValue( Object value ) {
+      if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
+            || value instanceof Class ){
+         return ((Class) value).getName();
+      }else if( value instanceof JSON ){
+         return value;
+      }else if( JSONUtils.isFunction( value ) ){
+         if( value instanceof String ){
+            value = JSONFunction.parse( (String) value );
+         }
+         return value;
+      }else if( value instanceof JSONString ){
+         return JSONSerializer.toJSON( (JSONString) value );
+      }else if( JSONUtils.isArray( value ) ){
+         return JSONArray.fromObject( value );
+      }else if( JSONUtils.isString( value ) ){
+         String str = String.valueOf( value );
+         if( JSONUtils.mayBeJSON( str ) ){
+            try{
+               return JSONSerializer.toJSON( str );
+            }catch( JSONException jsone ){
+               return JSONUtils.stripQuotes( str );
+            }
+         }else{
+            if( value == null ){
+               return "";
+            }else{
+               return str;
+            }
+         }
+      }else if( JSONUtils.isNumber( value ) ){
+         JSONUtils.testValidity( value );
+         return JSONUtils.transformNumber( (Number) value );
+      }else if( JSONUtils.isBoolean( value ) ){
+         return value;
+      }else if( value != null && Enum.class.isAssignableFrom( value.getClass() ) ){
+         return String.valueOf(value);
+      }else{
+         return fromObject( value );
+      }
    }
 
    /**
@@ -2036,47 +2063,31 @@ public final class JSONObject implements JSON, Map, Comparable {
          throw new JSONException( "Null key." );
       }
 
-      if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
-            || value instanceof Class ){
-         this.properties.put( key, ((Class) value).getName() );
-      }else if( value instanceof JSON ){
-         this.properties.put( key, value );
-      }else if( JSONUtils.isFunction( value ) ){
-         if( value instanceof String ){
-            value = JSONFunction.parse( (String) value );
-         }
-         this.properties.put( key, value );
-      }else if( value instanceof JSONString ){
-         this.properties.put( key, JSONSerializer.toJSON( (JSONString) value ) );
-      }else if( JSONUtils.isArray( value ) ){
-         this.properties.put( key, JSONArray.fromObject( value ) );
-      }else if( JSONUtils.isString( value ) ){
-         String str = String.valueOf( value );
-         if( JSONUtils.mayBeJSON( str ) ){
-            try{
-               this.properties.put( key, JSONSerializer.toJSON( str ) );
-            }catch( JSONException jsone ){
-               this.properties.put( key, JSONUtils.stripQuotes( str ) );
-            }
-         }else{
-            if( value == null ){
-               this.properties.put( key, "" );
-            }else{
-               this.properties.put( key, JSONUtils.stripQuotes( str ) );
-            }
-         }
-      }else if( JSONUtils.isNumber( value ) ){
-         JSONUtils.testValidity( value );
-         this.properties.put( key, JSONUtils.transformNumber( (Number) value ) );
-      }else if( JSONUtils.isBoolean( value ) ){
-         this.properties.put( key, value );
-      }else if( value != null && Enum.class.isAssignableFrom( value.getClass() ) ){
-         this.properties.put( key, ((Enum) value).toString() );
-      }else{
-         this.properties.put( key, fromObject( value ) );
-      }
+      this.properties.put( key, _processValue( value ) );
 
       return this;
+   }
+
+   private Object processValue( Object value ) {
+      if( value != null ){
+         JsonConfig jsonConfig = JsonConfig.getInstance();
+         JsonValueProcessor processor = jsonConfig.findJsonValueProcessor( value.getClass() );
+         if( processor != null ){
+            value = processor.processObjectValue( null, value );
+         }
+      }
+      return _processValue( value );
+   }
+
+   private Object processValue( String key, Object value ) {
+      if( value != null ){
+         JsonConfig jsonConfig = JsonConfig.getInstance();
+         JsonValueProcessor processor = jsonConfig.findJsonValueProcessor( value.getClass(), key );
+         if( processor != null ){
+            value = processor.processObjectValue( null, value );
+         }
+      }
+      return _processValue( value );
    }
 
    /**
@@ -2091,22 +2102,7 @@ public final class JSONObject implements JSON, Map, Comparable {
     *         null.
     */
    private JSONObject setInternal( String key, Object value ) {
-      if( value != null ){
-         JsonConfig jsonConfig = JsonConfig.getInstance();
-         JsonBeanProcessor processor = jsonConfig.findJsonBeanProcessor( value.getClass() );
-         if( processor != null ){
-            JSONObject json = processor.processBean( value );
-            if( json == null ){
-               json = new JSONObject( true );
-            }
-            this.properties.put( key, json );
-            return this;
-         }else{
-            return _setInternal( key, value );
-         }
-      }else{
-         return _setInternal( key, JSONNull.getInstance() );
-      }
+      return _setInternal( key, processValue( key, value ) );
    }
 
    /**

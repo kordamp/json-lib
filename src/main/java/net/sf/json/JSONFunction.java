@@ -130,13 +130,19 @@ public class JSONFunction implements Serializable {
       if( obj == null ){
          return false;
       }
+
+      if( obj instanceof String ){
+         try{
+            JSONFunction other = parse( (String) obj );
+            return equals( other );
+         }catch( JSONException e ){
+            return false;
+         }
+      }
+
       if( !(obj instanceof JSONFunction) ){
          return false;
       }
-
-      // if( obj instanceof String ){
-      // return toString().compareTo( (String) obj ) == 0;
-      // }
 
       JSONFunction other = (JSONFunction) obj;
       if( params.length != other.params.length ){

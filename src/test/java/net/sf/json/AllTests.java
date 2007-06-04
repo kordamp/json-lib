@@ -51,6 +51,8 @@ public class AllTests extends TestSuite {
       suite.addTest( new TestSuite( TestJSONArrayEqualsHashCodeCompareTo.class ) );
       suite.addTest( new TestSuite( TestJSONObjectEvents.class ) );
       suite.addTest( new TestSuite( TestJSONArrayEvents.class ) );
+      suite.addTest( new TestSuite( TestJSONObjectAsMap.class ) );
+      suite.addTest( new TestSuite( TestJSONArrayAsList.class ) );
 
       suite.addTest( new TestSuite( TestUserSubmitted.class ) );
 
