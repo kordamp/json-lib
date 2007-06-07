@@ -44,7 +44,7 @@ class ArrayListMetaClass extends DelegatingMetaClass {
       if( clazz == JSONArray ){
          return JSONArray.fromObject( list )
       }else{
-         return super.invokeMethod( list, methodName, args )
+         return super.invokeMethod( list, "asType", [clazz] )
       }
    }
 }

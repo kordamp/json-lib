@@ -44,7 +44,7 @@ class HashMapMetaClass extends DelegatingMetaClass {
       if( clazz == JSONObject ){
          return JSONObject.fromObject( map )
       }else{
-         return super.invokeMethod( map, methodName, args )
+         return super.invokeMethod( map, "asType", [clazz] )
       }
    }
 }
