@@ -16,9 +16,6 @@
 
 package net.sf.json.xml;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 import junit.framework.TestCase;
 import net.sf.json.Assertions;
 import net.sf.json.JSON;
@@ -250,10 +247,7 @@ public class TestXMLSerializer_reads extends TestCase {
       String xml = "<o><name>json</name><nested class=\"object\"><id type=\"number\">1</id></nested></o>";
       JSONObject actual = (JSONObject) xmlSerializer.read( xml );
       JSONObject expected = JSONObject.fromObject( "{name:\"json\",nested:{id:1}}" );
-      assertEquals( expected.get( "name" ), actual.get( "name" ) );
-      assertEquals( expected.get( "nested" )
-            .toString(), actual.get( "nested" )
-            .toString() );
+      Assertions.assertEquals( expected, actual );
    }
 
    public void testReadNumberArray_withDefaultType() {
@@ -314,13 +308,7 @@ public class TestXMLSerializer_reads extends TestCase {
       String xml = "<o type=\"number\"><bool type=\"boolean\">true</bool><int>1</int><double>2.2</double><string type=\"string\">json</string><numbers class=\"array\"><e>4.44</e><e>5</e></numbers></o>";
       JSONObject actual = (JSONObject) xmlSerializer.read( xml );
       JSONObject expected = JSONObject.fromObject( "{bool:true,int:1,double:2.2,string:'json',numbers:[4.44,5]}" );
-      assertEquals( expected.get( "bool" ), actual.get( "bool" ) );
-      assertEquals( expected.get( "int" ), actual.get( "int" ) );
-      assertEquals( expected.get( "double" ), actual.get( "double" ) );
-      assertEquals( expected.get( "string" ), actual.get( "string" ) );
-      assertEquals( expected.get( "numbers" )
-            .toString(), actual.get( "numbers" )
-            .toString() );
+      Assertions.assertEquals( expected, actual );
    }
 
    public void testReadStringArray_withDefaultType() {
@@ -358,18 +346,10 @@ public class TestXMLSerializer_reads extends TestCase {
    }
 
    public void testRemoveNameSpacePrefixFromElements() throws Exception {
-      StringBuffer xml = new StringBuffer();
-      BufferedReader in = new BufferedReader( new InputStreamReader( Thread.currentThread()
-            .getContextClassLoader()
-            .getResourceAsStream( "net/sf/json/xml/delicious.xml" ) ) );
-      String line = null;
-      while( (line = in.readLine()) != null ){
-         xml.append( line );
-      }
       XMLSerializer xmlSerializer = new XMLSerializer();
       xmlSerializer.setRemoveNamespacePrefixFromElements( true );
 
-      JSONObject json = (JSONObject) xmlSerializer.read( xml.toString() );
+      JSONObject json = (JSONObject) xmlSerializer.readFromFile( "net/sf/json/xml/delicious.xml" );
       assertFalse( json.getJSONObject( "item" )
             .has( "@rdf:about" ) );
       assertTrue( json.getJSONObject( "item" )
@@ -377,41 +357,25 @@ public class TestXMLSerializer_reads extends TestCase {
    }
 
    public void testSkipNamespaces() throws Exception {
-      StringBuffer xml = new StringBuffer();
-      BufferedReader in = new BufferedReader( new InputStreamReader( Thread.currentThread()
-            .getContextClassLoader()
-            .getResourceAsStream( "net/sf/json/xml/delicious.xml" ) ) );
-      String line = null;
-      while( (line = in.readLine()) != null ){
-         xml.append( line );
-      }
       XMLSerializer xmlSerializer = new XMLSerializer();
       xmlSerializer.setSkipNamespaces( true );
 
-      JSONObject json = (JSONObject) xmlSerializer.read( xml.toString() );
+      JSONObject json = (JSONObject) xmlSerializer.readFromFile( "net/sf/json/xml/delicious.xml" );
       assertFalse( json.getJSONObject( "item" )
             .has( "@xmlns" ) );
    }
 
    public void testTrimSpaces() throws Exception {
-      StringBuffer xml = new StringBuffer();
-      BufferedReader in = new BufferedReader( new InputStreamReader( Thread.currentThread()
-            .getContextClassLoader()
-            .getResourceAsStream( "net/sf/json/xml/delicious.xml" ) ) );
-      String line = null;
-      while( (line = in.readLine()) != null ){
-         xml.append( line );
-      }
       XMLSerializer xmlSerializer = new XMLSerializer();
 
-      JSONObject json = (JSONObject) xmlSerializer.read( xml.toString() );
+      JSONObject json = (JSONObject) xmlSerializer.readFromFile( "net/sf/json/xml/delicious.xml" );
       String link = json.getJSONObject( "item" )
             .getString( "link" );
       assertTrue( link.startsWith( " " ) );
       assertTrue( link.endsWith( " " ) );
 
       xmlSerializer.setTrimSpaces( true );
-      json = (JSONObject) xmlSerializer.read( xml.toString() );
+      json = (JSONObject) xmlSerializer.readFromFile( "net/sf/json/xml/delicious.xml" );
       link = json.getJSONObject( "item" )
             .getString( "link" );
       assertFalse( link.startsWith( " " ) );

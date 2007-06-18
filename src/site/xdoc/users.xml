@@ -68,6 +68,27 @@
        in incubation within the Apache incubator.<br/>
        Json-lib is used for testing purpouses in the bindings/jsonrpc module.</td>
          </tr>
+         <tr>
+       <td valign="top" align="center"><a href="http://www.azuki-framework.org/wiki/index.php?title=Main_Page">Azuki Framework</a></td>
+       <td valign="top">The Azuki framework is a Java application framework including many features (dependency, AOP, 
+       Event-based processing....) and provides a visual tool that describes your software architecture.<br/>
+       Json-lib is used on the server-side with Azuki beans. Thanks to Mathieu Jucker.</td>
+         </tr>
+         <tr>
+       <!--<td valign="top" align="center"><a href="http://code.google.com/p/pimpas/">Pimpas Framework</a></td>-->
+       <td valign="top" align="center"><a href="http://www.pimpas.net">Pimpas Framework</a></td>
+       <td valign="top">Pimpas Framework its a cool framework that help people to play with Java. We hav security using JAAS, 
+       xml reader provide by dom4j, web container provider by tomcat, using jsf to create visual components for web. 
+       Our framework its simple and fast.<br/>
+       Json-lib is used in the javascript transformation module. Thanks to Casmeiron.</td>
+         </tr>
+         <tr>
+       <td valign="top" align="center"><a href="http://sourceforge.net/projects/salto-framework">Salto Framework</a></td>
+       <td valign="top">Salto framework is an AJAX based framework which makes possible to build a Web application 
+       very quickly. Thanks to AJAX mechanism, datas exchanges between client side an server side are reduced. You are able 
+       to refresh only a part of the screen.<br/>
+       Json-lib is used in Tree-rendering components. Thanks to Jerome Denolf.</td>
+         </tr>
       </tbody>
    </table>
    <table>
