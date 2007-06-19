@@ -323,28 +323,25 @@ public class JsonConfig {
       }
    }
 
-   public void unregisterJsonValueProcessor( Class beanClass, Class propertyType,
-         JsonValueProcessor jsonValueProcessor ) {
+   public void unregisterJsonValueProcessor( Class beanClass, Class propertyType ) {
       if( beanClass != null && propertyType != null ){
          beanTypeMap.remove( beanClass, propertyType );
       }
    }
 
-   public void unregisterJsonValueProcessor( Class propertyType,
-         JsonValueProcessor jsonValueProcessor ) {
+   public void unregisterJsonValueProcessor( Class propertyType ) {
       if( propertyType != null ){
          typeMap.remove( propertyType );
       }
    }
 
-   public void unregisterJsonValueProcessor( Class beanClass, String key,
-         JsonValueProcessor jsonValueProcessor ) {
+   public void unregisterJsonValueProcessor( Class beanClass, String key ) {
       if( beanClass != null && key != null ){
          beanKeyMap.remove( beanClass, key );
       }
    }
 
-   public void unregisterJsonValueProcessor( String key, JsonValueProcessor jsonValueProcessor ) {
+   public void unregisterJsonValueProcessor( String key ) {
       if( key != null ){
          keyMap.remove( key );
       }

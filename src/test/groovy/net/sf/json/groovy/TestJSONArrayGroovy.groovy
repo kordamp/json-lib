@@ -28,7 +28,6 @@ class TestJSONArrayGroovy extends GroovyTestCase {
        assertTrue json == json
     }
 
-/*
     public void testLessThanOperator(){
        def json1 = new JSONArray().element(1)
        def json2 = new JSONArray().element(1).element(2)
@@ -46,5 +45,4 @@ class TestJSONArrayGroovy extends GroovyTestCase {
        def json2 = new JSONArray().element(1).element(2)
        assertTrue 0 != (json1 <=> json2)
     }
-*/
 }

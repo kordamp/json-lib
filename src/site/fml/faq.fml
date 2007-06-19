@@ -72,7 +72,7 @@
     
     <faq id="inner_bean">
       <question>
-        <strong>Json-lib does not finds my inner bean, help!</strong>
+        <strong>Json-lib does not find my inner bean, help!</strong>
       </question>
       <answer><p>In order for Json-lib (in fact the PropertyDescriptors) to find and inspect your beans
       they have to be declared public, and all desired properties must have a public pair of reader/writer.

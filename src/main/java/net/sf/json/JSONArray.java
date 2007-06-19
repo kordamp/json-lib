@@ -106,7 +106,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author JSON.org
  */
-public final class JSONArray implements JSON, List {
+public final class JSONArray implements JSON, List, Comparable {
    /**
     * Creates a JSONArray from a java array.<br>
     * The java array can be multidimensional.

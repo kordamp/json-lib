@@ -6,29 +6,29 @@
          Andres Almiray
       </author>
    </properties>
-
-   <release
-      version="N/A"
-      date="N/A"
-      desc="Current development version">
-      <action
-         dev="Andres Almiray"
-         type="fix"
-         issue="1739066">
-         Error in Attributes conversion from xml to json in 2.0a2
-      </action>
-      <action
-         dev="Andres Almiray"
-         type="add"
-         issue="1739247">
-         Add readFromFile to XMLSerializer
-      </action>
-   </release>
-
    <body>
+
+      <release
+         version="N/A"
+         date="2007-07-18"
+         desc="Current development version">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1739066">
+            Error in Attributes conversion from xml to json in 2.0a2
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1739247">
+            Add readFromFile to XMLSerializer
+         </action>
+      </release>
+
       <release
          version="2.0a2"
-         date="06/07/07"
+         date="2007-07-06"
          desc="Second 2.0 Alpha release">
          <action
             dev="Andres Almiray"
