@@ -15,6 +15,13 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1746272">
+            JSONArray.put(long) not behaving properly for longs &gt;
+            1L&lt;&lt;62. Thanks to Mathias Herberst (provided a patch)
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1739066">
             Error in Attributes conversion from xml to json in 2.0a2
          </action>

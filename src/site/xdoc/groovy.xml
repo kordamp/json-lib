@@ -28,8 +28,7 @@
 </ul></li>
 <li>JSONObject and JSONarray implement java.util.Comparable, which enables the use of the comparison operators with them (including the spaceship operator).</li>
 <li>JSONObject implements java.util.Map and JSONArray implements java.util.List, anything you can do with Maps and List can be done with JSONObject and JSONArray.</li>
-<li>JsonGroovyBuilder behaves like the JsonBuilder found in Grails but it will create a JSONObject/JSONArray instead of writing the built
-	structure to a String.</li>
+<li>JsonGroovyBuilder behaves like the JsonBuilder found in Grails but it will create a JSONObject/JSONArray instead of writing the built structure into a String.</li>
       </ul>
       </p>
       </section>
