@@ -940,7 +940,7 @@ public final class JSONObject implements JSON, Map, Comparable {
     *         null.
     */
    public JSONObject accumulate( String key, double value ) {
-      return _accumulate( key, Double.valueOf( value ) );
+      return _accumulate( key, new Double( value ) );
    }
 
    /**
@@ -957,7 +957,7 @@ public final class JSONObject implements JSON, Map, Comparable {
     *         null.
     */
    public JSONObject accumulate( String key, int value ) {
-      return _accumulate( key, Integer.valueOf( value ) );
+      return _accumulate( key, new Integer( value ) );
    }
 
    /**
@@ -974,7 +974,7 @@ public final class JSONObject implements JSON, Map, Comparable {
     *         null.
     */
    public JSONObject accumulate( String key, long value ) {
-      return _accumulate( key, Long.valueOf( value ) );
+      return _accumulate( key, new Long( value ) );
    }
 
    /**

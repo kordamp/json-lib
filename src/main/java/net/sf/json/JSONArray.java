@@ -588,7 +588,7 @@ public final class JSONArray implements JSON, List, Comparable {
       jsonConfig.fireArrayStartEvent();
       this.elements = new ArrayList();
       for( int i = 0; i < array.length; i++ ){
-         Character c = Character.valueOf( array[i] );
+         Character c = new Character( array[i] );
          this.elements.add( c );
          jsonConfig.fireElementAddedEvent( i, c );
       }

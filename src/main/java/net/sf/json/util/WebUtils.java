@@ -83,7 +83,7 @@ public class WebUtils {
    }
 
    private static String quote( String str ) {
-      if( str.contains( " " ) || str.contains( ":" ) ){
+      if( str.indexOf( " " ) > -1 || str.indexOf( ":" ) > -1 ){
          return JSONUtils.quote( str );
       }else{
          return str;
