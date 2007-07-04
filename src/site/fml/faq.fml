@@ -53,7 +53,7 @@
       your dependency declaration, like the following:
       </p><p><textarea name="srcode" class="xml:nocontrols:nogutter" cols="80" rows="6">
 <dependency> 
-   <groupId>net.sf.json</groupId> 
+   <groupId>net.sf.json-lib</groupId> 
    <artifactId>json-lib</artifactId> 
    <version>1.0</version> 
    <classifier>jdk15</classifier> 
