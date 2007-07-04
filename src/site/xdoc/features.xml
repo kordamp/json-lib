@@ -20,6 +20,7 @@
           </ul></li>
           <li>modify the target property name when transforming from JSON to Java if the name is not a valid JavaIdentifier</li>
           <li>skip modifying map keys when transforming form JSON to Java if the key is not a valid JavaIdentifier</li>
+          <li>register your own JavaIdentifierTransformer strategy</li>
           <li>publish events when building a JSONObject or JSONarray. The available events are:<ul>
              <li>object start/end</li>
              <li>array start/end</li>
@@ -29,6 +30,10 @@
              <li>error (exception)</li>
           </ul></li>
           <li>Cycle detection, there are two default strategies, you can register your own</li>
+          <li>JSONObject implements java.util.Map and java.util.Comparable</li>
+          <li>JSONArray implements java.util.List and java.util.Comparable</li>
+          <li>JSONObject, JSONArray and JSONNull implement a base interface: JSON</li>
+          <li>JSONAssert, a test-friendly class for testing JSON values</li>li>
           </ul>
           </p>
          </subsection>
