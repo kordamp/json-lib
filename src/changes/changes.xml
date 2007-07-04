@@ -22,7 +22,7 @@
             dev="Andres Almiray"
             type="fix"
             issue="1746838">
-            JDK 1.4 compatibility. Thnaks to Marcelo Liberato (provided
+            JDK 1.4 compatibility. Thanks to Marcelo Liberato (provided
             a patch)
          </action>
          <action

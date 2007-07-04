@@ -22,6 +22,7 @@
 		<menu name="Json-lib">
 			<item name="Introduction" href="index.html" />
 			<item name="Download" href="https://sourceforge.net/project/showfiles.php?group_id=171425" />
+			<item name="Feature List" href="features.html" />
 			<item name="Getting Started" href="usage.html" />
 			<item name="Advanced features" href="advanced.html" />
 			<item name="Groovy integration" href="groovy.html" />

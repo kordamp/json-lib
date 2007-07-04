@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
 
-	<properties>
-		<title>Json-lib::Welcome</title>
-	</properties>
+   <properties>
+      <title>Json-lib::Welcome</title>
+   </properties>
 
-	<body>
-		<section name="Welcome to Json-lib">
-			<p>
+   <body>
+      <section name="Welcome to Json-lib">
+         <p>
             JSON-lib is a java library for transforming beans, maps, collections,
             java arrays and XML to JSON and back again to beans and DynaBeans.<br/> 
-				It is based on the work by Douglas Crockford
-				in <a href="http://www.json.org/java">http://www.json.org/java</a>.
-			</p>
+            It is based on the work by Douglas Crockford
+            in <a href="http://www.json.org/java">http://www.json.org/java</a>.
+         </p>
          <p>
             The following tables sumarizes the types conversion between java and
             javascript:<br/>
@@ -55,23 +55,35 @@
       json-lib-x.x-jdk15 is compatible with JDK 1.5, includes support for Enums in JSONArray and JSONObject.
       Please reffer to the appropriate javadoc links available in the project menu.
       </p>
-		</section>
-		<section name="What is JSON ?">
-			<p>
-				JSON (JavaScript Object Notation) is a lightweight
-				data-interchange format. It is easy for humans to read
-				and write. It is easy for machines to parse and
-				generate. It is based on a subset of the JavaScript
-				Programming Language, Standard ECMA-262 3rd Edition -
-				December 1999. JSON is a text format that is completely
-				language independent but uses conventions that are
-				familiar to programmers of the C-family of languages,
-				including C, C++, C#, Java, JavaScript, Perl, Python,
-				and many others.
-				<br />
-				These properties make JSON an ideal data-interchange
-				language.
-			</p>
-		</section>
-	</body>
+      <p>Json-lib requires (at least) the following dependencies in your classpath:
+         <ul>
+            <li>jakarta commons-lang 2.3</li>
+            <li>jakarta commons-beanutils 1.70</li>
+            <li>jakarta commons-collections 3.2</li>
+             <li>jakarta commons-logging 1.1</li>
+            <li>ezmoprh 1.0.1</li>
+         </ul>
+         Other dependencies are needed if working with XML, Groovy and JRuby. Please review the 
+         <a href="http://json-lib.sourceforge.net/dependencies.html">Dependencies report</a> to know more about 
+         those extra dependencies.
+      </p>
+      </section>
+      <section name="What is JSON ?">
+         <p>
+            JSON (JavaScript Object Notation) is a lightweight
+            data-interchange format. It is easy for humans to read
+            and write. It is easy for machines to parse and
+            generate. It is based on a subset of the JavaScript
+            Programming Language, Standard ECMA-262 3rd Edition -
+            December 1999. JSON is a text format that is completely
+            language independent but uses conventions that are
+            familiar to programmers of the C-family of languages,
+            including C, C++, C#, Java, JavaScript, Perl, Python,
+            and many others.
+            <br />
+            These properties make JSON an ideal data-interchange
+            language.
+         </p>
+      </section>
+   </body>
 </document>

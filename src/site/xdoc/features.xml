@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+
+   <properties>
+      <title>Json-lib::Feature List</title>
+   </properties>
+
+   <body>
+      <section name="Feature List">
+         <p>The following is a list of the most notable features available in Json-lib.
+         </p>
+         <subsection name="Java">
+          <p>The following options are configurable with JsonConfig:
+          <ul>
+          <li>bidirectional serialization, supports Maps, Collections, arrays (primitives, multidimensional), beans, DynaBeans, Enums &amp; Annotations (jdk15 package only)</li>
+          <li>supports custom serialization with 3 schemes:<ul>
+                <li>implement JSONString interface</li>
+                <li>register a JsonBeanProcessor</li>
+                <li>register a JsonValueProcessor</li>
+          </ul></li>
+          <li>modify the target property name when transforming from JSON to Java if the name is not a valid JavaIdentifier</li>
+          <li>skip modifying map keys when transforming form JSON to Java if the key is not a valid JavaIdentifier</li>
+          <li>publish events when building a JSONObject or JSONarray. The available events are:<ul>
+             <li>object start/end</li>
+             <li>array start/end</li>
+             <li>propertySet</li>
+             <li>elementAdded</li>
+             <li>warning (recoverable)</li>
+             <li>error (exception)</li>
+          </ul></li>
+          <li>Cycle detection, there are two default strategies, you can register your own</li>
+          </ul>
+          </p>
+         </subsection>
+         <subsection name="XML">
+            <p>The following options are configurable in XMLSerializer:
+            <ul>
+               <li>[read] trim leading and trailing whitespace from element values</li>
+               <li>[read] skip namespace handling</li>
+               <li>[read] trim namespace prefixes</li>
+               <li>[write] write type hints (useful for converting back to JSON)</li>
+               <li>[write] change default values for Object, Array and Element tag names</li>
+               <li>[write] change default value for Root element tag name</li>
+               <li>[write] raise error if namespace uri is missing</li>
+               <li>[write] transform an explicit array into an implicit array</li>
+            </ul>
+            </p>
+         </subsection>
+         <subsection name="Web">
+            <p>The following options are configurable in WebUtils:
+            <ul>
+               <li>do not output quotes for object keys when its safe for JavaScript</li>
+               <li>two default strategies for preventing javascript hijacking, you can register your own</li>
+            </ul>
+            </p>
+         </subsection>
+         <subsection name="Groovy">
+            <ul>
+               <li>support for the leftshift ( &lt;&lt; ) operator in JSONObject</li>
+               <li>support for the spaceship ( &lt;=&gt; ) and its cousins</li>
+               <li>type conversion with the <code>as</code> keyword</li>
+               <li>a Groovy JSON builder</li>
+            </ul>
+         </subsection>
+         <!--
+         <subsection name="JRuby">
+         </subsection>
+         -->
+      </section>
+   </body>
+</document>
