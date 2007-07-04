@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="add"
+            issue="1748029">
+            Add JRuby support
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
             issue="1747394">
             Support cycle detection in static builders
          </action>

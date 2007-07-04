@@ -67,10 +67,13 @@
                <li>a Groovy JSON builder</li>
             </ul>
          </subsection>
-         <!--
          <subsection name="JRuby">
+            <ul>
+               <li>JSONArray.empty? is an alias for JSONArray.isEmpty()</li>
+               <li>JSONObject.empty? is an alias for JSONObject.isEmpty()</li>
+               <li>support for the leftshift ( &lt;&lt; ) operator in JSONObject</li>
+            </ul>
          </subsection>
-         -->
       </section>
    </body>
 </document>
