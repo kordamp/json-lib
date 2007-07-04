@@ -20,25 +20,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
+import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JavaIdentifierTransformer;
 import net.sf.json.util.JsonEventListener;
 
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JsonConfig {
    private static MultiKeyMap beanTypeMap = new MultiKeyMap();
+   private static final CycleDetectionStrategy DEFAULT_CYCLE_DETECTION_STRATEGY = CycleDetectionStrategy.STRICT;
    private static final String[] DEFAULT_EXCLUDES = new String[] { "class", "declaringClass",
          "metaClass" };
    private static final JavaIdentifierTransformer DEFAULT_JAVA_IDENTIFIER_TRANSFORMER = JavaIdentifierTransformer.NOOP;
@@ -50,7 +49,6 @@ public class JsonConfig {
     */
 
    private static JsonConfig instance = new JsonConfig();
-   private static final Log log = LogFactory.getLog( JsonConfig.class );
 
    public static JsonConfig getInstance() {
       // return (JsonConfig) instance.get();
@@ -58,6 +56,7 @@ public class JsonConfig {
    }
 
    private MultiKeyMap beanKeyMap = new MultiKeyMap();
+   private CycleDetectionStrategy cycleDetectionStrategy = DEFAULT_CYCLE_DETECTION_STRATEGY;
    private List eventListeners = new ArrayList();
    private String[] excludes = EMPTY_EXCLUDES;
    private boolean ignoreDefaultExcludes;
@@ -78,15 +77,15 @@ public class JsonConfig {
       }
    }
 
-   public synchronized void clearEventListeners() {
-      eventListeners.clear();
-   }
-
    /**
     * Removes all registered JsonBeanProcessors.
     */
    public void clearJsonBeanProcessors() {
       processorMap.clear();
+   }
+
+   public synchronized void clearJsonEventListeners() {
+      eventListeners.clear();
    }
 
    /**
@@ -198,6 +197,10 @@ public class JsonConfig {
       return null;
    }
 
+   public CycleDetectionStrategy getCycleDetectionStrategy() {
+      return cycleDetectionStrategy;
+   }
+
    /**
     * Returns the configured properties for exclusion. <br>
     * Used when tramsforming from Java to Json.
@@ -212,6 +215,10 @@ public class JsonConfig {
     */
    public JavaIdentifierTransformer getJavaIdentifierTransformer() {
       return javaIdentifierTransformer;
+   }
+
+   public synchronized List getJsonEventListeners() {
+      return eventListeners;
    }
 
    public Collection getMergedExcludes() {
@@ -291,8 +298,14 @@ public class JsonConfig {
       ignoreDefaultExcludes = false;
       ignoreTransientFields = false;
       javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
+      cycleDetectionStrategy = DEFAULT_CYCLE_DETECTION_STRATEGY;
       skipJavaIdentifierTransformationInMapKeys = false;
       triggerEvents = false;
+   }
+
+   public void setCycleDetectionStrategy( CycleDetectionStrategy cycleDetectionStrategy ) {
+      this.cycleDetectionStrategy = cycleDetectionStrategy == null ? DEFAULT_CYCLE_DETECTION_STRATEGY
+            : cycleDetectionStrategy;
    }
 
    public void setExcludes( String[] excludes ) {
@@ -323,15 +336,15 @@ public class JsonConfig {
       }
    }
 
-   public void unregisterJsonValueProcessor( Class beanClass, Class propertyType ) {
-      if( beanClass != null && propertyType != null ){
-         beanTypeMap.remove( beanClass, propertyType );
-      }
-   }
-
    public void unregisterJsonValueProcessor( Class propertyType ) {
       if( propertyType != null ){
          typeMap.remove( propertyType );
+      }
+   }
+
+   public void unregisterJsonValueProcessor( Class beanClass, Class propertyType ) {
+      if( beanClass != null && propertyType != null ){
+         beanTypeMap.remove( beanClass, propertyType );
       }
    }
 
@@ -344,110 +357,6 @@ public class JsonConfig {
    public void unregisterJsonValueProcessor( String key ) {
       if( key != null ){
          keyMap.remove( key );
-      }
-   }
-
-   void fireArrayEndEvent() {
-      if( triggerEvents ){
-         for( Iterator listeners = eventListeners.iterator(); listeners.hasNext(); ){
-            JsonEventListener listener = (JsonEventListener) listeners.next();
-            try{
-               listener.onArrayEnd();
-            }catch( RuntimeException e ){
-               log.warn( e );
-            }
-         }
-      }
-   }
-
-   void fireArrayStartEvent() {
-      if( triggerEvents ){
-         for( Iterator listeners = eventListeners.iterator(); listeners.hasNext(); ){
-            JsonEventListener listener = (JsonEventListener) listeners.next();
-            try{
-               listener.onArrayStart();
-            }catch( RuntimeException e ){
-               log.warn( e );
-            }
-         }
-      }
-   }
-
-   void fireElementAddedEvent( int index, Object element ) {
-      if( triggerEvents ){
-         for( Iterator listeners = eventListeners.iterator(); listeners.hasNext(); ){
-            JsonEventListener listener = (JsonEventListener) listeners.next();
-            try{
-               listener.onElementAdded( index, element );
-            }catch( RuntimeException e ){
-               log.warn( e );
-            }
-         }
-      }
-   }
-
-   void fireErrorEvent( JSONException jsone ) {
-      if( triggerEvents ){
-         for( Iterator listeners = eventListeners.iterator(); listeners.hasNext(); ){
-            JsonEventListener listener = (JsonEventListener) listeners.next();
-            try{
-               listener.onError( jsone );
-            }catch( RuntimeException e ){
-               log.warn( e );
-            }
-         }
-      }
-   }
-
-   void fireObjectEndEvent() {
-      if( triggerEvents ){
-         for( Iterator listeners = eventListeners.iterator(); listeners.hasNext(); ){
-            JsonEventListener listener = (JsonEventListener) listeners.next();
-            try{
-               listener.onObjectEnd();
-            }catch( RuntimeException e ){
-               log.warn( e );
-            }
-         }
-      }
-   }
-
-   void fireObjectStartEvent() {
-      if( triggerEvents ){
-         for( Iterator listeners = eventListeners.iterator(); listeners.hasNext(); ){
-            JsonEventListener listener = (JsonEventListener) listeners.next();
-            try{
-               listener.onObjectStart();
-            }catch( RuntimeException e ){
-               log.warn( e );
-            }
-         }
-      }
-   }
-
-   void firePropertySetEvent( String key, Object value, boolean accumulated ) {
-      if( triggerEvents ){
-         for( Iterator listeners = eventListeners.iterator(); listeners.hasNext(); ){
-            JsonEventListener listener = (JsonEventListener) listeners.next();
-            try{
-               listener.onPropertySet( key, value, accumulated );
-            }catch( RuntimeException e ){
-               log.warn( e );
-            }
-         }
-      }
-   }
-
-   void fireWarnEvent( String warning ) {
-      if( triggerEvents ){
-         for( Iterator listeners = eventListeners.iterator(); listeners.hasNext(); ){
-            JsonEventListener listener = (JsonEventListener) listeners.next();
-            try{
-               listener.onWarning( warning );
-            }catch( RuntimeException e ){
-               log.warn( e );
-            }
-         }
       }
    }
 }

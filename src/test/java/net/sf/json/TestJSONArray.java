@@ -1386,6 +1386,22 @@ public class TestJSONArray extends TestCase {
       assertEquals( "[[],{},1,true,\"json\"]", sw.toString() );
    }
 
+   public void testCycleDetection_arrays() {
+      Object[] array1 = new Object[2];
+      Object[] array2 = new Object[2];
+      array1[0] = new Integer( 1 );
+      array1[1] = array2;
+      array2[0] = new Integer( 2 );
+      array2[1] = array1;
+      try{
+         JSONArray.fromObject( array1 );
+         fail( "A JSONException was expected" );
+      }catch( JSONException expected ){
+         assertTrue( expected.getMessage()
+               .endsWith( "There is a cycle in the hierarchy!" ) );
+      }
+   }
+
    protected void setUp() throws Exception {
       super.setUp();
       JsonConfig.getInstance()

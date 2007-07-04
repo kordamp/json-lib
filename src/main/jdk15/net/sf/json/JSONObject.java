@@ -125,7 +125,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author JSON.org
  */
-public final class JSONObject implements JSON, Map, Comparable {
+public final class JSONObject extends AbstractJSON implements JSON, Map, Comparable {
 
    private static final Log log = LogFactory.getLog( JSONObject.class );
 
@@ -464,20 +464,49 @@ public final class JSONObject implements JSON, Map, Comparable {
     */
    private static JSONObject _fromBean( Object bean ) {
       JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireObjectStartEvent();
+
+      fireObjectStartEvent();
+      if( !addInstance( bean ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsObject( bean );
+         }catch( JSONException jsone ){
+            removeInstance( bean );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( bean );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
 
       JsonBeanProcessor processor = jsonConfig.findJsonBeanProcessor( bean.getClass() );
       if( processor != null ){
-         JSONObject json = processor.processBean( bean );
-         if( json == null ){
-            json = new JSONObject( true );
+         JSONObject json = null;
+         try{
+            json = processor.processBean( bean );
+            if( json == null ){
+               json = new JSONObject( true );
+            }
+            removeInstance( bean );
+            fireObjectEndEvent();
+         }catch( JSONException jsone ){
+            removeInstance( bean );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( bean );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
          }
-         jsonConfig.fireObjectEndEvent();
          return json;
       }
 
-      JSONObject jsonObject = new JSONObject();
       Collection exclusions = jsonConfig.getMergedExcludes();
+      JSONObject jsonObject = new JSONObject();
       try{
          PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors( bean );
          Class beanClass = bean.getClass();
@@ -505,30 +534,49 @@ public final class JSONObject implements JSON, Map, Comparable {
                setValue( jsonObject, key, value, type );
             }else{
                String warning = "Property '" + key + "' has no read method. SKIPPED";
-               jsonConfig.fireWarnEvent( warning );
+               fireWarnEvent( warning );
                log.warn( warning );
             }
          }
       }catch( JSONException jsone ){
-         jsonConfig.fireErrorEvent( jsone );
+         removeInstance( bean );
+         fireErrorEvent( jsone );
          throw jsone;
       }catch( Exception e ){
+         removeInstance( bean );
          JSONException jsone = new JSONException( e );
-         jsonConfig.fireErrorEvent( jsone );
+         fireErrorEvent( jsone );
          throw jsone;
       }
 
-      jsonConfig.fireObjectEndEvent();
+      removeInstance( bean );
+      fireObjectEndEvent();
       return jsonObject;
    }
 
    private static JSONObject _fromDynaBean( DynaBean bean ) {
       JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireObjectStartEvent();
 
+      fireObjectStartEvent();
       if( bean == null ){
-         jsonConfig.fireObjectEndEvent();
+         fireObjectEndEvent();
          return new JSONObject( true );
+      }
+
+      if( !addInstance( bean ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsObject( bean );
+         }catch( JSONException jsone ){
+            removeInstance( bean );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( bean );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
       }
 
       JSONObject jsonObject = new JSONObject();
@@ -536,7 +584,6 @@ public final class JSONObject implements JSON, Map, Comparable {
          DynaProperty[] props = bean.getDynaClass()
                .getDynaProperties();
          Collection exclusions = jsonConfig.getMergedExcludes();
-
          for( int i = 0; i < props.length; i++ ){
             DynaProperty dynaProperty = props[i];
             String key = dynaProperty.getName();
@@ -555,27 +602,49 @@ public final class JSONObject implements JSON, Map, Comparable {
             setValue( jsonObject, key, value, type );
          }
       }catch( JSONException jsone ){
-         jsonConfig.fireErrorEvent( jsone );
+         removeInstance( bean );
+         fireErrorEvent( jsone );
+         throw jsone;
+      }catch( RuntimeException e ){
+         removeInstance( bean );
+         JSONException jsone = new JSONException( e );
+         fireErrorEvent( jsone );
          throw jsone;
       }
 
-      jsonConfig.fireObjectEndEvent();
+      removeInstance( bean );
+      fireObjectEndEvent();
       return jsonObject;
    }
 
    private static JSONObject _fromJSONObject( JSONObject object ) {
       JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireObjectStartEvent();
 
+      fireObjectStartEvent();
       if( object == null || object.isNullObject() ){
-         jsonConfig.fireObjectEndEvent();
+         fireObjectEndEvent();
          return new JSONObject( true );
       }
 
-      JSONObject jsonObject = new JSONObject();
+      if( !addInstance( object ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsObject( object );
+         }catch( JSONException jsone ){
+            removeInstance( object );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( object );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
+
       JSONArray sa = object.names();
       Collection exclusions = jsonConfig.getMergedExcludes();
-
+      JSONObject jsonObject = new JSONObject();
       for( Iterator i = sa.iterator(); i.hasNext(); ){
          String key = (String) i.next();
          if( exclusions.contains( key ) ){
@@ -584,14 +653,15 @@ public final class JSONObject implements JSON, Map, Comparable {
          Object value = object.opt( key );
          if( jsonObject.properties.containsKey( key ) ){
             jsonObject.accumulate( key, value );
-            jsonConfig.firePropertySetEvent( key, value, true );
+            firePropertySetEvent( key, value, true );
          }else{
             jsonObject._setInternal( key, value );
-            jsonConfig.firePropertySetEvent( key, value, false );
+            firePropertySetEvent( key, value, false );
          }
       }
 
-      jsonConfig.fireObjectEndEvent();
+      removeInstance( object );
+      fireObjectEndEvent();
       return jsonObject;
    }
 
@@ -601,7 +671,7 @@ public final class JSONObject implements JSON, Map, Comparable {
 
    private static JSONObject _fromJSONTokener( JSONTokener tokener ) {
       JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireObjectStartEvent();
+      fireObjectStartEvent();
 
       try{
          char c;
@@ -609,24 +679,23 @@ public final class JSONObject implements JSON, Map, Comparable {
          Object value;
 
          if( tokener.matches( "null.*" ) ){
-            jsonConfig.fireObjectEndEvent();
+            fireObjectEndEvent();
             return new JSONObject( true );
          }
 
-         JSONObject jsonObject = new JSONObject();
          if( tokener.nextClean() != '{' ){
             throw tokener.syntaxError( "A JSONObject text must begin with '{'" );
          }
 
          Collection exclusions = jsonConfig.getMergedExcludes();
-
+         JSONObject jsonObject = new JSONObject();
          for( ;; ){
             c = tokener.nextClean();
             switch( c ){
                case 0:
                   throw tokener.syntaxError( "A JSONObject text must end with '}'" );
                case '}':
-                  jsonConfig.fireObjectEndEvent();
+                  fireObjectEndEvent();
                   return jsonObject;
                default:
                   tokener.back();
@@ -653,13 +722,13 @@ public final class JSONObject implements JSON, Map, Comparable {
                      case ';':
                      case ',':
                         if( tokener.nextClean() == '}' ){
-                           jsonConfig.fireObjectEndEvent();
+                           fireObjectEndEvent();
                            return jsonObject;
                         }
                         tokener.back();
                         break;
                      case '}':
-                        jsonConfig.fireObjectEndEvent();
+                        fireObjectEndEvent();
                         return jsonObject;
                      default:
                         throw tokener.syntaxError( "Expected a ',' or '}'" );
@@ -670,18 +739,18 @@ public final class JSONObject implements JSON, Map, Comparable {
                   value = JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE;
                   if( jsonObject.properties.containsKey( key ) ){
                      jsonObject.accumulate( key, value );
-                     jsonConfig.firePropertySetEvent( key, value, true );
+                     firePropertySetEvent( key, value, true );
                   }else{
                      jsonObject.element( key, value );
-                     jsonConfig.firePropertySetEvent( key, value, false );
+                     firePropertySetEvent( key, value, false );
                   }
                }else{
                   if( jsonObject.properties.containsKey( key ) ){
                      jsonObject.accumulate( key, v );
-                     jsonConfig.firePropertySetEvent( key, v, true );
+                     firePropertySetEvent( key, v, true );
                   }else{
                      jsonObject.element( key, v );
-                     jsonConfig.firePropertySetEvent( key, v, false );
+                     firePropertySetEvent( key, v, false );
                   }
                }
             }else{
@@ -717,10 +786,10 @@ public final class JSONObject implements JSON, Map, Comparable {
                      (params != null) ? StringUtils.split( params, "," ) : null, text );
                if( jsonObject.properties.containsKey( key ) ){
                   jsonObject.accumulate( key, value );
-                  jsonConfig.firePropertySetEvent( key, value, true );
+                  firePropertySetEvent( key, value, true );
                }else{
                   jsonObject.element( key, value );
-                  jsonConfig.firePropertySetEvent( key, value, false );
+                  firePropertySetEvent( key, value, false );
                }
             }
 
@@ -732,36 +801,51 @@ public final class JSONObject implements JSON, Map, Comparable {
                case ';':
                case ',':
                   if( tokener.nextClean() == '}' ){
-                     jsonConfig.fireObjectEndEvent();
+                     fireObjectEndEvent();
                      return jsonObject;
                   }
                   tokener.back();
                   break;
                case '}':
-                  jsonConfig.fireObjectEndEvent();
+                  fireObjectEndEvent();
                   return jsonObject;
                default:
                   throw tokener.syntaxError( "Expected a ',' or '}'" );
             }
          }
       }catch( JSONException jsone ){
-         jsonConfig.fireErrorEvent( jsone );
+         fireErrorEvent( jsone );
          throw jsone;
       }
    }
 
    private static JSONObject _fromMap( Map map ) {
       JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireObjectStartEvent();
 
+      fireObjectStartEvent();
       if( map == null ){
-         jsonConfig.fireObjectEndEvent();
+         fireObjectEndEvent();
          return new JSONObject( true );
       }
 
-      JSONObject jsonObject = new JSONObject();
-      Collection exclusions = jsonConfig.getMergedExcludes();
+      if( !addInstance( map ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsObject( map );
+         }catch( JSONException jsone ){
+            removeInstance( map );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( map );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
 
+      Collection exclusions = jsonConfig.getMergedExcludes();
+      JSONObject jsonObject = new JSONObject();
       try{
          for( Iterator entries = map.entrySet()
                .iterator(); entries.hasNext(); ){
@@ -785,28 +869,33 @@ public final class JSONObject implements JSON, Map, Comparable {
             }else{
                if( jsonObject.properties.containsKey( key ) ){
                   jsonObject.accumulate( key, JSONNull.getInstance() );
-                  jsonConfig.firePropertySetEvent( key, JSONNull.getInstance(), true );
+                  firePropertySetEvent( key, JSONNull.getInstance(), true );
                }else{
                   jsonObject.element( key, JSONNull.getInstance() );
-                  jsonConfig.firePropertySetEvent( key, JSONNull.getInstance(), false );
+                  firePropertySetEvent( key, JSONNull.getInstance(), false );
                }
             }
          }
       }catch( JSONException jsone ){
-         jsonConfig.fireErrorEvent( jsone );
+         removeInstance( map );
+         fireErrorEvent( jsone );
+         throw jsone;
+      }catch( RuntimeException e ){
+         removeInstance( map );
+         JSONException jsone = new JSONException( e );
+         fireErrorEvent( jsone );
          throw jsone;
       }
 
-      jsonConfig.fireObjectEndEvent();
+      removeInstance( map );
+      fireObjectEndEvent();
       return jsonObject;
    }
 
    private static JSONObject _fromString( String str ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-
       if( str == null || "null".compareToIgnoreCase( str ) == 0 ){
-         jsonConfig.fireObjectStartEvent();
-         jsonConfig.fireObjectEndEvent();
+         fireObjectStartEvent();
+         fireObjectEndEvent();
          return new JSONObject( true );
       }
       return _fromJSONTokener( new JSONTokener( str ) );
@@ -863,7 +952,7 @@ public final class JSONObject implements JSON, Map, Comparable {
       boolean accumulated = false;
       if( value == null ){
          if( JSONUtils.isArray( type ) ){
-            value = JSONSerializer.toJSON( "[]" );
+            value = new JSONArray();
          }else if( JSONUtils.isNumber( type ) ){
             if( JSONUtils.isDouble( type ) ){
                value = new Double( 0 );
@@ -885,14 +974,12 @@ public final class JSONObject implements JSON, Map, Comparable {
          jsonObject._setInternal( key, value );
       }
 
-      value = jsonObject.get( key );
+      value = jsonObject.opt( key );
       if( accumulated ){
          JSONArray array = (JSONArray) value;
          value = array.get( array.size() - 1 );
       }
-      JsonConfig.getInstance()
-            .firePropertySetEvent( key, value, accumulated );
-
+      firePropertySetEvent( key, value, accumulated );
    }
 
    // ------------------------------------------------------
@@ -1190,14 +1277,6 @@ public final class JSONObject implements JSON, Map, Comparable {
    public JSONObject elementOpt( String key, Object value ) {
       verifyIsNull();
       if( key != null && value != null ){
-         /*
-          * JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
-          * .findJsonValueProcessor( value.getClass(), key ); if(
-          * jsonValueProcessor != null ){ value =
-          * jsonValueProcessor.processObjectValue( key, value ); if(
-          * !JsonVerifier.isValidJsonValue( value ) ){ throw new JSONException(
-          * "Value is not a valid JSON value. " + value ); } }
-          */
          element( key, value );
       }
       return this;
@@ -2074,6 +2153,9 @@ public final class JSONObject implements JSON, Map, Comparable {
          JsonValueProcessor processor = jsonConfig.findJsonValueProcessor( value.getClass() );
          if( processor != null ){
             value = processor.processObjectValue( null, value );
+            if( !JsonVerifier.isValidJsonValue( value ) ){
+               throw new JSONException( "Value is not a valid JSON value. " + value );
+            }
          }
       }
       return _processValue( value );
@@ -2085,6 +2167,9 @@ public final class JSONObject implements JSON, Map, Comparable {
          JsonValueProcessor processor = jsonConfig.findJsonValueProcessor( value.getClass(), key );
          if( processor != null ){
             value = processor.processObjectValue( null, value );
+            if( !JsonVerifier.isValidJsonValue( value ) ){
+               throw new JSONException( "Value is not a valid JSON value. " + value );
+            }
          }
       }
       return _processValue( value );

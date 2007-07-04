@@ -317,8 +317,8 @@ public class JSONAssert extends Assert {
             .size() );
       for( Iterator keys = expected.keys(); keys.hasNext(); ){
          String key = (String) keys.next();
-         Object o1 = expected.get( key );
-         Object o2 = actual.get( key );
+         Object o1 = expected.opt( key );
+         Object o2 = actual.opt( key );
 
          if( JSONNull.getInstance()
                .equals( o1 ) ){

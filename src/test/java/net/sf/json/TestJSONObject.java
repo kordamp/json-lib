@@ -35,6 +35,7 @@ import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.BeanFoo;
 import net.sf.json.sample.BeanWithFunc;
+import net.sf.json.sample.ChildBean;
 import net.sf.json.sample.ClassBean;
 import net.sf.json.sample.EmptyBean;
 import net.sf.json.sample.JavaIdentifierBean;
@@ -43,9 +44,11 @@ import net.sf.json.sample.MappingBean;
 import net.sf.json.sample.NumberBean;
 import net.sf.json.sample.ObjectBean;
 import net.sf.json.sample.ObjectJSONStringBean;
+import net.sf.json.sample.ParentBean;
 import net.sf.json.sample.PropertyBean;
 import net.sf.json.sample.TransientBean;
 import net.sf.json.sample.ValueBean;
+import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
@@ -93,6 +96,31 @@ public class TestJSONObject extends TestCase {
             .setExcludes( new String[] { "bool", "integer" } );
       JSONObject jsonObject = JSONObject.fromObject( (Object) null );
       assertTrue( jsonObject.isNullObject() );
+   }
+
+   public void testCycleDetection_beans_null() {
+      JsonConfig.getInstance()
+            .setCycleDetectionStrategy( CycleDetectionStrategy.LENIENT );
+      ParentBean parent = new ParentBean();
+      parent.setChild( new ChildBean() );
+
+      JSONObject actual = JSONObject.fromObject( parent );
+      JSONObject expected = new JSONObject().element( "value", 0 )
+            .element( "child", new JSONObject().element( "value", 0 )
+                  .element( "parent", new JSONObject( true ) ) );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testCycleDetection_beans_strict() {
+      ParentBean parent = new ParentBean();
+      parent.setChild( new ChildBean() );
+      try{
+         JSONObject.fromObject( parent );
+         fail( "A JSONException was expected" );
+      }catch( JSONException expected ){
+         assertTrue( expected.getMessage()
+               .endsWith( "There is a cycle in the hierarchy!" ) );
+      }
    }
 
    public void testElement__duplicateProperty() {

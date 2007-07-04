@@ -106,7 +106,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author JSON.org
  */
-public final class JSONArray implements JSON, List, Comparable {
+public final class JSONArray extends AbstractJSON implements JSON, List, Comparable {
    /**
     * Creates a JSONArray from a java array.<br>
     * The java array can be multidimensional.
@@ -155,8 +155,6 @@ public final class JSONArray implements JSON, List, Comparable {
     *         JSONArray.
     */
    public static JSONArray fromObject( Object object ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-
       if( object instanceof JSONString ){
          return _fromJSONString( (JSONString) object );
       }else if( object instanceof JSONArray ){
@@ -175,21 +173,21 @@ public final class JSONArray implements JSON, List, Comparable {
             return _fromArray( (Object[]) object );
          }else{
             if( type == Boolean.TYPE ){
-               return new JSONArray( (boolean[]) object );
+               return _fromArray( (boolean[]) object );
             }else if( type == Byte.TYPE ){
-               return new JSONArray( (byte[]) object );
+               return _fromArray( (byte[]) object );
             }else if( type == Short.TYPE ){
-               return new JSONArray( (short[]) object );
+               return _fromArray( (short[]) object );
             }else if( type == Integer.TYPE ){
-               return new JSONArray( (int[]) object );
+               return _fromArray( (int[]) object );
             }else if( type == Long.TYPE ){
-               return new JSONArray( (long[]) object );
+               return _fromArray( (long[]) object );
             }else if( type == Float.TYPE ){
-               return new JSONArray( (float[]) object );
+               return _fromArray( (float[]) object );
             }else if( type == Double.TYPE ){
-               return new JSONArray( (double[]) object );
+               return _fromArray( (double[]) object );
             }else if( type == Character.TYPE ){
-               return new JSONArray( (char[]) object );
+               return _fromArray( (char[]) object );
             }else{
                throw new JSONException( "Unsupported type" );
             }
@@ -197,16 +195,16 @@ public final class JSONArray implements JSON, List, Comparable {
       }else if( JSONUtils.isBoolean( object ) || JSONUtils.isFunction( object )
             || JSONUtils.isNumber( object ) || JSONUtils.isNull( object )
             || JSONUtils.isString( object ) || object instanceof JSON ){
-         jsonConfig.fireArrayStartEvent();
+         fireArrayStartEvent();
          JSONArray jsonArray = new JSONArray().element( object );
-         jsonConfig.fireElementAddedEvent( 0, jsonArray.get( 0 ) );
-         jsonConfig.fireArrayStartEvent();
+         fireElementAddedEvent( 0, jsonArray.get( 0 ) );
+         fireArrayStartEvent();
          return jsonArray;
       }else if( JSONUtils.isObject( object ) ){
-         jsonConfig.fireArrayStartEvent();
+         fireArrayStartEvent();
          JSONArray jsonArray = new JSONArray().element( JSONObject.fromObject( object ) );
-         jsonConfig.fireElementAddedEvent( 0, jsonArray.get( 0 ) );
-         jsonConfig.fireArrayStartEvent();
+         fireElementAddedEvent( 0, jsonArray.get( 0 ) );
+         fireArrayStartEvent();
          return jsonArray;
       }else{
          throw new JSONException( "Unsupported type" );
@@ -356,60 +354,416 @@ public final class JSONArray implements JSON, List, Comparable {
       return list;
    }
 
+   /**
+    * Construct a JSONArray from an boolean[].<br>
+    *
+    * @param array An boolean[] array.
+    */
+   private static JSONArray _fromArray( boolean[] array ) {
+      JsonConfig jsonConfig = JsonConfig.getInstance();
+      fireArrayStartEvent();
+      if( !addInstance( array ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsArray( array );
+         }catch( JSONException jsone ){
+            removeInstance( array );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( array );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
+      JSONArray jsonArray = new JSONArray();
+      for( int i = 0; i < array.length; i++ ){
+         Boolean b = array[i] ? Boolean.TRUE : Boolean.FALSE;
+         jsonArray.elements.add( b );
+         fireElementAddedEvent( i, b );
+      }
+
+      removeInstance( array );
+      fireArrayEndEvent();
+      return jsonArray;
+   }
+
+   /**
+    * Construct a JSONArray from an byte[].<br>
+    *
+    * @param array An byte[] array.
+    */
+   private static JSONArray _fromArray( byte[] array ) {
+      JsonConfig jsonConfig = JsonConfig.getInstance();
+      fireArrayStartEvent();
+      if( !addInstance( array ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsArray( array );
+         }catch( JSONException jsone ){
+            removeInstance( array );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( array );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
+      JSONArray jsonArray = new JSONArray();
+      for( int i = 0; i < array.length; i++ ){
+         Number n = JSONUtils.transformNumber( new Byte( array[i] ) );
+         jsonArray.elements.add( n );
+         fireElementAddedEvent( i, n );
+      }
+
+      removeInstance( array );
+      fireArrayEndEvent();
+      return jsonArray;
+   }
+
+   /**
+    * Construct a JSONArray from an char[].<br>
+    *
+    * @param array An char[] array.
+    */
+   private static JSONArray _fromArray( char[] array ) {
+      JsonConfig jsonConfig = JsonConfig.getInstance();
+      fireArrayStartEvent();
+      if( !addInstance( array ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsArray( array );
+         }catch( JSONException jsone ){
+            removeInstance( array );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( array );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
+      JSONArray jsonArray = new JSONArray();
+      for( int i = 0; i < array.length; i++ ){
+         Character c = new Character( array[i] );
+         jsonArray.elements.add( c );
+         fireElementAddedEvent( i, c );
+      }
+
+      removeInstance( array );
+      fireArrayEndEvent();
+      return jsonArray;
+   }
+
+   /**
+    * Construct a JSONArray from an double[].<br>
+    *
+    * @param array An double[] array.
+    */
+   private static JSONArray _fromArray( double[] array ) {
+      JsonConfig jsonConfig = JsonConfig.getInstance();
+      fireArrayStartEvent();
+      if( !addInstance( array ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsArray( array );
+         }catch( JSONException jsone ){
+            removeInstance( array );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( array );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
+      JSONArray jsonArray = new JSONArray();
+      try{
+         for( int i = 0; i < array.length; i++ ){
+            Double d = new Double( array[i] );
+            JSONUtils.testValidity( d );
+            jsonArray.elements.add( d );
+            fireElementAddedEvent( i, d );
+         }
+      }catch( JSONException jsone ){
+         removeInstance( array );
+         fireErrorEvent( jsone );
+         throw jsone;
+      }
+
+      removeInstance( array );
+      fireArrayEndEvent();
+      return jsonArray;
+   }
+
+   /**
+    * Construct a JSONArray from an float[].<br>
+    *
+    * @param array An float[] array.
+    */
+   private static JSONArray _fromArray( float[] array ) {
+      JsonConfig jsonConfig = JsonConfig.getInstance();
+      fireArrayStartEvent();
+      if( !addInstance( array ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsArray( array );
+         }catch( JSONException jsone ){
+            removeInstance( array );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( array );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
+      JSONArray jsonArray = new JSONArray();
+      try{
+         for( int i = 0; i < array.length; i++ ){
+            Float f = new Float( array[i] );
+            JSONUtils.testValidity( f );
+            jsonArray.elements.add( f );
+            fireElementAddedEvent( i, f );
+         }
+      }catch( JSONException jsone ){
+         removeInstance( array );
+         fireErrorEvent( jsone );
+         throw jsone;
+      }
+
+      removeInstance( array );
+      fireArrayEndEvent();
+      return jsonArray;
+   }
+
+   /**
+    * Construct a JSONArray from an int[].<br>
+    *
+    * @param array An int[] array.
+    */
+   private static JSONArray _fromArray( int[] array ) {
+      JsonConfig jsonConfig = JsonConfig.getInstance();
+      fireArrayStartEvent();
+      if( !addInstance( array ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsArray( array );
+         }catch( JSONException jsone ){
+            removeInstance( array );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( array );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
+      JSONArray jsonArray = new JSONArray();
+      for( int i = 0; i < array.length; i++ ){
+         Number n = new Integer( array[i] );
+         jsonArray.elements.add( n );
+         fireElementAddedEvent( i, n );
+      }
+
+      removeInstance( array );
+      fireArrayEndEvent();
+      return jsonArray;
+   }
+
+   /**
+    * Construct a JSONArray from an long[].<br>
+    *
+    * @param array An long[] array.
+    */
+   private static JSONArray _fromArray( long[] array ) {
+      JsonConfig jsonConfig = JsonConfig.getInstance();
+      fireArrayStartEvent();
+      if( !addInstance( array ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsArray( array );
+         }catch( JSONException jsone ){
+            removeInstance( array );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( array );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
+      JSONArray jsonArray = new JSONArray();
+      for( int i = 0; i < array.length; i++ ){
+         Number n = JSONUtils.transformNumber( new Long( array[i] ) );
+         jsonArray.elements.add( n );
+         fireElementAddedEvent( i, n );
+      }
+
+      removeInstance( array );
+      fireArrayEndEvent();
+      return jsonArray;
+   }
+
+   // ------------------------------------------------------
+
    private static JSONArray _fromArray( Object[] array ) {
       JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireArrayStartEvent();
+      fireArrayStartEvent();
 
+      if( !addInstance( array ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsArray( array );
+         }catch( JSONException jsone ){
+            removeInstance( array );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( array );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
       JSONArray jsonArray = new JSONArray();
       try{
          for( int i = 0; i < array.length; i++ ){
             Object element = array[i];
             jsonArray.addValue( element );
-            jsonConfig.fireElementAddedEvent( i, jsonArray.get( i ) );
+            fireElementAddedEvent( i, jsonArray.get( i ) );
          }
       }catch( JSONException jsone ){
-         jsonConfig.fireErrorEvent( jsone );
+         removeInstance( array );
+         fireErrorEvent( jsone );
+         throw jsone;
+      }catch( RuntimeException e ){
+         removeInstance( array );
+         JSONException jsone = new JSONException( e );
+         fireErrorEvent( jsone );
          throw jsone;
       }
 
-      jsonConfig.fireArrayEndEvent();
+      removeInstance( array );
+      fireArrayEndEvent();
+      return jsonArray;
+   }
+
+   /**
+    * Construct a JSONArray from an short[].<br>
+    *
+    * @param array An short[] array.
+    */
+   private static JSONArray _fromArray( short[] array ) {
+      JsonConfig jsonConfig = JsonConfig.getInstance();
+      fireArrayStartEvent();
+      if( !addInstance( array ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsArray( array );
+         }catch( JSONException jsone ){
+            removeInstance( array );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( array );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
+      JSONArray jsonArray = new JSONArray();
+      for( int i = 0; i < array.length; i++ ){
+         Number n = JSONUtils.transformNumber( new Short( array[i] ) );
+         jsonArray.elements.add( n );
+         fireElementAddedEvent( i, n );
+      }
+
+      removeInstance( array );
+      fireArrayEndEvent();
       return jsonArray;
    }
 
    private static JSONArray _fromCollection( Collection collection ) {
       JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireArrayStartEvent();
+      fireArrayStartEvent();
 
+      if( !addInstance( collection ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsArray( collection );
+         }catch( JSONException jsone ){
+            removeInstance( collection );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( collection );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
       JSONArray jsonArray = new JSONArray();
       try{
          int i = 0;
          for( Iterator elements = collection.iterator(); elements.hasNext(); ){
             Object element = elements.next();
             jsonArray.addValue( element );
-            jsonConfig.fireElementAddedEvent( i, jsonArray.get( i++ ) );
+            fireElementAddedEvent( i, jsonArray.get( i++ ) );
          }
       }catch( JSONException jsone ){
-         jsonConfig.fireErrorEvent( jsone );
+         removeInstance( collection );
+         fireErrorEvent( jsone );
+         throw jsone;
+      }catch( RuntimeException e ){
+         removeInstance( collection );
+         JSONException jsone = new JSONException( e );
+         fireErrorEvent( jsone );
          throw jsone;
       }
 
-      jsonConfig.fireArrayEndEvent();
+      removeInstance( collection );
+      fireArrayEndEvent();
       return jsonArray;
    }
 
    private static JSONArray _fromJSONArray( JSONArray array ) {
       JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireArrayStartEvent();
+      fireArrayStartEvent();
 
+      if( !addInstance( array ) ){
+         try{
+            return jsonConfig.getCycleDetectionStrategy()
+                  .handleRepeatedReferenceAsArray( array );
+         }catch( JSONException jsone ){
+            removeInstance( array );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }catch( RuntimeException e ){
+            removeInstance( array );
+            JSONException jsone = new JSONException( e );
+            fireErrorEvent( jsone );
+            throw jsone;
+         }
+      }
       JSONArray jsonArray = new JSONArray();
       int index = 0;
       for( Iterator elements = array.iterator(); elements.hasNext(); ){
          Object element = elements.next();
          jsonArray.elements.add( element );
-         jsonConfig.fireElementAddedEvent( index++, element );
+         fireElementAddedEvent( index++, element );
       }
 
-      jsonConfig.fireArrayEndEvent();
+      removeInstance( array );
+      fireArrayEndEvent();
       return jsonArray;
    }
 
@@ -418,8 +772,7 @@ public final class JSONArray implements JSON, List, Comparable {
    }
 
    private static JSONArray _fromJSONTokener( JSONTokener tokener ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireArrayStartEvent();
+      fireArrayStartEvent();
 
       JSONArray jsonArray = new JSONArray();
       int index = 0;
@@ -429,7 +782,7 @@ public final class JSONArray implements JSON, List, Comparable {
             throw tokener.syntaxError( "A JSONArray text must start with '['" );
          }
          if( tokener.nextClean() == ']' ){
-            jsonConfig.fireArrayEndEvent();
+            fireArrayEndEvent();
             return jsonArray;
          }
          tokener.back();
@@ -437,7 +790,7 @@ public final class JSONArray implements JSON, List, Comparable {
             if( tokener.nextClean() == ',' ){
                tokener.back();
                jsonArray.elements.add( JSONNull.getInstance() );
-               jsonConfig.fireElementAddedEvent( index, jsonArray.get( index++ ) );
+               fireElementAddedEvent( index, jsonArray.get( index++ ) );
             }else{
                tokener.back();
                Object v = tokener.nextValue();
@@ -447,7 +800,7 @@ public final class JSONArray implements JSON, List, Comparable {
                   }else{
                      jsonArray.addValue( v );
                   }
-                  jsonConfig.fireElementAddedEvent( index, jsonArray.get( index++ ) );
+                  fireElementAddedEvent( index, jsonArray.get( index++ ) );
                }else{
                   // read params if any
                   String params = JSONUtils.getFunctionParams( (String) v );
@@ -479,27 +832,27 @@ public final class JSONArray implements JSON, List, Comparable {
                         .trim();
                   jsonArray.addValue( new JSONFunction( (params != null) ? StringUtils.split(
                         params, "," ) : null, text ) );
-                  jsonConfig.fireElementAddedEvent( index, jsonArray.get( index++ ) );
+                  fireElementAddedEvent( index, jsonArray.get( index++ ) );
                }
             }
             switch( tokener.nextClean() ){
                case ';':
                case ',':
                   if( tokener.nextClean() == ']' ){
-                     jsonConfig.fireArrayEndEvent();
+                     fireArrayEndEvent();
                      return jsonArray;
                   }
                   tokener.back();
                   break;
                case ']':
-                  jsonConfig.fireArrayEndEvent();
+                  fireArrayEndEvent();
                   return jsonArray;
                default:
                   throw tokener.syntaxError( "Expected a ',' or ']'" );
             }
          }
       }catch( JSONException jsone ){
-         jsonConfig.fireErrorEvent( jsone );
+         fireErrorEvent( jsone );
          throw jsone;
       }
    }
@@ -542,144 +895,6 @@ public final class JSONArray implements JSON, List, Comparable {
     */
    public JSONArray() {
       this.elements = new ArrayList();
-   }
-
-   /**
-    * Construct a JSONArray from an boolean[].<br>
-    *
-    * @param array An boolean[] array.
-    */
-   private JSONArray( boolean[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireArrayStartEvent();
-      this.elements = new ArrayList();
-      for( int i = 0; i < array.length; i++ ){
-         Boolean b = array[i] ? Boolean.TRUE : Boolean.FALSE;
-         this.elements.add( b );
-         jsonConfig.fireElementAddedEvent( i, b );
-      }
-      jsonConfig.fireArrayEndEvent();
-   }
-
-   /**
-    * Construct a JSONArray from an byte[].<br>
-    *
-    * @param array An byte[] array.
-    */
-   private JSONArray( byte[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireArrayStartEvent();
-      this.elements = new ArrayList();
-      for( int i = 0; i < array.length; i++ ){
-         Number n = JSONUtils.transformNumber( new Byte( array[i] ) );
-         this.elements.add( n );
-         jsonConfig.fireElementAddedEvent( i, n );
-      }
-      jsonConfig.fireArrayEndEvent();
-   }
-
-   /**
-    * Construct a JSONArray from an char[].<br>
-    *
-    * @param array An char[] array.
-    */
-   private JSONArray( char[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireArrayStartEvent();
-      this.elements = new ArrayList();
-      for( int i = 0; i < array.length; i++ ){
-         Character c = new Character( array[i] );
-         this.elements.add( c );
-         jsonConfig.fireElementAddedEvent( i, c );
-      }
-      jsonConfig.fireArrayEndEvent();
-   }
-
-   /**
-    * Construct a JSONArray from an double[].<br>
-    *
-    * @param array An double[] array.
-    */
-   private JSONArray( double[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireArrayStartEvent();
-      this.elements = new ArrayList();
-      for( int i = 0; i < array.length; i++ ){
-         Double d = new Double( array[i] );
-         JSONUtils.testValidity( d );
-         this.elements.add( d );
-         jsonConfig.fireElementAddedEvent( i, d );
-      }
-      jsonConfig.fireArrayEndEvent();
-   }
-
-   /**
-    * Construct a JSONArray from an float[].<br>
-    *
-    * @param array An float[] array.
-    */
-   private JSONArray( float[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireArrayStartEvent();
-      this.elements = new ArrayList();
-      for( int i = 0; i < array.length; i++ ){
-         Float f = new Float( array[i] );
-         JSONUtils.testValidity( f );
-         this.elements.add( f );
-         jsonConfig.fireElementAddedEvent( i, f );
-      }
-      jsonConfig.fireArrayEndEvent();
-   }
-
-   /**
-    * Construct a JSONArray from an int[].<br>
-    *
-    * @param array An int[] array.
-    */
-   private JSONArray( int[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireArrayStartEvent();
-      this.elements = new ArrayList();
-      for( int i = 0; i < array.length; i++ ){
-         Number n = new Integer( array[i] );
-         this.elements.add( n );
-         jsonConfig.fireElementAddedEvent( i, n );
-      }
-      jsonConfig.fireArrayEndEvent();
-   }
-
-   /**
-    * Construct a JSONArray from an long[].<br>
-    *
-    * @param array An long[] array.
-    */
-   private JSONArray( long[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireArrayStartEvent();
-      this.elements = new ArrayList();
-      for( int i = 0; i < array.length; i++ ){
-         Number n = JSONUtils.transformNumber( new Long( array[i] ) );
-         this.elements.add( n );
-         jsonConfig.fireElementAddedEvent( i, n );
-      }
-      jsonConfig.fireArrayEndEvent();
-   }
-
-   /**
-    * Construct a JSONArray from an short[].<br>
-    *
-    * @param array An short[] array.
-    */
-   private JSONArray( short[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      jsonConfig.fireArrayStartEvent();
-      this.elements = new ArrayList();
-      for( int i = 0; i < array.length; i++ ){
-         Number n = JSONUtils.transformNumber( new Short( array[i] ) );
-         this.elements.add( n );
-         jsonConfig.fireElementAddedEvent( i, n );
-      }
-      jsonConfig.fireArrayEndEvent();
    }
 
    public void add( int index, Object value ) {
