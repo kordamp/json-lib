@@ -220,6 +220,8 @@
    </target>
 
    <target name="jar.jdk15" depends="clean,test.jdk15" description="Binary jar (jdk15)">
+      <antcall target="test.groovy"/>	 
+      <antcall target="test.ruby"/>	 
       <jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk15.jar" basedir="${maven.build.output}" excludes="**/package.html" />
    </target>
 
