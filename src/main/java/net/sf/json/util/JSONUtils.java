@@ -43,7 +43,7 @@ import org.apache.commons.beanutils.DynaBean;
 
 /**
  * Provides useful methods on java objects and JSON values.
- * 
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  * @version 6
  */
@@ -74,19 +74,25 @@ public final class JSONUtils {
    /**
     * Transformes the string into a valid Java Identifier.<br>
     * The default strategy is JavaIdentifierTransformer.NOOP
-    * 
+    *
     * @throws JSONException if the string can not be transformed.
     */
    public static String convertToJavaIdentifier( String key ) {
-      return JsonConfig.getInstance()
-            .getJavaIdentifierTransformer()
-            .transformToJavaIdentifier( key );
+      try{
+         return JsonConfig.getInstance()
+               .getJavaIdentifierTransformer()
+               .transformToJavaIdentifier( key );
+      }catch( JSONException jsone ){
+         throw jsone;
+      }catch( Exception e ){
+         throw new JSONException( e );
+      }
    }
 
    /**
     * Produce a string from a double. The string "null" will be returned if the
     * number is not finite.
-    * 
+    *
     * @param d A double.
     * @return A String.
     */
@@ -129,7 +135,7 @@ public final class JSONUtils {
    /**
     * Returns the JavaIdentifierTransformer strategy currently configured.<br>
     * Default value is JavaIdentifierTransformer.NOOP;
-    * 
+    *
     * @deprecated use JsonConfig.getJavaIdentifierTransformer
     */
    public static JavaIdentifierTransformer getJavaIdentifierTransformer() {
@@ -417,7 +423,7 @@ public final class JSONUtils {
 
    /**
     * Produce a string from a Number.
-    * 
+    *
     * @param n A Number
     * @return A String.
     * @throws JSONException If n is a non-finite number.
@@ -450,7 +456,7 @@ public final class JSONUtils {
     * <strong>CAUTION:</strong> if <code>string</code> represents a
     * javascript function, translation of characters will not take place. This
     * will produce a non-conformant JSON text.
-    * 
+    *
     * @param string A String
     * @return A String correctly formatted for insertion in a JSON text.
     */
@@ -518,7 +524,7 @@ public final class JSONUtils {
     * Sets the JavaIdentifierTransformer strategy to use.<br>
     * If the parameter is null, JavaIdentifierTransformer.NOOP will be used
     * instead.
-    * 
+    *
     * @deprecated use JsonConfig.setJavaIdentifierTransformer
     */
    public static void setJavaIdentifierTransformer(
@@ -544,7 +550,7 @@ public final class JSONUtils {
 
    /**
     * Throw an exception if the object is an NaN or infinite number.
-    * 
+    *
     * @param o The object to test.
     * @throws JSONException If o is a non-finite number.
     */
@@ -596,7 +602,7 @@ public final class JSONUtils {
     * common case), then a text will be produced by the rules.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    * 
+    *
     * @param value The value to be serialized.
     * @return a printable, displayable, transmittable representation of the
     *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
@@ -635,7 +641,7 @@ public final class JSONUtils {
     * Make a prettyprinted JSON text of an object value.
     * <p>
     * Warning: This method assumes that the data structure is acyclical.
-    * 
+    *
     * @param value The value to be serialized.
     * @param indentFactor The number of spaces to add to each level of
     *        indentation.
@@ -672,7 +678,7 @@ public final class JSONUtils {
 
    /**
     * Finds out if n represents a BigInteger
-    * 
+    *
     * @return true if n is instanceOf BigInteger or the literal value can be
     *         evaluated as a BigInteger
     */
@@ -690,7 +696,7 @@ public final class JSONUtils {
 
    /**
     * Finds out if n represents a BigInteger
-    * 
+    *
     * @return true if n is instanceOf BigInteger or the literal value can be
     *         evaluated as a BigInteger
     */
@@ -708,7 +714,7 @@ public final class JSONUtils {
 
    /**
     * Finds out if n represents a Double.
-    * 
+    *
     * @return true if n is instanceOf Double or the literal value can be
     *         evaluated as a Double.
     */
@@ -726,7 +732,7 @@ public final class JSONUtils {
 
    /**
     * Finds out if n represents a Float.
-    * 
+    *
     * @return true if n is instanceOf Float or the literal value can be
     *         evaluated as a Float.
     */
@@ -744,7 +750,7 @@ public final class JSONUtils {
 
    /**
     * Finds out if n represents an Integer.
-    * 
+    *
     * @return true if n is instanceOf Integer or the literal value can be
     *         evaluated as an Integer.
     */
@@ -762,7 +768,7 @@ public final class JSONUtils {
 
    /**
     * Finds out if n represents a Long.
-    * 
+    *
     * @return true if n is instanceOf Long or the literal value can be evaluated
     *         as a Long.
     */

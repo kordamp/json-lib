@@ -263,16 +263,16 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       }
 
       DynaBean dynaBean = null;
-      try{
-         Map props = JSONUtils.getProperties( jsonObject );
-         dynaBean = JSONUtils.newDynaBean( jsonObject );
-         for( Iterator entries = jsonObject.names()
-               .iterator(); entries.hasNext(); ){
-            String name = (String) entries.next();
-            String key = JSONUtils.convertToJavaIdentifier( name );
-            Class type = (Class) props.get( name );
-            Object value = jsonObject.get( name );
 
+      Map props = JSONUtils.getProperties( jsonObject );
+      dynaBean = JSONUtils.newDynaBean( jsonObject );
+      for( Iterator entries = jsonObject.names()
+            .iterator(); entries.hasNext(); ){
+         String name = (String) entries.next();
+         String key = JSONUtils.convertToJavaIdentifier( name );
+         Class type = (Class) props.get( name );
+         Object value = jsonObject.get( name );
+         try{
             if( !JSONUtils.isNull( value ) ){
                if( value instanceof JSONArray ){
                   dynaBean.set( key, JSONArray.toList( (JSONArray) value ) );
@@ -294,11 +294,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   dynaBean.set( key, null );
                }
             }
+         }catch( JSONException jsone ){
+            throw jsone;
+         }catch( Exception e ){
+            throw new JSONException( "Error while setting property=" + name + " type" + type, e );
          }
-      }catch( JSONException jsone ){
-         throw jsone;
-      }catch( Exception e ){
-         throw new JSONException( e );
       }
 
       return dynaBean;
@@ -346,17 +346,23 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          }else{
             bean = beanClass.newInstance();
          }
-         Map props = JSONUtils.getProperties( jsonObject );
-         JsonConfig jsonConfig = JsonConfig.getInstance();
-         for( Iterator entries = jsonObject.names()
-               .iterator(); entries.hasNext(); ){
-            String name = (String) entries.next();
-            String key = Map.class.isAssignableFrom( beanClass )
-                  && jsonConfig.isSkipJavaIdentifierTransformationInMapKeys() ? name
-                  : JSONUtils.convertToJavaIdentifier( name );
-            Class type = (Class) props.get( name );
-            Object value = jsonObject.get( name );
+      }catch( JSONException jsone ){
+         throw jsone;
+      }catch( Exception e ){
+         throw new JSONException( e );
+      }
 
+      Map props = JSONUtils.getProperties( jsonObject );
+      JsonConfig jsonConfig = JsonConfig.getInstance();
+      for( Iterator entries = jsonObject.names()
+            .iterator(); entries.hasNext(); ){
+         String name = (String) entries.next();
+         String key = Map.class.isAssignableFrom( beanClass )
+               && jsonConfig.isSkipJavaIdentifierTransformationInMapKeys() ? name
+               : JSONUtils.convertToJavaIdentifier( name );
+         Class type = (Class) props.get( name );
+         Object value = jsonObject.get( name );
+         try{
             PropertyDescriptor pd = Map.class.isAssignableFrom( beanClass ) ? null
                   : PropertyUtils.getPropertyDescriptor( bean, key );
             if( pd != null && pd.getWriteMethod() == null ){
@@ -433,11 +439,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   setProperty( bean, key, null );
                }
             }
+         }catch( JSONException jsone ){
+            throw jsone;
+         }catch( Exception e ){
+            throw new JSONException( "Error while setting property=" + name + " type" + type, e );
          }
-      }catch( JSONException jsone ){
-         throw jsone;
-      }catch( Exception e ){
-         throw new JSONException( e );
       }
 
       return bean;
