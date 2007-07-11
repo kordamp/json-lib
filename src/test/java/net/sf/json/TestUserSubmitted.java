@@ -23,11 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.sf.json.sample.IdBean;
 import net.sf.json.sample.JSONTestBean;
+import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -149,7 +152,8 @@ public class TestUserSubmitted extends TestCase {
    public void testJsonWithNamespaceToDynaBean() throws Exception {
       // submited by Girish Ipadi
 
-      JsonConfig.getInstance().setJavaIdentifierTransformer( JavaIdentifierTransformer.NOOP );
+      JsonConfig.getInstance()
+            .setJavaIdentifierTransformer( JavaIdentifierTransformer.NOOP );
       String str = "{'version':'1.0'," + "'sid':'AmazonDocStyle',    'svcVersion':'0.1',"
             + "'oid':'ItemLookup',    'params':[{            'ns:ItemLookup': {"
             + "'ns:SubscriptionId':'0525E2PQ81DD7ZTWTK82'," + "'ns:Validate':'False',"
@@ -164,5 +168,28 @@ public class TestUserSubmitted extends TestCase {
       DynaBean itemLookup = (DynaBean) param0.get( "ns:ItemLookup" );
       assertNotNull( itemLookup );
       assertEquals( "0525E2PQ81DD7ZTWTK82", itemLookup.get( "ns:SubscriptionId" ) );
+   }
+
+   public void testToBeanSimpleToComplexValueTransformation() {
+      // Submitted by Oliver Z
+      JSONObject jsonObject = JSONObject.fromObject( "{'id':null}" );
+      IdBean idBean = (IdBean) JSONObject.toBean( jsonObject, IdBean.class );
+      assertNotNull( idBean );
+      assertEquals( null, idBean.getId() );
+
+      try{
+         jsonObject = JSONObject.fromObject( "{'id':1}" );
+         idBean = (IdBean) JSONObject.toBean( jsonObject, IdBean.class );
+         fail( "Should have thrown a JSONException" );
+      }catch( JSONException jsone ){
+         assertTrue( StringUtils.contains( jsone.getMessage(), "Can't transform property 'id'" ) );
+      }
+
+      JSONUtils.getMorpherRegistry()
+            .registerMorpher( new IdBean.IdMorpher() );
+      jsonObject = JSONObject.fromObject( "{'id':1}" );
+      idBean = (IdBean) JSONObject.toBean( jsonObject, IdBean.class );
+      assertNotNull( idBean );
+      assertEquals( new IdBean.Id( 1L ), idBean.getId() );
    }
 }

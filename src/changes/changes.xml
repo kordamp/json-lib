@@ -10,8 +10,21 @@
 
       <release
          version="N/A"
-         date="2007-07-18"
+         date="2007-06-11"
          desc="Current development version">
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1751973">
+            Make exceptions thrown by toBean() more explicit. Thanks to
+            Oliver Zyngier
+         </action>
+      </release>
+
+      <release
+         version="2.0a3"
+         date="2007-07-10"
+         desc="Third 2.0 Alpha release">
          <action
             dev="Andres Almiray"
             type="add"
@@ -54,7 +67,7 @@
 
       <release
          version="2.0a2"
-         date="2007-07-06"
+         date="2007-06-07"
          desc="Second 2.0 Alpha release">
          <action
             dev="Andres Almiray"

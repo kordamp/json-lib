@@ -36,15 +36,6 @@
       </p></answer>
     </faq>
 
-    <faq id="sintax">
-      <question>
-        <strong>Where can I get the code for the source code syntax highlighter ?</strong>
-      </question>
-      <answer><p>The SintaxHighlighter is availabe from Alex Gorbatchev at <a href="http://www.dreamprojections.com/SyntaxHighlighter">
-      http://www.dreamprojections.com/SyntaxHighlighter</a>.
-      </p></answer>
-    </faq>
-
     <faq id="maven2">
       <question>
         <strong>How do I configure Json-lib as a dependency with Maven2 ?</strong>
@@ -70,6 +61,18 @@
       </p></answer>
     </faq>
     
+    <faq id="simple2complex">
+      <question>
+        <strong>How can I transform a simple value into a complex one when serializing back to Java ?</strong>
+      </question>
+      <answer><p>Perhaps you've come across an scenario where you'll want a JSON string like "{'id':1}" transformed
+      back to a Java class, but the catch is that the id property is not a simple value but another class (a complex value),
+      say a wrapper around a primitive long. If you try to serialize such a string back to Java you'll get a ClassCastException. 
+      The solution to this problem is registering a Morpher that can handle the input and transform it into an
+      instance of the expected type, in this case the class of the id property.      
+      </p></answer>
+    </faq>
+    
     <faq id="inner_bean">
       <question>
         <strong>Json-lib does not find my inner bean, help!</strong>
@@ -82,5 +85,14 @@
       </p></answer>
     </faq>
 
+    <faq id="sintax">
+      <question>
+        <strong>Where can I get the code for the source code syntax highlighter ?</strong>
+      </question>
+      <answer><p>The SintaxHighlighter is availabe from Alex Gorbatchev at <a href="http://www.dreamprojections.com/SyntaxHighlighter">
+      http://www.dreamprojections.com/SyntaxHighlighter</a>.
+      </p></answer>
+    </faq>
   </part>
+  
 </faqs>

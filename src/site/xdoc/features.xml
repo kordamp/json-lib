@@ -30,7 +30,8 @@
              <li>error (exception)</li>
           </ul></li>
           <li>Cycle detection, there are two default strategies (default throws an exception), you can register your own</li>
-          <li>Skip transient fields when serailzing to JSON (default=don't skip)</li>
+          <li>Skip transient fields when serailizing to JSON (default=don't skip)</li>
+          <li>Exclude bean properties and/or map keys when serailizing to JSON (default=['class','metaClass','declaringClass'])</li>
           <li>JSONObject implements java.util.Map and java.util.Comparable</li>
           <li>JSONArray implements java.util.List and java.util.Comparable</li>
           <li>JSONObject, JSONArray and JSONNull implement a base interface: JSON</li>

@@ -401,8 +401,16 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   if( pd != null ){
                      if( !pd.getPropertyType()
                            .isInstance( value ) ){
-                        setProperty( bean, key, JSONUtils.getMorpherRegistry()
-                              .morph( pd.getPropertyType(), value ) );
+                        Morpher morpher = JSONUtils.getMorpherRegistry()
+                              .getMorpherFor( pd.getPropertyType() );
+                        if( morpher != IdentityObjectMorpher.getInstance() ){
+                           setProperty( bean, key, JSONUtils.getMorpherRegistry()
+                                 .morph( pd.getPropertyType(), value ) );
+                        }else{
+                           throw new JSONException( "Can't transform property '" + key + "' from "
+                                 + type.getName() + "into " + pd.getPropertyType()
+                                       .getName() );
+                        }
                      }else{
                         setProperty( bean, key, value );
                      }
