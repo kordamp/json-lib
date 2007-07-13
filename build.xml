@@ -129,6 +129,8 @@
    </target>
 
    <target name="test.jdk15" depends="junit-present, compile-tests.jdk15" if="junit.present" description="Run the test cases (jdk15)">
+      <antcall target="test.groovy"/>	 
+      <antcall target="test.jruby"/>	 
       <mkdir dir="${maven.test.reports}" />
       <junit printSummary="yes" haltonerror="true" haltonfailure="true" fork="true" dir=".">
          <sysproperty key="basedir" value="." />
@@ -220,8 +222,6 @@
    </target>
 
    <target name="jar.jdk15" depends="clean,test.jdk15" description="Binary jar (jdk15)">
-      <antcall target="test.groovy"/>	 
-      <antcall target="test.ruby"/>	 
       <jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk15.jar" basedir="${maven.build.output}" excludes="**/package.html" />
    </target>
 

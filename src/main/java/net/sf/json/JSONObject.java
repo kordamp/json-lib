@@ -971,10 +971,24 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          }
       }
       if( jsonObject.properties.containsKey( key ) ){
-         jsonObject.accumulate( key, value );
+         if( String.class.isAssignableFrom( type ) ){
+            Object o = jsonObject.opt( key );
+            if( o instanceof JSONArray ){
+               ((JSONArray) o).addString( (String) value );
+            }else{
+               jsonObject.properties.put( key, new JSONArray().element( o )
+                     .addString( (String) value ) );
+            }
+         }else{
+            jsonObject.accumulate( key, value );
+         }
          accumulated = true;
       }else{
-         jsonObject._setInternal( key, value );
+         if( String.class.isAssignableFrom( type ) ){
+            jsonObject.properties.put( key, value );
+         }else{
+            jsonObject._setInternal( key, value );
+         }
       }
 
       value = jsonObject.opt( key );

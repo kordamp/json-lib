@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.sf.json.sample.BeanA;
 import net.sf.json.sample.IdBean;
 import net.sf.json.sample.JSONTestBean;
 import net.sf.json.util.JSONUtils;
@@ -138,6 +139,18 @@ public class TestUserSubmitted extends TestCase {
       assertTrue( object.get( "str" ) instanceof String );
    }
 
+   public void testBug_1753528_ArrayStringLiteralToString(){
+      // submited by sckimos[at]gmail[dot]com
+      BeanA bean = new BeanA();
+      bean.setString( "[1234]" );
+      JSONObject jsonObject = JSONObject.fromObject( bean );
+      assertEquals( "[1234]", jsonObject.get( "string" ));
+
+      bean.setString( "{'key':'1234'}" );
+      jsonObject = JSONObject.fromObject( bean );
+      assertEquals( "{'key':'1234'}", jsonObject.get( "string" ));
+   }
+
    public void testDynaBeanAttributeMap() throws NoSuchMethodException, IllegalAccessException,
          InvocationTargetException {
       // submited by arco.vandenheuvel[at]points[dot].com
@@ -171,7 +184,7 @@ public class TestUserSubmitted extends TestCase {
    }
 
    public void testToBeanSimpleToComplexValueTransformation() {
-      // Submitted by Oliver Z
+      // Submitted by Oliver Zyngier
       JSONObject jsonObject = JSONObject.fromObject( "{'id':null}" );
       IdBean idBean = (IdBean) JSONObject.toBean( jsonObject, IdBean.class );
       assertNotNull( idBean );

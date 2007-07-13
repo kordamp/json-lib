@@ -399,7 +399,7 @@ public class TestJSONObject extends TestCase {
    public void testFromBean_DynaBean() throws Exception {
       JSONObject json = JSONObject.fromObject( createDynaBean() );
       assertEquals( "json", json.getString( "name" ) );
-      Assertions.assertEquals( JSONArray.fromObject( "[1,2]" ), json.getJSONArray( "str" ) );
+      Assertions.assertEquals( "[1,2]", json.getString( "str" ) );
       Assertions.assertEquals( JSONObject.fromObject( "{'id':'1'}" ), json.getJSONObject( "json" ) );
       Assertions.assertEquals( JSONObject.fromObject( "{'name':''}" ),
             json.getJSONObject( "jsonstr" ) );

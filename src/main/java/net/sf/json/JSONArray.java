@@ -1956,6 +1956,16 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    }
 
    /**
+    * Adds a String without performing any conversion on it.
+    */
+   protected JSONArray addString( String str ) {
+      if( str != null ){
+         elements.add( str );
+      }
+      return this;
+   }
+
+   /**
     * Append an object value. This increases the array's length by one.
     *
     * @param value An object value. The value should be a Boolean, Double,

@@ -52,6 +52,7 @@ import java.util.Map;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
+import net.sf.json.JSONArray;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
 import net.sf.json.util.JSONTokener;
@@ -2000,6 +2001,16 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       }catch( IOException e ){
          throw new JSONException( e );
       }
+   }
+
+   /**
+    * Adds a String without performing any conversion on it.
+    */
+   protected JSONArray addString( String str ) {
+      if( str != null ){
+         elements.add( str );
+      }
+      return this;
    }
 
    /**

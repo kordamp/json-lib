@@ -10,8 +10,15 @@
 
       <release
          version="N/A"
-         date="2007-06-11"
+         date="2007-06-13"
          desc="Current development version">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1753528">
+            Bean property of type String is transformed to JSONArray.
+            Thanks to sckimos[at]gmail[dot]com
+         </action>
          <action
             dev="Andres Almiray"
             type="add"
