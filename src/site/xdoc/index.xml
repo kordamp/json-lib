@@ -58,10 +58,10 @@
       <p>Json-lib requires (at least) the following dependencies in your classpath:
          <ul>
             <li>jakarta commons-lang 2.3</li>
-            <li>jakarta commons-beanutils 1.70</li>
+            <li>jakarta commons-beanutils 1.7.0</li>
             <li>jakarta commons-collections 3.2</li>
              <li>jakarta commons-logging 1.1</li>
-            <li>ezmoprh 1.0.1</li>
+            <li>ezmorph 1.0.1</li>
          </ul>
          Other dependencies are needed if working with XML, Groovy and JRuby. Please review the 
          <a href="http://json-lib.sourceforge.net/dependencies.html">Dependencies report</a> to know more about 
