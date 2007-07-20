@@ -34,6 +34,76 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 /**
+ * A Groovy builder for JSON values.
+ *
+ * <pre>
+def books1 = builder.books {
+   book = [title: "The Definitive Guide to Grails", author: "Graeme Rocher"]
+   book = [title: "The Definitive Guide to Grails", author: "Graeme Rocher"]
+}
+
+def books2 = builder.books {
+   book = new Book(title: "The Definitive Guide to Grails",
+                   author: "Graeme Rocher")
+   book = new Book(title: "The Definitive Guide to Grails",
+                   author: "Graeme Rocher")
+}
+
+def books3 = builder.books {
+   book = {
+      title = "The Definitive Guide to Grails"
+      author= "Graeme Rocher"
+   }
+   book = {
+      title = "The Definitive Guide to Grails"
+      author= "Graeme Rocher"
+   }
+}
+
+def books4 = builder.books {
+   book {
+      title = "The Definitive Guide to Grails"
+      author= "Graeme Rocher"
+   }
+   book {
+      title = "The Definitive Guide to Grails"
+      author= "Graeme Rocher"
+   }
+}
+
+def books5 = builder.books {
+   2.times {
+      book = {
+         title = "The Definitive Guide to Grails"
+         author= "Graeme Rocher"
+      }
+   }
+}
+
+def books6 = builder.books {
+   2.times {
+      book {
+         title = "The Definitive Guide to Grails"
+         author= "Graeme Rocher"
+      }
+   }
+}
+
+
+ all 6 books variables output the same JSON
+
+{"books": {
+   "book": [{
+         "title": "The Definitive Guide to Grails",
+         "author": "Graeme Rocher"
+      },{
+         "title": "The Definitive Guide to Grails",
+         "author": "Graeme Rocher"
+      }]
+   }
+}
+</pre>
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JsonGroovyBuilder extends GroovyObjectSupport {

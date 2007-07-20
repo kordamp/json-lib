@@ -17,10 +17,27 @@
 package net.sf.json.processors;
 
 /**
+ * Base interface for custom serialization per property.
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public interface JsonValueProcessor {
+   /**
+    * Processes the value an returns a suitable JSON value.
+    *
+    * @param value the input value
+    * @return a valid JSON value that represents the input value
+    * @throws JSONException if an error occurs during transformation
+    */
    Object processArrayValue( Object value );
 
+   /**
+    * Processes the value an returns a suitable JSON value.
+    *
+    * @param key the name of the property
+    * @param value the value of the property
+    * @return a valid JSON value that represents the input property
+    * @throws JSONException if an error occurs during transformation
+    */
    Object processObjectValue( String key, Object value );
 }

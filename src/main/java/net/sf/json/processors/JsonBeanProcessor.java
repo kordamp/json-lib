@@ -19,8 +19,17 @@ package net.sf.json.processors;
 import net.sf.json.JSONObject;
 
 /**
+ * Base interface for custom serialization per Bean.
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public interface JsonBeanProcessor {
+   /**
+    * Processes the bean an returns a suitable JSONObject representation.
+    *
+    * @param bean the input bean
+    * @return a JSONObject that represents the input bean
+    * @throws JSONException if an error occurs during transformation
+    */
    JSONObject processBean( Object bean );
 }

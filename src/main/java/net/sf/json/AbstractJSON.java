@@ -26,6 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * Base class for JSONObject and JSONArray.
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 abstract class AbstractJSON {
@@ -33,10 +35,20 @@ abstract class AbstractJSON {
 
    private static final Log log = LogFactory.getLog( AbstractJSON.class );
 
+   /**
+    * Adds a reference for cycle detection check.
+    *
+    * @param instance the reference to add
+    * @param true if the instance has not been added previously, false
+    *        otherwise.
+    */
    protected static boolean addInstance( Object instance ) {
       return cycleSet.add( instance );
    }
 
+   /**
+    * Fires an end of array event.
+    */
    protected static void fireArrayEndEvent() {
       JsonConfig jsonConfig = JsonConfig.getInstance();
       if( jsonConfig.isEventTriggeringEnabled() ){
@@ -52,6 +64,9 @@ abstract class AbstractJSON {
       }
    }
 
+   /**
+    * Fires a start of array event.
+    */
    protected static void fireArrayStartEvent() {
       JsonConfig jsonConfig = JsonConfig.getInstance();
       if( jsonConfig.isEventTriggeringEnabled() ){
@@ -67,6 +82,12 @@ abstract class AbstractJSON {
       }
    }
 
+   /**
+    * Fires an element added event.
+    *
+    * @param index the index where the element was added
+    * @param element the added element
+    */
    protected static void fireElementAddedEvent( int index, Object element ) {
       JsonConfig jsonConfig = JsonConfig.getInstance();
       if( jsonConfig.isEventTriggeringEnabled() ){
@@ -82,6 +103,11 @@ abstract class AbstractJSON {
       }
    }
 
+   /**
+    * Fires an error event.
+    *
+    * @param jsone the thrown exception
+    */
    protected static void fireErrorEvent( JSONException jsone ) {
       JsonConfig jsonConfig = JsonConfig.getInstance();
       if( jsonConfig.isEventTriggeringEnabled() ){
@@ -97,6 +123,9 @@ abstract class AbstractJSON {
       }
    }
 
+   /**
+    * Fires an end of object event.
+    */
    protected static void fireObjectEndEvent() {
       JsonConfig jsonConfig = JsonConfig.getInstance();
       if( jsonConfig.isEventTriggeringEnabled() ){
@@ -112,6 +141,9 @@ abstract class AbstractJSON {
       }
    }
 
+   /**
+    * Fires a start of object event.
+    */
    protected static void fireObjectStartEvent() {
       JsonConfig jsonConfig = JsonConfig.getInstance();
       if( jsonConfig.isEventTriggeringEnabled() ){
@@ -127,6 +159,13 @@ abstract class AbstractJSON {
       }
    }
 
+   /**
+    * Fires a property set event.
+    *
+    * @param key the name of the property
+    * @param value the value of the property
+    * @param accumulated if the value has been accumulated over 'key'
+    */
    protected static void firePropertySetEvent( String key, Object value, boolean accumulated ) {
       JsonConfig jsonConfig = JsonConfig.getInstance();
       if( jsonConfig.isEventTriggeringEnabled() ){
@@ -142,6 +181,11 @@ abstract class AbstractJSON {
       }
    }
 
+   /**
+    * Fires a warning event.
+    *
+    * @param warning the warning message
+    */
    protected static void fireWarnEvent( String warning ) {
       JsonConfig jsonConfig = JsonConfig.getInstance();
       if( jsonConfig.isEventTriggeringEnabled() ){
@@ -157,6 +201,9 @@ abstract class AbstractJSON {
       }
    }
 
+   /**
+    * Removes a reference for cycle detection check.
+    */
    protected static void removeInstance( Object instance ) {
       cycleSet.remove( instance );
    }

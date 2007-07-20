@@ -17,6 +17,9 @@
 package net.sf.json.processors;
 
 /**
+ * Transforms a java.util.Date property into a JSONObject ideal for JsDate
+ * conversion
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JsDateJsonValueProcessor implements JsonValueProcessor {

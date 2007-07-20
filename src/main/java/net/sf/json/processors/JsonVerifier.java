@@ -25,9 +25,17 @@ import net.sf.json.JSONNull;
 import net.sf.json.JSONString;
 
 /**
+ * Verifies if a value is a valid JSON value.
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public final class JsonVerifier {
+
+   /**
+    * Verifies if value is a valid JSON value.
+    *
+    * @param value the value to verify
+    */
    public static boolean isValidJsonValue( Object value ) {
       if( JSONNull.getInstance()
             .equals( value ) || value instanceof JSON || value instanceof Boolean

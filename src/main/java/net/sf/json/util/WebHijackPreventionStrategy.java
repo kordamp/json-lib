@@ -17,6 +17,13 @@
 package net.sf.json.util;
 
 /**
+ * Defines base implementations for preventing WebHijack in AJAX applications.
+ * The default implementations are:
+ * <ul>
+ * <li>COMMENTS - wraps the string with /* *\/</li>
+ * <li>INFINITE_LOOP - prepends "while(1);"</li>
+ * </ul>
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class WebHijackPreventionStrategy {
@@ -25,17 +32,25 @@ public abstract class WebHijackPreventionStrategy {
    /** Prepends "while(1);" */
    public static final WebHijackPreventionStrategy INFINITE_LOOP = new InfiniteLoopWebHijackPreventionStrategy();
 
+   /**
+    * Transforms the input with the desired strategy.<br>
+    *
+    * @param str a json string
+    * @return String - the transformed json string
+    */
    public abstract String protect( String str );
 
-   private static final class CommentWebHijackPreventionStrategy extends WebHijackPreventionStrategy {
+   private static final class CommentWebHijackPreventionStrategy extends
+         WebHijackPreventionStrategy {
       public String protect( String str ) {
-         return "/*"+str+"*/";
+         return "/*" + str + "*/";
       }
    }
 
-   private static final class InfiniteLoopWebHijackPreventionStrategy extends WebHijackPreventionStrategy {
+   private static final class InfiniteLoopWebHijackPreventionStrategy extends
+         WebHijackPreventionStrategy {
       public String protect( String str ) {
-         return "while(1);"+str;
+         return "while(1);" + str;
       }
    }
 }

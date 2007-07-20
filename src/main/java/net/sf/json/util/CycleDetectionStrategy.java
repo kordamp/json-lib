@@ -21,6 +21,15 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 /**
+ * Base class for cycle detection in a hierarchy.<br>
+ * The JSON spec forbides cycles in a hierarchy and most parsers will raise and
+ * error when a cycle is detected. This class defines a contract for handling
+ * those cycles and two base implementations:
+ * <ul>
+ * <li>STRICT - will throw a JSONException if a cycle is found.</li>
+ * <li>LENIENT - will return an empty array or null object if a cycle is found.</li>
+ * </ul>
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class CycleDetectionStrategy {
@@ -29,8 +38,20 @@ public abstract class CycleDetectionStrategy {
    /** Throws a JSONException */
    public static final CycleDetectionStrategy STRICT = new StrictCycleDetectionStrategy();
 
+   /**
+    * Handle a repeated reference<br>
+    * Must return a valid JSONArray or null.
+    *
+    * @param reference the repeated reference.
+    */
    public abstract JSONArray handleRepeatedReferenceAsArray( Object reference );
 
+   /**
+    * Handle a repeated reference<br>
+    * Must return a valid JSONObject or null.
+    *
+    * @param reference the repeated reference.
+    */
    public abstract JSONObject handleRepeatedReferenceAsObject( Object reference );
 
    private static final class LenientCycleDetectionStrategy extends CycleDetectionStrategy {
