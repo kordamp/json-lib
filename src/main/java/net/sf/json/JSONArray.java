@@ -1377,14 +1377,13 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *
     * @param index The index must be between 0 and size() - 1.
     * @return An object value.
-    * @throws JSONException If there is no value for the index.
     */
    public Object get( int index ) {
-      Object o = opt( index );
-      if( o == null ){
-         throw new JSONException( "JSONArray[" + index + "] not found." );
-      }
-      return o;
+      /*
+       * Object o = opt( index ); if( o == null ){ throw new JSONException(
+       * "JSONArray[" + index + "] not found." ); } return o;
+       */
+      return this.elements.get( index );
    }
 
    /**
@@ -1398,12 +1397,14 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     */
    public boolean getBoolean( int index ) {
       Object o = get( index );
-      if( o.equals( Boolean.FALSE )
-            || (o instanceof String && ((String) o).equalsIgnoreCase( "false" )) ){
-         return false;
-      }else if( o.equals( Boolean.TRUE )
-            || (o instanceof String && ((String) o).equalsIgnoreCase( "true" )) ){
-         return true;
+      if( o != null ){
+         if( o.equals( Boolean.FALSE )
+               || (o instanceof String && ((String) o).equalsIgnoreCase( "false" )) ){
+            return false;
+         }else if( o.equals( Boolean.TRUE )
+               || (o instanceof String && ((String) o).equalsIgnoreCase( "true" )) ){
+            return true;
+         }
       }
       throw new JSONException( "JSONArray[" + index + "] is not a Boolean." );
    }
@@ -1418,11 +1419,15 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     */
    public double getDouble( int index ) {
       Object o = get( index );
-      try{
-         return o instanceof Number ? ((Number) o).doubleValue() : Double.parseDouble( (String) o );
-      }catch( Exception e ){
-         throw new JSONException( "JSONArray[" + index + "] is not a number." );
+      if( o != null ){
+         try{
+            return o instanceof Number ? ((Number) o).doubleValue()
+                  : Double.parseDouble( (String) o );
+         }catch( Exception e ){
+            throw new JSONException( "JSONArray[" + index + "] is not a number." );
+         }
       }
+      throw new JSONException( "JSONArray[" + index + "] is not a number." );
    }
 
    /**
@@ -1436,7 +1441,10 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     */
    public int getInt( int index ) {
       Object o = get( index );
-      return o instanceof Number ? ((Number) o).intValue() : (int) getDouble( index );
+      if( o != null ){
+         return o instanceof Number ? ((Number) o).intValue() : (int) getDouble( index );
+      }
+      throw new JSONException( "JSONArray[" + index + "] is not a number." );
    }
 
    /**
@@ -1449,7 +1457,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     */
    public JSONArray getJSONArray( int index ) {
       Object o = get( index );
-      if( o instanceof JSONArray ){
+      if( o != null && o instanceof JSONArray ){
          return (JSONArray) o;
       }
       throw new JSONException( "JSONArray[" + index + "] is not a JSONArray." );
@@ -1465,7 +1473,10 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     */
    public JSONObject getJSONObject( int index ) {
       Object o = get( index );
-      if( o instanceof JSONObject ){
+      if( JSONNull.getInstance()
+            .equals( o ) ){
+         return new JSONObject( true );
+      }else if( o instanceof JSONObject ){
          return (JSONObject) o;
       }
       throw new JSONException( "JSONArray[" + index + "] is not a JSONObject." );
@@ -1481,7 +1492,10 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     */
    public long getLong( int index ) {
       Object o = get( index );
-      return o instanceof Number ? ((Number) o).longValue() : (long) getDouble( index );
+      if( o != null ){
+         return o instanceof Number ? ((Number) o).longValue() : (long) getDouble( index );
+      }
+      throw new JSONException( "JSONArray[" + index + "] is not a number." );
    }
 
    /**
@@ -1492,7 +1506,11 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @throws JSONException If there is no value for the index.
     */
    public String getString( int index ) {
-      return get( index ).toString();
+      Object o = get( index );
+      if( o != null ){
+         return o.toString();
+      }
+      throw new JSONException( "JSONArray[" + index + "] not found." );
    }
 
    public int hashCode() {

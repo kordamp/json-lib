@@ -9,6 +9,24 @@
    <body>
 
       <release
+         version="2.1-SNAPSHOT"
+         date="N/A"
+         desc="Current development version">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1763699">
+            JSONObject.toBean() Error with nested bean arrays
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1760194">
+            JSONObject.get() doesn't follow java.util.Map contract
+         </action>
+      </release>
+
+      <release
          version="2.0"
          date="2007-07-20"
          desc="The _2.0_ release">

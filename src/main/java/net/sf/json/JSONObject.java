@@ -54,6 +54,8 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.ezmorph.Morpher;
+import net.sf.ezmorph.array.ObjectArrayMorpher;
+import net.sf.ezmorph.bean.BeanMorpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
@@ -383,15 +385,33 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      List list = JSONArray.toList( (JSONArray) value, targetClass, classMap );
                      setProperty( bean, key, list );
                   }else{
-                     Object array = JSONArray.toArray( (JSONArray) value, beanClass, classMap );
                      Class innerType = JSONUtils.getInnerComponentType( pd.getPropertyType() );
+                     Object array = JSONArray.toArray( (JSONArray) value, innerType, classMap );
                      if( innerType.isPrimitive() || JSONUtils.isNumber( innerType )
                            || Boolean.class.isAssignableFrom( innerType )
-                           || JSONUtils.isString( innerType ) || !array.getClass()
-                                 .equals( pd.getPropertyType() ) ){
+                           || JSONUtils.isString( innerType ) ){
                         array = JSONUtils.getMorpherRegistry()
                               .morph( Array.newInstance( innerType, 0 )
                                     .getClass(), array );
+                     }else if( !array.getClass()
+                           .equals( pd.getPropertyType() ) && !pd.getPropertyType()
+                           .equals( Object.class ) ){
+                        // the last check is for generified types
+                        // (properties declared as Object)
+                        // if so, then no conversion should be performed
+                        Morpher morpher = JSONUtils.getMorpherRegistry()
+                              .getMorpherFor( Array.newInstance( innerType, 0 )
+                                    .getClass() );
+                        if( IdentityObjectMorpher.getInstance()
+                              .equals( morpher ) ){
+                           ObjectArrayMorpher beanMorpher = new ObjectArrayMorpher(
+                                 new BeanMorpher( innerType, JSONUtils.getMorpherRegistry() ) );
+                           JSONUtils.getMorpherRegistry()
+                                 .registerMorpher( beanMorpher );
+                           array = JSONUtils.getMorpherRegistry()
+                                 .morph( Array.newInstance( innerType, 0 )
+                                       .getClass(), array );
+                        }
                      }
                      setProperty( bean, key, array );
                   }
@@ -414,8 +434,12 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      }else{
                         setProperty( bean, key, value );
                      }
-                  }else{
+                  }else if( beanClass == null || bean instanceof Map ){
                      setProperty( bean, key, value );
+                  }else{
+                     log.warn( "Tried to assign property " + key + ":" + type.getName()
+                           + " to bean of class " + bean.getClass()
+                                 .getName() );
                   }
                }else{
                   if( pd != null ){
@@ -426,7 +450,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                               : targetClass;
                      }
                      setProperty( bean, key, toBean( (JSONObject) value, targetClass, classMap ) );
-                  }else{
+                  }else if( beanClass == null || bean instanceof Map ){
                      Class targetClass = findTargetClass( key, classMap );
                      targetClass = targetClass == null ? findTargetClass( name, classMap )
                            : targetClass;
@@ -435,6 +459,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      }else{
                         setProperty( bean, key, toBean( (JSONObject) value ) );
                      }
+                  }else{
+                     log.warn( "Tried to assign property " + key + ":" + type.getName()
+                           + " to bean of class " + bean.getClass()
+                                 .getName() );
                   }
                }
             }else{
@@ -450,7 +478,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          }catch( JSONException jsone ){
             throw jsone;
          }catch( Exception e ){
-            throw new JSONException( "Error while setting property=" + name + " type" + type, e );
+            throw new JSONException( "Error while setting property=" + name + " type " + type, e );
          }
       }
 
@@ -1425,16 +1453,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     *
     * @param key A key string.
     * @return The object associated with the key.
-    * @throws JSONException if the key is not found.
+    * @throws JSONException if this.isNull() returns true.
     */
    public Object get( String key ) {
       verifyIsNull();
-      Object o = opt( key );
-      if( o == null ){
-         throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] not found." );
-      }
-
-      return o;
+      return this.properties.get( key );
    }
 
    /**
@@ -1448,12 +1471,14 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    public boolean getBoolean( String key ) {
       verifyIsNull();
       Object o = get( key );
-      if( o.equals( Boolean.FALSE )
-            || (o instanceof String && ((String) o).equalsIgnoreCase( "false" )) ){
-         return false;
-      }else if( o.equals( Boolean.TRUE )
-            || (o instanceof String && ((String) o).equalsIgnoreCase( "true" )) ){
-         return true;
+      if( o != null ){
+         if( o.equals( Boolean.FALSE )
+               || (o instanceof String && ((String) o).equalsIgnoreCase( "false" )) ){
+            return false;
+         }else if( o.equals( Boolean.TRUE )
+               || (o instanceof String && ((String) o).equalsIgnoreCase( "true" )) ){
+            return true;
+         }
       }
       throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a Boolean." );
    }
@@ -1469,11 +1494,15 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    public double getDouble( String key ) {
       verifyIsNull();
       Object o = get( key );
-      try{
-         return o instanceof Number ? ((Number) o).doubleValue() : Double.parseDouble( (String) o );
-      }catch( Exception e ){
-         throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a number." );
+      if( o != null ){
+         try{
+            return o instanceof Number ? ((Number) o).doubleValue()
+                  : Double.parseDouble( (String) o );
+         }catch( Exception e ){
+            throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a number." );
+         }
       }
+      throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a number." );
    }
 
    /**
@@ -1488,7 +1517,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    public int getInt( String key ) {
       verifyIsNull();
       Object o = get( key );
-      return o instanceof Number ? ((Number) o).intValue() : (int) getDouble( key );
+      if( o != null ){
+         return o instanceof Number ? ((Number) o).intValue() : (int) getDouble( key );
+      }
+      throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a number." );
    }
 
    /**
@@ -1502,7 +1534,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    public JSONArray getJSONArray( String key ) {
       verifyIsNull();
       Object o = get( key );
-      if( o instanceof JSONArray ){
+         if( o != null && o instanceof JSONArray ){
          return (JSONArray) o;
       }
       throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a JSONArray." );
@@ -1519,11 +1551,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    public JSONObject getJSONObject( String key ) {
       verifyIsNull();
       Object o = get( key );
-      if( o instanceof JSONObject ){
-         return (JSONObject) o;
-      }else if( JSONNull.getInstance()
+      if( JSONNull.getInstance()
             .equals( o ) ){
          return new JSONObject( true );
+      }else if( o instanceof JSONObject ){
+         return (JSONObject) o;
       }
       throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a JSONObject." );
    }
@@ -1540,7 +1572,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    public long getLong( String key ) {
       verifyIsNull();
       Object o = get( key );
-      return o instanceof Number ? ((Number) o).longValue() : (long) getDouble( key );
+      if( o != null ){
+         return o instanceof Number ? ((Number) o).longValue() : (long) getDouble( key );
+      }
+      throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a number." );
    }
 
    /**
@@ -1552,7 +1587,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     */
    public String getString( String key ) {
       verifyIsNull();
-      return get( key ).toString();
+      Object o = get( key );
+      if( o != null ){
+         return o.toString();
+      }
+      throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] not found." );
    }
 
    /**

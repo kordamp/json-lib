@@ -742,9 +742,9 @@ public class TestJSONArray extends TestCase {
    public void testGet_exception() {
       try{
          JSONArray jsonArray = JSONArray.fromObject( "[]" );
-         jsonArray.get( 0 );
-         fail( "Expected a JSONException" );
-      }catch( JSONException expected ){
+         Object actual = jsonArray.get( 0 );
+         fail( "Expected a IndexOutOfBoundsException" );
+      }catch( IndexOutOfBoundsException expected ){
          // OK
       }
    }
@@ -922,8 +922,8 @@ public class TestJSONArray extends TestCase {
       try{
          JSONArray jsonArray = JSONArray.fromObject( "[]" );
          jsonArray.getString( 0 );
-         fail( "Expected a JSONException" );
-      }catch( JSONException expected ){
+         fail( "Expected a IndexOutOfBoundsException" );
+      }catch( IndexOutOfBoundsException expected ){
          // OK
       }
    }

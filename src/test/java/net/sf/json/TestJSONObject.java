@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -1239,6 +1240,10 @@ public class TestJSONObject extends TestCase {
       List l = new ArrayList();
       l.add( "a" );
       l.add( "b" );
+      System.err.println(l.toArray().getClass());
+      System.err.println(obj.getParray().getClass());
+      System.err.println(Arrays.toString(l.toArray()));
+      System.err.println(Arrays.toString((Object[])obj.getParray()));
       ArrayAssertions.assertEquals( l.toArray(), (Object[]) obj.getParray() );
       l = new ArrayList();
       l.add( "1" );

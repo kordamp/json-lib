@@ -129,8 +129,6 @@
    </target>
 
    <target name="test.jdk15" depends="junit-present, compile-tests.jdk15" if="junit.present" description="Run the test cases (jdk15)">
-      <antcall target="test.groovy"/>	 
-      <antcall target="test.jruby"/>	 
       <mkdir dir="${maven.test.reports}" />
       <junit printSummary="yes" haltonerror="true" haltonfailure="true" fork="true" dir=".">
          <sysproperty key="basedir" value="." />
@@ -156,6 +154,8 @@
             </path>
          </batchtest>
       </junit>
+      <antcall target="test.groovy"/>	 
+      <antcall target="test.jruby"/>	 
    </target>
 
    <target name="test.groovy" depends="junit-present, compile-tests.groovy" if="junit.present" description="Run the test cases (Groovy)">

@@ -24,6 +24,8 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.json.sample.BeanA;
+import net.sf.json.sample.BeanA1763699;
+import net.sf.json.sample.BeanB1763699;
 import net.sf.json.sample.IdBean;
 import net.sf.json.sample.JSONTestBean;
 import net.sf.json.util.JSONUtils;
@@ -149,6 +151,16 @@ public class TestUserSubmitted extends TestCase {
       bean.setString( "{'key':'1234'}" );
       jsonObject = JSONObject.fromObject( bean );
       assertEquals( "{'key':'1234'}", jsonObject.get( "string" ));
+   }
+
+   public void testBug_1763699_toBean(){
+      JSONObject json = JSONObject.fromObject("{'bbeans':[{'str':'test'}]}");
+      BeanA1763699 bean = (BeanA1763699)JSONObject.toBean( json, BeanA1763699.class);
+      assertNotNull(bean);
+      BeanB1763699[] bbeans = bean.getBbeans();
+      assertNotNull(bbeans);
+      assertEquals( 1, bbeans.length );
+      assertEquals( "test", bbeans[0].getStr() );
    }
 
    public void testDynaBeanAttributeMap() throws NoSuchMethodException, IllegalAccessException,
