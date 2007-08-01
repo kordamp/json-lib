@@ -419,10 +419,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                                  new BeanMorpher( innerType, JSONUtils.getMorpherRegistry() ) );
                            JSONUtils.getMorpherRegistry()
                                  .registerMorpher( beanMorpher );
-                           array = JSONUtils.getMorpherRegistry()
-                                 .morph( Array.newInstance( innerType, 0 )
-                                       .getClass(), array );
                         }
+                        array = JSONUtils.getMorpherRegistry()
+                              .morph( Array.newInstance( innerType, 0 )
+                                    .getClass(), array );
                      }
                      setProperty( bean, key, array );
                   }
