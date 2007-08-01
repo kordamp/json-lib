@@ -423,14 +423,24 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                            .isInstance( value ) ){
                         Morpher morpher = JSONUtils.getMorpherRegistry()
                               .getMorpherFor( pd.getPropertyType() );
-                        if( morpher != IdentityObjectMorpher.getInstance() ){
-                           setProperty( bean, key, JSONUtils.getMorpherRegistry()
-                                 .morph( pd.getPropertyType(), value ) );
-                        }else{
-                           throw new JSONException( "Can't transform property '" + key + "' from "
-                                 + type.getName() + "into " + pd.getPropertyType()
-                                       .getName() );
+                        if( IdentityObjectMorpher.getInstance()
+                              .equals( morpher ) ){
+                           log.warn( "Can't transform property '" + key + "' from "
+                                 + type.getName() + " into " + pd.getPropertyType()
+                                       .getName() + ". Will register a default BeanMorpher" );
+                           JSONUtils.getMorpherRegistry()
+                                 .registerMorpher(
+                                       new BeanMorpher( pd.getPropertyType(),
+                                             JSONUtils.getMorpherRegistry() ) );
                         }
+                        //if( morpher != IdentityObjectMorpher.getInstance() ){
+                        setProperty( bean, key, JSONUtils.getMorpherRegistry()
+                              .morph( pd.getPropertyType(), value ) );
+                        /*}else{
+                           throw new JSONException( "Can't transform property '" + key + "' from "
+                                 + type.getName() + " into " + pd.getPropertyType()
+                                       .getName() );
+                        }*/
                      }else{
                         setProperty( bean, key, value );
                      }

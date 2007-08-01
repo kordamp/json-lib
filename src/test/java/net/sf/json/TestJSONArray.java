@@ -742,7 +742,7 @@ public class TestJSONArray extends TestCase {
    public void testGet_exception() {
       try{
          JSONArray jsonArray = JSONArray.fromObject( "[]" );
-         Object actual = jsonArray.get( 0 );
+         jsonArray.get( 0 );
          fail( "Expected a IndexOutOfBoundsException" );
       }catch( IndexOutOfBoundsException expected ){
          // OK

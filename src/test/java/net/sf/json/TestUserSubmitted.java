@@ -26,6 +26,7 @@ import junit.framework.TestCase;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanA1763699;
 import net.sf.json.sample.BeanB1763699;
+import net.sf.json.sample.BeanC;
 import net.sf.json.sample.IdBean;
 import net.sf.json.sample.JSONTestBean;
 import net.sf.json.util.JSONUtils;
@@ -33,7 +34,6 @@ import net.sf.json.util.JavaIdentifierTransformer;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -141,26 +141,36 @@ public class TestUserSubmitted extends TestCase {
       assertTrue( object.get( "str" ) instanceof String );
    }
 
-   public void testBug_1753528_ArrayStringLiteralToString(){
+   public void testBug_1753528_ArrayStringLiteralToString() {
       // submited by sckimos[at]gmail[dot]com
       BeanA bean = new BeanA();
       bean.setString( "[1234]" );
       JSONObject jsonObject = JSONObject.fromObject( bean );
-      assertEquals( "[1234]", jsonObject.get( "string" ));
+      assertEquals( "[1234]", jsonObject.get( "string" ) );
 
       bean.setString( "{'key':'1234'}" );
       jsonObject = JSONObject.fromObject( bean );
-      assertEquals( "{'key':'1234'}", jsonObject.get( "string" ));
+      assertEquals( "{'key':'1234'}", jsonObject.get( "string" ) );
    }
 
-   public void testBug_1763699_toBean(){
-      JSONObject json = JSONObject.fromObject("{'bbeans':[{'str':'test'}]}");
-      BeanA1763699 bean = (BeanA1763699)JSONObject.toBean( json, BeanA1763699.class);
-      assertNotNull(bean);
+   public void testBug_1763699_toBean() {
+      JSONObject json = JSONObject.fromObject( "{'bbeans':[{'str':'test'}]}" );
+      BeanA1763699 bean = (BeanA1763699) JSONObject.toBean( json, BeanA1763699.class );
+      assertNotNull( bean );
       BeanB1763699[] bbeans = bean.getBbeans();
-      assertNotNull(bbeans);
+      assertNotNull( bbeans );
       assertEquals( 1, bbeans.length );
       assertEquals( "test", bbeans[0].getStr() );
+   }
+
+   public void testBug_1764768_toBean() {
+      JSONObject json = JSONObject.fromObject( "{'beanA':''}" );
+      Map classMap = new HashMap();
+      classMap.put( "beanA", BeanA.class );
+      BeanC bean = (BeanC) JSONObject.toBean( json, BeanC.class, classMap );
+      assertNotNull( bean );
+      assertNotNull( bean.getBeanA() );
+      assertEquals( new BeanA(), bean.getBeanA() );
    }
 
    public void testDynaBeanAttributeMap() throws NoSuchMethodException, IllegalAccessException,
@@ -202,16 +212,15 @@ public class TestUserSubmitted extends TestCase {
       assertNotNull( idBean );
       assertEquals( null, idBean.getId() );
 
-      try{
-         jsonObject = JSONObject.fromObject( "{'id':1}" );
-         idBean = (IdBean) JSONObject.toBean( jsonObject, IdBean.class );
-         fail( "Should have thrown a JSONException" );
-      }catch( JSONException jsone ){
-         assertTrue( StringUtils.contains( jsone.getMessage(), "Can't transform property 'id'" ) );
-      }
+      jsonObject = JSONObject.fromObject( "{'id':1}" );
+      idBean = (IdBean) JSONObject.toBean( jsonObject, IdBean.class );
+      assertNotNull( idBean );
+      assertNotNull( idBean.getId() );
+      assertEquals( 0L, idBean.getId()
+            .getValue() );
 
       JSONUtils.getMorpherRegistry()
-            .registerMorpher( new IdBean.IdMorpher() );
+            .registerMorpher( new IdBean.IdMorpher(), true );
       jsonObject = JSONObject.fromObject( "{'id':1}" );
       idBean = (IdBean) JSONObject.toBean( jsonObject, IdBean.class );
       assertNotNull( idBean );

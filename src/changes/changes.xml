@@ -15,6 +15,14 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1764768">
+            JSONObject.toBean() empty string error [jettison
+            integration]. Thanks to
+            jcue786[at]users[dot]sourceforge[dot]net
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1763699">
             JSONObject.toBean() Error with nested bean arrays
          </action>
