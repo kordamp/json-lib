@@ -193,14 +193,20 @@ public class TestUserSubmitted extends TestCase {
 
    public void testBug_1769578_array_conversion() {
       JSONObject jsonObject = JSONObject.fromObject( "{'media':[{'title':'Giggles'},{'title':'Dreamland?'}]}" );
-      System.err.println( jsonObject );
       Map classMap = new HashMap();
       classMap.put( "media", MediaBean.class );
       MediaListBean bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class,
             classMap );
-      System.err.println( bean );
-      Object[] media = (Object[])bean.getMedia();
-      System.err.println(media[0].getClass());
+      assertNotNull( bean );
+      assertNotNull( bean.getMedia() );
+      assertTrue( bean.getMedia()
+            .getClass()
+            .isArray() );
+      Object[] media = (Object[]) bean.getMedia();
+      assertEquals( 2, media.length );
+      Object mediaItem1 = media[0];
+      assertTrue( mediaItem1 instanceof MediaBean );
+      assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() );
    }
 
    public void testDynaBeanAttributeMap() throws NoSuchMethodException, IllegalAccessException,
@@ -212,6 +218,33 @@ public class TestUserSubmitted extends TestCase {
       DynaBean jsonBean = (DynaBean) JSONObject.toBean( JSONObject.fromObject( jsonString ) );
       assertNotNull( jsonBean );
       assertEquals( "wrong inventoryID", "", jsonBean.get( "inventoryID" ) );
+   }
+
+   public void testFR_1768960_array_conversion() {
+      // 2 items
+      JSONObject jsonObject = JSONObject.fromObject( "{'media2':[{'title':'Giggles'},{'title':'Dreamland?'}]}" );
+      Map classMap = new HashMap();
+      classMap.put( "media2", MediaBean.class );
+      MediaListBean bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class,
+            classMap );
+      assertNotNull( bean );
+      assertNotNull( bean.getMedia2() );
+      List media2 = bean.getMedia2();
+      assertEquals( 2, media2.size() );
+      Object mediaItem1 = media2.get( 0 );
+      assertTrue( mediaItem1 instanceof MediaBean );
+      assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() );
+
+      // 1 item
+      jsonObject = JSONObject.fromObject( "{'media2':[{'title':'Giggles'}]}" );
+      bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class, classMap );
+      assertNotNull( bean );
+      assertNotNull( bean.getMedia2() );
+      media2 = bean.getMedia2();
+      assertEquals( 1, media2.size() );
+      mediaItem1 = media2.get( 0 );
+      assertTrue( mediaItem1 instanceof MediaBean );
+      assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() );
    }
 
    public void testJsonWithNamespaceToDynaBean() throws Exception {

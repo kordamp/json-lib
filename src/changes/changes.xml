@@ -16,13 +16,15 @@
             dev="Andres Almiray"
             type="fix"
             issue="1769578">
-            Setter always passes in Object[]
+            Setter always passes in Object[]. Thanks to
+            jcue786[at]users[dot]sourceforge[dot]net
          </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1769559">
-            JSONArray.toArray always returns array of type Object[]
+            JSONArray.toArray always returns array of type Object[].
+            Thanks to sebthom[at]users[dot]sourceforge[dot]net
          </action>
          <action
             dev="Andres Almiray"
