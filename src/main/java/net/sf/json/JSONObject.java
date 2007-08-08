@@ -386,6 +386,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      setProperty( bean, key, list );
                   }else{
                      Class innerType = JSONUtils.getInnerComponentType( pd.getPropertyType() );
+                     Class targetInnerType = findTargetClass( key, classMap );
+                     if( innerType.equals( Object.class ) && targetInnerType != null
+                           && !targetInnerType.equals( Object.class ) ){
+                        innerType = targetInnerType;
+                     }
                      Object array = JSONArray.toArray( (JSONArray) value, innerType, classMap );
                      if( innerType.isPrimitive() || JSONUtils.isNumber( innerType )
                            || Boolean.class.isAssignableFrom( innerType )
@@ -394,24 +399,23 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                               .morph( Array.newInstance( innerType, 0 )
                                     .getClass(), array );
                      }else if( !array.getClass()
-                           .equals( pd.getPropertyType() ) && !pd.getPropertyType()
-                           .equals( Object.class ) ){
-                        // the last check is for generified types
-                        // (properties declared as Object)
-                        // if so, then no conversion should be performed
-                        Morpher morpher = JSONUtils.getMorpherRegistry()
-                              .getMorpherFor( Array.newInstance( innerType, 0 )
-                                    .getClass() );
-                        if( IdentityObjectMorpher.getInstance()
-                              .equals( morpher ) ){
-                           ObjectArrayMorpher beanMorpher = new ObjectArrayMorpher(
-                                 new BeanMorpher( innerType, JSONUtils.getMorpherRegistry() ) );
-                           JSONUtils.getMorpherRegistry()
-                                 .registerMorpher( beanMorpher );
+                           .equals( pd.getPropertyType() ) ){
+                        if( !pd.getPropertyType()
+                              .equals( Object.class ) ){
+                           Morpher morpher = JSONUtils.getMorpherRegistry()
+                                 .getMorpherFor( Array.newInstance( innerType, 0 )
+                                       .getClass() );
+                           if( IdentityObjectMorpher.getInstance()
+                                 .equals( morpher ) ){
+                              ObjectArrayMorpher beanMorpher = new ObjectArrayMorpher(
+                                    new BeanMorpher( innerType, JSONUtils.getMorpherRegistry() ) );
+                              JSONUtils.getMorpherRegistry()
+                                    .registerMorpher( beanMorpher );
+                           }
+                           array = JSONUtils.getMorpherRegistry()
+                                 .morph( Array.newInstance( innerType, 0 )
+                                       .getClass(), array );
                         }
-                        array = JSONUtils.getMorpherRegistry()
-                              .morph( Array.newInstance( innerType, 0 )
-                                    .getClass(), array );
                      }
                      setProperty( bean, key, array );
                   }

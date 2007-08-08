@@ -882,7 +882,7 @@ public class TestJSONObject extends TestCase {
       assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
       assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
       assertEquals( jsonObject.get( "string" ), bean.getString() );
-      ArrayAssertions.assertEquals( bean.getIntarray(),
+      Assertions.assertEquals( bean.getIntarray(),
             JSONArray.toArray( jsonObject.getJSONArray( "intarray" ) ) );
    }
 
@@ -1240,10 +1240,12 @@ public class TestJSONObject extends TestCase {
       List l = new ArrayList();
       l.add( "a" );
       l.add( "b" );
-      System.err.println(l.toArray().getClass());
-      System.err.println(obj.getParray().getClass());
-      System.err.println(Arrays.toString(l.toArray()));
-      System.err.println(Arrays.toString((Object[])obj.getParray()));
+      System.err.println( l.toArray()
+            .getClass() );
+      System.err.println( obj.getParray()
+            .getClass() );
+      System.err.println( Arrays.toString( l.toArray() ) );
+      System.err.println( Arrays.toString( (Object[]) obj.getParray() ) );
       ArrayAssertions.assertEquals( l.toArray(), (Object[]) obj.getParray() );
       l = new ArrayList();
       l.add( "1" );

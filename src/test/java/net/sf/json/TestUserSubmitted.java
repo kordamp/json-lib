@@ -23,12 +23,15 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.sf.json.sample.ArrayBean;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanA1763699;
 import net.sf.json.sample.BeanB1763699;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.IdBean;
 import net.sf.json.sample.JSONTestBean;
+import net.sf.json.sample.MediaBean;
+import net.sf.json.sample.MediaListBean;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
 
@@ -171,6 +174,33 @@ public class TestUserSubmitted extends TestCase {
       assertNotNull( bean );
       assertNotNull( bean.getBeanA() );
       assertEquals( new BeanA(), bean.getBeanA() );
+   }
+
+   public void testBug_1769559_array_conversion() {
+      JSONObject jsonObject = new JSONObject().element( "beans", new JSONArray().element( "{}" )
+            .element( "{'bool':false,'integer':216,'string':'JsOn'}" ) );
+      ArrayBean bean = (ArrayBean) JSONObject.toBean( jsonObject, ArrayBean.class );
+      assertNotNull( bean );
+      // no error should happen here
+
+      JSONArray jsonArray = jsonObject.getJSONArray( "beans" );
+      BeanA[] beans = (BeanA[]) JSONArray.toArray( jsonArray, BeanA.class );
+      assertNotNull( beans );
+      assertEquals( 2, beans.length );
+      assertEquals( new BeanA(), beans[0] );
+      assertEquals( new BeanA( false, 216, "JsOn" ), beans[1] );
+   }
+
+   public void testBug_1769578_array_conversion() {
+      JSONObject jsonObject = JSONObject.fromObject( "{'media':[{'title':'Giggles'},{'title':'Dreamland?'}]}" );
+      System.err.println( jsonObject );
+      Map classMap = new HashMap();
+      classMap.put( "media", MediaBean.class );
+      MediaListBean bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class,
+            classMap );
+      System.err.println( bean );
+      Object[] media = (Object[])bean.getMedia();
+      System.err.println(media[0].getClass());
    }
 
    public void testDynaBeanAttributeMap() throws NoSuchMethodException, IllegalAccessException,

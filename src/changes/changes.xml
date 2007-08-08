@@ -15,6 +15,18 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1769578">
+            Setter always passes in Object[]
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1769559">
+            JSONArray.toArray always returns array of type Object[]
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1764768">
             JSONObject.toBean() empty string error [jettison
             integration]. Thanks to

@@ -29,6 +29,17 @@ public class BeanA {
    private int integer = 42;
    private String string = "json";
 
+   public BeanA() {
+      super();
+   }
+
+   public BeanA( boolean bool, int integer, String string ) {
+      super();
+      this.bool = bool;
+      this.integer = integer;
+      this.string = string;
+   }
+
    public boolean equals( Object obj ) {
       if( obj == this ){
          return true;
