@@ -58,6 +58,8 @@ import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.array.ObjectArrayMorpher;
 import net.sf.ezmorph.bean.BeanMorpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
@@ -434,7 +436,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      || JSONUtils.isNumber( type ) || JSONUtils.isString( type )
                      || JSONFunction.class.isAssignableFrom( type ) ){
                   if( pd != null ){
-                     if( !pd.getPropertyType()
+                     if( jsonConfig.isHandleJettisonEmptyElement() && "".equals( value ) ){
+                        setProperty( bean, key, null );
+                     }else if( !pd.getPropertyType()
                            .isInstance( value ) ){
                         Morpher morpher = JSONUtils.getMorpherRegistry()
                               .getMorpherFor( pd.getPropertyType() );
@@ -469,12 +473,29 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                }else{
                   if( pd != null ){
                      Class targetClass = pd.getPropertyType();
-                     if( targetClass == Object.class ){
-                        targetClass = findTargetClass( key, classMap );
-                        targetClass = targetClass == null ? findTargetClass( name, classMap )
-                              : targetClass;
+                     if( jsonConfig.isHandleJettisonSingleElementArray() ){
+                        JSONArray array = new JSONArray().element( value );
+                        if( targetClass.isArray() ){
+                           targetClass = findTargetClass( key, classMap );
+                           targetClass = targetClass == null ? findTargetClass( name, classMap )
+                                 : targetClass;
+                           setProperty( bean, key, JSONArray.toArray( array, targetClass, classMap ) );
+                        }else if( Collection.class.isAssignableFrom( targetClass ) ){
+                           targetClass = findTargetClass( key, classMap );
+                           targetClass = targetClass == null ? findTargetClass( name, classMap )
+                                 : targetClass;
+                           setProperty( bean, key, JSONArray.toList( array, targetClass, classMap ) );
+                        }else if( JSONArray.class.isAssignableFrom( targetClass ) ){
+                           setProperty( bean, key, array );
+                        }
+                     }else{
+                        if( targetClass == Object.class ){
+                           targetClass = findTargetClass( key, classMap );
+                           targetClass = targetClass == null ? findTargetClass( name, classMap )
+                                 : targetClass;
+                        }
+                        setProperty( bean, key, toBean( (JSONObject) value, targetClass, classMap ) );
                      }
-                     setProperty( bean, key, toBean( (JSONObject) value, targetClass, classMap ) );
                   }else if( beanClass == null || bean instanceof Map ){
                      Class targetClass = findTargetClass( key, classMap );
                      targetClass = targetClass == null ? findTargetClass( name, classMap )

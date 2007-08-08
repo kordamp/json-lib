@@ -247,6 +247,33 @@ public class TestUserSubmitted extends TestCase {
       assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() );
    }
 
+   public void testHandleJettisonEmptyElement() {
+      JSONObject jsonObject = JSONObject.fromObject( "{'beanA':'','beanB':''}" );
+      JsonConfig.getInstance()
+            .setHandleJettisonEmptyElement( true );
+      BeanC bean = (BeanC) JSONObject.toBean( jsonObject, BeanC.class );
+      assertNotNull( bean );
+      assertNull( bean.getBeanA() );
+      assertNull( bean.getBeanB() );
+   }
+
+   public void testHandleJettisonSingleElementArray() {
+      JSONObject jsonObject = JSONObject.fromObject( "{'media2':{'title':'Giggles'}}" );
+      Map classMap = new HashMap();
+      classMap.put( "media2", MediaBean.class );
+      JsonConfig.getInstance()
+            .setHandleJettisonSingleElementArray( true );
+      MediaListBean bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class,
+            classMap );
+      assertNotNull( bean );
+      assertNotNull( bean.getMedia2() );
+      List media2 = bean.getMedia2();
+      assertEquals( 1, media2.size() );
+      Object mediaItem1 = media2.get( 0 );
+      assertTrue( mediaItem1 instanceof MediaBean );
+      assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() );
+   }
+
    public void testJsonWithNamespaceToDynaBean() throws Exception {
       // submited by Girish Ipadi
 
@@ -288,5 +315,11 @@ public class TestUserSubmitted extends TestCase {
       idBean = (IdBean) JSONObject.toBean( jsonObject, IdBean.class );
       assertNotNull( idBean );
       assertEquals( new IdBean.Id( 1L ), idBean.getId() );
+   }
+
+   protected void setUp() throws Exception {
+      super.setUp();
+      JsonConfig.getInstance()
+            .reset();
    }
 }

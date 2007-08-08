@@ -63,6 +63,8 @@ public class JsonConfig {
    private CycleDetectionStrategy cycleDetectionStrategy = DEFAULT_CYCLE_DETECTION_STRATEGY;
    private List eventListeners = new ArrayList();
    private String[] excludes = EMPTY_EXCLUDES;
+   private boolean handleJettisonEmptyElement;
+   private boolean handleJettisonSingleElementArray;
    private boolean ignoreDefaultExcludes;
    private boolean ignoreTransientFields;
    private JavaIdentifierTransformer javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
@@ -295,6 +297,26 @@ public class JsonConfig {
    }
 
    /**
+    * Returns true if this jettison convention will be handled when converting
+    * to Java.<br>
+    * Jettison assumes that "" (empty string) can be assigned to empty elements
+    * (objects), which clearly violates the JSON spec.
+    */
+   public boolean isHandleJettisonEmptyElement() {
+      return handleJettisonEmptyElement;
+   }
+
+   /**
+    * Returns true if this jettison convention will be handled when converting
+    * to Java.<br>
+    * Jettison states the following JSON {'media':{'title':'hello'}} can be set
+    * as a single element JSONArray (media is the array).
+    */
+   public boolean isHandleJettisonSingleElementArray() {
+      return handleJettisonSingleElementArray;
+   }
+
+   /**
     * Returns true if default excludes will not be used.<br>
     * Default value is false
     */
@@ -403,6 +425,8 @@ public class JsonConfig {
       cycleDetectionStrategy = DEFAULT_CYCLE_DETECTION_STRATEGY;
       skipJavaIdentifierTransformationInMapKeys = false;
       triggerEvents = false;
+      handleJettisonEmptyElement = false;
+      handleJettisonSingleElementArray = false;
    }
 
    /**
@@ -420,6 +444,26 @@ public class JsonConfig {
     */
    public void setExcludes( String[] excludes ) {
       this.excludes = excludes == null ? EMPTY_EXCLUDES : excludes;
+   }
+
+   /**
+    * Activate/Deactive handling this jettison convention when converting to
+    * Java.<br>
+    * Jettison states that "" (empty string) can be assigned to empty elements
+    * (objects), which clearly violates the JSON spec.
+    */
+   public void setHandleJettisonEmptyElement( boolean handleJettisonEmptyElement ) {
+      this.handleJettisonEmptyElement = handleJettisonEmptyElement;
+   }
+
+   /**
+    * Activate/Deactive handling this jettison convention when converting to
+    * Java.<br> * Jettison states the following JSON
+    * {'media':{'title':'hello'}} can be set as a single element JSONArray
+    * (media is the array).
+    */
+   public void setHandleJettisonSingleElementArray( boolean handleJettisonSingleElementArray ) {
+      this.handleJettisonSingleElementArray = handleJettisonSingleElementArray;
    }
 
    /**
