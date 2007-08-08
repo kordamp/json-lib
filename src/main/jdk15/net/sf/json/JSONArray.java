@@ -52,7 +52,6 @@ import java.util.Map;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
-import net.sf.json.JSONArray;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
 import net.sf.json.util.JSONTokener;
@@ -252,14 +251,14 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    /**
     * Creates a java array from a JSONArray.
     */
-   public static Object[] toArray( JSONArray jsonArray ) {
+   public static Object toArray( JSONArray jsonArray ) {
       return toArray( jsonArray, null, null );
    }
 
    /**
     * Creates a java array from a JSONArray.
     */
-   public static Object[] toArray( JSONArray jsonArray, Class objectClass ) {
+   public static Object toArray( JSONArray jsonArray, Class objectClass ) {
       return toArray( jsonArray, objectClass, null );
    }
 
@@ -274,13 +273,14 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * <li>A key may be a regular expression.</li>
     * </ul>
     */
-   public static Object[] toArray( JSONArray jsonArray, Class objectClass, Map classMap ) {
+   public static Object toArray( JSONArray jsonArray, Class objectClass, Map classMap ) {
       if( jsonArray.size() == 0 ){
          return new Object[0];
       }
 
       int[] dimensions = JSONArray.getDimensions( jsonArray );
-      Object array = Array.newInstance( Object.class, dimensions );
+      Object array = Array.newInstance( objectClass == null ? Object.class : objectClass,
+            dimensions );
       int size = jsonArray.size();
       for( int i = 0; i < size; i++ ){
          Object value = jsonArray.get( i );
@@ -305,7 +305,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             }
          }
       }
-      return (Object[]) array;
+      return array;
    }
 
    /**
