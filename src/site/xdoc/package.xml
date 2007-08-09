@@ -23,7 +23,7 @@
                      .
                   </li>
                   <li>
-                     You must have ant 1.6.5 or newer installed in your system.
+                     You must have ant 1.7.0 or newer installed in your system.
                      You can download it from
                      <a
                         href="http://ant.apache.org"
@@ -54,7 +54,7 @@
                      .
                   </li>
                   <li>
-                     You must have ant 1.6.5 or newer installed in your system.
+                     You must have ant 1.7.0 or newer installed in your system.
                      You can download it from
                      <a
                         href="http://ant.apache.org"

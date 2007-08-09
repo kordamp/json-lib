@@ -462,18 +462,20 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      Class targetClass = pd.getPropertyType();
                      if( jsonConfig.isHandleJettisonSingleElementArray() ){
                         JSONArray array = new JSONArray().element( value );
+                        Class newTargetClass = findTargetClass( key, classMap );
+                        newTargetClass = newTargetClass == null ? findTargetClass( name, classMap )
+                              : newTargetClass;
                         if( targetClass.isArray() ){
-                           targetClass = findTargetClass( key, classMap );
-                           targetClass = targetClass == null ? findTargetClass( name, classMap )
-                                 : targetClass;
-                           setProperty( bean, key, JSONArray.toArray( array, targetClass, classMap ) );
+                           setProperty( bean, key, JSONArray.toArray( array, newTargetClass,
+                                 classMap ) );
                         }else if( Collection.class.isAssignableFrom( targetClass ) ){
-                           targetClass = findTargetClass( key, classMap );
-                           targetClass = targetClass == null ? findTargetClass( name, classMap )
-                                 : targetClass;
-                           setProperty( bean, key, JSONArray.toList( array, targetClass, classMap ) );
+                           setProperty( bean, key, JSONArray.toList( array, newTargetClass,
+                                 classMap ) );
                         }else if( JSONArray.class.isAssignableFrom( targetClass ) ){
                            setProperty( bean, key, array );
+                        }else{
+                           setProperty( bean, key, toBean( (JSONObject) value, newTargetClass,
+                                 classMap ) );
                         }
                      }else{
                         if( targetClass == Object.class ){

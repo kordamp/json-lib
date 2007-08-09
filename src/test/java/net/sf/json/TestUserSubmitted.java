@@ -30,8 +30,12 @@ import net.sf.json.sample.BeanB1763699;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.IdBean;
 import net.sf.json.sample.JSONTestBean;
+import net.sf.json.sample.Media;
 import net.sf.json.sample.MediaBean;
+import net.sf.json.sample.MediaList;
 import net.sf.json.sample.MediaListBean;
+import net.sf.json.sample.Player;
+import net.sf.json.sample.PlayerList;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
 
@@ -272,6 +276,44 @@ public class TestUserSubmitted extends TestCase {
       Object mediaItem1 = media2.get( 0 );
       assertTrue( mediaItem1 instanceof MediaBean );
       assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() );
+   }
+
+   public void testHandleJettisonSingleElementArray2() {
+      JSONObject jsonObject = JSONObject.fromObject( "{'mediaList':{'media':{'title':'Giggles'}}}" );
+      Map classMap = new HashMap();
+      classMap.put( "media", Media.class );
+      classMap.put( "mediaList", MediaList.class );
+      JsonConfig.getInstance()
+            .setHandleJettisonSingleElementArray( true );
+      Player bean = (Player) JSONObject.toBean( jsonObject, Player.class, classMap );
+      assertNotNull( bean );
+      assertNotNull( bean.getMediaList() );
+      MediaList mediaList = bean.getMediaList();
+      assertNotNull( mediaList.getMedia() );
+      ArrayList medias = mediaList.getMedia();
+      assertEquals( "Giggles", ((Media) medias.get( 0 )).getTitle() );
+   }
+
+   public void testHandleJettisonSingleElementArray3() {
+      JSONObject jsonObject = JSONObject.fromObject( "{'player':{'mediaList':{'media':{'title':'Giggles'}}}}" );
+      Map classMap = new HashMap();
+      classMap.put( "media", Media.class );
+      classMap.put( "mediaList", MediaList.class );
+      classMap.put( "player", Player.class );
+      JsonConfig.getInstance()
+            .setHandleJettisonSingleElementArray( true );
+      PlayerList bean = (PlayerList) JSONObject.toBean( jsonObject, PlayerList.class, classMap );
+      assertNotNull( bean );
+      assertNotNull( bean.getPlayer() );
+      ArrayList players = bean.getPlayer();
+      assertNotNull( players );
+      assertNotNull( players.get( 0 ) );
+      Player player = (Player) players.get( 0 );
+      assertNotNull( player.getMediaList() );
+      MediaList mediaList = player.getMediaList();
+      assertNotNull( mediaList.getMedia() );
+      ArrayList medias = mediaList.getMedia();
+      assertEquals( "Giggles", ((Media) medias.get( 0 )).getTitle() );
    }
 
    public void testJsonWithNamespaceToDynaBean() throws Exception {
