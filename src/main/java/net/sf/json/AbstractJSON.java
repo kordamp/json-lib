@@ -49,8 +49,7 @@ abstract class AbstractJSON {
    /**
     * Fires an end of array event.
     */
-   protected static void fireArrayEndEvent() {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
+   protected static void fireArrayEndEvent( JsonConfig jsonConfig ) {
       if( jsonConfig.isEventTriggeringEnabled() ){
          for( Iterator listeners = jsonConfig.getJsonEventListeners()
                .iterator(); listeners.hasNext(); ){
@@ -67,8 +66,7 @@ abstract class AbstractJSON {
    /**
     * Fires a start of array event.
     */
-   protected static void fireArrayStartEvent() {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
+   protected static void fireArrayStartEvent( JsonConfig jsonConfig ) {
       if( jsonConfig.isEventTriggeringEnabled() ){
          for( Iterator listeners = jsonConfig.getJsonEventListeners()
                .iterator(); listeners.hasNext(); ){
@@ -88,8 +86,7 @@ abstract class AbstractJSON {
     * @param index the index where the element was added
     * @param element the added element
     */
-   protected static void fireElementAddedEvent( int index, Object element ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
+   protected static void fireElementAddedEvent( int index, Object element, JsonConfig jsonConfig ) {
       if( jsonConfig.isEventTriggeringEnabled() ){
          for( Iterator listeners = jsonConfig.getJsonEventListeners()
                .iterator(); listeners.hasNext(); ){
@@ -108,8 +105,7 @@ abstract class AbstractJSON {
     *
     * @param jsone the thrown exception
     */
-   protected static void fireErrorEvent( JSONException jsone ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
+   protected static void fireErrorEvent( JSONException jsone, JsonConfig jsonConfig ) {
       if( jsonConfig.isEventTriggeringEnabled() ){
          for( Iterator listeners = jsonConfig.getJsonEventListeners()
                .iterator(); listeners.hasNext(); ){
@@ -126,8 +122,7 @@ abstract class AbstractJSON {
    /**
     * Fires an end of object event.
     */
-   protected static void fireObjectEndEvent() {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
+   protected static void fireObjectEndEvent( JsonConfig jsonConfig ) {
       if( jsonConfig.isEventTriggeringEnabled() ){
          for( Iterator listeners = jsonConfig.getJsonEventListeners()
                .iterator(); listeners.hasNext(); ){
@@ -144,8 +139,7 @@ abstract class AbstractJSON {
    /**
     * Fires a start of object event.
     */
-   protected static void fireObjectStartEvent() {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
+   protected static void fireObjectStartEvent( JsonConfig jsonConfig ) {
       if( jsonConfig.isEventTriggeringEnabled() ){
          for( Iterator listeners = jsonConfig.getJsonEventListeners()
                .iterator(); listeners.hasNext(); ){
@@ -166,8 +160,8 @@ abstract class AbstractJSON {
     * @param value the value of the property
     * @param accumulated if the value has been accumulated over 'key'
     */
-   protected static void firePropertySetEvent( String key, Object value, boolean accumulated ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
+   protected static void firePropertySetEvent( String key, Object value, boolean accumulated,
+         JsonConfig jsonConfig ) {
       if( jsonConfig.isEventTriggeringEnabled() ){
          for( Iterator listeners = jsonConfig.getJsonEventListeners()
                .iterator(); listeners.hasNext(); ){
@@ -186,8 +180,7 @@ abstract class AbstractJSON {
     *
     * @param warning the warning message
     */
-   protected static void fireWarnEvent( String warning ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
+   protected static void fireWarnEvent( String warning, JsonConfig jsonConfig ) {
       if( jsonConfig.isEventTriggeringEnabled() ){
          for( Iterator listeners = jsonConfig.getJsonEventListeners()
                .iterator(); listeners.hasNext(); ){

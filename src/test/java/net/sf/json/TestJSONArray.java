@@ -1401,12 +1401,6 @@ public class TestJSONArray extends TestCase {
       }
    }
 
-   protected void setUp() throws Exception {
-      super.setUp();
-      JsonConfig.getInstance()
-            .reset();
-   }
-
    private MorphDynaBean createDynaBean() throws Exception {
       Map properties = new HashMap();
       properties.put( "name", String.class );

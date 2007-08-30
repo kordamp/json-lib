@@ -36,6 +36,7 @@ public class TestJSONObjectEvents extends TestCase {
       junit.textui.TestRunner.run( TestJSONObjectEvents.class );
    }
 
+   private JsonConfig jsonConfig;
    private JsonEventAdpater jsonEventAdpater;
 
    public TestJSONObjectEvents( String name ) {
@@ -43,12 +44,12 @@ public class TestJSONObjectEvents extends TestCase {
    }
 
    public void testFromObject_bean() {
-      JSONObject.fromObject( new BeanA() );
+      JSONObject.fromObject( new BeanA(), jsonConfig );
       assertEvents();
    }
 
    public void testFromObject_bean2() {
-      JSONObject.fromObject( new PropertyBean() );
+      JSONObject.fromObject( new PropertyBean(), jsonConfig );
       assertEquals( 0, jsonEventAdpater.getError() );
       assertEquals( 1, jsonEventAdpater.getWarning() );
       assertEquals( 0, jsonEventAdpater.getArrayStart() );
@@ -60,13 +61,13 @@ public class TestJSONObjectEvents extends TestCase {
    }
 
    public void testFromObject_dynaBean() throws Exception {
-      JSONObject.fromObject( createDynaBean() );
+      JSONObject.fromObject( createDynaBean(), jsonConfig );
       assertEvents();
    }
 
    public void testFromObject_error() {
       try{
-         JSONObject.fromObject( "[]" );
+         JSONObject.fromObject( "[]", jsonConfig );
          fail( "A JSONException was expected" );
       }catch( JSONException expected ){
          assertEquals( 1, jsonEventAdpater.getError() );
@@ -84,7 +85,7 @@ public class TestJSONObjectEvents extends TestCase {
       JSONObject jsonObject = new JSONObject().element( "name", "json" )
             .element( "func", new JSONFunction( "return this;" ) )
             .element( "int", new Integer( 1 ) );
-      JSONObject.fromObject( jsonObject );
+      JSONObject.fromObject( jsonObject, jsonConfig );
       assertEvents();
    }
 
@@ -93,26 +94,24 @@ public class TestJSONObjectEvents extends TestCase {
       map.put( "name", "json" );
       map.put( "func", new JSONFunction( "return this;" ) );
       map.put( "int", new Integer( 1 ) );
-      JSONObject.fromObject( map );
+      JSONObject.fromObject( map, jsonConfig );
       assertEvents();
    }
 
    public void testFromObject_string() {
-      JSONObject.fromObject( "{name:'json',int:1,func:function(){ return this; }}" );
+      JSONObject.fromObject( "{name:'json',int:1,func:function(){ return this; }}", jsonConfig );
       assertEvents();
    }
 
    protected void setUp() throws Exception {
       jsonEventAdpater = new JsonEventAdpater();
-      JsonConfig.getInstance()
-            .addJsonEventListener( jsonEventAdpater );
-      JsonConfig.getInstance()
-            .enableEventTriggering();
+      jsonConfig = new JsonConfig();
+      jsonConfig.addJsonEventListener( jsonEventAdpater );
+      jsonConfig.enableEventTriggering();
+
    }
 
    protected void tearDown() throws Exception {
-      JsonConfig.getInstance()
-            .removeJsonEventListener( jsonEventAdpater );
       jsonEventAdpater.reset();
    }
 

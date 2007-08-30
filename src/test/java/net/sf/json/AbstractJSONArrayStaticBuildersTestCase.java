@@ -36,9 +36,9 @@ public abstract class AbstractJSONArrayStaticBuildersTestCase extends TestCase {
    }
 
    public void testFromObject_excludes() {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
+      JsonConfig jsonConfig = new JsonConfig();
       jsonConfig.setExcludes( getExclusions() );
-      JSONArray jsonArray = JSONArray.fromObject( getSource() );
+      JSONArray jsonArray = JSONArray.fromObject( getSource(), jsonConfig );
       assertNotNull( jsonArray );
       assertEquals( 1, jsonArray.size() );
       JSONObject jsonObject = jsonArray.getJSONObject( 0 );
@@ -52,10 +52,10 @@ public abstract class AbstractJSONArrayStaticBuildersTestCase extends TestCase {
    }
 
    public void testFromObject_excludes_ignoreDefaults() {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
+      JsonConfig jsonConfig = new JsonConfig();
       jsonConfig.setExcludes( getExclusions() );
       jsonConfig.setIgnoreDefaultExcludes( true );
-      JSONArray jsonArray = JSONArray.fromObject( getSource() );
+      JSONArray jsonArray = JSONArray.fromObject( getSource(), jsonConfig );
       assertNotNull( jsonArray );
       assertEquals( 1, jsonArray.size() );
       JSONObject jsonObject = jsonArray.getJSONObject( 0 );
@@ -73,18 +73,6 @@ public abstract class AbstractJSONArrayStaticBuildersTestCase extends TestCase {
    }
 
    protected abstract Object getSource();
-
-   protected void setUp() throws Exception {
-      super.setUp();
-      JsonConfig.getInstance()
-            .reset();
-   }
-
-   protected void tearDown() throws Exception {
-      super.tearDown();
-      JsonConfig.getInstance()
-            .reset();
-   }
 
    private void assertJSONObject( JSONObject json, String[] properties ) {
       assertNotNull( json );

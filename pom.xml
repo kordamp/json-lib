@@ -298,6 +298,18 @@
             <artifactId>findbugs-maven-plugin</artifactId>
             <version>1.0.0</version>
          </plugin>
+	 <!--
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>jdiff-maven-plugin</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <configuration>
+               <packages>net.sf.json</packages>
+               <oldTag>2.0</oldTag>
+               <newTag>CURRENT</newTag>
+            </configuration>
+         </plugin>
+         -->
       </plugins>
    </reporting>
 
@@ -321,5 +333,21 @@
          <url>scp://ssh.sf.net/home/groups/j/js/json-lib/htdocs</url>
       </site>
    </distributionManagement>
+
+   <!--
+   <pluginRepositories>
+      <pluginRepository>
+         <id>codehaus-snapshot-plugins</id>
+         <name>codehaus-shapshot-plugins</name>
+         <url>http://snapshots.repository.codehaus.org/</url>
+         <snapshots>
+            <enabled>true</enabled>
+         </snapshots>
+         <releases>
+            <enabled>false</enabled>
+         </releases>
+      </pluginRepository>
+   </pluginRepositories>
+   -->
 
 </project>

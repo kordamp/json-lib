@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +63,8 @@ public class TestJSONObject extends TestCase {
       junit.textui.TestRunner.run( TestJSONObject.class );
    }
 
+   private JsonConfig jsonConfig;
+
    public TestJSONObject( String testName ) {
       super( testName );
    }
@@ -93,19 +94,17 @@ public class TestJSONObject extends TestCase {
    }
 
    public void testConstructor_Object_String_Array__nullObject() {
-      JsonConfig.getInstance()
-            .setExcludes( new String[] { "bool", "integer" } );
-      JSONObject jsonObject = JSONObject.fromObject( (Object) null );
+      jsonConfig.setExcludes( new String[] { "bool", "integer" } );
+      JSONObject jsonObject = JSONObject.fromObject( (Object) null, jsonConfig );
       assertTrue( jsonObject.isNullObject() );
    }
 
    public void testCycleDetection_beans_null() {
-      JsonConfig.getInstance()
-            .setCycleDetectionStrategy( CycleDetectionStrategy.LENIENT );
+      jsonConfig.setCycleDetectionStrategy( CycleDetectionStrategy.LENIENT );
       ParentBean parent = new ParentBean();
       parent.setChild( new ChildBean() );
 
-      JSONObject actual = JSONObject.fromObject( parent );
+      JSONObject actual = JSONObject.fromObject( parent, jsonConfig );
       JSONObject expected = new JSONObject().element( "value", 0 )
             .element( "child", new JSONObject().element( "value", 0 )
                   .element( "parent", new JSONObject( true ) ) );
@@ -150,9 +149,8 @@ public class TestJSONObject extends TestCase {
 
    public void testElement_Bean_exclusions() {
       JSONObject jsonObject = new JSONObject();
-      JsonConfig.getInstance()
-            .setExcludes( new String[] { "pexcluded" } );
-      jsonObject.element( "bean", new ObjectBean() );
+      jsonConfig.setExcludes( new String[] { "pexcluded" } );
+      jsonObject.element( "bean", new ObjectBean(), jsonConfig );
       JSONObject actual = jsonObject.getJSONObject( "bean" );
       Assertions.assertTrue( !actual.has( "class" ) );
       Assertions.assertTrue( !actual.has( "pexcluded" ) );
@@ -160,11 +158,9 @@ public class TestJSONObject extends TestCase {
 
    public void testElement_Bean_exclusions_ignoreDefault() {
       JSONObject jsonObject = new JSONObject();
-      JsonConfig.getInstance()
-            .setExcludes( new String[] { "pexcluded" } );
-      JsonConfig.getInstance()
-            .setIgnoreDefaultExcludes( true );
-      jsonObject.element( "bean", new ObjectBean() );
+      jsonConfig.setExcludes( new String[] { "pexcluded" } );
+      jsonConfig.setIgnoreDefaultExcludes( true );
+      jsonObject.element( "bean", new ObjectBean(), jsonConfig );
       JSONObject actual = jsonObject.getJSONObject( "bean" );
       Assertions.assertTrue( actual.has( "class" ) );
       Assertions.assertTrue( !actual.has( "pexcluded" ) );
@@ -208,9 +204,8 @@ public class TestJSONObject extends TestCase {
       List list = new ArrayList();
       list.add( new ObjectBean() );
       JSONObject jsonObject = new JSONObject();
-      JsonConfig.getInstance()
-            .setExcludes( new String[] { "pexcluded" } );
-      jsonObject.element( "list", list );
+      jsonConfig.setExcludes( new String[] { "pexcluded" } );
+      jsonObject.element( "list", list, jsonConfig );
       JSONObject actual = jsonObject.getJSONArray( "list" )
             .getJSONObject( 0 );
       Assertions.assertTrue( !actual.has( "class" ) );
@@ -220,12 +215,10 @@ public class TestJSONObject extends TestCase {
    public void testElement_Collection2_exclusions_ignoreDefault() {
       List list = new ArrayList();
       list.add( new ObjectBean() );
-      JsonConfig.getInstance()
-            .setExcludes( new String[] { "pexcluded" } );
-      JsonConfig.getInstance()
-            .setIgnoreDefaultExcludes( true );
+      jsonConfig.setExcludes( new String[] { "pexcluded" } );
+      jsonConfig.setIgnoreDefaultExcludes( true );
       JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "list", list );
+      jsonObject.element( "list", list, jsonConfig );
       JSONObject actual = jsonObject.getJSONArray( "list" )
             .getJSONObject( 0 );
       Assertions.assertTrue( actual.has( "class" ) );
@@ -303,10 +296,9 @@ public class TestJSONObject extends TestCase {
       map.put( "name", "json" );
       map.put( "class", "java.lang.Object" );
       map.put( "pexcluded", "excluded" );
-      JsonConfig.getInstance()
-            .setExcludes( new String[] { "pexcluded" } );
+      jsonConfig.setExcludes( new String[] { "pexcluded" } );
       JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "map", map );
+      jsonObject.element( "map", map, jsonConfig );
       JSONObject actual = jsonObject.getJSONObject( "map" );
       Assertions.assertTrue( !actual.has( "class" ) );
       Assertions.assertTrue( !actual.has( "pexcluded" ) );
@@ -317,12 +309,10 @@ public class TestJSONObject extends TestCase {
       map.put( "name", "json" );
       map.put( "class", "java.lang.Object" );
       map.put( "pexcluded", "excluded" );
-      JsonConfig.getInstance()
-            .setExcludes( new String[] { "pexcluded" } );
-      JsonConfig.getInstance()
-            .setIgnoreDefaultExcludes( true );
+      jsonConfig.setExcludes( new String[] { "pexcluded" } );
+      jsonConfig.setIgnoreDefaultExcludes( true );
       JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "map", map );
+      jsonObject.element( "map", map, jsonConfig );
       JSONObject actual = jsonObject.getJSONObject( "map" );
       Assertions.assertTrue( actual.has( "class" ) );
       Assertions.assertTrue( !actual.has( "pexcluded" ) );
@@ -596,12 +586,11 @@ public class TestJSONObject extends TestCase {
    }
 
    public void testFromObject_ignoreTransientFields() {
-      JsonConfig.getInstance()
-            .setIgnoreTransientFields( true );
+      jsonConfig.setIgnoreTransientFields( true );
       TransientBean bean = new TransientBean();
       bean.setValue( 42 );
       bean.setTransientValue( 84 );
-      JSONObject jsonObject = JSONObject.fromObject( bean );
+      JSONObject jsonObject = JSONObject.fromObject( bean, jsonConfig );
       assertTrue( jsonObject.has( "value" ) );
       assertFalse( jsonObject.has( "transientValue" ) );
    }
@@ -1240,12 +1229,6 @@ public class TestJSONObject extends TestCase {
       List l = new ArrayList();
       l.add( "a" );
       l.add( "b" );
-      System.err.println( l.toArray()
-            .getClass() );
-      System.err.println( obj.getParray()
-            .getClass() );
-      System.err.println( Arrays.toString( l.toArray() ) );
-      System.err.println( Arrays.toString( (Object[]) obj.getParray() ) );
       ArrayAssertions.assertEquals( l.toArray(), (Object[]) obj.getParray() );
       l = new ArrayList();
       l.add( "1" );
@@ -1272,30 +1255,27 @@ public class TestJSONObject extends TestCase {
 
    public void testToBean_withNonJavaIdentifier_camelCase_Strategy() {
       JSONObject json = new JSONObject().element( "camel case", "json" );
-      JsonConfig.getInstance()
-            .setJavaIdentifierTransformer( JavaIdentifierTransformer.CAMEL_CASE );
-      JavaIdentifierBean bean = (JavaIdentifierBean) JSONObject.toBean( json,
-            JavaIdentifierBean.class );
+      jsonConfig.setJavaIdentifierTransformer( JavaIdentifierTransformer.CAMEL_CASE );
+      jsonConfig.setRootClass( JavaIdentifierBean.class );
+      JavaIdentifierBean bean = (JavaIdentifierBean) JSONObject.toBean( json, jsonConfig );
       assertNotNull( bean );
       assertEquals( "json", bean.getCamelCase() );
    }
 
    public void testToBean_withNonJavaIdentifier_underScore_Strategy() {
       JSONObject json = new JSONObject().element( "under score", "json" );
-      JsonConfig.getInstance()
-            .setJavaIdentifierTransformer( JavaIdentifierTransformer.UNDERSCORE );
-      JavaIdentifierBean bean = (JavaIdentifierBean) JSONObject.toBean( json,
-            JavaIdentifierBean.class );
+      jsonConfig.setJavaIdentifierTransformer( JavaIdentifierTransformer.UNDERSCORE );
+      jsonConfig.setRootClass( JavaIdentifierBean.class );
+      JavaIdentifierBean bean = (JavaIdentifierBean) JSONObject.toBean( json, jsonConfig );
       assertNotNull( bean );
       assertEquals( "json", bean.getUnder_score() );
    }
 
    public void testToBean_withNonJavaIdentifier_whitespace_Strategy() {
       JSONObject json = new JSONObject().element( " white space ", "json" );
-      JsonConfig.getInstance()
-            .setJavaIdentifierTransformer( JavaIdentifierTransformer.WHITESPACE );
-      JavaIdentifierBean bean = (JavaIdentifierBean) JSONObject.toBean( json,
-            JavaIdentifierBean.class );
+      jsonConfig.setJavaIdentifierTransformer( JavaIdentifierTransformer.WHITESPACE );
+      jsonConfig.setRootClass( JavaIdentifierBean.class );
+      JavaIdentifierBean bean = (JavaIdentifierBean) JSONObject.toBean( json, jsonConfig );
       assertNotNull( bean );
       assertEquals( "json", bean.getWhitespace() );
    }
@@ -1311,9 +1291,7 @@ public class TestJSONObject extends TestCase {
    }
 
    protected void setUp() throws Exception {
-      super.setUp();
-      JsonConfig.getInstance()
-            .reset();
+      jsonConfig = new JsonConfig();
    }
 
    private MorphDynaBean createDynaBean() throws Exception {

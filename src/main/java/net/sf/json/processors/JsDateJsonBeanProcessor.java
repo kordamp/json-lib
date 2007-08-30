@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
 
 /**
  * Transforms a java.util.Date into a JSONObject ideal for JsDate conversion.<br>
@@ -44,7 +45,7 @@ public class JsDateJsonBeanProcessor implements JsonBeanProcessor {
    /**
     * Processes the input bena into a compatible JsDate.<br>
     */
-   public JSONObject processBean( Object bean ) {
+   public JSONObject processBean( Object bean, JsonConfig jsonConfig ) {
       JSONObject jsonObject = null;
       if( bean instanceof Date ){
          Calendar c = Calendar.getInstance();

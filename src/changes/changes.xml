@@ -15,6 +15,18 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1784862">
+            Move JSONSerializer's configuration to JsonConfig
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1784859">
+            JsonConfig should not be singleton
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1769578">
             Setter always passes in Object[]. Thanks to
             jcue786[at]users[dot]sourceforge[dot]net

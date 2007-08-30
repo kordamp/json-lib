@@ -21,6 +21,7 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -46,7 +47,8 @@ public class TestJsDateJsonValueProcessor extends TestCase {
       c.set( Calendar.SECOND, 14 );
       c.set( Calendar.MILLISECOND, 150 );
       Date date = c.getTime();
-      JSONObject jsonObject = (JSONObject) processor.processObjectValue( "date", date );
+      JSONObject jsonObject = (JSONObject) processor.processObjectValue( "date", date,
+            new JsonConfig() );
       assertNotNull( jsonObject );
       assertEquals( 2007, jsonObject.getInt( "year" ) );
       assertEquals( 5, jsonObject.getInt( "month" ) );

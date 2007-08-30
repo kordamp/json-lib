@@ -42,15 +42,6 @@ public interface JSON {
     *
     * @return the size of an json object or array
     * @throws JSONException if called on a 'null' object
-    * @deprecated use size() instead
-    */
-   int length();
-
-   /**
-    * Returns the number of properties in an object or the size of the array.
-    *
-    * @return the size of an json object or array
-    * @throws JSONException if called on a 'null' object
     */
    int size();
 

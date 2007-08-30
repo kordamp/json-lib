@@ -50,6 +50,8 @@ public class TestUserSubmitted extends TestCase {
       junit.textui.TestRunner.run( TestUserSubmitted.class );
    }
 
+   private JsonConfig jsonConfig;
+
    public TestUserSubmitted( String name ) {
       super( name );
    }
@@ -253,9 +255,9 @@ public class TestUserSubmitted extends TestCase {
 
    public void testHandleJettisonEmptyElement() {
       JSONObject jsonObject = JSONObject.fromObject( "{'beanA':'','beanB':''}" );
-      JsonConfig.getInstance()
-            .setHandleJettisonEmptyElement( true );
-      BeanC bean = (BeanC) JSONObject.toBean( jsonObject, BeanC.class );
+      jsonConfig.setHandleJettisonEmptyElement( true );
+      jsonConfig.setRootClass( BeanC.class );
+      BeanC bean = (BeanC) JSONObject.toBean( jsonObject, jsonConfig );
       assertNotNull( bean );
       assertNull( bean.getBeanA() );
       assertNull( bean.getBeanB() );
@@ -265,10 +267,10 @@ public class TestUserSubmitted extends TestCase {
       JSONObject jsonObject = JSONObject.fromObject( "{'media2':{'title':'Giggles'}}" );
       Map classMap = new HashMap();
       classMap.put( "media2", MediaBean.class );
-      JsonConfig.getInstance()
-            .setHandleJettisonSingleElementArray( true );
-      MediaListBean bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class,
-            classMap );
+      jsonConfig.setHandleJettisonSingleElementArray( true );
+      jsonConfig.setRootClass( MediaListBean.class );
+      jsonConfig.setClassMap( classMap );
+      MediaListBean bean = (MediaListBean) JSONObject.toBean( jsonObject, jsonConfig );
       assertNotNull( bean );
       assertNotNull( bean.getMedia2() );
       List media2 = bean.getMedia2();
@@ -283,9 +285,10 @@ public class TestUserSubmitted extends TestCase {
       Map classMap = new HashMap();
       classMap.put( "media", Media.class );
       classMap.put( "mediaList", MediaList.class );
-      JsonConfig.getInstance()
-            .setHandleJettisonSingleElementArray( true );
-      Player bean = (Player) JSONObject.toBean( jsonObject, Player.class, classMap );
+      jsonConfig.setHandleJettisonSingleElementArray( true );
+      jsonConfig.setRootClass( Player.class );
+      jsonConfig.setClassMap( classMap );
+      Player bean = (Player) JSONObject.toBean( jsonObject, jsonConfig );
       assertNotNull( bean );
       assertNotNull( bean.getMediaList() );
       MediaList mediaList = bean.getMediaList();
@@ -300,9 +303,10 @@ public class TestUserSubmitted extends TestCase {
       classMap.put( "media", Media.class );
       classMap.put( "mediaList", MediaList.class );
       classMap.put( "player", Player.class );
-      JsonConfig.getInstance()
-            .setHandleJettisonSingleElementArray( true );
-      PlayerList bean = (PlayerList) JSONObject.toBean( jsonObject, PlayerList.class, classMap );
+      jsonConfig.setHandleJettisonSingleElementArray( true );
+      jsonConfig.setRootClass( PlayerList.class );
+      jsonConfig.setClassMap( classMap );
+      PlayerList bean = (PlayerList) JSONObject.toBean( jsonObject, jsonConfig );
       assertNotNull( bean );
       assertNotNull( bean.getPlayer() );
       ArrayList players = bean.getPlayer();
@@ -319,15 +323,14 @@ public class TestUserSubmitted extends TestCase {
    public void testJsonWithNamespaceToDynaBean() throws Exception {
       // submited by Girish Ipadi
 
-      JsonConfig.getInstance()
-            .setJavaIdentifierTransformer( JavaIdentifierTransformer.NOOP );
+      jsonConfig.setJavaIdentifierTransformer( JavaIdentifierTransformer.NOOP );
       String str = "{'version':'1.0'," + "'sid':'AmazonDocStyle',    'svcVersion':'0.1',"
             + "'oid':'ItemLookup',    'params':[{            'ns:ItemLookup': {"
             + "'ns:SubscriptionId':'0525E2PQ81DD7ZTWTK82'," + "'ns:Validate':'False',"
             + "'ns:Request':{" + "'ns:ItemId':'SDGKJSHDGAJSGL'," + "'ns:IdType':'ASIN',"
             + "'ns:ResponseGroup':'Large'" + "}," + "'ns:Request':{" + "'ns:ItemId':'XXXXXXXXXX',"
             + "'ns:IdType':'ASIN'," + "'ns:ResponseGroup':'Large'" + "}" + "}" + "}]" + "} ";
-      JSONObject json = JSONObject.fromObject( str );
+      JSONObject json = JSONObject.fromObject( str, jsonConfig );
       Object bean = JSONObject.toBean( (JSONObject) json );
       assertNotNull( bean );
       List params = (List) PropertyUtils.getProperty( bean, "params" );
@@ -361,7 +364,6 @@ public class TestUserSubmitted extends TestCase {
 
    protected void setUp() throws Exception {
       super.setUp();
-      JsonConfig.getInstance()
-            .reset();
+      jsonConfig = new JsonConfig();
    }
 }

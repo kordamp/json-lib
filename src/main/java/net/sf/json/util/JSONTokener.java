@@ -19,6 +19,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
 import net.sf.json.regexp.RegexpUtils;
 
 /*
@@ -331,6 +332,17 @@ public class JSONTokener {
     * @return An object.
     */
    public Object nextValue() {
+      return nextValue( new JsonConfig() );
+   }
+
+   /**
+    * Get the next value. The value can be a Boolean, Double, Integer,
+    * JSONArray, JSONObject, Long, or String, or the JSONObject.NULL object.
+    *
+    * @throws JSONException If syntax error.
+    * @return An object.
+    */
+   public Object nextValue( JsonConfig jsonConfig ) {
       char c = nextClean();
       String s;
 
@@ -340,10 +352,10 @@ public class JSONTokener {
             return nextString( c );
          case '{':
             back();
-            return JSONObject.fromObject( this );
+            return JSONObject.fromObject( this, jsonConfig );
          case '[':
             back();
-            return JSONArray.fromObject( this );
+            return JSONArray.fromObject( this, jsonConfig );
          default:
             // empty
       }

@@ -16,6 +16,8 @@
 
 package net.sf.json.processors;
 
+import net.sf.json.JsonConfig;
+
 /**
  * Transforms a java.util.Date property into a JSONObject ideal for JsDate
  * conversion
@@ -30,15 +32,15 @@ public class JsDateJsonValueProcessor implements JsonValueProcessor {
       processor = new JsDateJsonBeanProcessor();
    }
 
-   public Object processArrayValue( Object value ) {
-      return process( value );
+   public Object processArrayValue( Object value, JsonConfig jsonConfig ) {
+      return process( value, jsonConfig );
    }
 
-   public Object processObjectValue( String key, Object value ) {
-      return process( value );
+   public Object processObjectValue( String key, Object value, JsonConfig jsonConfig ) {
+      return process( value, jsonConfig );
    }
 
-   private Object process( Object value ) {
-      return processor.processBean( value );
+   private Object process( Object value, JsonConfig jsonConfig ) {
+      return processor.processBean( value, jsonConfig );
    }
 }

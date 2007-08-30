@@ -76,7 +76,8 @@ public final class JSONNull implements JSON {
     *         null.
     */
    public boolean equals( Object object ) {
-      return object == null || object == this || object == instance;
+      return object == null || object == this || object == instance
+            || (object instanceof JSONObject && ((JSONObject) object).isNullObject());
    }
 
    public int hashCode() {
@@ -88,13 +89,6 @@ public final class JSONNull implements JSON {
    }
 
    public boolean isEmpty() {
-      throw new JSONException( "Object is null" );
-   }
-
-   /**
-    * @deprecated use size() instead
-    */
-   public int length() {
       throw new JSONException( "Object is null" );
    }
 

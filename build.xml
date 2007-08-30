@@ -7,14 +7,14 @@
    <property name="maven.test.output" value="target/test-classes" />
    <property name="maven.repo.local" value="${user.home}/.m2/repository" />
    <property name="project.lib.dir" value="${basedir}/src/lib" />
-   <property name="project.src.jdk13.dir" value="${basedir}/src/main/java" />
-   <property name="project.src.jdk15.dir" value="${basedir}/src/main/jdk15" />
+   <property name="project.src.jdk3.dir" value="${basedir}/src/main/java" />
+   <property name="project.src.jdk5.dir" value="${basedir}/src/main/jdk15" />
    <property name="project.src.groovy.dir" value="${basedir}/src/main/groovy" />
-   <property name="project.test.jdk13.dir" value="${basedir}/src/test/java" />
-   <property name="project.test.jdk15.dir" value="${basedir}/src/test/jdk15" />
+   <property name="project.test.jdk3.dir" value="${basedir}/src/test/java" />
+   <property name="project.test.jdk5.dir" value="${basedir}/src/test/jdk15" />
    <property name="project.test.groovy.dir" value="${basedir}/src/test/groovy" />
-   <property name="javadoc.jdk13.dir" value="${maven.build.directory}/site/apidocs" />
-   <property name="javadoc.jdk15.dir" value="${maven.build.directory}/site/apidocs/jdk15" />
+   <property name="javadoc.jdk3.dir" value="${maven.build.directory}/site/apidocs" />
+   <property name="javadoc.jdk5.dir" value="${maven.build.directory}/site/apidocs/jdk15" />
 
    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
       <classpath>
@@ -38,19 +38,19 @@
 
    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="build.classpath" />
 
-   <target name="compile" description="Compile the code (jdk13)">
+   <target name="compile" description="Compile the code (jdk1.3)">
       <mkdir dir="${maven.build.output}" />
       <javac destdir="${maven.build.output}" excludes="**/package.html" debug="true" deprecation="true" source="1.3" target="1.1">
-         <src path="${project.src.jdk13.dir}" />
+         <src path="${project.src.jdk3.dir}" />
          <classpath refid="build.classpath" />
       </javac>
    </target>
 
-   <target name="compile.jdk15" depends="compile" description="Compile the code (jdk15)">
+   <target name="compile.jdk5" depends="compile" description="Compile the code (jdk5)">
       <delete file="${maven.build.output}/net/sf/json/JSONObject.class" />
       <delete file="${maven.build.output}/net/sf/json/JSONArray.class" />
       <javac destdir="${maven.build.output}" debug="true" deprecation="true" source="1.5" target="1.5">
-         <src path="${project.src.jdk15.dir}" />
+         <src path="${project.src.jdk5.dir}" />
          <classpath>
             <path refid="build.classpath" />
             <pathelement location="${maven.build.output}" />
@@ -67,10 +67,10 @@
       </groovyc>
    </target>
 
-   <target name="compile-tests" depends="junit-present, compile" description="Compile the test code (jdk13)" if="junit.present">
+   <target name="compile-tests" depends="junit-present, compile" description="Compile the test code (jdk1.3)" if="junit.present">
       <mkdir dir="${maven.test.output}" />
       <javac destdir="${maven.test.output}" debug="true" deprecation="true" optimize="false" source="1.3" target="1.1">
-         <src path="${project.test.jdk13.dir}" />
+         <src path="${project.test.jdk3.dir}" />
          <classpath>
             <path refid="build.classpath" />
             <path refid="test.classpath" />
@@ -82,10 +82,10 @@
       </copy>
    </target>
 
-   <target name="compile-tests.jdk15" depends="junit-present, compile.jdk15, compile-tests" description="Compile the test code (jdk15)" if="junit.present">
+   <target name="compile-tests.jdk5" depends="junit-present, compile.jdk5, compile-tests" description="Compile the test code (jdk5)" if="junit.present">
       <mkdir dir="${maven.test.output}" />
       <javac destdir="${maven.test.output}" debug="true" deprecation="true" optimize="false" source="1.5" target="1.5">
-         <src path="${project.test.jdk15.dir}" />
+         <src path="${project.test.jdk5.dir}" />
          <classpath>
             <path refid="build.classpath" />
             <path refid="test.classpath" />
@@ -104,9 +104,9 @@
       </groovyc>
    </target>
 
-   <target name="test" depends="test.jdk13,test.groovy,test.jruby" description="Run JDK13, Groovy &amp; JRuby test cases" />
+   <target name="test" depends="test.jdk3,test.groovy,test.jruby" description="Run JDK13, Groovy &amp; JRuby test cases" />
 
-   <target name="test.jdk13" depends="junit-present, compile-tests" if="junit.present" description="Run the test cases (jdk13)">
+   <target name="test.jdk3" depends="junit-present, compile-tests" if="junit.present" description="Run the test cases (jdk1.3)">
       <mkdir dir="${maven.test.reports}" />
       <junit printSummary="yes" haltonerror="true" haltonfailure="true" fork="true" dir=".">
          <sysproperty key="basedir" value="." />
@@ -128,7 +128,7 @@
       </junit>
    </target>
 
-   <target name="test.jdk15" depends="junit-present, compile-tests.jdk15" if="junit.present" description="Run the test cases (jdk15)">
+   <target name="test.jdk5" depends="junit-present, compile-tests.jdk5" if="junit.present" description="Run the test cases (jdk5)">
       <mkdir dir="${maven.test.reports}" />
       <junit printSummary="yes" haltonerror="true" haltonfailure="true" fork="true" dir=".">
          <sysproperty key="basedir" value="." />
@@ -217,15 +217,15 @@
       <echo>==========================================================================</echo>
    </target>
 
-   <target name="jar" depends="clean,test" description="Binary jar (jdk13)">
+   <target name="jar" depends="clean,test" description="Binary jar (jdk3)">
       <jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk13.jar" basedir="${maven.build.output}" excludes="**/package.html" />
    </target>
 
-   <target name="jar.jdk15" depends="clean,test.jdk15" description="Binary jar (jdk15)">
+   <target name="jar.jdk5" depends="clean,test.jdk5" description="Binary jar (jdk5)">
       <jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk15.jar" basedir="${maven.build.output}" excludes="**/package.html" />
    </target>
 
-   <target name="source.jar" depends="clean" description="Source jar (jdk13)">
+   <target name="source.jar" depends="clean" description="Source jar (jdk1.3)">
       <mkdir dir="${maven.build.directory}/source/jdk13" />
       <copy todir="${maven.build.directory}/source/jdk13">
          <fileset dir="src/main/java">
@@ -235,7 +235,7 @@
       <jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk13-sources.jar" basedir="${maven.build.directory}/source/jdk13" />
    </target>
 
-   <target name="source.jar.jdk15" depends="clean" description="Source jar (jdk15)">
+   <target name="source.jar.jdk5" depends="clean" description="Source jar (jdk5)">
       <mkdir dir="${maven.build.directory}/source/jdk15" />
       <copy todir="${maven.build.directory}/source/jdk15">
          <fileset dir="src/main/java">
@@ -248,15 +248,15 @@
       <jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk15-sources.jar" basedir="${maven.build.directory}/source/jdk15" />
    </target>
 
-   <target name="javadoc" description="Build javadocs (jdk13)" depends="setup">
-      <mkdir dir="${javadoc.jdk13.dir}" />
+   <target name="javadoc" description="Build javadocs (jdk1.3)" depends="setup">
+      <mkdir dir="${javadoc.jdk3.dir}" />
       <mkdir dir="${maven.build.directory}/source/jdk13" />
       <copy todir="${maven.build.directory}/source/jdk13">
          <fileset dir="src/main/java">
             <include name="**/*" />
          </fileset>
       </copy>
-      <javadoc destdir="${javadoc.jdk13.dir}" windowtitle="Overview (json-lib jdk13 API)" useexternalfile="true">
+      <javadoc destdir="${javadoc.jdk3.dir}" windowtitle="Overview (json-lib jdk 1.3 API)" useexternalfile="true">
 
          <packageset dir="${maven.build.directory}/source/jdk13">
             <include name="**/*" />
@@ -272,11 +272,11 @@
          <link href="http://jakarta.apache.org/commons/lang/api-2.2/" />
          <link href="http://ezmorph.sourceforge.net/apidocs/" />
       </javadoc>
-      <jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk13-javadoc.jar" basedir="${javadoc.jdk13.dir}" />
+      <jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk13-javadoc.jar" basedir="${javadoc.jdk3.dir}" />
    </target>
 
-   <target name="javadoc.jdk15" description="Build javadocs (jdk15)" depends="setup">
-      <mkdir dir="${javadoc.jdk15.dir}" />
+   <target name="javadoc.jdk5" description="Build javadocs (jdk5)" depends="setup">
+      <mkdir dir="${javadoc.jdk5.dir}" />
       <mkdir dir="${maven.build.directory}/source/jdk15" />
       <copy todir="${maven.build.directory}/source/jdk15">
          <fileset dir="src/main/java">
@@ -286,7 +286,7 @@
             <include name="**/*.java" />
          </fileset>
       </copy>
-      <javadoc destdir="${javadoc.jdk15.dir}" windowtitle="Overview (json-lib jdk15 API)" useexternalfile="true">
+      <javadoc destdir="${javadoc.jdk5.dir}" windowtitle="Overview (json-lib jdk 5 API)" useexternalfile="true">
 
          <packageset dir="${maven.build.directory}/source/jdk15">
             <include name="**/*" />
@@ -302,7 +302,7 @@
          <link href="http://jakarta.apache.org/commons/lang/api-2.2/" />
          <link href="http://ezmorph.sourceforge.net/apidocs/" />
       </javadoc>
-      <jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk15-javadoc.jar" basedir="${javadoc.jdk15.dir}" />
+      <jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk15-javadoc.jar" basedir="${javadoc.jdk5.dir}" />
    </target>
 
    <target name="setup" if="use.proxy">

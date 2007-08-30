@@ -74,10 +74,4 @@ public abstract class AbstractJSONTest extends TestCase {
    protected abstract Object[] getToStringExpectations3();
 
    protected abstract Object[] getWriteExpectations();
-
-   protected void setUp() throws Exception {
-      super.setUp();
-      JsonConfig.getInstance()
-            .reset();
-   }
 }

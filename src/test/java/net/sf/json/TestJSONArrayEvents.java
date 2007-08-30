@@ -30,6 +30,7 @@ public class TestJSONArrayEvents extends TestCase {
       junit.textui.TestRunner.run( TestJSONArrayEvents.class );
    }
 
+   private JsonConfig jsonConfig;
    private JsonEventAdpater jsonEventAdpater;
 
    public TestJSONArrayEvents( String name ) {
@@ -37,13 +38,13 @@ public class TestJSONArrayEvents extends TestCase {
    }
 
    public void testFromObject_array() {
-      JSONArray.fromObject( new Object[] { "1", "2", "3" } );
+      JSONArray.fromObject( new Object[] { "1", "2", "3" }, jsonConfig );
       assertEvents();
    }
 
    public void testFromObject_error() {
       try{
-         JSONArray.fromObject( "{}" );
+         JSONArray.fromObject( "{}", jsonConfig );
          fail( "A JSONException was expected" );
       }catch( JSONException expected ){
          assertEquals( 1, jsonEventAdpater.getError() );
@@ -61,7 +62,7 @@ public class TestJSONArrayEvents extends TestCase {
       JSONArray array = new JSONArray().element( "1" )
             .element( "2" )
             .element( "3" );
-      JSONArray.fromObject( array );
+      JSONArray.fromObject( array, jsonConfig );
       assertEvents();
    }
 
@@ -70,62 +71,55 @@ public class TestJSONArrayEvents extends TestCase {
       list.add( "1" );
       list.add( "2" );
       list.add( "3" );
-      JSONArray.fromObject( list );
+      JSONArray.fromObject( list, jsonConfig );
       assertEvents();
    }
 
    public void testFromObject_primitive_boolean() {
-      JSONArray.fromObject( new boolean[] { true, false, true } );
+      JSONArray.fromObject( new boolean[] { true, false, true }, jsonConfig );
       assertEvents();
    }
 
    public void testFromObject_primitive_byte() {
-      JSONArray.fromObject( new byte[] { (byte) 1, (byte) 2, (byte) 3 } );
+      JSONArray.fromObject( new byte[] { (byte) 1, (byte) 2, (byte) 3 }, jsonConfig );
       assertEvents();
    }
 
    public void testFromObject_primitive_double() {
-      JSONArray.fromObject( new double[] { 1d, 2d, 3d } );
+      JSONArray.fromObject( new double[] { 1d, 2d, 3d }, jsonConfig );
       assertEvents();
    }
 
    public void testFromObject_primitive_float() {
-      JSONArray.fromObject( new float[] { 1f, 2f, 3f } );
+      JSONArray.fromObject( new float[] { 1f, 2f, 3f }, jsonConfig );
       assertEvents();
    }
 
    public void testFromObject_primitive_int() {
-      JSONArray.fromObject( new int[] { 1, 2, 3 } );
+      JSONArray.fromObject( new int[] { 1, 2, 3 }, jsonConfig );
       assertEvents();
    }
 
    public void testFromObject_primitive_long() {
-      JSONArray.fromObject( new long[] { 1L, 2L, 3L } );
+      JSONArray.fromObject( new long[] { 1L, 2L, 3L }, jsonConfig );
       assertEvents();
    }
 
    public void testFromObject_primitive_short() {
-      JSONArray.fromObject( new short[] { (short) 1, (short) 2, (short) 3 } );
+      JSONArray.fromObject( new short[] { (short) 1, (short) 2, (short) 3 }, jsonConfig );
       assertEvents();
    }
 
    public void testFromObject_string() {
-      JSONArray.fromObject( "[1,2,3]" );
+      JSONArray.fromObject( "[1,2,3]", jsonConfig );
       assertEvents();
    }
 
    protected void setUp() throws Exception {
       jsonEventAdpater = new JsonEventAdpater();
-      JsonConfig.getInstance()
-            .addJsonEventListener( jsonEventAdpater );
-      JsonConfig.getInstance()
-            .enableEventTriggering();
-   }
-
-   protected void tearDown() throws Exception {
-      JsonConfig.getInstance()
-            .removeJsonEventListener( jsonEventAdpater );
-      jsonEventAdpater.reset();
+      jsonConfig = new JsonConfig();
+      jsonConfig.addJsonEventListener( jsonEventAdpater );
+      jsonConfig.enableEventTriggering();
    }
 
    private void assertEvents() {

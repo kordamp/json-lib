@@ -16,7 +16,9 @@
 
 package net.sf.json.processors;
 
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
 
 /**
  * Base interface for custom serialization per Bean.
@@ -31,5 +33,5 @@ public interface JsonBeanProcessor {
     * @return a JSONObject that represents the input bean
     * @throws JSONException if an error occurs during transformation
     */
-   JSONObject processBean( Object bean );
+   JSONObject processBean( Object bean, JsonConfig jsonConfig );
 }

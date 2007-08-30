@@ -38,28 +38,20 @@ import org.apache.commons.lang.StringUtils;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JsonConfig {
+   public static final int MODE_LIST = 1;
+   public static final int MODE_OBJECT_ARRAY = 2;
    private static final CycleDetectionStrategy DEFAULT_CYCLE_DETECTION_STRATEGY = CycleDetectionStrategy.STRICT;
    private static final String[] DEFAULT_EXCLUDES = new String[] { "class", "declaringClass",
          "metaClass" };
    private static final JavaIdentifierTransformer DEFAULT_JAVA_IDENTIFIER_TRANSFORMER = JavaIdentifierTransformer.NOOP;
    private static final String[] EMPTY_EXCLUDES = new String[0];
-   private static JsonConfig instance = new JsonConfig();
 
-   /*
-    * private static ThreadLocal instance = new ThreadLocal(){ protected
-    * synchronized Object initialValue() { return new JsonConfig(); } };
-    */
-
-   /**
-    * Returns the singleton instance.
-    */
-   public static JsonConfig getInstance() {
-      // return (JsonConfig) instance.get();
-      return instance;
-   }
-
+   /** Array conversion mode */
+   private int arrayMode = MODE_LIST;
    private MultiKeyMap beanKeyMap = new MultiKeyMap();
    private MultiKeyMap beanTypeMap = new MultiKeyMap();
+   /** Map of attribute/class */
+   private Map classMap;
    private CycleDetectionStrategy cycleDetectionStrategy = DEFAULT_CYCLE_DETECTION_STRATEGY;
    private List eventListeners = new ArrayList();
    private String[] excludes = EMPTY_EXCLUDES;
@@ -70,11 +62,13 @@ public class JsonConfig {
    private JavaIdentifierTransformer javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
    private Map keyMap = new HashMap();
    private Map processorMap = new HashMap();
+   /** Root class used when converting to an specific bean */
+   private Class rootClass;
    private boolean skipJavaIdentifierTransformationInMapKeys;
    private boolean triggerEvents;
    private Map typeMap = new HashMap();
 
-   private JsonConfig() {
+   public JsonConfig() {
    }
 
    /**
@@ -115,6 +109,36 @@ public class JsonConfig {
       beanTypeMap.clear();
       keyMap.clear();
       typeMap.clear();
+   }
+
+   public JsonConfig copy() {
+      JsonConfig jsc = new JsonConfig();
+      jsc.beanKeyMap.putAll( beanKeyMap );
+      jsc.beanTypeMap.putAll( beanTypeMap );
+      jsc.classMap = new HashMap();
+      if( classMap != null ){
+         jsc.classMap.putAll( classMap );
+      }
+      jsc.cycleDetectionStrategy = cycleDetectionStrategy;
+      if( eventListeners != null ){
+         jsc.eventListeners.addAll( eventListeners );
+      }
+      if( excludes != null ){
+         jsc.excludes = new String[excludes.length];
+         System.arraycopy( excludes, 0, jsc.excludes, 0, excludes.length );
+      }
+      jsc.handleJettisonEmptyElement = handleJettisonEmptyElement;
+      jsc.handleJettisonSingleElementArray = handleJettisonSingleElementArray;
+      jsc.ignoreDefaultExcludes = ignoreDefaultExcludes;
+      jsc.ignoreTransientFields = ignoreTransientFields;
+      jsc.javaIdentifierTransformer = javaIdentifierTransformer;
+      jsc.keyMap.putAll( keyMap );
+      jsc.processorMap.putAll( processorMap );
+      jsc.rootClass = rootClass;
+      jsc.skipJavaIdentifierTransformationInMapKeys = skipJavaIdentifierTransformationInMapKeys;
+      jsc.triggerEvents = triggerEvents;
+      jsc.typeMap.putAll( typeMap );
+      return jsc;
    }
 
    /**
@@ -234,6 +258,24 @@ public class JsonConfig {
    }
 
    /**
+    * Returns the current array mode conversion
+    *
+    * @return either MODE_OBJECT_ARRAY or MODE_LIST
+    */
+   public int getArrayMode() {
+      return arrayMode;
+   }
+
+   /**
+    * Returns the current attribute/class Map
+    *
+    * @return a Map of classes, every key identifies a property or a regexp
+    */
+   public Map getClassMap() {
+      return classMap;
+   }
+
+   /**
     * Returns the configured CycleDetectionStrategy.<br>
     * Default value is CycleDetectionStrategy.STRICT
     */
@@ -286,6 +328,15 @@ public class JsonConfig {
       }
 
       return exclusions;
+   }
+
+   /**
+    * Returns the current root Class.
+    *
+    * @return the target class for conversion
+    */
+   public Class getRootClass() {
+      return rootClass;
    }
 
    /**
@@ -427,6 +478,34 @@ public class JsonConfig {
       triggerEvents = false;
       handleJettisonEmptyElement = false;
       handleJettisonSingleElementArray = false;
+      arrayMode = MODE_LIST;
+      rootClass = null;
+      classMap = null;
+   }
+
+   /**
+    * Sets the current array mode for conversion.<br>
+    * If the value is not MODE_LIST neither MODE_OBJECT_ARRAY, then MODE_LIST
+    * will be used.
+    *
+    * @param arrayMode array mode for conversion
+    */
+   public void setArrayMode( int arrayMode ) {
+      if( arrayMode != MODE_LIST && arrayMode != MODE_OBJECT_ARRAY ){
+         this.arrayMode = MODE_LIST;
+      }else{
+         this.arrayMode = arrayMode;
+      }
+   }
+
+   /**
+    * Sets the current attribute/Class Map
+    *
+    * @param classMap a Map of classes, every key identifies a property or a
+    *        regexp
+    */
+   public void setClassMap( Map classMap ) {
+      this.classMap = classMap;
    }
 
    /**
@@ -487,6 +566,15 @@ public class JsonConfig {
    public void setJavaIdentifierTransformer( JavaIdentifierTransformer javaIdentifierTransformer ) {
       this.javaIdentifierTransformer = javaIdentifierTransformer == null ? DEFAULT_JAVA_IDENTIFIER_TRANSFORMER
             : javaIdentifierTransformer;
+   }
+
+   /**
+    * Sets the current root Class
+    *
+    * @param rootClass the target class for conversion
+    */
+   public void setRootClass( Class rootClass ) {
+      this.rootClass = rootClass;
    }
 
    /**

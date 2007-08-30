@@ -58,8 +58,6 @@ import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.array.ObjectArrayMorpher;
 import net.sf.ezmorph.bean.BeanMorpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
@@ -134,89 +132,16 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    private static final Log log = LogFactory.getLog( JSONObject.class );
 
    /**
-    * Creates a JSONObject from a POJO.<br>
-    * Supports nested maps, POJOs, and arrays/collections.
+    * Creates a JSONObject.<br>
+    * Inspects the object type to call the correct JSONObject factory method.
     *
-    * @param bean An object with POJO conventions
-    * @throws JSONException if the bean can not be converted to a proper
-    *         JSONObject
-    * @deprecated use JSONObject.fromObject(Object) instead
+    * @param object
+    * @throws JSONException if the object can not be converted to a proper
+    *         JSONObject.
     */
-   public static JSONObject fromBean( Object bean ) {
-      if( bean == null || JSONUtils.isNull( bean ) ){
-         return new JSONObject( true );
-      }else if( bean instanceof Enum ){
-         throw new JSONException( "'bean' is an Enum. Use JSONArray instead" );
-      }else if( bean instanceof Annotation || (bean != null && bean.getClass()
-            .isAnnotation()) ){
-         throw new JSONException( "'bean' is an Annotation." );
-      }else if( bean instanceof JSONObject ){
-         return _fromJSONObject( (JSONObject) bean );
-      }else if( bean instanceof DynaBean ){
-         return _fromDynaBean( (DynaBean) bean );
-      }else if( bean instanceof JSONTokener ){
-         return _fromJSONTokener( (JSONTokener) bean );
-      }else if( bean instanceof JSONString ){
-         return _fromJSONString( (JSONString) bean );
-      }else if( bean instanceof Map ){
-         return _fromMap( (Map) bean );
-      }else if( bean instanceof String ){
-         return _fromString( (String) bean );
-      }else if( JSONUtils.isNumber( bean ) || JSONUtils.isBoolean( bean )
-            || JSONUtils.isString( bean ) ){
-         return new JSONObject();
-      }else if( JSONUtils.isArray( bean ) ){
-         throw new JSONException( "'bean' is an array. Use JSONArray instead" );
-      }else{
-         return _fromBean( bean );
-      }
-   }
 
-   /**
-    * Creates a JSONObject from a DynaBean.<br>
-    * Supports nested maps, POJOs, and arrays/collections.
-    *
-    * @param bean A DynaBean implementation
-    * @throws JSONException if the bean can not be converted to a proper
-    *         JSONObject
-    * @deprecated use JSONObject.fromObject(Object) instead
-    */
-   public static JSONObject fromDynaBean( DynaBean bean ) {
-      return _fromDynaBean( bean );
-   }
-
-   /**
-    * Constructs a JSONObject from another JSONObject.
-    *
-    * @deprecated use JSONObject.fromObject(Object) instead
-    */
-   public static JSONObject fromJSONObject( JSONObject object ) {
-      return _fromJSONObject( object );
-   }
-
-   /**
-    * Creates a JSONObject from a JSONString.<br>
-    *
-    * @param string A string with JSON values
-    * @throws JSONException if the source string is not a valid JSON string for
-    *         a JSONObject
-    * @deprecated use JSONObject.fromObject(Object) instead
-    */
-   public static JSONObject fromJSONString( JSONString string ) {
-      return _fromJSONString( string );
-   }
-
-   /**
-    * Creates a JSONObject from a map.<br>
-    * The key names will become the object's attributes. Supports nested maps,
-    * POJOs, and arrays/collections.
-    *
-    * @param map
-    * @throws JSONException if the map contains invalid JSON values
-    * @deprecated use JSONObject.fromObject(Object) instead
-    */
-   public static JSONObject fromMap( Map map ) {
-      return _fromMap( map );
+   public static JSONObject fromObject( Object object ) {
+      return fromObject( object, new JsonConfig() );
    }
 
    /**
@@ -227,7 +152,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     * @throws JSONException if the object can not be converted to a proper
     *         JSONObject.
     */
-   public static JSONObject fromObject( Object object ) {
+   public static JSONObject fromObject( Object object, JsonConfig jsonConfig ) {
       if( object == null || JSONUtils.isNull( object ) ){
          return new JSONObject( true );
       }else if( object instanceof Enum ){
@@ -236,37 +161,25 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             .isAnnotation()) ){
          throw new JSONException( "'object' is an Annotation." );
       }else if( object instanceof JSONObject ){
-         return _fromJSONObject( (JSONObject) object );
+         return _fromJSONObject( (JSONObject) object, jsonConfig );
       }else if( object instanceof DynaBean ){
-         return _fromDynaBean( (DynaBean) object );
+         return _fromDynaBean( (DynaBean) object, jsonConfig );
       }else if( object instanceof JSONTokener ){
-         return _fromJSONTokener( (JSONTokener) object );
+         return _fromJSONTokener( (JSONTokener) object, jsonConfig );
       }else if( object instanceof JSONString ){
-         return _fromJSONString( (JSONString) object );
+         return _fromJSONString( (JSONString) object, jsonConfig );
       }else if( object instanceof Map ){
-         return _fromMap( (Map) object );
+         return _fromMap( (Map) object, jsonConfig );
       }else if( object instanceof String ){
-         return _fromString( (String) object );
+         return _fromString( (String) object, jsonConfig );
       }else if( JSONUtils.isNumber( object ) || JSONUtils.isBoolean( object )
             || JSONUtils.isString( object ) ){
          return new JSONObject();
       }else if( JSONUtils.isArray( object ) ){
          throw new JSONException( "'object' is an array. Use JSONArray instead" );
       }else{
-         return _fromBean( object );
+         return _fromBean( object, jsonConfig );
       }
-   }
-
-   /**
-    * Constructs a JSONObject from a string in JSON format.
-    *
-    * @param str A string in JSON format
-    * @throws JSONException if the source string is not a valid JSON string for
-    *         a JSONObject
-    * @deprecated use JSONObject.fromObject(Object) instead
-    */
-   public static JSONObject fromString( String str ) {
-      return _fromString( str );
    }
 
    /**
@@ -280,11 +193,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       DynaBean dynaBean = null;
 
       Map props = JSONUtils.getProperties( jsonObject );
-      dynaBean = JSONUtils.newDynaBean( jsonObject );
+      dynaBean = JSONUtils.newDynaBean( jsonObject, new JsonConfig() );
       for( Iterator entries = jsonObject.names()
             .iterator(); entries.hasNext(); ){
          String name = (String) entries.next();
-         String key = JSONUtils.convertToJavaIdentifier( name );
+         String key = JSONUtils.convertToJavaIdentifier( name, new JsonConfig() );
          Class type = (Class) props.get( name );
          Object value = jsonObject.get( name );
          try{
@@ -323,7 +236,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     * Creates a bean from a JSONObject, with a specific target class.<br>
     */
    public static Object toBean( JSONObject jsonObject, Class beanClass ) {
-      return toBean( jsonObject, beanClass, null );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( beanClass );
+      return toBean( jsonObject, jsonConfig );
    }
 
    /**
@@ -339,9 +254,22 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     * </ul>
     */
    public static Object toBean( JSONObject jsonObject, Class beanClass, Map classMap ) {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( beanClass );
+      jsonConfig.setClassMap( classMap );
+      return toBean( jsonObject, jsonConfig );
+   }
+
+   /**
+    * Creates a bean from a JSONObject, with the specific configuration.
+    */
+   public static Object toBean( JSONObject jsonObject, JsonConfig jsonConfig ) {
       if( jsonObject == null || jsonObject.isNullObject() ){
          return null;
       }
+
+      Class beanClass = jsonConfig.getRootClass();
+      Map classMap = jsonConfig.getClassMap();
 
       if( beanClass == null ){
          return toBean( jsonObject );
@@ -368,13 +296,12 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       }
 
       Map props = JSONUtils.getProperties( jsonObject );
-      JsonConfig jsonConfig = JsonConfig.getInstance();
       for( Iterator entries = jsonObject.names()
             .iterator(); entries.hasNext(); ){
          String name = (String) entries.next();
          String key = Map.class.isAssignableFrom( beanClass )
                && jsonConfig.isSkipJavaIdentifierTransformationInMapKeys() ? name
-               : JSONUtils.convertToJavaIdentifier( name );
+               : JSONUtils.convertToJavaIdentifier( name, jsonConfig );
          Class type = (Class) props.get( name );
          Object value = jsonObject.get( name );
          try{
@@ -395,7 +322,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      // DynaBeans
                      // targetClass = (targetClass != null) ? targetClass :
                      // beanClass;
-                     List list = JSONArray.toList( (JSONArray) value, targetClass, classMap );
+                     JsonConfig jsc = jsonConfig.copy();
+                     jsc.setRootClass( targetClass );
+                     jsc.setClassMap( classMap );
+                     List list = JSONArray.toList( (JSONArray) value, jsc );
                      setProperty( bean, key, list );
                   }else{
                      Class innerType = JSONUtils.getInnerComponentType( pd.getPropertyType() );
@@ -404,7 +334,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                            && !targetInnerType.equals( Object.class ) ){
                         innerType = targetInnerType;
                      }
-                     Object array = JSONArray.toArray( (JSONArray) value, innerType, classMap );
+                     JsonConfig jsc = jsonConfig.copy();
+                     jsc.setRootClass( innerType );
+                     jsc.setClassMap( classMap );
+                     Object array = JSONArray.toArray( (JSONArray) value, jsc );
                      if( innerType.isPrimitive() || JSONUtils.isNumber( innerType )
                            || Boolean.class.isAssignableFrom( innerType )
                            || JSONUtils.isString( innerType ) ){
@@ -452,14 +385,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                                        new BeanMorpher( pd.getPropertyType(),
                                              JSONUtils.getMorpherRegistry() ) );
                         }
-                        //if( morpher != IdentityObjectMorpher.getInstance() ){
                         setProperty( bean, key, JSONUtils.getMorpherRegistry()
                               .morph( pd.getPropertyType(), value ) );
-                        /*}else{
-                           throw new JSONException( "Can't transform property '" + key + "' from "
-                                 + type.getName() + " into " + pd.getPropertyType()
-                                       .getName() );
-                        }*/
                      }else{
                         setProperty( bean, key, value );
                      }
@@ -474,21 +401,21 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   if( pd != null ){
                      Class targetClass = pd.getPropertyType();
                      if( jsonConfig.isHandleJettisonSingleElementArray() ){
-                        JSONArray array = new JSONArray().element( value );
+                        JSONArray array = new JSONArray().element( value, jsonConfig );
                         Class newTargetClass = findTargetClass( key, classMap );
                         newTargetClass = newTargetClass == null ? findTargetClass( name, classMap )
                               : newTargetClass;
+                        JsonConfig jsc = jsonConfig.copy();
+                        jsc.setRootClass( newTargetClass );
+                        jsc.setClassMap( classMap );
                         if( targetClass.isArray() ){
-                           setProperty( bean, key, JSONArray.toArray( array, newTargetClass,
-                                 classMap ) );
+                           setProperty( bean, key, JSONArray.toArray( array, jsc ) );
                         }else if( Collection.class.isAssignableFrom( targetClass ) ){
-                           setProperty( bean, key, JSONArray.toList( array, newTargetClass,
-                                 classMap ) );
+                           setProperty( bean, key, JSONArray.toList( array, jsc ) );
                         }else if( JSONArray.class.isAssignableFrom( targetClass ) ){
                            setProperty( bean, key, array );
                         }else{
-                           setProperty( bean, key, toBean( (JSONObject) value, newTargetClass,
-                                 classMap ) );
+                           setProperty( bean, key, toBean( (JSONObject) value, jsc ) );
                         }
                      }else{
                         if( targetClass == Object.class ){
@@ -496,14 +423,20 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                            targetClass = targetClass == null ? findTargetClass( name, classMap )
                                  : targetClass;
                         }
-                        setProperty( bean, key, toBean( (JSONObject) value, targetClass, classMap ) );
+                        JsonConfig jsc = jsonConfig.copy();
+                        jsc.setRootClass( targetClass );
+                        jsc.setClassMap( classMap );
+                        setProperty( bean, key, toBean( (JSONObject) value, jsc ) );
                      }
                   }else if( beanClass == null || bean instanceof Map ){
                      Class targetClass = findTargetClass( key, classMap );
                      targetClass = targetClass == null ? findTargetClass( name, classMap )
                            : targetClass;
+                     JsonConfig jsc = jsonConfig.copy();
+                     jsc.setRootClass( targetClass );
+                     jsc.setClassMap( classMap );
                      if( targetClass != null ){
-                        setProperty( bean, key, toBean( (JSONObject) value, targetClass, classMap ) );
+                        setProperty( bean, key, toBean( (JSONObject) value, jsc ) );
                      }else{
                         setProperty( bean, key, toBean( (JSONObject) value ) );
                      }
@@ -541,22 +474,20 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     * @throws JSONException if the bean can not be converted to a proper
     *         JSONObject.
     */
-   private static JSONObject _fromBean( Object bean ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-
-      fireObjectStartEvent();
+   private static JSONObject _fromBean( Object bean, JsonConfig jsonConfig ) {
+      fireObjectStartEvent( jsonConfig );
       if( !addInstance( bean ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
                   .handleRepeatedReferenceAsObject( bean );
          }catch( JSONException jsone ){
             removeInstance( bean );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( bean );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -565,20 +496,20 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       if( processor != null ){
          JSONObject json = null;
          try{
-            json = processor.processBean( bean );
+            json = processor.processBean( bean, jsonConfig );
             if( json == null ){
                json = new JSONObject( true );
             }
             removeInstance( bean );
-            fireObjectEndEvent();
+            fireObjectEndEvent( jsonConfig );
          }catch( JSONException jsone ){
             removeInstance( bean );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( bean );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
          return json;
@@ -605,40 +536,38 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                JsonValueProcessor jsonValueProcessor = jsonConfig.findJsonValueProcessor(
                      beanClass, type, key );
                if( jsonValueProcessor != null ){
-                  value = jsonValueProcessor.processObjectValue( key, value );
+                  value = jsonValueProcessor.processObjectValue( key, value, jsonConfig );
                   if( !JsonVerifier.isValidJsonValue( value ) ){
                      throw new JSONException( "Value is not a valid JSON value. " + value );
                   }
                }
-               setValue( jsonObject, key, value, type );
+               setValue( jsonObject, key, value, type, jsonConfig );
             }else{
                String warning = "Property '" + key + "' has no read method. SKIPPED";
-               fireWarnEvent( warning );
+               fireWarnEvent( warning, jsonConfig );
                log.warn( warning );
             }
          }
       }catch( JSONException jsone ){
          removeInstance( bean );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }catch( Exception e ){
          removeInstance( bean );
          JSONException jsone = new JSONException( e );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }
 
       removeInstance( bean );
-      fireObjectEndEvent();
+      fireObjectEndEvent( jsonConfig );
       return jsonObject;
    }
 
-   private static JSONObject _fromDynaBean( DynaBean bean ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-
-      fireObjectStartEvent();
+   private static JSONObject _fromDynaBean( DynaBean bean, JsonConfig jsonConfig ) {
+      fireObjectStartEvent( jsonConfig );
       if( bean == null ){
-         fireObjectEndEvent();
+         fireObjectEndEvent( jsonConfig );
          return new JSONObject( true );
       }
 
@@ -648,12 +577,12 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   .handleRepeatedReferenceAsObject( bean );
          }catch( JSONException jsone ){
             removeInstance( bean );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( bean );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -673,35 +602,33 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             Object value = bean.get( dynaProperty.getName() );
             JsonValueProcessor jsonValueProcessor = jsonConfig.findJsonValueProcessor( type, key );
             if( jsonValueProcessor != null ){
-               value = jsonValueProcessor.processObjectValue( key, value );
+               value = jsonValueProcessor.processObjectValue( key, value, jsonConfig );
                if( !JsonVerifier.isValidJsonValue( value ) ){
                   throw new JSONException( "Value is not a valid JSON value. " + value );
                }
             }
-            setValue( jsonObject, key, value, type );
+            setValue( jsonObject, key, value, type, jsonConfig );
          }
       }catch( JSONException jsone ){
          removeInstance( bean );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }catch( RuntimeException e ){
          removeInstance( bean );
          JSONException jsone = new JSONException( e );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }
 
       removeInstance( bean );
-      fireObjectEndEvent();
+      fireObjectEndEvent( jsonConfig );
       return jsonObject;
    }
 
-   private static JSONObject _fromJSONObject( JSONObject object ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-
-      fireObjectStartEvent();
+   private static JSONObject _fromJSONObject( JSONObject object, JsonConfig jsonConfig ) {
+      fireObjectStartEvent( jsonConfig );
       if( object == null || object.isNullObject() ){
-         fireObjectEndEvent();
+         fireObjectEndEvent( jsonConfig );
          return new JSONObject( true );
       }
 
@@ -711,12 +638,12 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   .handleRepeatedReferenceAsObject( object );
          }catch( JSONException jsone ){
             removeInstance( object );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( object );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -731,26 +658,25 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          }
          Object value = object.opt( key );
          if( jsonObject.properties.containsKey( key ) ){
-            jsonObject.accumulate( key, value );
-            firePropertySetEvent( key, value, true );
+            jsonObject.accumulate( key, value, jsonConfig );
+            firePropertySetEvent( key, value, true, jsonConfig );
          }else{
-            jsonObject._setInternal( key, value );
-            firePropertySetEvent( key, value, false );
+            jsonObject._setInternal( key, value, jsonConfig );
+            firePropertySetEvent( key, value, false, jsonConfig );
          }
       }
 
       removeInstance( object );
-      fireObjectEndEvent();
+      fireObjectEndEvent( jsonConfig );
       return jsonObject;
    }
 
-   private static JSONObject _fromJSONString( JSONString string ) {
-      return _fromJSONTokener( new JSONTokener( string.toJSONString() ) );
+   private static JSONObject _fromJSONString( JSONString string, JsonConfig jsonConfig ) {
+      return _fromJSONTokener( new JSONTokener( string.toJSONString() ), jsonConfig );
    }
 
-   private static JSONObject _fromJSONTokener( JSONTokener tokener ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireObjectStartEvent();
+   private static JSONObject _fromJSONTokener( JSONTokener tokener, JsonConfig jsonConfig ) {
+      fireObjectStartEvent( jsonConfig );
 
       try{
          char c;
@@ -758,7 +684,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          Object value;
 
          if( tokener.matches( "null.*" ) ){
-            fireObjectEndEvent();
+            fireObjectEndEvent( jsonConfig );
             return new JSONObject( true );
          }
 
@@ -774,11 +700,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                case 0:
                   throw tokener.syntaxError( "A JSONObject text must end with '}'" );
                case '}':
-                  fireObjectEndEvent();
+                  fireObjectEndEvent( jsonConfig );
                   return jsonObject;
                default:
                   tokener.back();
-                  key = tokener.nextValue()
+                  key = tokener.nextValue( jsonConfig )
                         .toString();
             }
 
@@ -794,20 +720,20 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             }else if( c != ':' ){
                throw tokener.syntaxError( "Expected a ':' after a key" );
             }
-            Object v = tokener.nextValue();
+            Object v = tokener.nextValue( jsonConfig );
             if( !JSONUtils.isFunctionHeader( v ) ){
                if( exclusions.contains( key ) ){
                   switch( tokener.nextClean() ){
                      case ';':
                      case ',':
                         if( tokener.nextClean() == '}' ){
-                           fireObjectEndEvent();
+                           fireObjectEndEvent( jsonConfig );
                            return jsonObject;
                         }
                         tokener.back();
                         break;
                      case '}':
-                        fireObjectEndEvent();
+                        fireObjectEndEvent( jsonConfig );
                         return jsonObject;
                      default:
                         throw tokener.syntaxError( "Expected a ',' or '}'" );
@@ -817,19 +743,19 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                if( v instanceof String && JSONUtils.mayBeJSON( (String) v ) ){
                   value = JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE;
                   if( jsonObject.properties.containsKey( key ) ){
-                     jsonObject.accumulate( key, value );
-                     firePropertySetEvent( key, value, true );
+                     jsonObject.accumulate( key, value, jsonConfig );
+                     firePropertySetEvent( key, value, true, jsonConfig );
                   }else{
-                     jsonObject.element( key, value );
-                     firePropertySetEvent( key, value, false );
+                     jsonObject.element( key, value, jsonConfig );
+                     firePropertySetEvent( key, value, false, jsonConfig );
                   }
                }else{
                   if( jsonObject.properties.containsKey( key ) ){
-                     jsonObject.accumulate( key, v );
-                     firePropertySetEvent( key, v, true );
+                     jsonObject.accumulate( key, v, jsonConfig );
+                     firePropertySetEvent( key, v, true, jsonConfig );
                   }else{
-                     jsonObject.element( key, v );
-                     firePropertySetEvent( key, v, false );
+                     jsonObject.element( key, v, jsonConfig );
+                     firePropertySetEvent( key, v, false, jsonConfig );
                   }
                }
             }else{
@@ -864,11 +790,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                value = new JSONFunction(
                      (params != null) ? StringUtils.split( params, "," ) : null, text );
                if( jsonObject.properties.containsKey( key ) ){
-                  jsonObject.accumulate( key, value );
-                  firePropertySetEvent( key, value, true );
+                  jsonObject.accumulate( key, value, jsonConfig );
+                  firePropertySetEvent( key, value, true, jsonConfig );
                }else{
-                  jsonObject.element( key, value );
-                  firePropertySetEvent( key, value, false );
+                  jsonObject.element( key, value, jsonConfig );
+                  firePropertySetEvent( key, value, false, jsonConfig );
                }
             }
 
@@ -880,30 +806,28 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                case ';':
                case ',':
                   if( tokener.nextClean() == '}' ){
-                     fireObjectEndEvent();
+                     fireObjectEndEvent( jsonConfig );
                      return jsonObject;
                   }
                   tokener.back();
                   break;
                case '}':
-                  fireObjectEndEvent();
+                  fireObjectEndEvent( jsonConfig );
                   return jsonObject;
                default:
                   throw tokener.syntaxError( "Expected a ',' or '}'" );
             }
          }
       }catch( JSONException jsone ){
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }
    }
 
-   private static JSONObject _fromMap( Map map ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-
-      fireObjectStartEvent();
+   private static JSONObject _fromMap( Map map, JsonConfig jsonConfig ) {
+      fireObjectStartEvent( jsonConfig );
       if( map == null ){
-         fireObjectEndEvent();
+         fireObjectEndEvent( jsonConfig );
          return new JSONObject( true );
       }
 
@@ -913,12 +837,12 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   .handleRepeatedReferenceAsObject( map );
          }catch( JSONException jsone ){
             removeInstance( map );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( map );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -939,45 +863,45 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                JsonValueProcessor jsonValueProcessor = jsonConfig.findJsonValueProcessor(
                      value.getClass(), key );
                if( jsonValueProcessor != null ){
-                  value = jsonValueProcessor.processObjectValue( key, value );
+                  value = jsonValueProcessor.processObjectValue( key, value, jsonConfig );
                   if( !JsonVerifier.isValidJsonValue( value ) ){
                      throw new JSONException( "Value is not a valid JSON value. " + value );
                   }
                }
-               setValue( jsonObject, key, value, value.getClass() );
+               setValue( jsonObject, key, value, value.getClass(), jsonConfig );
             }else{
                if( jsonObject.properties.containsKey( key ) ){
                   jsonObject.accumulate( key, JSONNull.getInstance() );
-                  firePropertySetEvent( key, JSONNull.getInstance(), true );
+                  firePropertySetEvent( key, JSONNull.getInstance(), true, jsonConfig );
                }else{
                   jsonObject.element( key, JSONNull.getInstance() );
-                  firePropertySetEvent( key, JSONNull.getInstance(), false );
+                  firePropertySetEvent( key, JSONNull.getInstance(), false, jsonConfig );
                }
             }
          }
       }catch( JSONException jsone ){
          removeInstance( map );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }catch( RuntimeException e ){
          removeInstance( map );
          JSONException jsone = new JSONException( e );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }
 
       removeInstance( map );
-      fireObjectEndEvent();
+      fireObjectEndEvent( jsonConfig );
       return jsonObject;
    }
 
-   private static JSONObject _fromString( String str ) {
+   private static JSONObject _fromString( String str, JsonConfig jsonConfig ) {
       if( str == null || "null".compareToIgnoreCase( str ) == 0 ){
-         fireObjectStartEvent();
-         fireObjectEndEvent();
+         fireObjectStartEvent( jsonConfig );
+         fireObjectEndEvent( jsonConfig );
          return new JSONObject( true );
       }
-      return _fromJSONTokener( new JSONTokener( str ) );
+      return _fromJSONTokener( new JSONTokener( str ), jsonConfig );
    }
 
    /**
@@ -1027,7 +951,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       }
    }
 
-   private static void setValue( JSONObject jsonObject, String key, Object value, Class type ) {
+   private static void setValue( JSONObject jsonObject, String key, Object value, Class type,
+         JsonConfig jsonConfig ) {
       boolean accumulated = false;
       if( value == null ){
          if( JSONUtils.isArray( type ) ){
@@ -1056,14 +981,14 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      .addString( (String) value ) );
             }
          }else{
-            jsonObject.accumulate( key, value );
+            jsonObject.accumulate( key, value, jsonConfig );
          }
          accumulated = true;
       }else{
          if( String.class.isAssignableFrom( type ) ){
             jsonObject.properties.put( key, value );
          }else{
-            jsonObject._setInternal( key, value );
+            jsonObject._setInternal( key, value, jsonConfig );
          }
       }
 
@@ -1072,7 +997,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          JSONArray array = (JSONArray) value;
          value = array.get( array.size() - 1 );
       }
-      firePropertySetEvent( key, value, accumulated );
+      firePropertySetEvent( key, value, accumulated, jsonConfig );
    }
 
    // ------------------------------------------------------
@@ -1114,7 +1039,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     *         null.
     */
    public JSONObject accumulate( String key, boolean value ) {
-      return _accumulate( key, value ? Boolean.TRUE : Boolean.FALSE );
+      return _accumulate( key, value ? Boolean.TRUE : Boolean.FALSE, new JsonConfig() );
    }
 
    /**
@@ -1131,7 +1056,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     *         null.
     */
    public JSONObject accumulate( String key, double value ) {
-      return _accumulate( key, Double.valueOf( value ) );
+      return _accumulate( key, Double.valueOf( value ), new JsonConfig() );
    }
 
    /**
@@ -1148,7 +1073,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     *         null.
     */
    public JSONObject accumulate( String key, int value ) {
-      return _accumulate( key, Integer.valueOf( value ) );
+      return _accumulate( key, Integer.valueOf( value ), new JsonConfig() );
    }
 
    /**
@@ -1165,7 +1090,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     *         null.
     */
    public JSONObject accumulate( String key, long value ) {
-      return _accumulate( key, Long.valueOf( value ) );
+      return _accumulate( key, Long.valueOf( value ), new JsonConfig() );
    }
 
    /**
@@ -1182,17 +1107,38 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     *         null.
     */
    public JSONObject accumulate( String key, Object value ) {
-      return _accumulate( key, value );
+      return _accumulate( key, value, new JsonConfig() );
+   }
+
+   /**
+    * Accumulate values under a key. It is similar to the element method except
+    * that if there is already an object stored under the key then a JSONArray
+    * is stored under the key to hold all of the accumulated values. If there is
+    * already a JSONArray, then the new value is appended to it. In contrast,
+    * the replace method replaces the previous value.
+    *
+    * @param key A key string.
+    * @param value An object to be accumulated under the key.
+    * @return this.
+    * @throws JSONException If the value is an invalid number or if the key is
+    *         null.
+    */
+   public JSONObject accumulate( String key, Object value, JsonConfig jsonConfig ) {
+      return _accumulate( key, value, jsonConfig );
    }
 
    public void accumulateAll( Map map ) {
+      accumulateAll( map, new JsonConfig() );
+   }
+
+   public void accumulateAll( Map map, JsonConfig jsonConfig ) {
       if( map instanceof JSONObject ){
          for( Iterator entries = map.entrySet()
                .iterator(); entries.hasNext(); ){
             Map.Entry entry = (Map.Entry) entries.next();
             String key = (String) entry.getKey();
             Object value = entry.getValue();
-            accumulate( key, value );
+            accumulate( key, value, jsonConfig );
          }
       }else{
          for( Iterator entries = map.entrySet()
@@ -1200,7 +1146,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             Map.Entry entry = (Map.Entry) entries.next();
             String key = String.valueOf( entry.getKey() );
             Object value = entry.getValue();
-            accumulate( key, value );
+            accumulate( key, value, jsonConfig );
          }
       }
    }
@@ -1230,9 +1176,12 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    }
 
    public boolean containsValue( Object value ) {
-      try{
+      return containsValue( value, new JsonConfig() );
+   }
 
-         value = processValue( value );
+   public boolean containsValue( Object value, JsonConfig jsonConfig ) {
+      try{
+         value = processValue( value, jsonConfig );
       }catch( JSONException e ){
          return false;
       }
@@ -1262,11 +1211,24 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     * @throws JSONException
     */
    public JSONObject element( String key, Collection value ) {
+      return element( key, value, new JsonConfig() );
+   }
+
+   /**
+    * Put a key/value pair in the JSONObject, where the value will be a
+    * JSONArray which is produced from a Collection.
+    *
+    * @param key A key string.
+    * @param value A Collection value.
+    * @return this.
+    * @throws JSONException
+    */
+   public JSONObject element( String key, Collection value, JsonConfig jsonConfig ) {
       verifyIsNull();
       if( value instanceof JSONArray ){
-         return setInternal( key, value );
+         return setInternal( key, value, jsonConfig );
       }else{
-         return element( key, JSONArray.fromObject( value ) );
+         return element( key, JSONArray.fromObject( value, jsonConfig ) );
       }
    }
 
@@ -1321,11 +1283,24 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     * @throws JSONException
     */
    public JSONObject element( String key, Map value ) {
+      return element( key, value, new JsonConfig() );
+   }
+
+   /**
+    * Put a key/value pair in the JSONObject, where the value will be a
+    * JSONObject which is produced from a Map.
+    *
+    * @param key A key string.
+    * @param value A Map value.
+    * @return this.
+    * @throws JSONException
+    */
+   public JSONObject element( String key, Map value, JsonConfig jsonConfig ) {
       verifyIsNull();
       if( value instanceof JSONObject ){
-         return setInternal( key, value );
+         return setInternal( key, value, jsonConfig );
       }else{
-         return element( key, JSONObject.fromObject( value ) );
+         return element( key, JSONObject.fromObject( value, jsonConfig ), jsonConfig );
       }
    }
 
@@ -1343,13 +1318,30 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     *         null.
     */
    public JSONObject element( String key, Object value ) {
+      return element( key, value, new JsonConfig() );
+   }
+
+   /**
+    * Put a key/value pair in the JSONObject. If the value is null, then the key
+    * will be removed from the JSONObject if it is present.<br>
+    * If there is a previous value assigned to the key, it will call accumulate.
+    *
+    * @param key A key string.
+    * @param value An object which is the value. It should be of one of these
+    *        types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
+    *        String, or the JSONNull object.
+    * @return this.
+    * @throws JSONException If the value is non-finite number or if the key is
+    *         null.
+    */
+   public JSONObject element( String key, Object value, JsonConfig jsonConfig ) {
       verifyIsNull();
       if( key == null ){
          throw new JSONException( "Null key." );
       }
       if( value != null ){
-         value = processValue( key, value );
-         setInternal( key, value );
+         value = processValue( key, value, jsonConfig );
+         setInternal( key, value, jsonConfig );
       }else{
          remove( key );
       }
@@ -1368,9 +1360,24 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     * @throws JSONException If the value is a non-finite number.
     */
    public JSONObject elementOpt( String key, Object value ) {
+      return elementOpt( key, value, new JsonConfig() );
+   }
+
+   /**
+    * Put a key/value pair in the JSONObject, but only if the key and the value
+    * are both non-null.
+    *
+    * @param key A key string.
+    * @param value An object which is the value. It should be of one of these
+    *        types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
+    *        String, or the JSONNull object.
+    * @return this.
+    * @throws JSONException If the value is a non-finite number.
+    */
+   public JSONObject elementOpt( String key, Object value, JsonConfig jsonConfig ) {
       verifyIsNull();
       if( key != null && value != null ){
-         element( key, value );
+         element( key, value, jsonConfig );
       }
       return this;
    }
@@ -1582,7 +1589,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    public JSONArray getJSONArray( String key ) {
       verifyIsNull();
       Object o = get( key );
-         if( o != null && o instanceof JSONArray ){
+      if( o != null && o instanceof JSONArray ){
          return (JSONArray) o;
       }
       throw new JSONException( "JSONObject[" + JSONUtils.quote( key ) + "] is not a JSONArray." );
@@ -1698,17 +1705,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
 
    public Set keySet() {
       return properties.keySet();
-   }
-
-   /**
-    * Get the number of keys stored in the JSONObject.
-    *
-    * @return The number of keys in the JSONObject.
-    * @deprecated use size() instead
-    */
-   public int length() {
-      verifyIsNull();
-      return this.properties.size();
    }
 
    /**
@@ -1927,6 +1923,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    }
 
    public void putAll( Map map ) {
+      putAll( map, new JsonConfig() );
+   }
+
+   public void putAll( Map map, JsonConfig jsonConfig ) {
       if( map instanceof JSONObject ){
          for( Iterator entries = map.entrySet()
                .iterator(); entries.hasNext(); ){
@@ -1941,7 +1941,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             Map.Entry entry = (Map.Entry) entries.next();
             String key = String.valueOf( entry.getKey() );
             Object value = entry.getValue();
-            element( key, value );
+            element( key, value, jsonConfig );
          }
       }
    }
@@ -2167,46 +2167,46 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       }
    }
 
-   private JSONObject _accumulate( String key, Object value ) {
+   private JSONObject _accumulate( String key, Object value, JsonConfig jsonConfig ) {
       if( isNullObject() ){
          throw new JSONException( "Can't accumulate on null object" );
       }
 
       if( !has( key ) ){
-         setInternal( key, value );
+         setInternal( key, value, jsonConfig );
       }else{
          Object o = opt( key );
          if( o instanceof JSONArray ){
-            ((JSONArray) o).element( value );
+            ((JSONArray) o).element( value, jsonConfig );
          }else{
             setInternal( key, new JSONArray().element( o )
-                  .element( value ) );
+                  .element( value, jsonConfig ), jsonConfig );
          }
       }
 
       return this;
    }
 
-   private Object _processValue( Object value ) {
+   private Object _processValue( Object value, JsonConfig jsonConfig ) {
       if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
             || value instanceof Class ){
          return ((Class) value).getName();
       }else if( value instanceof JSON ){
-         return value;
+         return JSONSerializer.toJSON( value, jsonConfig );
       }else if( JSONUtils.isFunction( value ) ){
          if( value instanceof String ){
             value = JSONFunction.parse( (String) value );
          }
          return value;
       }else if( value instanceof JSONString ){
-         return JSONSerializer.toJSON( (JSONString) value );
+         return JSONSerializer.toJSON( (JSONString) value, jsonConfig );
       }else if( JSONUtils.isArray( value ) ){
-         return JSONArray.fromObject( value );
+         return JSONArray.fromObject( value, jsonConfig );
       }else if( JSONUtils.isString( value ) ){
          String str = String.valueOf( value );
          if( JSONUtils.mayBeJSON( str ) ){
             try{
-               return JSONSerializer.toJSON( str );
+               return JSONSerializer.toJSON( str, jsonConfig );
             }catch( JSONException jsone ){
                return JSONUtils.stripQuotes( str );
             }
@@ -2225,7 +2225,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       }else if( value != null && Enum.class.isAssignableFrom( value.getClass() ) ){
          return String.valueOf(value);
       }else{
-         return fromObject( value );
+         return fromObject( value, jsonConfig );
       }
    }
 
@@ -2240,43 +2240,41 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     * @throws JSONException If the value is non-finite number or if the key is
     *         null.
     */
-   private JSONObject _setInternal( String key, Object value ) {
+   private JSONObject _setInternal( String key, Object value, JsonConfig jsonConfig ) {
       verifyIsNull();
       if( key == null ){
          throw new JSONException( "Null key." );
       }
 
-      this.properties.put( key, _processValue( value ) );
+      this.properties.put( key, _processValue( value, jsonConfig ) );
 
       return this;
    }
 
-   private Object processValue( Object value ) {
+   private Object processValue( Object value, JsonConfig jsonConfig ) {
       if( value != null ){
-         JsonConfig jsonConfig = JsonConfig.getInstance();
          JsonValueProcessor processor = jsonConfig.findJsonValueProcessor( value.getClass() );
          if( processor != null ){
-            value = processor.processObjectValue( null, value );
+            value = processor.processObjectValue( null, value, jsonConfig );
             if( !JsonVerifier.isValidJsonValue( value ) ){
                throw new JSONException( "Value is not a valid JSON value. " + value );
             }
          }
       }
-      return _processValue( value );
+      return _processValue( value, jsonConfig );
    }
 
-   private Object processValue( String key, Object value ) {
+   private Object processValue( String key, Object value, JsonConfig jsonConfig ) {
       if( value != null ){
-         JsonConfig jsonConfig = JsonConfig.getInstance();
          JsonValueProcessor processor = jsonConfig.findJsonValueProcessor( value.getClass(), key );
          if( processor != null ){
-            value = processor.processObjectValue( null, value );
+            value = processor.processObjectValue( null, value, jsonConfig );
             if( !JsonVerifier.isValidJsonValue( value ) ){
                throw new JSONException( "Value is not a valid JSON value. " + value );
             }
          }
       }
-      return _processValue( value );
+      return _processValue( value, jsonConfig );
    }
 
    /**
@@ -2290,8 +2288,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     * @throws JSONException If the value is non-finite number or if the key is
     *         null.
     */
-   private JSONObject setInternal( String key, Object value ) {
-      return _setInternal( key, processValue( key, value ) );
+   private JSONObject setInternal( String key, Object value, JsonConfig jsonConfig ) {
+      return _setInternal( key, processValue( key, value, jsonConfig ), jsonConfig );
    }
 
    /**

@@ -109,42 +109,15 @@ import org.apache.commons.lang.StringUtils;
  */
 public final class JSONArray extends AbstractJSON implements JSON, List, Comparable {
    /**
-    * Creates a JSONArray from a java array.<br>
-    * The java array can be multidimensional.
+    * Creates a JSONArray.<br>
+    * Inspects the object type to call the correct JSONArray factory method.
     *
-    * @param array A Java array
-    * @throws JSONException if the array can not be converted to a proper
+    * @param object
+    * @throws JSONException if the object can not be converted to a proper
     *         JSONArray.
-    * @deprecated use JSONArray.fromObject(Object) instead
     */
-   public static JSONArray fromArray( Object[] array ) {
-      return _fromArray( array );
-   }
-
-   /**
-    * Creates a JSONArray from a Collection.<br>
-    * Its elements can be maps, POJOs, java arrays (primitive & object),
-    * collections.
-    *
-    * @param collection A collection
-    * @throws JSONException if the collection can not be converted to a proper
-    *         JSONArray.
-    * @deprecated use JSONArray.fromObject(Object) instead
-    */
-   public static JSONArray fromCollection( Collection collection ) {
-      return _fromCollection( collection );
-   }
-
-   /**
-    * Creates a JSONArray from a JSONString.<br>
-    *
-    * @param string
-    * @throws JSONException if the string can not be converted to a proper
-    *         JSONArray.
-    * @deprecated use JSONArray.fromObject(Object) instead
-    */
-   public static JSONArray fromJSONString( JSONString string ) {
-      return _fromJSONString( string );
+   public static JSONArray fromObject( Object object ) {
+      return fromObject( object, new JsonConfig() );
    }
 
    /**
@@ -155,40 +128,40 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @throws JSONException if the object can not be converted to a proper
     *         JSONArray.
     */
-   public static JSONArray fromObject( Object object ) {
+   public static JSONArray fromObject( Object object, JsonConfig jsonConfig ) {
       if( object instanceof JSONString ){
-         return _fromJSONString( (JSONString) object );
+         return _fromJSONString( (JSONString) object, jsonConfig );
       }else if( object instanceof JSONArray ){
-         return _fromJSONArray( (JSONArray) object );
+         return _fromJSONArray( (JSONArray) object, jsonConfig );
       }else if( object instanceof Collection ){
-         return _fromCollection( (Collection) object );
+         return _fromCollection( (Collection) object, jsonConfig );
       }else if( object instanceof JSONTokener ){
-         return _fromJSONTokener( (JSONTokener) object );
+         return _fromJSONTokener( (JSONTokener) object, jsonConfig );
       }else if( object instanceof String ){
-         return _fromString( (String) object );
+         return _fromString( (String) object, jsonConfig );
       }else if( object != null && object.getClass()
             .isArray() ){
          Class type = object.getClass()
                .getComponentType();
          if( !type.isPrimitive() ){
-            return _fromArray( (Object[]) object );
+            return _fromArray( (Object[]) object, jsonConfig );
          }else{
             if( type == Boolean.TYPE ){
-               return _fromArray( (boolean[]) object );
+               return _fromArray( (boolean[]) object, jsonConfig );
             }else if( type == Byte.TYPE ){
-               return _fromArray( (byte[]) object );
+               return _fromArray( (byte[]) object, jsonConfig );
             }else if( type == Short.TYPE ){
-               return _fromArray( (short[]) object );
+               return _fromArray( (short[]) object, jsonConfig );
             }else if( type == Integer.TYPE ){
-               return _fromArray( (int[]) object );
+               return _fromArray( (int[]) object, jsonConfig );
             }else if( type == Long.TYPE ){
-               return _fromArray( (long[]) object );
+               return _fromArray( (long[]) object, jsonConfig );
             }else if( type == Float.TYPE ){
-               return _fromArray( (float[]) object );
+               return _fromArray( (float[]) object, jsonConfig );
             }else if( type == Double.TYPE ){
-               return _fromArray( (double[]) object );
+               return _fromArray( (double[]) object, jsonConfig );
             }else if( type == Character.TYPE ){
-               return _fromArray( (char[]) object );
+               return _fromArray( (char[]) object, jsonConfig );
             }else{
                throw new JSONException( "Unsupported type" );
             }
@@ -196,37 +169,25 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       }else if( JSONUtils.isBoolean( object ) || JSONUtils.isFunction( object )
             || JSONUtils.isNumber( object ) || JSONUtils.isNull( object )
             || JSONUtils.isString( object ) || object instanceof JSON ){
-         fireArrayStartEvent();
-         JSONArray jsonArray = new JSONArray().element( object );
-         fireElementAddedEvent( 0, jsonArray.get( 0 ) );
-         fireArrayStartEvent();
+         fireArrayStartEvent( jsonConfig );
+         JSONArray jsonArray = new JSONArray().element( object, jsonConfig );
+         fireElementAddedEvent( 0, jsonArray.get( 0 ), jsonConfig );
+         fireArrayStartEvent( jsonConfig );
          return jsonArray;
       }else if( object instanceof Enum ){
-         return _fromArray( (Enum) object );
+         return _fromArray( (Enum) object, jsonConfig );
       }else if( object instanceof Annotation || (object != null && object.getClass()
             .isAnnotation()) ){
          throw new JSONException( "Unsupported type" );
       }else if( JSONUtils.isObject( object ) ){
-         fireArrayStartEvent();
-         JSONArray jsonArray = new JSONArray().element( JSONObject.fromObject( object ) );
-         fireElementAddedEvent( 0, jsonArray.get( 0 ) );
-         fireArrayStartEvent();
+         fireArrayStartEvent( jsonConfig );
+         JSONArray jsonArray = new JSONArray().element( JSONObject.fromObject( object, jsonConfig ) );
+         fireElementAddedEvent( 0, jsonArray.get( 0 ), jsonConfig );
+         fireArrayStartEvent( jsonConfig );
          return jsonArray;
       }else{
          throw new JSONException( "Unsupported type" );
       }
-   }
-
-   /**
-    * Constructs a JSONArray from a string in JSON format.
-    *
-    * @param string A string in JSON format
-    * @throws JSONException if the string can not be converted to a proper
-    *         JSONArray.
-    * @deprecated use JSONArray.fromObject(Object) instead
-    */
-   public static JSONArray fromString( String string ) {
-      return _fromString( string );
    }
 
    /**
@@ -252,14 +213,16 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * Creates a java array from a JSONArray.
     */
    public static Object toArray( JSONArray jsonArray ) {
-      return toArray( jsonArray, null, null );
+      return toArray( jsonArray, new JsonConfig() );
    }
 
    /**
     * Creates a java array from a JSONArray.
     */
    public static Object toArray( JSONArray jsonArray, Class objectClass ) {
-      return toArray( jsonArray, objectClass, null );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( objectClass );
+      return toArray( jsonArray, jsonConfig );
    }
 
    /**
@@ -274,9 +237,22 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * </ul>
     */
    public static Object toArray( JSONArray jsonArray, Class objectClass, Map classMap ) {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( objectClass );
+      jsonConfig.setClassMap( classMap );
+      return toArray( jsonArray, jsonConfig );
+   }
+
+   /**
+    * Creates a java array from a JSONArray.<br>
+    */
+   public static Object toArray( JSONArray jsonArray, JsonConfig jsonConfig ) {
       if( jsonArray.size() == 0 ){
          return new Object[0];
       }
+
+      Class objectClass = jsonConfig.getRootClass();
+      Map classMap = jsonConfig.getClassMap();
 
       int[] dimensions = JSONArray.getDimensions( jsonArray );
       Object array = Array.newInstance( objectClass == null ? Object.class : objectClass,
@@ -297,8 +273,10 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                Array.set( array, i, value );
             }else{
                if( objectClass != null ){
-                  Array.set( array, i,
-                        JSONObject.toBean( (JSONObject) value, objectClass, classMap ) );
+                  JsonConfig jsc = jsonConfig.copy();
+                  jsc.setRootClass( objectClass );
+                  jsc.setClassMap( classMap );
+                  Array.set( array, i, JSONObject.toBean( (JSONObject) value, jsc ) );
                }else{
                   Array.set( array, i, JSONObject.toBean( (JSONObject) value ) );
                }
@@ -312,14 +290,16 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * Creates a List from a JSONArray.
     */
    public static List toList( JSONArray jsonArray ) {
-      return toList( jsonArray, null, null );
+      return toList( jsonArray, new JsonConfig() );
    }
 
    /**
     * Creates a List from a JSONArray.
     */
    public static List toList( JSONArray jsonArray, Class objectClass ) {
-      return toList( jsonArray, objectClass, null );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( objectClass );
+      return toList( jsonArray, jsonConfig );
    }
 
    /**
@@ -334,6 +314,19 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * </ul>
     */
    public static List toList( JSONArray jsonArray, Class objectClass, Map classMap ) {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( objectClass );
+      jsonConfig.setClassMap( classMap );
+      return toList( jsonArray, jsonConfig );
+   }
+
+   /**
+    * Creates a List from a JSONArray.<br>
+    */
+   public static List toList( JSONArray jsonArray, JsonConfig jsonConfig ) {
+      Class objectClass = jsonConfig.getRootClass();
+      Map classMap = jsonConfig.getClassMap();
+
       List list = new ArrayList();
       int size = jsonArray.size();
       for( int i = 0; i < size; i++ ){
@@ -351,7 +344,10 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                list.add( value );
             }else{
                if( objectClass != null ){
-                  list.add( JSONObject.toBean( (JSONObject) value, objectClass, classMap ) );
+                  JsonConfig jsc = jsonConfig.copy();
+                  jsc.setRootClass( objectClass );
+                  jsc.setClassMap( classMap );
+                  list.add( JSONObject.toBean( (JSONObject) value, jsc ) );
                }else{
                   list.add( JSONObject.toBean( (JSONObject) value ) );
                }
@@ -366,21 +362,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *
     * @param array An boolean[] array.
     */
-   private static JSONArray _fromArray( boolean[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireArrayStartEvent();
+   private static JSONArray _fromArray( boolean[] array, JsonConfig jsonConfig ) {
+      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
                   .handleRepeatedReferenceAsArray( array );
          }catch( JSONException jsone ){
             removeInstance( array );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( array );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -388,11 +383,11 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       for( int i = 0; i < array.length; i++ ){
          Boolean b = array[i] ? Boolean.TRUE : Boolean.FALSE;
          jsonArray.elements.add( b );
-         fireElementAddedEvent( i, b );
+         fireElementAddedEvent( i, b, jsonConfig );
       }
 
       removeInstance( array );
-      fireArrayEndEvent();
+      fireArrayEndEvent( jsonConfig );
       return jsonArray;
    }
 
@@ -401,21 +396,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *
     * @param array An byte[] array.
     */
-   private static JSONArray _fromArray( byte[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireArrayStartEvent();
+   private static JSONArray _fromArray( byte[] array, JsonConfig jsonConfig ) {
+      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
                   .handleRepeatedReferenceAsArray( array );
          }catch( JSONException jsone ){
             removeInstance( array );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( array );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -423,11 +417,11 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       for( int i = 0; i < array.length; i++ ){
          Number n = JSONUtils.transformNumber( new Byte( array[i] ) );
          jsonArray.elements.add( n );
-         fireElementAddedEvent( i, n );
+         fireElementAddedEvent( i, n, jsonConfig );
       }
 
       removeInstance( array );
-      fireArrayEndEvent();
+      fireArrayEndEvent( jsonConfig );
       return jsonArray;
    }
 
@@ -436,21 +430,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *
     * @param array An char[] array.
     */
-   private static JSONArray _fromArray( char[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireArrayStartEvent();
+   private static JSONArray _fromArray( char[] array, JsonConfig jsonConfig ) {
+      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
                   .handleRepeatedReferenceAsArray( array );
          }catch( JSONException jsone ){
             removeInstance( array );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( array );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -458,11 +451,11 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       for( int i = 0; i < array.length; i++ ){
          Character c = new Character( array[i] );
          jsonArray.elements.add( c );
-         fireElementAddedEvent( i, c );
+         fireElementAddedEvent( i, c, jsonConfig );
       }
 
       removeInstance( array );
-      fireArrayEndEvent();
+      fireArrayEndEvent( jsonConfig );
       return jsonArray;
    }
 
@@ -471,21 +464,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *
     * @param array An double[] array.
     */
-   private static JSONArray _fromArray( double[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireArrayStartEvent();
+   private static JSONArray _fromArray( double[] array, JsonConfig jsonConfig ) {
+      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
                   .handleRepeatedReferenceAsArray( array );
          }catch( JSONException jsone ){
             removeInstance( array );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( array );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -495,16 +487,16 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             Double d = new Double( array[i] );
             JSONUtils.testValidity( d );
             jsonArray.elements.add( d );
-            fireElementAddedEvent( i, d );
+            fireElementAddedEvent( i, d, jsonConfig );
          }
       }catch( JSONException jsone ){
          removeInstance( array );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }
 
       removeInstance( array );
-      fireArrayEndEvent();
+      fireArrayEndEvent( jsonConfig );
       return jsonArray;
    }
 
@@ -514,38 +506,38 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @param e A enum value.
     * @throws JSONException If there is a syntax error.
     */
-   private static JSONArray _fromArray( Enum e )
+   private static JSONArray _fromArray( Enum e, JsonConfig jsonConfig )
    {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireArrayStartEvent();
+      
+      fireArrayStartEvent( jsonConfig );
       if( !addInstance( e ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
                   .handleRepeatedReferenceAsArray( e );
          }catch( JSONException jsone ){
             removeInstance( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException re ){
             removeInstance( e );
             JSONException jsone = new JSONException( re );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
       JSONArray jsonArray = new JSONArray();
       if( e != null ){
          jsonArray.elements.add( e.toString() );
-         fireElementAddedEvent( 0, jsonArray.get(0) );
+         fireElementAddedEvent( 0, jsonArray.get(0), jsonConfig );
       }else{
          JSONException jsone = new JSONException( "enum value is null" );
          removeInstance( e );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }
 
       removeInstance( e );
-      fireArrayEndEvent();
+      fireArrayEndEvent(jsonConfig);
       return jsonArray;
    }
 
@@ -554,21 +546,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *
     * @param array An float[] array.
     */
-   private static JSONArray _fromArray( float[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireArrayStartEvent();
+   private static JSONArray _fromArray( float[] array, JsonConfig jsonConfig ) {
+      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
                   .handleRepeatedReferenceAsArray( array );
          }catch( JSONException jsone ){
             removeInstance( array );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( array );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -578,16 +569,16 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             Float f = new Float( array[i] );
             JSONUtils.testValidity( f );
             jsonArray.elements.add( f );
-            fireElementAddedEvent( i, f );
+            fireElementAddedEvent( i, f, jsonConfig );
          }
       }catch( JSONException jsone ){
          removeInstance( array );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }
 
       removeInstance( array );
-      fireArrayEndEvent();
+      fireArrayEndEvent( jsonConfig );
       return jsonArray;
    }
 
@@ -596,21 +587,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *
     * @param array An int[] array.
     */
-   private static JSONArray _fromArray( int[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireArrayStartEvent();
+   private static JSONArray _fromArray( int[] array, JsonConfig jsonConfig ) {
+      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
                   .handleRepeatedReferenceAsArray( array );
          }catch( JSONException jsone ){
             removeInstance( array );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( array );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -618,11 +608,11 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       for( int i = 0; i < array.length; i++ ){
          Number n = new Integer( array[i] );
          jsonArray.elements.add( n );
-         fireElementAddedEvent( i, n );
+         fireElementAddedEvent( i, n, jsonConfig );
       }
 
       removeInstance( array );
-      fireArrayEndEvent();
+      fireArrayEndEvent( jsonConfig );
       return jsonArray;
    }
 
@@ -631,21 +621,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *
     * @param array An long[] array.
     */
-   private static JSONArray _fromArray( long[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireArrayStartEvent();
+   private static JSONArray _fromArray( long[] array, JsonConfig jsonConfig ) {
+      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
                   .handleRepeatedReferenceAsArray( array );
          }catch( JSONException jsone ){
             removeInstance( array );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( array );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -653,19 +642,18 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       for( int i = 0; i < array.length; i++ ){
          Number n = JSONUtils.transformNumber( new Long( array[i] ) );
          jsonArray.elements.add( n );
-         fireElementAddedEvent( i, n );
+         fireElementAddedEvent( i, n, jsonConfig );
       }
 
       removeInstance( array );
-      fireArrayEndEvent();
+      fireArrayEndEvent( jsonConfig );
       return jsonArray;
    }
 
    // ------------------------------------------------------
 
-   private static JSONArray _fromArray( Object[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireArrayStartEvent();
+   private static JSONArray _fromArray( Object[] array, JsonConfig jsonConfig ) {
+      fireArrayStartEvent( jsonConfig );
 
       if( !addInstance( array ) ){
          try{
@@ -673,12 +661,12 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                   .handleRepeatedReferenceAsArray( array );
          }catch( JSONException jsone ){
             removeInstance( array );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( array );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -686,22 +674,22 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       try{
          for( int i = 0; i < array.length; i++ ){
             Object element = array[i];
-            jsonArray.addValue( element );
-            fireElementAddedEvent( i, jsonArray.get( i ) );
+            jsonArray.addValue( element, jsonConfig );
+            fireElementAddedEvent( i, jsonArray.get( i ), jsonConfig );
          }
       }catch( JSONException jsone ){
          removeInstance( array );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }catch( RuntimeException e ){
          removeInstance( array );
          JSONException jsone = new JSONException( e );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }
 
       removeInstance( array );
-      fireArrayEndEvent();
+      fireArrayEndEvent( jsonConfig );
       return jsonArray;
    }
 
@@ -710,21 +698,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *
     * @param array An short[] array.
     */
-   private static JSONArray _fromArray( short[] array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireArrayStartEvent();
+   private static JSONArray _fromArray( short[] array, JsonConfig jsonConfig ) {
+      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
                   .handleRepeatedReferenceAsArray( array );
          }catch( JSONException jsone ){
             removeInstance( array );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( array );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -732,17 +719,16 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       for( int i = 0; i < array.length; i++ ){
          Number n = JSONUtils.transformNumber( new Short( array[i] ) );
          jsonArray.elements.add( n );
-         fireElementAddedEvent( i, n );
+         fireElementAddedEvent( i, n, jsonConfig );
       }
 
       removeInstance( array );
-      fireArrayEndEvent();
+      fireArrayEndEvent( jsonConfig );
       return jsonArray;
    }
 
-   private static JSONArray _fromCollection( Collection collection ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireArrayStartEvent();
+   private static JSONArray _fromCollection( Collection collection, JsonConfig jsonConfig ) {
+      fireArrayStartEvent( jsonConfig );
 
       if( !addInstance( collection ) ){
          try{
@@ -750,12 +736,12 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                   .handleRepeatedReferenceAsArray( collection );
          }catch( JSONException jsone ){
             removeInstance( collection );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( collection );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -764,28 +750,27 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
          int i = 0;
          for( Iterator elements = collection.iterator(); elements.hasNext(); ){
             Object element = elements.next();
-            jsonArray.addValue( element );
-            fireElementAddedEvent( i, jsonArray.get( i++ ) );
+            jsonArray.addValue( element, jsonConfig );
+            fireElementAddedEvent( i, jsonArray.get( i++ ), jsonConfig );
          }
       }catch( JSONException jsone ){
          removeInstance( collection );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }catch( RuntimeException e ){
          removeInstance( collection );
          JSONException jsone = new JSONException( e );
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }
 
       removeInstance( collection );
-      fireArrayEndEvent();
+      fireArrayEndEvent( jsonConfig );
       return jsonArray;
    }
 
-   private static JSONArray _fromJSONArray( JSONArray array ) {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
-      fireArrayStartEvent();
+   private static JSONArray _fromJSONArray( JSONArray array, JsonConfig jsonConfig ) {
+      fireArrayStartEvent( jsonConfig );
 
       if( !addInstance( array ) ){
          try{
@@ -793,12 +778,12 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                   .handleRepeatedReferenceAsArray( array );
          }catch( JSONException jsone ){
             removeInstance( array );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }catch( RuntimeException e ){
             removeInstance( array );
             JSONException jsone = new JSONException( e );
-            fireErrorEvent( jsone );
+            fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
       }
@@ -807,20 +792,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       for( Iterator elements = array.iterator(); elements.hasNext(); ){
          Object element = elements.next();
          jsonArray.elements.add( element );
-         fireElementAddedEvent( index++, element );
+         fireElementAddedEvent( index++, element, jsonConfig );
       }
 
       removeInstance( array );
-      fireArrayEndEvent();
+      fireArrayEndEvent( jsonConfig );
       return jsonArray;
    }
 
-   private static JSONArray _fromJSONString( JSONString string ) {
-      return _fromJSONTokener( new JSONTokener( string.toJSONString() ) );
+   private static JSONArray _fromJSONString( JSONString string, JsonConfig jsonConfig ) {
+      return _fromJSONTokener( new JSONTokener( string.toJSONString() ), jsonConfig );
    }
 
-   private static JSONArray _fromJSONTokener( JSONTokener tokener ) {
-      fireArrayStartEvent();
+   private static JSONArray _fromJSONTokener( JSONTokener tokener, JsonConfig jsonConfig ) {
+      fireArrayStartEvent( jsonConfig );
 
       JSONArray jsonArray = new JSONArray();
       int index = 0;
@@ -830,7 +815,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw tokener.syntaxError( "A JSONArray text must start with '['" );
          }
          if( tokener.nextClean() == ']' ){
-            fireArrayEndEvent();
+            fireArrayEndEvent( jsonConfig );
             return jsonArray;
          }
          tokener.back();
@@ -838,17 +823,18 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             if( tokener.nextClean() == ',' ){
                tokener.back();
                jsonArray.elements.add( JSONNull.getInstance() );
-               fireElementAddedEvent( index, jsonArray.get( index++ ) );
+               fireElementAddedEvent( index, jsonArray.get( index++ ), jsonConfig );
             }else{
                tokener.back();
-               Object v = tokener.nextValue();
+               Object v = tokener.nextValue( jsonConfig );
                if( !JSONUtils.isFunctionHeader( v ) ){
                   if( v instanceof String && JSONUtils.mayBeJSON( (String) v ) ){
-                     jsonArray.addValue( JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE );
+                     jsonArray.addValue( JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE,
+                           jsonConfig );
                   }else{
-                     jsonArray.addValue( v );
+                     jsonArray.addValue( v, jsonConfig );
                   }
-                  fireElementAddedEvent( index, jsonArray.get( index++ ) );
+                  fireElementAddedEvent( index, jsonArray.get( index++ ), jsonConfig );
                }else{
                   // read params if any
                   String params = JSONUtils.getFunctionParams( (String) v );
@@ -879,34 +865,34 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                   text = text.substring( 1, text.length() - 1 )
                         .trim();
                   jsonArray.addValue( new JSONFunction( (params != null) ? StringUtils.split(
-                        params, "," ) : null, text ) );
-                  fireElementAddedEvent( index, jsonArray.get( index++ ) );
+                        params, "," ) : null, text ), jsonConfig );
+                  fireElementAddedEvent( index, jsonArray.get( index++ ), jsonConfig );
                }
             }
             switch( tokener.nextClean() ){
                case ';':
                case ',':
                   if( tokener.nextClean() == ']' ){
-                     fireArrayEndEvent();
+                     fireArrayEndEvent( jsonConfig );
                      return jsonArray;
                   }
                   tokener.back();
                   break;
                case ']':
-                  fireArrayEndEvent();
+                  fireArrayEndEvent( jsonConfig );
                   return jsonArray;
                default:
                   throw tokener.syntaxError( "Expected a ',' or ']'" );
             }
          }
       }catch( JSONException jsone ){
-         fireErrorEvent( jsone );
+         fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }
    }
 
-   private static JSONArray _fromString( String string ) {
-      return _fromJSONTokener( new JSONTokener( string ) );
+   private static JSONArray _fromString( String string, JsonConfig jsonConfig ) {
+      return _fromJSONTokener( new JSONTokener( string ), jsonConfig );
    }
 
    private static void processArrayDimensions( JSONArray jsonArray, List dims, int index ) {
@@ -946,31 +932,47 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    }
 
    public void add( int index, Object value ) {
-      this.elements.add( index, processValue( value ) );
+      add( index, value, new JsonConfig() );
+   }
+
+   public void add( int index, Object value, JsonConfig jsonConfig ) {
+      this.elements.add( index, processValue( value, jsonConfig ) );
    }
 
    public boolean add( Object value ) {
-      element( value );
+      return add( value, new JsonConfig() );
+   }
+
+   public boolean add( Object value, JsonConfig jsonConfig ) {
+      element( value, jsonConfig );
       return true;
    }
 
    public boolean addAll( Collection collection ) {
+      return addAll( collection, new JsonConfig() );
+   }
+
+   public boolean addAll( Collection collection, JsonConfig jsonConfig ) {
       if( collection == null || collection.size() == 0 ){
          return false;
       }
       for( Iterator i = collection.iterator(); i.hasNext(); ){
-         element( i.next() );
+         element( i.next(), jsonConfig );
       }
       return true;
    }
 
    public boolean addAll( int index, Collection collection ) {
+      return addAll( index, collection, new JsonConfig() );
+   }
+
+   public boolean addAll( int index, Collection collection, JsonConfig jsonConfig ) {
       if( collection == null || collection.size() == 0 ){
          return false;
       }
       int offset = 0;
       for( Iterator i = collection.iterator(); i.hasNext(); ){
-         this.elements.add( index + (offset++), processValue( i.next() ) );
+         this.elements.add( index + (offset++), processValue( i.next(), jsonConfig ) );
       }
       return true;
    }
@@ -996,11 +998,19 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    }
 
    public boolean contains( Object o ) {
-      return elements.contains( processValue( o ) );
+      return contains( o, new JsonConfig() );
+   }
+
+   public boolean contains( Object o, JsonConfig jsonConfig ) {
+      return elements.contains( processValue( o, jsonConfig ) );
    }
 
    public boolean containsAll( Collection collection ) {
-      return elements.containsAll( fromObject( collection ) );
+      return containsAll( collection, new JsonConfig() );
+   }
+
+   public boolean containsAll( Collection collection, JsonConfig jsonConfig ) {
+      return elements.containsAll( fromObject( collection, jsonConfig ) );
    }
 
    /**
@@ -1021,11 +1031,22 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @return this.
     */
    public JSONArray element( Collection value ) {
+      return element( value, new JsonConfig() );
+   }
+
+   /**
+    * Append a value in the JSONArray, where the value will be a JSONArray which
+    * is produced from a Collection.
+    *
+    * @param value A Collection value.
+    * @return this.
+    */
+   public JSONArray element( Collection value, JsonConfig jsonConfig ) {
       if( value instanceof JSONArray ){
          elements.add( value );
          return this;
       }else{
-         return element( _fromCollection( value ) );
+         return element( _fromCollection( value, jsonConfig ) );
       }
    }
 
@@ -1077,6 +1098,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *         finite.
     */
    public JSONArray element( int index, Collection value ) {
+      return element( index, value, new JsonConfig() );
+   }
+
+   /**
+    * Put a value in the JSONArray, where the value will be a JSONArray which is
+    * produced from a Collection.
+    *
+    * @param index The subscript.
+    * @param value A Collection value.
+    * @return this.
+    * @throws JSONException If the index is negative or if the value is not
+    *         finite.
+    */
+   public JSONArray element( int index, Collection value, JsonConfig jsonConfig ) {
       if( value instanceof JSONArray ){
          if( index < 0 ){
             throw new JSONException( "JSONArray[" + index + "] not found." );
@@ -1087,11 +1122,11 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             while( index != size() ){
                element( JSONNull.getInstance() );
             }
-            element( value );
+            element( value, jsonConfig );
          }
          return this;
       }else{
-         return element( index, _fromCollection( value ) );
+         return element( index, _fromCollection( value, jsonConfig ) );
       }
    }
 
@@ -1149,6 +1184,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *         invalid number.
     */
    public JSONArray element( int index, Map value ) {
+      return element( index, value, new JsonConfig() );
+   }
+
+   /**
+    * Put a value in the JSONArray, where the value will be a JSONObject which
+    * is produced from a Map.
+    *
+    * @param index The subscript.
+    * @param value The Map value.
+    * @return this.
+    * @throws JSONException If the index is negative or if the the value is an
+    *         invalid number.
+    */
+   public JSONArray element( int index, Map value, JsonConfig jsonConfig ) {
       if( value instanceof JSONObject ){
          if( index < 0 ){
             throw new JSONException( "JSONArray[" + index + "] not found." );
@@ -1159,11 +1208,11 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             while( index != size() ){
                element( JSONNull.getInstance() );
             }
-            element( value );
+            element( value, jsonConfig );
          }
          return this;
       }else{
-         return element( index, JSONObject.fromObject( value ) );
+         return element( index, JSONObject.fromObject( value, jsonConfig ) );
       }
    }
 
@@ -1181,17 +1230,34 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *         invalid number.
     */
    public JSONArray element( int index, Object value ) {
+      return element( index, value, new JsonConfig() );
+   }
+
+   /**
+    * Put or replace an object value in the JSONArray. If the index is greater
+    * than the length of the JSONArray, then null elements will be added as
+    * necessary to pad it out.
+    *
+    * @param index The subscript.
+    * @param value An object value. The value should be a Boolean, Double,
+    *        Integer, JSONArray, JSONObject, JSONFunction, Long, String,
+    *        JSONString or the JSONNull object.
+    * @return this.
+    * @throws JSONException If the index is negative or if the the value is an
+    *         invalid number.
+    */
+   public JSONArray element( int index, Object value, JsonConfig jsonConfig ) {
       JSONUtils.testValidity( value );
       if( index < 0 ){
          throw new JSONException( "JSONArray[" + index + "] not found." );
       }
       if( index < size() ){
-         this.elements.set( index, processValue( value ) );
+         this.elements.set( index, processValue( value, jsonConfig ) );
       }else{
          while( index != size() ){
             element( JSONNull.getInstance() );
          }
-         element( value );
+         element( value, jsonConfig );
       }
       return this;
    }
@@ -1210,6 +1276,23 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *         invalid number.
     */
    public JSONArray element( int index, String value ) {
+      return element( index, value, new JsonConfig() );
+   }
+
+   /**
+    * Put or replace a String value in the JSONArray. If the index is greater
+    * than the length of the JSONArray, then null elements will be added as
+    * necessary to pad it out.<br>
+    * The string may be a valid JSON formatted string, in tha case, it will be
+    * trabsformed to a JSONArray, JSONObjetc or JSONNull.
+    *
+    * @param index The subscript.
+    * @param value A String value.
+    * @return this.
+    * @throws JSONException If the index is negative or if the the value is an
+    *         invalid number.
+    */
+   public JSONArray element( int index, String value, JsonConfig jsonConfig ) {
       if( index < 0 ){
          throw new JSONException( "JSONArray[" + index + "] not found." );
       }
@@ -1218,7 +1301,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             this.elements.set( index, "" );
          }else if( JSONUtils.mayBeJSON( value ) ){
             try{
-               this.elements.set( index, JSONSerializer.toJSON( value ) );
+               this.elements.set( index, JSONSerializer.toJSON( value, jsonConfig ) );
             }catch( JSONException jsone ){
                this.elements.set( index, JSONUtils.stripQuotes( value ) );
             }
@@ -1229,7 +1312,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
          while( index != size() ){
             element( JSONNull.getInstance() );
          }
-         element( value );
+         element( value, jsonConfig );
       }
       return this;
    }
@@ -1274,11 +1357,22 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @return this.
     */
    public JSONArray element( Map value ) {
+      return element( value, new JsonConfig() );
+   }
+
+   /**
+    * Put a value in the JSONArray, where the value will be a JSONObject which
+    * is produced from a Map.
+    *
+    * @param value A Map value.
+    * @return this.
+    */
+   public JSONArray element( Map value, JsonConfig jsonConfig ) {
       if( value instanceof JSONObject ){
          elements.add( value );
          return this;
       }else{
-         return element( JSONObject.fromObject( value ) );
+         return element( JSONObject.fromObject( value, jsonConfig ) );
       }
    }
 
@@ -1291,7 +1385,19 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @return this.
     */
    public JSONArray element( Object value ) {
-      return addValue( value );
+      return element( value, new JsonConfig() );
+   }
+
+   /**
+    * Append an object value. This increases the array's length by one.
+    *
+    * @param value An object value. The value should be a Boolean, Double,
+    *        Integer, JSONArray, JSONObject, JSONFunction, Long, String,
+    *        JSONString or the JSONNull object.
+    * @return this.
+    */
+   public JSONArray element( Object value, JsonConfig jsonConfig ) {
+      return addValue( value, jsonConfig );
    }
 
    /**
@@ -1303,11 +1409,23 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @return this.
     */
    public JSONArray element( String value ) {
+      return element( value, new JsonConfig() );
+   }
+
+   /**
+    * Append a String value. This increases the array's length by one.<br>
+    * The string may be a valid JSON formatted string, in tha case, it will be
+    * trabsformed to a JSONArray, JSONObjetc or JSONNull.
+    *
+    * @param value A String value.
+    * @return this.
+    */
+   public JSONArray element( String value, JsonConfig jsonConfig ) {
       if( value == null ){
          this.elements.add( "" );
       }else if( JSONUtils.mayBeJSON( value ) ){
          try{
-            this.elements.add( JSONSerializer.toJSON( value ) );
+            this.elements.add( JSONSerializer.toJSON( value, jsonConfig ) );
          }catch( JSONException jsone ){
             this.elements.add( JSONUtils.stripQuotes( value ) );
          }
@@ -1634,16 +1752,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       return elements.lastIndexOf( o );
    }
 
-   /**
-    * Get the number of elements in the JSONArray, included nulls.
-    *
-    * @return The length (or size).
-    * @deprecated use size() instead
-    */
-   public int length() {
-      return this.elements.size();
-   }
-
    public ListIterator listIterator() {
       return elements.listIterator();
    }
@@ -1837,16 +1945,28 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    }
 
    public boolean removeAll( Collection collection ) {
-      return elements.removeAll( fromObject( collection ) );
+      return removeAll( collection, new JsonConfig() );
+   }
+
+   public boolean removeAll( Collection collection, JsonConfig jsonConfig ) {
+      return elements.removeAll( fromObject( collection, jsonConfig ) );
    }
 
    public boolean retainAll( Collection collection ) {
-      return elements.retainAll( fromObject( collection ) );
+      return retainAll( collection, new JsonConfig() );
+   }
+
+   public boolean retainAll( Collection collection, JsonConfig jsonConfig ) {
+      return elements.retainAll( fromObject( collection, jsonConfig ) );
    }
 
    public Object set( int index, Object value ) {
+      return set( index, value, new JsonConfig() );
+   }
+
+   public Object set( int index, Object value, JsonConfig jsonConfig ) {
       Object previous = get( index );
-      element( index, value );
+      element( index, value, jsonConfig );
       return previous;
    }
 
@@ -2039,12 +2159,12 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *        JSONString or the JSONNull object.
     * @return this.
     */
-   private JSONArray _addValue( Object value ) {
-      this.elements.add( _processValue( value ) );
+   private JSONArray _addValue( Object value, JsonConfig jsonConfig ) {
+      this.elements.add( _processValue( value, jsonConfig ) );
       return this;
    }
 
-   private Object _processValue( Object value ) {
+   private Object _processValue( Object value, JsonConfig jsonConfig ) {
       if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
             || value instanceof Class ){
          return ((Class) value).getName();
@@ -2054,18 +2174,18 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
          }
          return value;
       }else if( value instanceof JSONString ){
-         return JSONSerializer.toJSON( (JSONString) value );
+         return JSONSerializer.toJSON( (JSONString) value, jsonConfig );
       }else if( value instanceof JSON ){
-         return value;
+         return JSONSerializer.toJSON( value, jsonConfig );
       }else if( JSONUtils.isArray( value ) ){
-         return JSONArray.fromObject( value );
+         return JSONArray.fromObject( value, jsonConfig );
       }else if( value instanceof JSONTokener ){
-         return _fromJSONTokener( (JSONTokener) value );
+         return _fromJSONTokener( (JSONTokener) value, jsonConfig );
       }else if( JSONUtils.isString( value ) ){
          String str = String.valueOf( value );
          if( JSONUtils.mayBeJSON( str ) ){
             try{
-               return JSONSerializer.toJSON( str );
+               return JSONSerializer.toJSON( str, jsonConfig );
             }catch( JSONException jsone ){
                return JSONUtils.stripQuotes( str );
             }
@@ -2083,7 +2203,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             .isAnnotation()) ){
          throw new JSONException( "Unsupported type" );
       }else{
-         JSONObject jsonObject = JSONObject.fromObject( value );
+         JSONObject jsonObject = JSONObject.fromObject( value, jsonConfig );
          if( jsonObject.isNullObject() ){
             return JSONNull.getInstance();
          }else{
@@ -2100,21 +2220,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     *        JSONString or the JSONNull object.
     * @return this.
     */
-   private JSONArray addValue( Object value ) {
-      return _addValue( processValue( value ) );
+   private JSONArray addValue( Object value, JsonConfig jsonConfig ) {
+      return _addValue( processValue( value, jsonConfig ), jsonConfig );
    }
 
-   private Object processValue( Object value ) {
+   private Object processValue( Object value, JsonConfig jsonConfig ) {
       if( value != null ){
-         JsonValueProcessor jsonValueProcessor = JsonConfig.getInstance()
-               .findJsonValueProcessor( value.getClass() );
+         JsonValueProcessor jsonValueProcessor = jsonConfig.findJsonValueProcessor( value.getClass() );
          if( jsonValueProcessor != null ){
-            value = jsonValueProcessor.processArrayValue( value );
+            value = jsonValueProcessor.processArrayValue( value, jsonConfig );
             if( !JsonVerifier.isValidJsonValue( value ) ){
                throw new JSONException( "Value is not a valid JSON value. " + value );
             }
          }
       }
-      return _processValue( value );
+      return _processValue( value, jsonConfig );
    }
 }

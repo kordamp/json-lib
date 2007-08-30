@@ -39,22 +39,16 @@ public class TestJSONSerializer extends TestCase {
       junit.textui.TestRunner.run( TestJSONSerializer.class );
    }
 
-   private JSONSerializer jsonSerializer = new JSONSerializer();
+   private JsonConfig jsonConfig;
 
    public TestJSONSerializer( String name ) {
       super( name );
    }
 
-   protected void setUp() throws Exception {
-      super.setUp();
-      JsonConfig.getInstance()
-            .reset();
-   }
-
    public void testToJava_JSONArray_1() {
       setName( "JSONArray('[]') -&gt; ToJava[default]" );
       JSONArray jsonArray = JSONArray.fromObject( "[]" );
-      Object java = jsonSerializer.toJava( jsonArray );
+      Object java = JSONSerializer.toJava( jsonArray );
       assertNotNull( java );
       assertTrue( java instanceof List );
       List list = (List) java;
@@ -64,8 +58,8 @@ public class TestJSONSerializer extends TestCase {
    public void testToJava_JSONArray_2() {
       setName( "JSONArray('[]') -&gt; ToJava[arrayMode:OBJECT_ARRAY]" );
       JSONArray jsonArray = JSONArray.fromObject( "[]" );
-      jsonSerializer.setArrayMode( JSONSerializer.MODE_OBJECT_ARRAY );
-      Object java = jsonSerializer.toJava( jsonArray );
+      jsonConfig.setArrayMode( JsonConfig.MODE_OBJECT_ARRAY );
+      Object java = JSONSerializer.toJava( jsonArray, jsonConfig );
       assertNotNull( java );
       assertTrue( Object[].class.isAssignableFrom( java.getClass() ) );
       Object[] array = (Object[]) java;
@@ -74,13 +68,13 @@ public class TestJSONSerializer extends TestCase {
 
    public void testToJava_JSONNull_1() {
       setName( "JSONNull -&gt; ToJava[default]" );
-      Object java = jsonSerializer.toJava( JSONNull.getInstance() );
+      Object java = JSONSerializer.toJava( JSONNull.getInstance() );
       assertNull( java );
    }
 
    public void testToJava_JSONObject_1() {
       setName( "JSONObject(null:true) -&gt; ToJava[default]" );
-      Object java = jsonSerializer.toJava( new JSONObject( true ) );
+      Object java = JSONSerializer.toJava( new JSONObject( true ) );
       assertNull( java );
    }
 
@@ -88,7 +82,7 @@ public class TestJSONSerializer extends TestCase {
       setName( "JSONObject -&gt; ToJava[default]" );
       String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
       JSONObject jsonObject = JSONObject.fromObject( json );
-      Object bean = jsonSerializer.toJava( jsonObject );
+      Object bean = JSONSerializer.toJava( jsonObject );
       assertNotNull( bean );
       assertTrue( bean instanceof DynaBean );
       assertEquals( jsonObject.get( "name" ), PropertyUtils.getProperty( bean, "name" ) );
@@ -104,8 +98,8 @@ public class TestJSONSerializer extends TestCase {
       setName( "JSONObject -&gt; ToJava[rootClass:BeanA]" );
       String json = "{bool:true,integer:1,string:\"json\"}";
       JSONObject jsonObject = JSONObject.fromObject( json );
-      jsonSerializer.setRootClass( BeanA.class );
-      Object java = jsonSerializer.toJava( jsonObject );
+      jsonConfig.setRootClass( BeanA.class );
+      Object java = JSONSerializer.toJava( jsonObject, jsonConfig );
       assertNotNull( java );
       assertTrue( java instanceof BeanA );
       BeanA bean = (BeanA) java;
@@ -128,9 +122,9 @@ public class TestJSONSerializer extends TestCase {
       classMap.put( "bean.*", ValueBean.class );
 
       JSONObject jsonObject = JSONObject.fromObject( mappingBean );
-      jsonSerializer.setRootClass( MappingBean.class );
-      jsonSerializer.setClassMap( classMap );
-      Object java = jsonSerializer.toJava( jsonObject );
+      jsonConfig.setRootClass( MappingBean.class );
+      jsonConfig.setClassMap( classMap );
+      Object java = JSONSerializer.toJava( jsonObject, jsonConfig );
       assertNotNull( java );
       assertTrue( java instanceof MappingBean );
       MappingBean mappingBean2 = (MappingBean) java;
@@ -148,16 +142,16 @@ public class TestJSONSerializer extends TestCase {
    public void testToJava_JSONObject_and_reset() throws Exception {
       String json = "{bool:true,integer:1,string:\"json\"}";
       JSONObject jsonObject = JSONObject.fromObject( json );
-      jsonSerializer.setRootClass( BeanA.class );
-      Object java = jsonSerializer.toJava( jsonObject );
+      jsonConfig.setRootClass( BeanA.class );
+      Object java = JSONSerializer.toJava( jsonObject, jsonConfig );
       assertNotNull( java );
       assertTrue( java instanceof BeanA );
       BeanA bean = (BeanA) java;
       assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
       assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
       assertEquals( jsonObject.get( "string" ), bean.getString() );
-      jsonSerializer.reset();
-      java = jsonSerializer.toJava( jsonObject );
+      jsonConfig.reset();
+      java = JSONSerializer.toJava( jsonObject, jsonConfig );
       assertTrue( java instanceof DynaBean );
       assertEquals( jsonObject.get( "bool" ), PropertyUtils.getProperty( java, "bool" ) );
       assertEquals( jsonObject.get( "integer" ), PropertyUtils.getProperty( java, "integer" ) );
@@ -252,5 +246,9 @@ public class TestJSONSerializer extends TestCase {
       assertNotNull( json );
       assertTrue( json instanceof JSONObject );
       Assertions.assertEquals( JSONObject.fromObject( "{\"name\":\"json\"}" ), (JSONObject) json );
+   }
+
+   protected void setUp() throws Exception {
+      jsonConfig = new JsonConfig();
    }
 }

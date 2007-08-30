@@ -33,9 +33,9 @@ public abstract class AbstractJSONObjectStaticBuildersTestCase extends TestCase 
    }
 
    public void testFromObject_excludes() {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
+      JsonConfig jsonConfig = new JsonConfig();
       jsonConfig.setExcludes( getExclusions() );
-      JSONObject json = JSONObject.fromObject( getSource() );
+      JSONObject json = JSONObject.fromObject( getSource(), jsonConfig );
       assertJSONObject( json, getProperties() );
       String[] excluded = getExclusions();
       for( int i = 0; i < excluded.length; i++ ){
@@ -46,10 +46,10 @@ public abstract class AbstractJSONObjectStaticBuildersTestCase extends TestCase 
    }
 
    public void testFromObject_excludes_ignoreDefaults() {
-      JsonConfig jsonConfig = JsonConfig.getInstance();
+      JsonConfig jsonConfig = new JsonConfig();
       jsonConfig.setExcludes( getExclusions() );
       jsonConfig.setIgnoreDefaultExcludes( true );
-      JSONObject json = JSONObject.fromObject( getSource() );
+      JSONObject json = JSONObject.fromObject( getSource(), jsonConfig );
       assertJSONObject( json, getProperties() );
       assertTrue( json.has( "class" ) );
       assertTrue( !json.has( "pexcluded" ) );
@@ -64,18 +64,6 @@ public abstract class AbstractJSONObjectStaticBuildersTestCase extends TestCase 
    }
 
    protected abstract Object getSource();
-
-   protected void setUp() throws Exception {
-      super.setUp();
-      JsonConfig.getInstance()
-            .reset();
-   }
-
-   protected void tearDown() throws Exception {
-      super.tearDown();
-      JsonConfig.getInstance()
-            .reset();
-   }
 
    private void assertJSONObject( JSONObject json, String[] properties ) {
       assertNotNull( json );

@@ -78,9 +78,18 @@ public final class JSONUtils {
     * @throws JSONException if the string can not be transformed.
     */
    public static String convertToJavaIdentifier( String key ) {
+      return convertToJavaIdentifier( key, new JsonConfig() );
+   }
+
+   /**
+    * Transformes the string into a valid Java Identifier.<br>
+    * The default strategy is JavaIdentifierTransformer.NOOP
+    *
+    * @throws JSONException if the string can not be transformed.
+    */
+   public static String convertToJavaIdentifier( String key, JsonConfig jsonConfig ) {
       try{
-         return JsonConfig.getInstance()
-               .getJavaIdentifierTransformer()
+         return jsonConfig.getJavaIdentifierTransformer()
                .transformToJavaIdentifier( key );
       }catch( JSONException jsone ){
          throw jsone;
@@ -130,17 +139,6 @@ public final class JSONUtils {
          return type;
       }
       return getInnerComponentType( type.getComponentType() );
-   }
-
-   /**
-    * Returns the JavaIdentifierTransformer strategy currently configured.<br>
-    * Default value is JavaIdentifierTransformer.NOOP;
-    *
-    * @deprecated use JsonConfig.getJavaIdentifierTransformer
-    */
-   public static JavaIdentifierTransformer getJavaIdentifierTransformer() {
-      return JsonConfig.getInstance()
-            .getJavaIdentifierTransformer();
    }
 
    /**
@@ -398,13 +396,22 @@ public final class JSONUtils {
     * Values of properties are not copied.
     */
    public static DynaBean newDynaBean( JSONObject jsonObject ) {
+      return newDynaBean( jsonObject, new JsonConfig() );
+   }
+
+   /**
+    * Creates a new MorphDynaBean from a JSONObject. The MorphDynaBean will have
+    * all the properties of the original JSONObject with the most accurate type.
+    * Values of properties are not copied.
+    */
+   public static DynaBean newDynaBean( JSONObject jsonObject, JsonConfig jsonConfig ) {
       Map props = getProperties( jsonObject );
       for( Iterator entries = props.entrySet()
             .iterator(); entries.hasNext(); ){
          Map.Entry entry = (Map.Entry) entries.next();
          String key = (String) entry.getKey();
          if( !JSONUtils.isJavaIdentifier( key ) ){
-            String parsedKey = JSONUtils.convertToJavaIdentifier( key );
+            String parsedKey = JSONUtils.convertToJavaIdentifier( key, jsonConfig );
             if( parsedKey.compareTo( key ) != 0 ){
                props.put( parsedKey, props.remove( key ) );
             }
@@ -518,19 +525,6 @@ public final class JSONUtils {
       }
       sb.append( '"' );
       return sb.toString();
-   }
-
-   /**
-    * Sets the JavaIdentifierTransformer strategy to use.<br>
-    * If the parameter is null, JavaIdentifierTransformer.NOOP will be used
-    * instead.
-    *
-    * @deprecated use JsonConfig.setJavaIdentifierTransformer
-    */
-   public static void setJavaIdentifierTransformer(
-         JavaIdentifierTransformer javaIdentifierTransformer ) {
-      JsonConfig.getInstance()
-            .setJavaIdentifierTransformer( javaIdentifierTransformer );
    }
 
    /**
