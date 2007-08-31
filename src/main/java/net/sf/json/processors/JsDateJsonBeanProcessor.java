@@ -43,10 +43,13 @@ import net.sf.json.JsonConfig;
 public class JsDateJsonBeanProcessor implements JsonBeanProcessor {
 
    /**
-    * Processes the input bena into a compatible JsDate.<br>
+    * Processes the input bean into a compatible JsDate.<br>
     */
    public JSONObject processBean( Object bean, JsonConfig jsonConfig ) {
       JSONObject jsonObject = null;
+      if( bean instanceof java.sql.Date ){
+         bean = new Date( ((java.sql.Date) bean).getTime() );
+      }
       if( bean instanceof Date ){
          Calendar c = Calendar.getInstance();
          c.setTime( (Date) bean );
