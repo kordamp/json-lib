@@ -64,6 +64,7 @@ import net.sf.json.processors.JsonVerifier;
 import net.sf.json.regexp.RegexpUtils;
 import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
+import net.sf.json.util.JsonPropertyFilter;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
@@ -519,6 +520,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       JSONObject jsonObject = new JSONObject();
       try{
          PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors( bean );
+         JsonPropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
          Class beanClass = bean.getClass();
          for( int i = 0; i < pds.length; i++ ){
             String key = pds[i].getName();
@@ -533,6 +535,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             Class type = pds[i].getPropertyType();
             if( pds[i].getReadMethod() != null ){
                Object value = PropertyUtils.getProperty( bean, key );
+               if( jsonPropertyFilter != null && jsonPropertyFilter.apply( bean, key, value ) ){
+                  continue;
+               }
                JsonValueProcessor jsonValueProcessor = jsonConfig.findJsonValueProcessor(
                      beanClass, type, key );
                if( jsonValueProcessor != null ){
@@ -592,6 +597,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          DynaProperty[] props = bean.getDynaClass()
                .getDynaProperties();
          Collection exclusions = jsonConfig.getMergedExcludes();
+         JsonPropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
          for( int i = 0; i < props.length; i++ ){
             DynaProperty dynaProperty = props[i];
             String key = dynaProperty.getName();
@@ -600,6 +606,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             }
             Class type = dynaProperty.getType();
             Object value = bean.get( dynaProperty.getName() );
+            if( jsonPropertyFilter != null && jsonPropertyFilter.apply( bean, key, value ) ){
+               continue;
+            }
             JsonValueProcessor jsonValueProcessor = jsonConfig.findJsonValueProcessor( type, key );
             if( jsonValueProcessor != null ){
                value = jsonValueProcessor.processObjectValue( key, value, jsonConfig );
@@ -651,12 +660,16 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       JSONArray sa = object.names();
       Collection exclusions = jsonConfig.getMergedExcludes();
       JSONObject jsonObject = new JSONObject();
+      JsonPropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
       for( Iterator i = sa.iterator(); i.hasNext(); ){
          String key = (String) i.next();
          if( exclusions.contains( key ) ){
             continue;
          }
          Object value = object.opt( key );
+         if( jsonPropertyFilter != null && jsonPropertyFilter.apply( object, key, value ) ){
+            continue;
+         }
          if( jsonObject.properties.containsKey( key ) ){
             jsonObject.accumulate( key, value, jsonConfig );
             firePropertySetEvent( key, value, true, jsonConfig );
@@ -693,6 +706,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          }
 
          Collection exclusions = jsonConfig.getMergedExcludes();
+         JsonPropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
          JSONObject jsonObject = new JSONObject();
          for( ;; ){
             c = tokener.nextClean();
@@ -740,22 +754,24 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   }
                   continue;
                }
-               if( v instanceof String && JSONUtils.mayBeJSON( (String) v ) ){
-                  value = JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE;
-                  if( jsonObject.properties.containsKey( key ) ){
-                     jsonObject.accumulate( key, value, jsonConfig );
-                     firePropertySetEvent( key, value, true, jsonConfig );
+               if( jsonPropertyFilter == null || !jsonPropertyFilter.apply( tokener, key, v ) ){
+                  if( v instanceof String && JSONUtils.mayBeJSON( (String) v ) ){
+                     value = JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE;
+                     if( jsonObject.properties.containsKey( key ) ){
+                        jsonObject.accumulate( key, value, jsonConfig );
+                        firePropertySetEvent( key, value, true, jsonConfig );
+                     }else{
+                        jsonObject.element( key, value, jsonConfig );
+                        firePropertySetEvent( key, value, false, jsonConfig );
+                     }
                   }else{
-                     jsonObject.element( key, value, jsonConfig );
-                     firePropertySetEvent( key, value, false, jsonConfig );
-                  }
-               }else{
-                  if( jsonObject.properties.containsKey( key ) ){
-                     jsonObject.accumulate( key, v, jsonConfig );
-                     firePropertySetEvent( key, v, true, jsonConfig );
-                  }else{
-                     jsonObject.element( key, v, jsonConfig );
-                     firePropertySetEvent( key, v, false, jsonConfig );
+                     if( jsonObject.properties.containsKey( key ) ){
+                        jsonObject.accumulate( key, v, jsonConfig );
+                        firePropertySetEvent( key, v, true, jsonConfig );
+                     }else{
+                        jsonObject.element( key, v, jsonConfig );
+                        firePropertySetEvent( key, v, false, jsonConfig );
+                     }
                   }
                }
             }else{
@@ -789,12 +805,14 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      .trim();
                value = new JSONFunction(
                      (params != null) ? StringUtils.split( params, "," ) : null, text );
-               if( jsonObject.properties.containsKey( key ) ){
-                  jsonObject.accumulate( key, value, jsonConfig );
-                  firePropertySetEvent( key, value, true, jsonConfig );
-               }else{
-                  jsonObject.element( key, value, jsonConfig );
-                  firePropertySetEvent( key, value, false, jsonConfig );
+               if( jsonPropertyFilter == null || !jsonPropertyFilter.apply( tokener, key, value ) ){
+                  if( jsonObject.properties.containsKey( key ) ){
+                     jsonObject.accumulate( key, value, jsonConfig );
+                     firePropertySetEvent( key, value, true, jsonConfig );
+                  }else{
+                     jsonObject.element( key, value, jsonConfig );
+                     firePropertySetEvent( key, value, false, jsonConfig );
+                  }
                }
             }
 
@@ -849,6 +867,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
 
       Collection exclusions = jsonConfig.getMergedExcludes();
       JSONObject jsonObject = new JSONObject();
+      JsonPropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
       try{
          for( Iterator entries = map.entrySet()
                .iterator(); entries.hasNext(); ){
@@ -859,6 +878,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                continue;
             }
             Object value = entry.getValue();
+            if( jsonPropertyFilter != null && jsonPropertyFilter.apply( map, key, value ) ){
+               continue;
+            }
             if( value != null ){
                JsonValueProcessor jsonValueProcessor = jsonConfig.findJsonValueProcessor(
                      value.getClass(), key );

@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1789704">
+            Allow attribute filters on method fromObject
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1785314">
             Add support for java.sql.Date in JsDate*Processors
          </action>

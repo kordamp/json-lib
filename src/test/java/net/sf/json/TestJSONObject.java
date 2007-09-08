@@ -45,6 +45,7 @@ import net.sf.json.sample.NumberBean;
 import net.sf.json.sample.ObjectBean;
 import net.sf.json.sample.ObjectJSONStringBean;
 import net.sf.json.sample.ParentBean;
+import net.sf.json.sample.PrimitiveBean;
 import net.sf.json.sample.PropertyBean;
 import net.sf.json.sample.TransientBean;
 import net.sf.json.sample.ValueBean;
@@ -52,6 +53,7 @@ import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
+import net.sf.json.util.JsonPropertyFilter;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -760,6 +762,71 @@ public class TestJSONObject extends TestCase {
       assertTrue( json.isEmpty() );
       json = JSONObject.fromObject( new Character( 'A' ) );
       assertTrue( json.isEmpty() );
+   }
+
+   public void testFromObject_withFilters() {
+      PrimitiveBean bean = new PrimitiveBean();
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setJsonPropertyFilter( new JsonPropertyFilter(){
+         public boolean apply( Object source, String name, Object value ) {
+            if( value != null && Number.class.isAssignableFrom( value.getClass() ) ){
+               return true;
+            }
+            return false;
+         }
+      } );
+      JSONObject json = JSONObject.fromObject( bean, jsonConfig );
+      assertNotNull( json );
+      assertTrue( json.has( "pbean" ) );
+      assertTrue( json.has( "pclass" ) );
+      assertTrue( json.has( "pexcluded" ) );
+      assertTrue( json.has( "pfunction" ) );
+      assertTrue( json.has( "plist" ) );
+      assertTrue( json.has( "pmap" ) );
+      assertTrue( json.has( "pstring" ) );
+      assertTrue( json.has( "parray" ) );
+
+      assertTrue( json.has( "pboolean" ) );
+      assertTrue( !json.has( "pbyte" ) );
+      assertTrue( !json.has( "pshort" ) );
+      assertTrue( !json.has( "pint" ) );
+      assertTrue( !json.has( "plong" ) );
+      assertTrue( !json.has( "pfloat" ) );
+      assertTrue( !json.has( "pdouble" ) );
+      assertTrue( json.has( "pchar" ) );
+   }
+
+   public void testFromObject_withFiltersAndExcludes() {
+      PrimitiveBean bean = new PrimitiveBean();
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setJsonPropertyFilter( new JsonPropertyFilter(){
+         public boolean apply( Object source, String name, Object value ) {
+            if( value != null && Number.class.isAssignableFrom( value.getClass() ) ){
+               return true;
+            }
+            return false;
+         }
+      } );
+      jsonConfig.setExcludes( new String[] { "pexcluded" } );
+      JSONObject json = JSONObject.fromObject( bean, jsonConfig );
+      assertNotNull( json );
+      assertTrue( json.has( "pbean" ) );
+      assertTrue( json.has( "pclass" ) );
+      assertTrue( !json.has( "pexcluded" ) );
+      assertTrue( json.has( "pfunction" ) );
+      assertTrue( json.has( "plist" ) );
+      assertTrue( json.has( "pmap" ) );
+      assertTrue( json.has( "pstring" ) );
+      assertTrue( json.has( "parray" ) );
+
+      assertTrue( json.has( "pboolean" ) );
+      assertTrue( !json.has( "pbyte" ) );
+      assertTrue( !json.has( "pshort" ) );
+      assertTrue( !json.has( "pint" ) );
+      assertTrue( !json.has( "plong" ) );
+      assertTrue( !json.has( "pfloat" ) );
+      assertTrue( !json.has( "pdouble" ) );
+      assertTrue( json.has( "pchar" ) );
    }
 
    public void testFromString_null_String() {

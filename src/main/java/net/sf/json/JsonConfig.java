@@ -28,6 +28,7 @@ import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JavaIdentifierTransformer;
 import net.sf.json.util.JsonEventListener;
+import net.sf.json.util.JsonPropertyFilter;
 
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.commons.lang.StringUtils;
@@ -60,6 +61,7 @@ public class JsonConfig {
    private boolean ignoreDefaultExcludes;
    private boolean ignoreTransientFields;
    private JavaIdentifierTransformer javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
+   private JsonPropertyFilter jsonPropertyFilter;
    private Map keyMap = new HashMap();
    private Map processorMap = new HashMap();
    /** Root class used when converting to an specific bean */
@@ -138,6 +140,7 @@ public class JsonConfig {
       jsc.skipJavaIdentifierTransformationInMapKeys = skipJavaIdentifierTransformationInMapKeys;
       jsc.triggerEvents = triggerEvents;
       jsc.typeMap.putAll( typeMap );
+      jsc.jsonPropertyFilter = jsonPropertyFilter;
       return jsc;
    }
 
@@ -305,6 +308,13 @@ public class JsonConfig {
     */
    public synchronized List getJsonEventListeners() {
       return eventListeners;
+   }
+
+   /**
+    * Returns the configured property filter.
+    */
+   public JsonPropertyFilter getJsonPropertyFilter() {
+      return jsonPropertyFilter;
    }
 
    /**
@@ -481,6 +491,11 @@ public class JsonConfig {
       arrayMode = MODE_LIST;
       rootClass = null;
       classMap = null;
+      keyMap.clear();
+      typeMap.clear();
+      beanKeyMap.clear();
+      beanTypeMap.clear();
+      jsonPropertyFilter = null;
    }
 
    /**
@@ -566,6 +581,15 @@ public class JsonConfig {
    public void setJavaIdentifierTransformer( JavaIdentifierTransformer javaIdentifierTransformer ) {
       this.javaIdentifierTransformer = javaIdentifierTransformer == null ? DEFAULT_JAVA_IDENTIFIER_TRANSFORMER
             : javaIdentifierTransformer;
+   }
+
+   /**
+    * Sets a property filter used when serializing to JSON.
+    *
+    * @param jsonPropertyFilter the property filter
+    */
+   public void setJsonPropertyFilter( JsonPropertyFilter jsonPropertyFilter ) {
+      this.jsonPropertyFilter = jsonPropertyFilter;
    }
 
    /**
