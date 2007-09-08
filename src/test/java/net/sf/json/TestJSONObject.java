@@ -829,6 +829,19 @@ public class TestJSONObject extends TestCase {
       assertTrue( json.has( "pchar" ) );
    }
 
+   public void testToBean_rootObject() {
+      JSONObject json = new JSONObject().element( "bool", "false" )
+            .element( "integer", 84 )
+            .element( "string", "bean" );
+      BeanA expected = new BeanA();
+      BeanA actual = (BeanA) JSONObject.toBean( json, expected, new JsonConfig() );
+      assertNotNull( actual );
+      assertEquals( expected, actual );
+      assertFalse( actual.isBool() );
+      assertEquals( 84, actual.getInteger() );
+      assertEquals( "bean", actual.getString() );
+   }
+
    public void testFromString_null_String() {
       JSONObject json = JSONObject.fromObject( null );
       assertTrue( json.isNullObject() );

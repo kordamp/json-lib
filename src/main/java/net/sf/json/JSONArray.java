@@ -281,6 +281,50 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    }
 
    /**
+    * Creates a java array from a JSONArray.<br>
+    */
+   public static Object toArray( JSONArray jsonArray, Object root, JsonConfig jsonConfig ) {
+      if( jsonArray.size() == 0 || root == null ){
+         return new Object[0];
+      }
+
+      Class objectClass = root.getClass();
+
+      int[] dimensions = JSONArray.getDimensions( jsonArray );
+      Object array = Array.newInstance( objectClass == null ? Object.class : objectClass,
+            dimensions );
+      int size = jsonArray.size();
+      for( int i = 0; i < size; i++ ){
+         Object value = jsonArray.get( i );
+         if( JSONUtils.isNull( value ) ){
+            Array.set( array, i, null );
+         }else{
+            Class type = value.getClass();
+            if( JSONArray.class.isAssignableFrom( type ) ){
+               Array.set( array, i, toArray( (JSONArray) value, root, jsonConfig ) );
+            }else if( String.class.isAssignableFrom( type )
+                  || Boolean.class.isAssignableFrom( type ) || JSONUtils.isNumber( type )
+                  || Character.class.isAssignableFrom( type )
+                  || JSONFunction.class.isAssignableFrom( type ) ){
+               Array.set( array, i, value );
+            }else{
+               try{
+                  Object newRoot = root.getClass()
+                        .newInstance();
+                  Array.set( array, i,
+                        JSONObject.toBean( (JSONObject) value, newRoot, jsonConfig ) );
+               }catch( JSONException jsone ){
+                  throw jsone;
+               }catch( Exception e ){
+                  throw new JSONException( e );
+               }
+            }
+         }
+      }
+      return array;
+   }
+
+   /**
     * Creates a List from a JSONArray.
     */
    public static List toList( JSONArray jsonArray ) {
@@ -318,6 +362,10 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * Creates a List from a JSONArray.<br>
     */
    public static List toList( JSONArray jsonArray, JsonConfig jsonConfig ) {
+      if( jsonArray.size() == 0  ){
+         return new ArrayList();
+      }
+
       Class objectClass = jsonConfig.getRootClass();
       Map classMap = jsonConfig.getClassMap();
 
@@ -350,6 +398,46 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       }
       return list;
    }
+
+   /**
+    * Creates a List from a JSONArray.<br>
+    */
+   public static List toList( JSONArray jsonArray, Object root, JsonConfig jsonConfig ) {
+      if( jsonArray.size() == 0 || root == null ){
+         return new ArrayList();
+      }
+
+      List list = new ArrayList();
+      int size = jsonArray.size();
+      for( int i = 0; i < size; i++ ){
+         Object value = jsonArray.get( i );
+         if( JSONUtils.isNull( value ) ){
+            list.add( null );
+         }else{
+            Class type = value.getClass();
+            if( JSONArray.class.isAssignableFrom( type ) ){
+               list.add( toList( (JSONArray) value, root, jsonConfig ) );
+            }else if( String.class.isAssignableFrom( type )
+                  || Boolean.class.isAssignableFrom( type ) || JSONUtils.isNumber( type )
+                  || Character.class.isAssignableFrom( type )
+                  || JSONFunction.class.isAssignableFrom( type ) ){
+               list.add( value );
+            }else{
+               try{
+                  Object newRoot = root.getClass()
+                        .newInstance();
+                  list.add( JSONObject.toBean( (JSONObject) value, newRoot, jsonConfig ) );
+               }catch( JSONException jsone ){
+                  throw jsone;
+               }catch( Exception e ){
+                  throw new JSONException( e );
+               }
+            }
+         }
+      }
+      return list;
+   }
+
 
    /**
     * Construct a JSONArray from an boolean[].<br>
