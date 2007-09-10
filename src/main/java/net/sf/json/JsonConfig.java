@@ -28,7 +28,7 @@ import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JavaIdentifierTransformer;
 import net.sf.json.util.JsonEventListener;
-import net.sf.json.util.JsonPropertyFilter;
+import net.sf.json.util.PropertyFilter;
 
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.commons.lang.StringUtils;
@@ -61,7 +61,8 @@ public class JsonConfig {
    private boolean ignoreDefaultExcludes;
    private boolean ignoreTransientFields;
    private JavaIdentifierTransformer javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
-   private JsonPropertyFilter jsonPropertyFilter;
+   private PropertyFilter javaPropertyFilter;
+   private PropertyFilter jsonPropertyFilter;
    private Map keyMap = new HashMap();
    private Map processorMap = new HashMap();
    /** Root class used when converting to an specific bean */
@@ -141,6 +142,7 @@ public class JsonConfig {
       jsc.triggerEvents = triggerEvents;
       jsc.typeMap.putAll( typeMap );
       jsc.jsonPropertyFilter = jsonPropertyFilter;
+      jsc.javaPropertyFilter = javaPropertyFilter;
       return jsc;
    }
 
@@ -304,6 +306,13 @@ public class JsonConfig {
    }
 
    /**
+    * Returns the configured property filter when serializing to Java.
+    */
+   public PropertyFilter getJavaPropertyFilter() {
+      return javaPropertyFilter;
+   }
+
+   /**
     * Returns a list of registered listeners for Json events.
     */
    public synchronized List getJsonEventListeners() {
@@ -311,9 +320,9 @@ public class JsonConfig {
    }
 
    /**
-    * Returns the configured property filter.
+    * Returns the configured property filter when serializing to JSON.
     */
-   public JsonPropertyFilter getJsonPropertyFilter() {
+   public PropertyFilter getJsonPropertyFilter() {
       return jsonPropertyFilter;
    }
 
@@ -496,6 +505,7 @@ public class JsonConfig {
       beanKeyMap.clear();
       beanTypeMap.clear();
       jsonPropertyFilter = null;
+      javaPropertyFilter = null;
    }
 
    /**
@@ -584,11 +594,20 @@ public class JsonConfig {
    }
 
    /**
+    * Sets a property filter used when serializing to Java.
+    *
+    * @param javaPropertyFilter the property filter
+    */
+   public void setJavaPropertyFilter( PropertyFilter javaPropertyFilter ) {
+      this.javaPropertyFilter = javaPropertyFilter;
+   }
+
+   /**
     * Sets a property filter used when serializing to JSON.
     *
     * @param jsonPropertyFilter the property filter
     */
-   public void setJsonPropertyFilter( JsonPropertyFilter jsonPropertyFilter ) {
+   public void setJsonPropertyFilter( PropertyFilter jsonPropertyFilter ) {
       this.jsonPropertyFilter = jsonPropertyFilter;
    }
 

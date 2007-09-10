@@ -23,25 +23,25 @@ import java.util.List;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class CompositeJsonPropertyFilter implements JsonPropertyFilter {
+public class CompositePropertyFilter implements PropertyFilter {
    private List filters = new ArrayList();
 
-   public CompositeJsonPropertyFilter() {
+   public CompositePropertyFilter() {
       this( null );
    }
 
-   public CompositeJsonPropertyFilter( List filters ) {
+   public CompositePropertyFilter( List filters ) {
       if( filters != null ){
          for( Iterator i = filters.iterator(); i.hasNext(); ){
             Object filter = i.next();
-            if( filter instanceof JsonPropertyFilter ){
+            if( filter instanceof PropertyFilter ){
                this.filters.add( filter );
             }
          }
       }
    }
 
-   public void addJsonPropertyFilter( JsonPropertyFilter filter ) {
+   public void addPropertyFilter( PropertyFilter filter ) {
       if( filter != null ){
          filters.add( filter );
       }
@@ -49,7 +49,7 @@ public class CompositeJsonPropertyFilter implements JsonPropertyFilter {
 
    public boolean apply( Object source, String name, Object value ) {
       for( Iterator i = filters.iterator(); i.hasNext(); ){
-         JsonPropertyFilter filter = (JsonPropertyFilter) i.next();
+         PropertyFilter filter = (PropertyFilter) i.next();
          if( filter.apply( source, name, value ) ){
             return true;
          }
@@ -57,7 +57,7 @@ public class CompositeJsonPropertyFilter implements JsonPropertyFilter {
       return false;
    }
 
-   public void removeJsonPropertyFilter( JsonPropertyFilter filter ) {
+   public void removePropertyFilter( PropertyFilter filter ) {
       if( filter != null ){
          filters.remove( filter );
       }

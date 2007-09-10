@@ -53,7 +53,7 @@ import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
-import net.sf.json.util.JsonPropertyFilter;
+import net.sf.json.util.PropertyFilter;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -767,7 +767,7 @@ public class TestJSONObject extends TestCase {
    public void testFromObject_withFilters() {
       PrimitiveBean bean = new PrimitiveBean();
       JsonConfig jsonConfig = new JsonConfig();
-      jsonConfig.setJsonPropertyFilter( new JsonPropertyFilter(){
+      jsonConfig.setJsonPropertyFilter( new PropertyFilter(){
          public boolean apply( Object source, String name, Object value ) {
             if( value != null && Number.class.isAssignableFrom( value.getClass() ) ){
                return true;
@@ -799,7 +799,7 @@ public class TestJSONObject extends TestCase {
    public void testFromObject_withFiltersAndExcludes() {
       PrimitiveBean bean = new PrimitiveBean();
       JsonConfig jsonConfig = new JsonConfig();
-      jsonConfig.setJsonPropertyFilter( new JsonPropertyFilter(){
+      jsonConfig.setJsonPropertyFilter( new PropertyFilter(){
          public boolean apply( Object source, String name, Object value ) {
             if( value != null && Number.class.isAssignableFrom( value.getClass() ) ){
                return true;
@@ -827,19 +827,6 @@ public class TestJSONObject extends TestCase {
       assertTrue( !json.has( "pfloat" ) );
       assertTrue( !json.has( "pdouble" ) );
       assertTrue( json.has( "pchar" ) );
-   }
-
-   public void testToBean_rootObject() {
-      JSONObject json = new JSONObject().element( "bool", "false" )
-            .element( "integer", 84 )
-            .element( "string", "bean" );
-      BeanA expected = new BeanA();
-      BeanA actual = (BeanA) JSONObject.toBean( json, expected, new JsonConfig() );
-      assertNotNull( actual );
-      assertEquals( expected, actual );
-      assertFalse( actual.isBool() );
-      assertEquals( 84, actual.getInteger() );
-      assertEquals( "bean", actual.getString() );
    }
 
    public void testFromString_null_String() {
@@ -1331,6 +1318,42 @@ public class TestJSONObject extends TestCase {
       for( int i = 0; i < keys.length; i++ ){
          assertNull( PropertyUtils.getProperty( obj, keys[i] ) );
       }
+   }
+
+   public void testToBean_rootObject() {
+      JSONObject json = new JSONObject().element( "bool", "false" )
+            .element( "integer", 84 )
+            .element( "string", "bean" );
+      BeanA expected = new BeanA();
+      BeanA actual = (BeanA) JSONObject.toBean( json, expected, new JsonConfig() );
+      assertNotNull( actual );
+      assertEquals( expected, actual );
+      assertFalse( actual.isBool() );
+      assertEquals( 84, actual.getInteger() );
+      assertEquals( "bean", actual.getString() );
+   }
+
+   public void testToBean_withFilters() {
+      BeanA bean = new BeanA();
+      bean.setBool( false );
+      bean.setInteger( 84 );
+      bean.setString( "filter" );
+      JSONObject json = JSONObject.fromObject( bean );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( BeanA.class );
+      jsonConfig.setJavaPropertyFilter( new PropertyFilter(){
+         public boolean apply( Object source, String name, Object value ) {
+            if( "bool".equals( name ) || "integer".equals( name ) ){
+               return true;
+            }
+            return false;
+         }
+      } );
+      BeanA actual = (BeanA) JSONObject.toBean( json, jsonConfig );
+      assertNotNull( actual );
+      assertTrue( actual.isBool() );
+      assertEquals( 42, actual.getInteger() );
+      assertEquals( "filter", actual.getString() );
    }
 
    public void testToBean_withNonJavaIdentifier_camelCase_Strategy() {
