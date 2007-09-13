@@ -767,14 +767,7 @@ public class TestJSONObject extends TestCase {
    public void testFromObject_withFilters() {
       PrimitiveBean bean = new PrimitiveBean();
       JsonConfig jsonConfig = new JsonConfig();
-      jsonConfig.setJsonPropertyFilter( new PropertyFilter(){
-         public boolean apply( Object source, String name, Object value ) {
-            if( value != null && Number.class.isAssignableFrom( value.getClass() ) ){
-               return true;
-            }
-            return false;
-         }
-      } );
+      jsonConfig.setJsonPropertyFilter( new NumberPropertyFilter() );
       JSONObject json = JSONObject.fromObject( bean, jsonConfig );
       assertNotNull( json );
       assertTrue( json.has( "pbean" ) );
@@ -799,14 +792,7 @@ public class TestJSONObject extends TestCase {
    public void testFromObject_withFiltersAndExcludes() {
       PrimitiveBean bean = new PrimitiveBean();
       JsonConfig jsonConfig = new JsonConfig();
-      jsonConfig.setJsonPropertyFilter( new PropertyFilter(){
-         public boolean apply( Object source, String name, Object value ) {
-            if( value != null && Number.class.isAssignableFrom( value.getClass() ) ){
-               return true;
-            }
-            return false;
-         }
-      } );
+      jsonConfig.setJsonPropertyFilter( new NumberPropertyFilter() );
       jsonConfig.setExcludes( new String[] { "pexcluded" } );
       JSONObject json = JSONObject.fromObject( bean, jsonConfig );
       assertNotNull( json );
@@ -1341,14 +1327,7 @@ public class TestJSONObject extends TestCase {
       JSONObject json = JSONObject.fromObject( bean );
       JsonConfig jsonConfig = new JsonConfig();
       jsonConfig.setRootClass( BeanA.class );
-      jsonConfig.setJavaPropertyFilter( new PropertyFilter(){
-         public boolean apply( Object source, String name, Object value ) {
-            if( "bool".equals( name ) || "integer".equals( name ) ){
-               return true;
-            }
-            return false;
-         }
-      } );
+      jsonConfig.setJavaPropertyFilter( new BeanAPropertyFilter() );
       BeanA actual = (BeanA) JSONObject.toBean( json, jsonConfig );
       assertNotNull( actual );
       assertTrue( actual.isBool() );
@@ -1414,5 +1393,24 @@ public class TestJSONObject extends TestCase {
       dynaBean.set( "str", "[1,2]" );
       // JSON Strings can not be null, only empty
       return dynaBean;
+   }
+
+   public static class BeanAPropertyFilter implements PropertyFilter {
+      public boolean apply( Object source, String name, Object value ) {
+         if( "bool".equals( name ) || "integer".equals( name ) ){
+            return true;
+         }
+         return false;
+      }
+
+   }
+
+   public static class NumberPropertyFilter implements PropertyFilter {
+      public boolean apply( Object source, String name, Object value ) {
+         if( value != null && Number.class.isAssignableFrom( value.getClass() ) ){
+            return true;
+         }
+         return false;
+      }
    }
 }

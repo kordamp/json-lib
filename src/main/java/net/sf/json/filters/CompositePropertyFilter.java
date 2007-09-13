@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package net.sf.json.util;
+package net.sf.json.filters;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import net.sf.json.util.PropertyFilter;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>

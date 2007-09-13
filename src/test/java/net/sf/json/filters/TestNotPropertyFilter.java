@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.filters;
 
-import junit.framework.TestSuite;
+import junit.framework.TestCase;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class JSONTestSuite extends TestSuite {
-   public static TestSuite suite() throws Exception {
-      TestSuite suite = new TestSuite();
-      suite.setName( "json-lib" );
+public class TestNotPropertyFilter extends TestCase {
+   public static void main( String[] args ) {
+      junit.textui.TestRunner.run( TestNotPropertyFilter.class );
+   }
+   public TestNotPropertyFilter( String testName ) {
+      super( testName );
+   }
 
-      suite.addTest( net.sf.json.AllTests.suite() );
-      suite.addTest( net.sf.json.regexp.AllTests.suite() );
-      suite.addTest( net.sf.json.filters.AllTests.suite() );
-      suite.addTest( net.sf.json.processors.AllTests.suite() );
-      suite.addTest( net.sf.json.util.AllTests.suite() );
-      suite.addTest( net.sf.json.xml.AllTests.suite() );
-      suite.addTest( net.sf.json.test.AllTests.suite() );
-
-      return suite;
+   public void testApply_true() {
+      NotPropertyFilter filter = new NotPropertyFilter(new TruePropertyFilter());
+      assertFalse( filter.apply( null, null, null ) );
+   }
+   public void testApply_false() {
+      NotPropertyFilter filter = new NotPropertyFilter(new FalsePropertyFilter());
+      assertTrue( filter.apply( null, null, null ) );
    }
 }

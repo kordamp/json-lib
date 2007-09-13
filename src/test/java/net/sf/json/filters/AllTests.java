@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.filters;
 
 import junit.framework.TestSuite;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class JSONTestSuite extends TestSuite {
+public class AllTests extends TestSuite {
    public static TestSuite suite() throws Exception {
       TestSuite suite = new TestSuite();
-      suite.setName( "json-lib" );
+      suite.setName( "filters" );
 
-      suite.addTest( net.sf.json.AllTests.suite() );
-      suite.addTest( net.sf.json.regexp.AllTests.suite() );
-      suite.addTest( net.sf.json.filters.AllTests.suite() );
-      suite.addTest( net.sf.json.processors.AllTests.suite() );
-      suite.addTest( net.sf.json.util.AllTests.suite() );
-      suite.addTest( net.sf.json.xml.AllTests.suite() );
-      suite.addTest( net.sf.json.test.AllTests.suite() );
+      suite.addTest( new TestSuite( TestAndPropertyFilter.class ) );
+      suite.addTest( new TestSuite( TestCompositePropertyFilter.class ) );
+      suite.addTest( new TestSuite( TestNotPropertyFilter.class ) );
+      suite.addTest( new TestSuite( TestOrPropertyFilter.class ) );
+      suite.addTest( new TestSuite( TestMappingPropertyFilter.class ) );
 
       return suite;
    }

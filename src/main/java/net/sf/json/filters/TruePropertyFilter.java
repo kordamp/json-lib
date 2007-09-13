@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-package net.sf.json;
+package net.sf.json.filters;
 
-import junit.framework.TestSuite;
+import net.sf.json.util.PropertyFilter;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class JSONTestSuite extends TestSuite {
-   public static TestSuite suite() throws Exception {
-      TestSuite suite = new TestSuite();
-      suite.setName( "json-lib" );
-
-      suite.addTest( net.sf.json.AllTests.suite() );
-      suite.addTest( net.sf.json.regexp.AllTests.suite() );
-      suite.addTest( net.sf.json.filters.AllTests.suite() );
-      suite.addTest( net.sf.json.processors.AllTests.suite() );
-      suite.addTest( net.sf.json.util.AllTests.suite() );
-      suite.addTest( net.sf.json.xml.AllTests.suite() );
-      suite.addTest( net.sf.json.test.AllTests.suite() );
-
-      return suite;
+public class TruePropertyFilter implements PropertyFilter {
+   public boolean apply( Object source, String name, Object value ) {
+      return true;
    }
 }
