@@ -41,6 +41,38 @@
          bean, provided that the name of the property returned from the PropertyDescriptor matches the name of the field, meaning that
          this option will not work if you have a BeanInfo that changes the name of a read method or provides a synthetic property.
          </subsection>
+
+	 <subsection name="Filtering properties">
+	 <p>
+	 When serializing to JSON there may be some times where you would like to exclude some properties from being processed, the current exclusion mechanism matches the property name to a list of Strings, but what if you would like to filter out all properties that match a regex or extend a particular class? PropertyFilter will help you attain that goal with ease, and what's more, it will also work when converting back to Java. Here is an example filter that will exclude all properties that are a Number when serializing to JSON:
+ </p><textarea cols="70" rows="11" class="java:nocontrols:nogutter" name="srccode">
+   PrimitiveBean bean = new PrimitiveBean();
+   JsonConfig jsonConfig = new JsonConfig();
+   jsonConfig.setJsonPropertyFilter( new PropertyFilter(){
+      public boolean apply( Object source, String name, Object value ) {
+         if( value != null &amp;&amp; Number.class.isAssignableFrom( value.getClass() ) ){
+            return true;
+         }
+         return false;
+      }
+   });
+   JSONObject json = JSONObject.fromObject( bean, jsonConfig );</textarea><p>
+   This is another filter example, this time converting back to Java, it will filter out any property named 'bool' or 'integer':
+ </p><textarea cols="70" rows="13" class="java:nocontrols:nogutter" name="srccode">
+   BeanA bean = new BeanA();
+   JSONObject json = JSONObject.fromObject( bean );
+   JsonConfig jsonConfig = new JsonConfig();
+   jsonConfig.setRootClass( BeanA.class );
+   jsonConfig.setJavaPropertyFilter( new PropertyFilter(){
+      public boolean apply( Object source, String name, Object value ) {
+         if( "bool".equals( name ) || "integer".equals( name ) ){
+            return true;
+         }
+         return false;
+      }
+   });
+   BeanA actual = (BeanA) JSONObject.toBean( json, jsonConfig );</textarea><p>Please review the <code>net.sf.json.filters</code> package to find out more about default filters and composite filters.</p>
+         </subsection>
       </section>
    </body>
 </document>
