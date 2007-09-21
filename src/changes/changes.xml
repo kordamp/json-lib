@@ -15,6 +15,13 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1798641">
+            JSONObject/JSONArray are not thread safe. Thanks to Yee_Keat
+            Phuah (provided a patch).
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1789704">
             Allow attribute filters on method fromObject
          </action>

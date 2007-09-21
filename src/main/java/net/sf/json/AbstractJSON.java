@@ -31,7 +31,13 @@ import org.apache.commons.logging.LogFactory;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 abstract class AbstractJSON {
-   private static Set cycleSet = new HashSet();
+   // private static Set cycleSet = new HashSet();
+
+   private static ThreadLocal cycleSet = new ThreadLocal(){
+      protected synchronized Object initialValue() {
+         return new HashSet();
+      }
+   };
 
    private static final Log log = LogFactory.getLog( AbstractJSON.class );
 
@@ -43,7 +49,7 @@ abstract class AbstractJSON {
     *        otherwise.
     */
    protected static boolean addInstance( Object instance ) {
-      return cycleSet.add( instance );
+      return getCycleSet().add( instance );
    }
 
    /**
@@ -198,6 +204,10 @@ abstract class AbstractJSON {
     * Removes a reference for cycle detection check.
     */
    protected static void removeInstance( Object instance ) {
-      cycleSet.remove( instance );
+      getCycleSet().remove( instance );
+   }
+
+   private static Set getCycleSet() {
+      return (Set) cycleSet.get();
    }
 }
