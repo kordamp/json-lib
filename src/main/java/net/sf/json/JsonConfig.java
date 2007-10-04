@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.json.processors.JsonBeanProcessor;
+import net.sf.json.processors.JsonBeanProcessorMatcher;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JavaIdentifierTransformer;
@@ -39,6 +40,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JsonConfig {
+   public static final JsonBeanProcessorMatcher DEFAULT_JSON_BEAN_PROCESSOR_MATCHER = JsonBeanProcessorMatcher.DEFAULT;
    public static final int MODE_LIST = 1;
    public static final int MODE_OBJECT_ARRAY = 2;
    private static final CycleDetectionStrategy DEFAULT_CYCLE_DETECTION_STRATEGY = CycleDetectionStrategy.STRICT;
@@ -62,6 +64,7 @@ public class JsonConfig {
    private boolean ignoreTransientFields;
    private JavaIdentifierTransformer javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
    private PropertyFilter javaPropertyFilter;
+   private JsonBeanProcessorMatcher jsonBeanProcessorMatcher = DEFAULT_JSON_BEAN_PROCESSOR_MATCHER;
    private PropertyFilter jsonPropertyFilter;
    private Map keyMap = new HashMap();
    private Map processorMap = new HashMap();
@@ -143,6 +146,7 @@ public class JsonConfig {
       jsc.typeMap.putAll( typeMap );
       jsc.jsonPropertyFilter = jsonPropertyFilter;
       jsc.javaPropertyFilter = javaPropertyFilter;
+      jsc.jsonBeanProcessorMatcher = jsonBeanProcessorMatcher;
       return jsc;
    }
 
@@ -168,11 +172,8 @@ public class JsonConfig {
     * @param target a class used for searching a JsonBeanProcessor.
     */
    public JsonBeanProcessor findJsonBeanProcessor( Class target ) {
-      if( target != null ){
-         return (JsonBeanProcessor) processorMap.get( target );
-      }else{
-         return null;
-      }
+      Object key = jsonBeanProcessorMatcher.getMatch( target, processorMap.keySet() );
+      return (JsonBeanProcessor) processorMap.get( key );
    }
 
    /**
@@ -310,6 +311,14 @@ public class JsonConfig {
     */
    public PropertyFilter getJavaPropertyFilter() {
       return javaPropertyFilter;
+   }
+
+   /**
+    * Returns the configured JsonBeanProcessorMatcher.<br>
+    * Default value is JsonBeanProcessorMatcher.DEFAULT
+    */
+   public JsonBeanProcessorMatcher getJsonBeanProcessorMatcher() {
+      return jsonBeanProcessorMatcher;
    }
 
    /**
@@ -506,6 +515,7 @@ public class JsonConfig {
       beanTypeMap.clear();
       jsonPropertyFilter = null;
       javaPropertyFilter = null;
+      jsonBeanProcessorMatcher = DEFAULT_JSON_BEAN_PROCESSOR_MATCHER;
    }
 
    /**
@@ -600,6 +610,15 @@ public class JsonConfig {
     */
    public void setJavaPropertyFilter( PropertyFilter javaPropertyFilter ) {
       this.javaPropertyFilter = javaPropertyFilter;
+   }
+
+   /**
+    * Sets a JsonBeanProcessorMatcher to use.<br>
+    * Will set default value (JsonBeanProcessorMatcher.STRICT) if null.
+    */
+   public void setJsonBeanProcessorMatcher( JsonBeanProcessorMatcher jsonBeanProcessorMatcher ) {
+      this.jsonBeanProcessorMatcher = jsonBeanProcessorMatcher == null ? DEFAULT_JSON_BEAN_PROCESSOR_MATCHER
+            : jsonBeanProcessorMatcher;
    }
 
    /**

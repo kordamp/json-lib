@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1806171">
+            Enable custom selectrion of JsonBeanProcessors.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1798641">
             JSONObject/JSONArray are not thread safe. Thanks to Yee_Keat
             Phuah (provided a patch).

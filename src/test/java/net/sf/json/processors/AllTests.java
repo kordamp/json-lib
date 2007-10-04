@@ -28,6 +28,7 @@ public class AllTests extends TestSuite {
 
       suite.addTest( new TestSuite( TestJsDateJsonBeanProcessor.class ) );
       suite.addTest( new TestSuite( TestJsDateJsonValueProcessor.class ) );
+      suite.addTest( new TestSuite( TestJsonBeanProcessorMatcher.class ) );
 
       return suite;
    }
