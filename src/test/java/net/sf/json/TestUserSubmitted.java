@@ -36,8 +36,10 @@ import net.sf.json.sample.MediaList;
 import net.sf.json.sample.MediaListBean;
 import net.sf.json.sample.Player;
 import net.sf.json.sample.PlayerList;
+import net.sf.json.sample.UnstandardBean;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
+import net.sf.json.util.NewBeanInstanceStrategy;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -253,6 +255,18 @@ public class TestUserSubmitted extends TestCase {
       assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() );
    }
 
+   public void testFR_1808430_newBeanInstance() {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setNewBeanInstanceStrategy( new UnstandardBeanInstanceStrategy() );
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.element( "id", 1 );
+      jsonConfig.setRootClass( UnstandardBean.class );
+      UnstandardBean bean = (UnstandardBean) JSONObject.toBean( jsonObject, jsonConfig );
+      assertNotNull( bean );
+      assertEquals( UnstandardBean.class, bean.getClass() );
+      assertEquals( 1, bean.getId() );
+   }
+
    public void testHandleJettisonEmptyElement() {
       JSONObject jsonObject = JSONObject.fromObject( "{'beanA':'','beanB':''}" );
       jsonConfig.setHandleJettisonEmptyElement( true );
@@ -365,5 +379,12 @@ public class TestUserSubmitted extends TestCase {
    protected void setUp() throws Exception {
       super.setUp();
       jsonConfig = new JsonConfig();
+   }
+
+   private static class UnstandardBeanInstanceStrategy extends NewBeanInstanceStrategy {
+      public Object newInstance( Class target, JSONObject source ) throws InstantiationException,
+            IllegalAccessException {
+         return new UnstandardBean( source.getInt( "id" ) );
+      }
    }
 }

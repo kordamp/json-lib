@@ -288,7 +288,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                bean = new HashMap();
             }
          }else{
-            bean = beanClass.newInstance();
+            bean = jsonConfig.getNewBeanInstanceStrategy()
+                  .newInstance( beanClass, jsonObject );
          }
       }catch( JSONException jsone ){
          throw jsone;

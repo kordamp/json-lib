@@ -15,8 +15,14 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1808430">
+            Customize bean instantiation in JSONObject.toBean()
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1806171">
-            Enable custom selectrion of JsonBeanProcessors.
+            Enable custom selection of JsonBeanProcessors.
          </action>
          <action
             dev="Andres Almiray"

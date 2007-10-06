@@ -8,15 +8,15 @@ REPOSITORYID="sf_release"
 mkdir build
 ant source.jar
 mv target/${ARTIFACTID}-${VERSION}-jdk13-sources.jar build
-ant source.jar.jdk15
+ant source.jar.jdk5
 mv target/${ARTIFACTID}-${VERSION}-jdk15-sources.jar build
 ant javadoc
 mv target/${ARTIFACTID}-${VERSION}-jdk13-javadoc.jar build
-ant javadoc.jdk15
+ant javadoc.jdk5
 mv target/${ARTIFACTID}-${VERSION}-jdk15-javadoc.jar build
 ant jar
 mv target/${ARTIFACTID}-${VERSION}-jdk13.jar build
-ant jar.jdk15
+ant jar.jdk5
 mv target/${ARTIFACTID}-${VERSION}-jdk15.jar build
 
 mvn deploy:deploy-file -DrepositoryId=${REPOSITORYID} \

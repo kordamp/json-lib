@@ -29,6 +29,7 @@ import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JavaIdentifierTransformer;
 import net.sf.json.util.JsonEventListener;
+import net.sf.json.util.NewBeanInstanceStrategy;
 import net.sf.json.util.PropertyFilter;
 
 import org.apache.commons.collections.map.MultiKeyMap;
@@ -41,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class JsonConfig {
    public static final JsonBeanProcessorMatcher DEFAULT_JSON_BEAN_PROCESSOR_MATCHER = JsonBeanProcessorMatcher.DEFAULT;
+   public static final NewBeanInstanceStrategy DEFAULT_NEW_BEAN_INSTANCE_STRATEGY = NewBeanInstanceStrategy.DEFAULT;
    public static final int MODE_LIST = 1;
    public static final int MODE_OBJECT_ARRAY = 2;
    private static final CycleDetectionStrategy DEFAULT_CYCLE_DETECTION_STRATEGY = CycleDetectionStrategy.STRICT;
@@ -67,6 +69,7 @@ public class JsonConfig {
    private JsonBeanProcessorMatcher jsonBeanProcessorMatcher = DEFAULT_JSON_BEAN_PROCESSOR_MATCHER;
    private PropertyFilter jsonPropertyFilter;
    private Map keyMap = new HashMap();
+   private NewBeanInstanceStrategy newBeanInstanceStrategy = DEFAULT_NEW_BEAN_INSTANCE_STRATEGY;
    private Map processorMap = new HashMap();
    /** Root class used when converting to an specific bean */
    private Class rootClass;
@@ -147,6 +150,7 @@ public class JsonConfig {
       jsc.jsonPropertyFilter = jsonPropertyFilter;
       jsc.javaPropertyFilter = javaPropertyFilter;
       jsc.jsonBeanProcessorMatcher = jsonBeanProcessorMatcher;
+      jsc.newBeanInstanceStrategy = newBeanInstanceStrategy;
       return jsc;
    }
 
@@ -359,6 +363,14 @@ public class JsonConfig {
    }
 
    /**
+    * Returns the configured NewBeanInstanceStrategy.<br>
+    * Default value is NewBeanInstanceStrategy.DEFAULT
+    */
+   public NewBeanInstanceStrategy getNewBeanInstanceStrategy() {
+      return newBeanInstanceStrategy;
+   }
+
+   /**
     * Returns the current root Class.
     *
     * @return the target class for conversion
@@ -516,6 +528,7 @@ public class JsonConfig {
       jsonPropertyFilter = null;
       javaPropertyFilter = null;
       jsonBeanProcessorMatcher = DEFAULT_JSON_BEAN_PROCESSOR_MATCHER;
+      newBeanInstanceStrategy = DEFAULT_NEW_BEAN_INSTANCE_STRATEGY;
    }
 
    /**
@@ -628,6 +641,15 @@ public class JsonConfig {
     */
    public void setJsonPropertyFilter( PropertyFilter jsonPropertyFilter ) {
       this.jsonPropertyFilter = jsonPropertyFilter;
+   }
+
+   /**
+    * Sets the NewBeanInstanceStrategy to use.<br>
+    * Will set default value (NewBeanInstanceStrategy.DEFAULT) if null.
+    */
+   public void setNewBeanInstanceStrategy( NewBeanInstanceStrategy newBeanInstanceStrategy ) {
+      this.newBeanInstanceStrategy = newBeanInstanceStrategy == null ? DEFAULT_NEW_BEAN_INSTANCE_STRATEGY
+            : newBeanInstanceStrategy;
    }
 
    /**
