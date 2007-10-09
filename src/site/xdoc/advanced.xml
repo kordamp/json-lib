@@ -73,6 +73,21 @@
    });
    BeanA actual = (BeanA) JSONObject.toBean( json, jsonConfig );</textarea><p>Please review the <code>net.sf.json.filters</code> package to find out more about default filters and composite filters.</p>
          </subsection>
+
+         <subsection name="Selecting the proper JsonBeanProcessor">
+	 <code>JsonBeanProcessor</code>s are maped to classes but sometimes you'll like that some subclasses may be mapped to the same
+	 processor or perhaps you are serializing a recently hydrated instance coming from a database with Hibernate, because the instance's
+	 class is not exactly the one you expect (it actually is a cglib proxy class) the default class matching mechanism will not work.
+	 In order to solve these problems you may register a <code>JsonBeanProcessorMatcher</code> that will take care of the job of selecting
+	 the proper <code>JsonBeanProcessor</code>, just as you need it.
+         </subsection>
+
+	 <subsection name="Instantiating non JavaBeans">
+	 When serializing from JSON to Java you have to keep one rule in mind, the target class must follow the JavaBeans convention of a
+	 no-args constructor but sometimes it won't be possible, as it is the case of <code>java.sql.Timestamp</code>. Json-lib has an option
+	 to overcome this "restriction", just register a <code>NewBeanInstanceStrategy</code> into JsonConfig and you are in business.
+         </subsection>
+
       </section>
    </body>
 </document>
