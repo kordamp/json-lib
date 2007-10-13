@@ -9,6 +9,17 @@
    <body>
 
       <release
+         version="2.2-SNAPSHOT"
+         date="N/A"
+         desc="Current development release">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="1812682">
+            Byte and Short arrays throw an IllegalArgumentException
+         </action>
+      </release>
+      <release
          version="2.1"
          date="2007-10-08"
          desc="Release 2.1">

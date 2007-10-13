@@ -261,10 +261,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             if( JSONArray.class.isAssignableFrom( type ) ){
                Array.set( array, i, toArray( (JSONArray) value, objectClass, classMap ) );
             }else if( String.class.isAssignableFrom( type )
-                  || Boolean.class.isAssignableFrom( type ) || JSONUtils.isNumber( type )
+                  || Boolean.class.isAssignableFrom( type )
                   || Character.class.isAssignableFrom( type )
                   || JSONFunction.class.isAssignableFrom( type ) ){
                Array.set( array, i, value );
+            }else if( JSONUtils.isNumber( type ) ){
+               if( objectClass != null
+                     && (Byte.class.isAssignableFrom( objectClass ) || Byte.TYPE.isAssignableFrom( objectClass )) ){
+                  Array.set( array, i, Byte.valueOf( String.valueOf( value ) ) );
+               }else if( objectClass != null
+                     && (Short.class.isAssignableFrom( objectClass ) || Short.TYPE.isAssignableFrom( objectClass )) ){
+                  Array.set( array, i, Short.valueOf( String.valueOf( value ) ) );
+               }else{
+                  Array.set( array, i, value );
+               }
             }else{
                if( objectClass != null ){
                   JsonConfig jsc = jsonConfig.copy();

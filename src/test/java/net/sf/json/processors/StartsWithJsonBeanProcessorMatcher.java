@@ -16,27 +16,31 @@
 
 package net.sf.json.processors;
 
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
-
-import junit.framework.TestCase;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class TestJsonBeanProcessorMatcher extends TestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestJsonBeanProcessorMatcher.class );
+public class StartsWithJsonBeanProcessorMatcher extends JsonBeanProcessorMatcher {
+   private String pattern;
+
+   public StartsWithJsonBeanProcessorMatcher( String pattern ) {
+      this.pattern = pattern;
    }
 
-   public void testGetMatchUsingStartsWith() {
-      Set set = new HashSet();
-      set.add( JsonBeanProcessorMatcher.class );
-      set.add( JsonBeanProcessorMatcher.DEFAULT.getClass() );
+   public Object getMatch( Class target, Set set ) {
+      if( target != null && set != null && target.getName()
+            .startsWith( pattern ) ){
+         for( Iterator i = set.iterator(); i.hasNext(); ){
+            Class c = (Class) i.next();
+            if( c.getName()
+                  .startsWith( pattern ) ){
+               return c;
+            }
+         }
+      }
 
-      JsonBeanProcessorMatcher matcher = new StartsWithJsonBeanProcessorMatcher(
-            "net.sf.json.processors.JsonBeanProcessorMatcher$" );
-      assertEquals( JsonBeanProcessorMatcher.DEFAULT.getClass(), matcher.getMatch(
-            JsonBeanProcessorMatcher.DEFAULT.getClass(), set ) );
+      return null;
    }
 }

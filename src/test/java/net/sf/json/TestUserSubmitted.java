@@ -34,12 +34,13 @@ import net.sf.json.sample.Media;
 import net.sf.json.sample.MediaBean;
 import net.sf.json.sample.MediaList;
 import net.sf.json.sample.MediaListBean;
+import net.sf.json.sample.NumberArrayBean;
 import net.sf.json.sample.Player;
 import net.sf.json.sample.PlayerList;
 import net.sf.json.sample.UnstandardBean;
+import net.sf.json.sample.UnstandardBeanInstanceStrategy;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
-import net.sf.json.util.NewBeanInstanceStrategy;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -56,6 +57,20 @@ public class TestUserSubmitted extends TestCase {
 
    public TestUserSubmitted( String name ) {
       super( name );
+   }
+
+   public void testBug_1812682() {
+      int[] numbers = new int[] { 1, 2, 3, 4, 5 };
+      JSONObject json = new JSONObject().element( "bytes", numbers )
+            .element( "shorts", numbers )
+            .element( "ints", numbers )
+            .element( "longs", numbers )
+            .element( "floats", numbers )
+            .element( "doubles", numbers );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( NumberArrayBean.class );
+      NumberArrayBean bean = (NumberArrayBean) JSONObject.toBean( json, jsonConfig );
+      assertNotNull( bean );
    }
 
    public void testBug_1635890() throws NoSuchMethodException, IllegalAccessException,
@@ -379,12 +394,5 @@ public class TestUserSubmitted extends TestCase {
    protected void setUp() throws Exception {
       super.setUp();
       jsonConfig = new JsonConfig();
-   }
-
-   private static class UnstandardBeanInstanceStrategy extends NewBeanInstanceStrategy {
-      public Object newInstance( Class target, JSONObject source ) throws InstantiationException,
-            IllegalAccessException {
-         return new UnstandardBean( source.getInt( "id" ) );
-      }
    }
 }
