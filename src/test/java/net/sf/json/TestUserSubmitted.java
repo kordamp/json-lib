@@ -30,6 +30,7 @@ import net.sf.json.sample.BeanB1763699;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.IdBean;
 import net.sf.json.sample.JSONTestBean;
+import net.sf.json.sample.MappedBean;
 import net.sf.json.sample.Media;
 import net.sf.json.sample.MediaBean;
 import net.sf.json.sample.MediaList;
@@ -57,20 +58,6 @@ public class TestUserSubmitted extends TestCase {
 
    public TestUserSubmitted( String name ) {
       super( name );
-   }
-
-   public void testBug_1812682() {
-      int[] numbers = new int[] { 1, 2, 3, 4, 5 };
-      JSONObject json = new JSONObject().element( "bytes", numbers )
-            .element( "shorts", numbers )
-            .element( "ints", numbers )
-            .element( "longs", numbers )
-            .element( "floats", numbers )
-            .element( "doubles", numbers );
-      JsonConfig jsonConfig = new JsonConfig();
-      jsonConfig.setRootClass( NumberArrayBean.class );
-      NumberArrayBean bean = (NumberArrayBean) JSONObject.toBean( json, jsonConfig );
-      assertNotNull( bean );
    }
 
    public void testBug_1635890() throws NoSuchMethodException, IllegalAccessException,
@@ -230,6 +217,35 @@ public class TestUserSubmitted extends TestCase {
       Object mediaItem1 = media[0];
       assertTrue( mediaItem1 instanceof MediaBean );
       assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() );
+   }
+
+   public void testBug_1812682() {
+      int[] numbers = new int[] { 1, 2, 3, 4, 5 };
+      JSONObject json = new JSONObject().element( "bytes", numbers )
+            .element( "shorts", numbers )
+            .element( "ints", numbers )
+            .element( "longs", numbers )
+            .element( "floats", numbers )
+            .element( "doubles", numbers );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( NumberArrayBean.class );
+      NumberArrayBean bean = (NumberArrayBean) JSONObject.toBean( json, jsonConfig );
+      assertNotNull( bean );
+   }
+
+   public void testBug_1813301() {
+      List list = new ArrayList();
+      list.add( "1" );
+      list.add( "2" );
+      list.add( "3" );
+      JSONObject jsonObject = new JSONObject().element( "name", "JSON" )
+            .element( "list", list );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( MappedBean.class );
+      MappedBean bean = (MappedBean) JSONObject.toBean( jsonObject, jsonConfig );
+      assertNotNull( bean );
+      assertEquals( "JSON", bean.getName() );
+      Assertions.assertEquals( list, bean.getList() );
    }
 
    public void testDynaBeanAttributeMap() throws NoSuchMethodException, IllegalAccessException,

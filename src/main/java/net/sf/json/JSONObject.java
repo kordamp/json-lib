@@ -314,7 +314,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
 
             if( !JSONUtils.isNull( value ) ){
                if( value instanceof JSONArray ){
-                  if( List.class.isAssignableFrom( pd.getPropertyType() ) ){
+                  if( pd == null || List.class.isAssignableFrom( pd.getPropertyType() ) ){
                      Class targetClass = findTargetClass( key, classMap );
                      targetClass = targetClass == null ? findTargetClass( name, classMap )
                            : targetClass;
@@ -504,7 +504,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
 
             if( !JSONUtils.isNull( value ) ){
                if( value instanceof JSONArray ){
-                  if( List.class.isAssignableFrom( pd.getPropertyType() ) ){
+                  if( pd == null || List.class.isAssignableFrom( pd.getPropertyType() ) ){
                      Class targetClass = findTargetClass( key, classMap );
                      targetClass = targetClass == null ? findTargetClass( name, classMap )
                            : targetClass;
