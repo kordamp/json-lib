@@ -80,6 +80,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class XMLSerializer {
    private static final String[] EMPTY_ARRAY = new String[0];
+   private static final String JSON_PREFIX = "json_";
    private static final Log log = LogFactory.getLog( XMLSerializer.class );
 
    /** the name for an JSONArray Element */
@@ -104,6 +105,8 @@ public class XMLSerializer {
    private boolean skipNamespaces;
    /** flag for trimming spaces from string values */
    private boolean trimSpaces;
+   /** flag for type hints naming compatibility */
+   private boolean typeHintsCompatibility;
    /** flag for adding JSON types hints as attributes */
    private boolean typeHintsEnabled;
 
@@ -114,6 +117,7 @@ public class XMLSerializer {
     * <li><code>arrayName</code>: 'a'</li>
     * <li><code>elementName</code>: 'e'</li>
     * <li><code>typeHinstEnabled</code>: true</li>
+    * <li><code>typeHinstCompatibility</code>: true</li>
     * <li><code>namespaceLenient</code>: false</li>
     * <li><code>expandableProperties</code>: []</li>
     * <li><code>skipNamespaces</code>: false</li>
@@ -126,6 +130,7 @@ public class XMLSerializer {
       setArrayName( "a" );
       setElementName( "e" );
       setTypeHintsEnabled( true );
+      setTypeHintsCompatibility( true );
       setNamespaceLenient( false );
       setSkipNamespaces( false );
       setRemoveNamespacePrefixFromElements( false );
@@ -259,6 +264,13 @@ public class XMLSerializer {
     */
    public boolean isTrimSpaces() {
       return trimSpaces;
+   }
+
+   /**
+    * Returns true if types hints will have a 'json_' prefix or not.
+    */
+   public boolean isTypeHintsCompatibility() {
+      return typeHintsCompatibility;
    }
 
    /**
@@ -499,6 +511,13 @@ public class XMLSerializer {
    }
 
    /**
+    * Sets wether types hints will have a 'json_' prefix or not.
+    */
+   public void setTypeHintsCompatibility( boolean typeHintsCompatibility ) {
+      this.typeHintsCompatibility = typeHintsCompatibility;
+   }
+
+   /**
     * Sets wether JSON types will be included as attributes.
     */
    public void setTypeHintsEnabled( boolean typeHintsEnabled ) {
@@ -532,7 +551,7 @@ public class XMLSerializer {
             .equals( json ) ){
          Element root = null;
          root = newElement( getRootName() == null ? getObjectName() : getRootName() );
-         root.addAttribute( new Attribute( "null", "true" ) );
+         root.addAttribute( new Attribute( addJsonPrefix( "null" ), "true" ) );
          Document doc = new Document( root );
          return writeDocument( doc, encoding );
       }else if( json instanceof JSONArray ){
@@ -547,7 +566,7 @@ public class XMLSerializer {
          Element root = null;
          if( jsonObject.isNullObject() ){
             root = newElement( getObjectName() );
-            root.addAttribute( new Attribute( "null", "true" ) );
+            root.addAttribute( new Attribute( addJsonPrefix( "null" ), "true" ) );
          }else{
             root = processJSONObject( jsonObject,
                   newElement( getRootName() == null ? getObjectName() : getRootName() ),
@@ -556,6 +575,13 @@ public class XMLSerializer {
          Document doc = new Document( root );
          return writeDocument( doc, encoding );
       }
+   }
+
+   private String addJsonPrefix( String str ) {
+      if( !isTypeHintsCompatibility() ){
+         return JSON_PREFIX + str;
+      }
+      return str;
    }
 
    private void addNameSpaceToElement( Element element ) {
@@ -629,7 +655,7 @@ public class XMLSerializer {
    }
 
    private String getClass( Element element ) {
-      Attribute attribute = element.getAttribute( "class" );
+      Attribute attribute = element.getAttribute( addJsonPrefix( "class" ) );
       String clazz = null;
       if( attribute != null ){
          String clazzText = attribute.getValue()
@@ -648,7 +674,7 @@ public class XMLSerializer {
    }
 
    private String getType( Element element, String defaultType ) {
-      Attribute attribute = element.getAttribute( "type" );
+      Attribute attribute = element.getAttribute( addJsonPrefix( "type" ) );
       String type = null;
       if( attribute != null ){
          String typeText = attribute.getValue()
@@ -700,10 +726,10 @@ public class XMLSerializer {
       }else if( element.getAttributeCount() == 0 ){
          isArray = checkChildElements( element, isTopLevel );
       }else if( element.getAttributeCount() == 1
-            && (element.getAttribute( "class" ) != null || element.getAttribute( "type" ) != null) ){
+            && (element.getAttribute( addJsonPrefix( "class" ) ) != null || element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
          isArray = checkChildElements( element, isTopLevel );
       }else if( element.getAttributeCount() == 2
-            && (element.getAttribute( "class" ) != null && element.getAttribute( "type" ) != null) ){
+            && (element.getAttribute( addJsonPrefix( "class" ) ) != null && element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
          isArray = checkChildElements( element, isTopLevel );
       }
 
@@ -724,8 +750,8 @@ public class XMLSerializer {
    private boolean isFunction( Element element ) {
       int attrCount = element.getAttributeCount();
       if( attrCount > 0 ){
-         Attribute typeAttr = element.getAttribute( "type" );
-         Attribute paramsAttr = element.getAttribute( "params" );
+         Attribute typeAttr = element.getAttribute( addJsonPrefix( "type" ) );
+         Attribute paramsAttr = element.getAttribute( addJsonPrefix( "params" ) );
          if( attrCount == 1 && paramsAttr != null ){
             return true;
          }
@@ -742,13 +768,13 @@ public class XMLSerializer {
       if( element.getChildCount() == 0 ){
          if( element.getAttributeCount() == 0 ){
             return true;
-         }else if( element.getAttribute( "null" ) != null ){
+         }else if( element.getAttribute( addJsonPrefix( "null" ) ) != null ){
             return true;
          }else if( element.getAttributeCount() == 1
-               && (element.getAttribute( "class" ) != null || element.getAttribute( "type" ) != null) ){
+               && (element.getAttribute( addJsonPrefix( "class" ) ) != null || element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
             return true;
          }else if( element.getAttributeCount() == 2
-               && (element.getAttribute( "class" ) != null && element.getAttribute( "type" ) != null) ){
+               && (element.getAttribute( addJsonPrefix( "class" ) ) != null && element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
             return true;
          }
       }
@@ -823,7 +849,7 @@ public class XMLSerializer {
    private Element processJSONObject( JSONObject jsonObject, Element root,
          String[] expandableProperties, boolean isRoot ) {
       if( jsonObject.isNullObject() ){
-         root.addAttribute( new Attribute( "null", "true" ) );
+         root.addAttribute( new Attribute( addJsonPrefix( "null" ), "true" ) );
          return root;
       }else if( jsonObject.isEmpty() ){
          return root;
@@ -913,12 +939,12 @@ public class XMLSerializer {
       }
       if( JSONUtils.isBoolean( value ) ){
          if( isTypeHintsEnabled() ){
-            target.addAttribute( new Attribute( "type", JSONTypes.BOOLEAN ) );
+            target.addAttribute( new Attribute( addJsonPrefix( "type" ), JSONTypes.BOOLEAN ) );
          }
          target.appendChild( value.toString() );
       }else if( JSONUtils.isNumber( value ) ){
          if( isTypeHintsEnabled() ){
-            target.addAttribute( new Attribute( "type", JSONTypes.NUMBER ) );
+            target.addAttribute( new Attribute( addJsonPrefix( "type" ), JSONTypes.NUMBER ) );
          }
          target.appendChild( value.toString() );
       }else if( JSONUtils.isFunction( value ) ){
@@ -927,33 +953,33 @@ public class XMLSerializer {
          }
          JSONFunction func = (JSONFunction) value;
          if( isTypeHintsEnabled() ){
-            target.addAttribute( new Attribute( "type", JSONTypes.FUNCTION ) );
+            target.addAttribute( new Attribute( addJsonPrefix( "type" ), JSONTypes.FUNCTION ) );
          }
          String params = ArrayUtils.toString( func.getParams() );
          params = params.substring( 1 );
          params = params.substring( 0, params.length() - 1 );
-         target.addAttribute( new Attribute( "params", params ) );
+         target.addAttribute( new Attribute( addJsonPrefix( "params" ), params ) );
          target.appendChild( new Text( "<![CDATA[" + func.getText() + "]]>" ) );
       }else if( JSONUtils.isString( value ) ){
          if( isTypeHintsEnabled() ){
-            target.addAttribute( new Attribute( "type", JSONTypes.STRING ) );
+            target.addAttribute( new Attribute( addJsonPrefix( "type" ), JSONTypes.STRING ) );
          }
          target.appendChild( value.toString() );
       }else if( value instanceof JSONArray ){
          if( isTypeHintsEnabled() ){
-            target.addAttribute( new Attribute( "class", JSONTypes.ARRAY ) );
+            target.addAttribute( new Attribute( addJsonPrefix( "class" ), JSONTypes.ARRAY ) );
          }
          target = processJSONArray( (JSONArray) value, target, expandableProperties );
       }else if( value instanceof JSONObject ){
          if( isTypeHintsEnabled() ){
-            target.addAttribute( new Attribute( "class", JSONTypes.OBJECT ) );
+            target.addAttribute( new Attribute( addJsonPrefix( "class" ), JSONTypes.OBJECT ) );
          }
          target = processJSONObject( (JSONObject) value, target, expandableProperties, false );
       }else if( JSONUtils.isNull( value ) ){
          if( isTypeHintsEnabled() ){
-            target.addAttribute( new Attribute( "class", JSONTypes.OBJECT ) );
+            target.addAttribute( new Attribute( addJsonPrefix( "class" ), JSONTypes.OBJECT ) );
          }
-         target.addAttribute( new Attribute( "null", "true" ) );
+         target.addAttribute( new Attribute( addJsonPrefix( "null" ), "true" ) );
       }
       return target;
    }
@@ -983,8 +1009,9 @@ public class XMLSerializer {
       for( int i = 0; i < attrCount; i++ ){
          Attribute attr = element.getAttribute( i );
          String attrname = attr.getQualifiedName();
-         if( "class".compareToIgnoreCase( attrname ) == 0
-               || "type".compareToIgnoreCase( attrname ) == 0 ){
+         if( isTypeHintsEnabled()
+               && (addJsonPrefix( "class" ).compareToIgnoreCase( attrname ) == 0 || addJsonPrefix(
+                     "type" ).compareToIgnoreCase( attrname ) == 0) ){
             continue;
          }
          String attrvalue = attr.getValue();
@@ -1039,7 +1066,7 @@ public class XMLSerializer {
          return;
       }else if( element.getAttributeCount() > 0 ){
          if( isFunction( element ) ){
-            Attribute paramsAttribute = element.getAttribute( "params" );
+            Attribute paramsAttribute = element.getAttribute( addJsonPrefix( "params" ) );
             String[] params = null;
             String text = element.getValue();
             params = StringUtils.split( paramsAttribute.getValue(), "," );
@@ -1078,14 +1105,14 @@ public class XMLSerializer {
          }else if( type.compareToIgnoreCase( JSONTypes.FUNCTION ) == 0 ){
             String[] params = null;
             String text = element.getValue();
-            Attribute paramsAttribute = element.getAttribute( "params" );
+            Attribute paramsAttribute = element.getAttribute( addJsonPrefix( "params" ) );
             if( paramsAttribute != null ){
                params = StringUtils.split( paramsAttribute.getValue(), "," );
             }
             jsonArray.element( new JSONFunction( params, text ) );
          }else if( type.compareToIgnoreCase( JSONTypes.STRING ) == 0 ){
             // see if by any chance has a 'params' attribute
-            Attribute paramsAttribute = element.getAttribute( "params" );
+            Attribute paramsAttribute = element.getAttribute( addJsonPrefix( "params" ) );
             if( paramsAttribute != null ){
                String[] params = null;
                String text = element.getValue();
@@ -1117,7 +1144,7 @@ public class XMLSerializer {
          return;
       }else if( element.getAttributeCount() > 0 ){
          if( isFunction( element ) ){
-            Attribute paramsAttribute = element.getAttribute( "params" );
+            Attribute paramsAttribute = element.getAttribute( addJsonPrefix( "params" ) );
             String[] params = null;
             String text = element.getValue();
             params = StringUtils.split( paramsAttribute.getValue(), "," );
@@ -1158,14 +1185,14 @@ public class XMLSerializer {
          }else if( type.compareToIgnoreCase( JSONTypes.FUNCTION ) == 0 ){
             String[] params = null;
             String text = element.getValue();
-            Attribute paramsAttribute = element.getAttribute( "params" );
+            Attribute paramsAttribute = element.getAttribute( addJsonPrefix( "params" ) );
             if( paramsAttribute != null ){
                params = StringUtils.split( paramsAttribute.getValue(), "," );
             }
             setOrAccumulate( jsonObject, key, new JSONFunction( params, text ) );
          }else if( type.compareToIgnoreCase( JSONTypes.STRING ) == 0 ){
             // see if by any chance has a 'params' attribute
-            Attribute paramsAttribute = element.getAttribute( "params" );
+            Attribute paramsAttribute = element.getAttribute( addJsonPrefix( "params" ) );
             if( paramsAttribute != null ){
                String[] params = null;
                String text = element.getValue();
@@ -1258,7 +1285,6 @@ public class XMLSerializer {
          }
       }
    }
-
    private class XomSerializer extends Serializer {
       public XomSerializer( OutputStream out ) {
          super( out );

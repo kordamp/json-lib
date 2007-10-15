@@ -23,6 +23,8 @@ import java.util.List;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class MappedBean extends HashMap {
+   private static final long serialVersionUID = -3372716996620968313L;
+
    public List getList() {
       return (List) get( "list" );
    }

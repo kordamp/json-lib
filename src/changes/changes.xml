@@ -14,9 +14,16 @@
          desc="Current development release">
          <action
             dev="Andres Almiray"
+            type="add"
+            issue="1813520">
+            Allow 'type' to be parsed from XML to JSON
+         </action>
+         <action
+            dev="Andres Almiray"
             type="fix"
             issue="1813301">
-            JSONObject.toBean throws NPE with JSONArray values
+            JSONObject.toBean throws NPE with JSONArray values. Thanks
+            to Mino Togna (provided a testcase)
          </action>
          <action
             dev="Andres Almiray"

@@ -63,11 +63,20 @@ public class TestXMLSerializer_writes extends XMLTestCase {
       assertXMLEqual( expected, xml );
    }
 
+   public void testWriteFunctionArray_noTypeHintsCompatibility() throws Exception {
+      JSONArray jsonArray = JSONArray.fromObject( "[function(a){ return a; }]" );
+      xmlSerializer.setTypeHintsCompatibility( false );
+      String expected = "<a><e json_type=\"function\" json_params=\"a\"><![CDATA[return a;]]></e></a>";
+      String xml = xmlSerializer.write( jsonArray );
+      assertXMLEqual( expected, xml );
+   }
+
    public void testWriteJSONArray_collapseProperties() throws Exception {
       JSONObject jsonObject = new JSONObject();
       jsonObject.element( "duplicated", "json1" );
       jsonObject.accumulate( "duplicated", "json2" );
-      jsonObject.getJSONArray( "duplicated" ).setExpandElements( true );
+      jsonObject.getJSONArray( "duplicated" )
+            .setExpandElements( true );
       JSONArray jsonArray = new JSONArray().element( jsonObject );
       String expected = "<a><e class=\"object\"><duplicated type=\"string\">json1</duplicated><duplicated type=\"string\">json2</duplicated></e></a>";
       xmlSerializer.setExpandableProperties( new String[] { "duplicated" } );
@@ -91,7 +100,8 @@ public class TestXMLSerializer_writes extends XMLTestCase {
       JSONObject jsonObject = new JSONObject();
       jsonObject.element( "duplicated", "json1" );
       jsonObject.accumulate( "duplicated", "json2" );
-      jsonObject.getJSONArray( "duplicated" ).setExpandElements( true );
+      jsonObject.getJSONArray( "duplicated" )
+            .setExpandElements( true );
       String expected = "<o><duplicated type=\"string\">json1</duplicated><duplicated type=\"string\">json2</duplicated></o>";
       xmlSerializer.setExpandableProperties( new String[] { "duplicated" } );
       String xml = xmlSerializer.write( jsonObject );
@@ -133,9 +143,25 @@ public class TestXMLSerializer_writes extends XMLTestCase {
       assertXMLEqual( expected, xml );
    }
 
+   public void testWriteNullObject_noTypeHintsCompatibility() throws Exception {
+      JSONObject jsonObject = new JSONObject( true );
+      String expected = "<o json_null=\"true\"/>";
+      xmlSerializer.setTypeHintsCompatibility( false );
+      String xml = xmlSerializer.write( jsonObject );
+      assertXMLEqual( expected, xml );
+   }
+
    public void testWriteNullObjectArray() throws Exception {
       JSONArray jsonArray = JSONArray.fromObject( "[null,null]" );
       String expected = "<a><e class=\"object\" null=\"true\"/><e class=\"object\" null=\"true\"/></a>";
+      String xml = xmlSerializer.write( jsonArray );
+      assertXMLEqual( expected, xml );
+   }
+
+   public void testWriteNullObjectArray_noTypeHintsCompatibility() throws Exception {
+      JSONArray jsonArray = JSONArray.fromObject( "[null,null]" );
+      String expected = "<a><e json_class=\"object\" json_null=\"true\"/><e json_class=\"object\" json_null=\"true\"/></a>";
+      xmlSerializer.setTypeHintsCompatibility( false );
       String xml = xmlSerializer.write( jsonArray );
       assertXMLEqual( expected, xml );
    }

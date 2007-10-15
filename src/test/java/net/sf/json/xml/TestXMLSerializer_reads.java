@@ -44,6 +44,14 @@ public class TestXMLSerializer_reads extends TestCase {
       Assertions.assertEquals( expected, actual );
    }
 
+   public void testNullObjectArray_noTypeHintsCompatibility() {
+      String xml = "<a><e json_class=\"object\" json_null=\"true\"/><e json_class=\"object\" json_null=\"true\"/></a>";
+      xmlSerializer.setTypeHintsCompatibility( false );
+      JSON actual = xmlSerializer.read( xml );
+      JSON expected = JSONArray.fromObject( "[null,null]" );
+      Assertions.assertEquals( expected, actual );
+   }
+
    public void testRead_nullObject() {
       String xml = "<o/>";
       JSON actual = xmlSerializer.read( xml );
@@ -56,8 +64,22 @@ public class TestXMLSerializer_reads extends TestCase {
       Assertions.assertEquals( JSONNull.getInstance(), actual );
    }
 
+   public void testRead_nullObject_2_noTypeHintsCompatibility() {
+      String xml = "<o json_null=\"true\"/>";
+      xmlSerializer.setTypeHintsCompatibility( false );
+      JSON actual = xmlSerializer.read( xml );
+      Assertions.assertEquals( JSONNull.getInstance(), actual );
+   }
+
    public void testRead_nullObject_3() {
       String xml = "<o class=\"object\"/>";
+      JSON actual = xmlSerializer.read( xml );
+      Assertions.assertEquals( JSONNull.getInstance(), actual );
+   }
+
+   public void testRead_nullObject_3_noTypeHintsCompatibility() {
+      String xml = "<o json_class=\"object\"/>";
+      xmlSerializer.setTypeHintsCompatibility( false );
       JSON actual = xmlSerializer.read( xml );
       Assertions.assertEquals( JSONNull.getInstance(), actual );
    }
@@ -68,8 +90,22 @@ public class TestXMLSerializer_reads extends TestCase {
       Assertions.assertEquals( JSONNull.getInstance(), actual );
    }
 
+   public void testRead_nullObject_4_noTypeHintsCompatibility() {
+      String xml = "<o json_type=\"string\"/>";
+      xmlSerializer.setTypeHintsCompatibility( false );
+      JSON actual = xmlSerializer.read( xml );
+      Assertions.assertEquals( JSONNull.getInstance(), actual );
+   }
+
    public void testRead_nullObject_5() {
       String xml = "<o class=\"object\" type=\"string\"/>";
+      JSON actual = xmlSerializer.read( xml );
+      Assertions.assertEquals( JSONNull.getInstance(), actual );
+   }
+
+   public void testRead_nullObject_5_noTypeHintsCompatibility() {
+      String xml = "<o json_class=\"object\" json_type=\"string\"/>";
+      xmlSerializer.setTypeHintsCompatibility( false );
       JSON actual = xmlSerializer.read( xml );
       Assertions.assertEquals( JSONNull.getInstance(), actual );
    }
@@ -112,6 +148,14 @@ public class TestXMLSerializer_reads extends TestCase {
 
    public void testReadFunctionObject() {
       String xml = "<o><func params=\"a\" ><![CDATA[return a;]]></func></o>";
+      JSON actual = xmlSerializer.read( xml );
+      JSON expected = JSONObject.fromObject( "{func:function(a){ return a; }}" );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testReadFunctionObject_noTypeHintsCompatibility() {
+      String xml = "<o><func json_params=\"a\" ><![CDATA[return a;]]></func></o>";
+      xmlSerializer.setTypeHintsCompatibility( false );
       JSON actual = xmlSerializer.read( xml );
       JSON expected = JSONObject.fromObject( "{func:function(a){ return a; }}" );
       Assertions.assertEquals( expected, actual );
@@ -268,6 +312,29 @@ public class TestXMLSerializer_reads extends TestCase {
       String xml = "<o string=\"json\" number=\"1\"/>";
       JSON actual = xmlSerializer.read( xml );
       JSON expected = new JSONObject().element( "@string", "json" )
+            .element( "@number", "1" );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testReadObject_withAttributes_noTypeHintsEnabled() {
+      String xml = "<o class=\"Java.class\" type=\"object\" string=\"json\" number=\"1\"/>";
+      xmlSerializer.setTypeHintsEnabled( false );
+      JSON actual = xmlSerializer.read( xml );
+      JSON expected = new JSONObject().element( "@class", "Java.class" )
+            .element( "@type", "object" )
+            .element( "@string", "json" )
+            .element( "@number", "1" );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testReadObject_withAttributes_noTypeHintsEnabled_noTypeHintsCompatibility() {
+      String xml = "<o json_class=\"Java.class\" json_type=\"object\" string=\"json\" number=\"1\"/>";
+      xmlSerializer.setTypeHintsEnabled( false );
+      xmlSerializer.setTypeHintsCompatibility( false );
+      JSON actual = xmlSerializer.read( xml );
+      JSON expected = new JSONObject().element( "@json_class", "Java.class" )
+            .element( "@json_type", "object" )
+            .element( "@string", "json" )
             .element( "@number", "1" );
       Assertions.assertEquals( expected, actual );
    }
