@@ -23,6 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.processors.DefaultDefaultValueProcessor;
+import net.sf.json.processors.DefaultValueProcessor;
+import net.sf.json.processors.DefaultValueProcessorMatcher;
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonBeanProcessorMatcher;
 import net.sf.json.processors.JsonValueProcessor;
@@ -41,6 +44,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JsonConfig {
+   public static final DefaultValueProcessorMatcher DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER = DefaultValueProcessorMatcher.DEFAULT;
    public static final JsonBeanProcessorMatcher DEFAULT_JSON_BEAN_PROCESSOR_MATCHER = JsonBeanProcessorMatcher.DEFAULT;
    public static final NewBeanInstanceStrategy DEFAULT_NEW_BEAN_INSTANCE_STRATEGY = NewBeanInstanceStrategy.DEFAULT;
    public static final int MODE_LIST = 1;
@@ -49,6 +53,7 @@ public class JsonConfig {
    private static final String[] DEFAULT_EXCLUDES = new String[] { "class", "declaringClass",
          "metaClass" };
    private static final JavaIdentifierTransformer DEFAULT_JAVA_IDENTIFIER_TRANSFORMER = JavaIdentifierTransformer.NOOP;
+   private static final DefaultValueProcessor DEFAULT_VALUE_PROCESSOR = new DefaultDefaultValueProcessor();
    private static final String[] EMPTY_EXCLUDES = new String[0];
 
    /** Array conversion mode */
@@ -58,6 +63,8 @@ public class JsonConfig {
    /** Map of attribute/class */
    private Map classMap;
    private CycleDetectionStrategy cycleDetectionStrategy = DEFAULT_CYCLE_DETECTION_STRATEGY;
+   private Map defaultValueMap = new HashMap();
+   private DefaultValueProcessorMatcher defaultValueProcessorMatcher = DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER;
    private List eventListeners = new ArrayList();
    private String[] excludes = EMPTY_EXCLUDES;
    private boolean handleJettisonEmptyElement;
@@ -151,6 +158,8 @@ public class JsonConfig {
       jsc.javaPropertyFilter = javaPropertyFilter;
       jsc.jsonBeanProcessorMatcher = jsonBeanProcessorMatcher;
       jsc.newBeanInstanceStrategy = newBeanInstanceStrategy;
+      jsc.defaultValueProcessorMatcher = defaultValueProcessorMatcher;
+      jsc.defaultValueMap.putAll( defaultValueMap );
       return jsc;
    }
 
@@ -167,11 +176,26 @@ public class JsonConfig {
    public void enableEventTriggering() {
       triggerEvents = true;
    }
+   /**
+    * Finds a DefaultValueProcessor registered to the target class.<br>
+    * Returns null if none is registered. <br>
+    * Used when transforming from Java to Json.
+    *
+    * @param target a class used for searching a DefaultValueProcessor.
+    */
+   public DefaultValueProcessor findDefaultValueProcessor( Class target ) {
+      Object key = defaultValueProcessorMatcher.getMatch( target, defaultValueMap.keySet() );
+      DefaultValueProcessor processor = (DefaultValueProcessor) defaultValueMap.get( key );
+      if( processor != null ){
+         return processor;
+      }
+      return DEFAULT_VALUE_PROCESSOR;
+   }
 
    /**
     * Finds a JsonBeanProcessor registered to the target class.<br>
     * Returns null if none is registered. <br>
-    * Used when tramsforming from Java to Json.
+    * Used when transforming from Java to Json.
     *
     * @param target a class used for searching a JsonBeanProcessor.
     */
@@ -291,6 +315,14 @@ public class JsonConfig {
     */
    public CycleDetectionStrategy getCycleDetectionStrategy() {
       return cycleDetectionStrategy;
+   }
+
+   /**
+    * Returns the configured DefaultValueProcessorMatcher.<br>
+    * Default value is DefaultValueProcessorMatcher.DEFAULT
+    */
+   public DefaultValueProcessorMatcher getDefaultValueProcessorMatcher() {
+      return defaultValueProcessorMatcher;
    }
 
    /**
@@ -432,7 +464,20 @@ public class JsonConfig {
    }
 
    /**
-    * Registers a JsonValueProcessor.<br>
+    * Registers a DefaultValueProcessor.<br>
+    *
+    * @param target the class to use as key
+    * @param defaultValueProcessor the processor to register
+    */
+   public void registerDefaultValueProcessor( Class target,
+         DefaultValueProcessor defaultValueProcessor ) {
+      if( target != null && defaultValueProcessor != null ){
+         defaultValueMap.put( target, defaultValueProcessor );
+      }
+   }
+
+   /**
+    * Registers a JsonBeanProcessor.<br>
     *
     * @param target the class to use as key
     * @param jsonBeanProcessor the processor to register
@@ -529,6 +574,8 @@ public class JsonConfig {
       javaPropertyFilter = null;
       jsonBeanProcessorMatcher = DEFAULT_JSON_BEAN_PROCESSOR_MATCHER;
       newBeanInstanceStrategy = DEFAULT_NEW_BEAN_INSTANCE_STRATEGY;
+      defaultValueProcessorMatcher = DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER;
+      defaultValueMap.clear();
    }
 
    /**
@@ -563,6 +610,16 @@ public class JsonConfig {
    public void setCycleDetectionStrategy( CycleDetectionStrategy cycleDetectionStrategy ) {
       this.cycleDetectionStrategy = cycleDetectionStrategy == null ? DEFAULT_CYCLE_DETECTION_STRATEGY
             : cycleDetectionStrategy;
+   }
+
+   /**
+    * Sets a DefaultValueProcessorMatcher to use.<br>
+    * Will set default value (DefaultValueProcessorMatcher.DEFAULT) if null.
+    */
+   public void setDefaultValueProcessorMatcher(
+         DefaultValueProcessorMatcher defaultValueProcessorMatcher ) {
+      this.defaultValueProcessorMatcher = defaultValueProcessorMatcher == null ? DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER
+            : defaultValueProcessorMatcher;
    }
 
    /**
@@ -627,7 +684,7 @@ public class JsonConfig {
 
    /**
     * Sets a JsonBeanProcessorMatcher to use.<br>
-    * Will set default value (JsonBeanProcessorMatcher.STRICT) if null.
+    * Will set default value (JsonBeanProcessorMatcher.DEFAULT) if null.
     */
    public void setJsonBeanProcessorMatcher( JsonBeanProcessorMatcher jsonBeanProcessorMatcher ) {
       this.jsonBeanProcessorMatcher = jsonBeanProcessorMatcher == null ? DEFAULT_JSON_BEAN_PROCESSOR_MATCHER
@@ -667,6 +724,17 @@ public class JsonConfig {
    public void setSkipJavaIdentifierTransformationInMapKeys(
          boolean skipJavaIdentifierTransformationInMapKeys ) {
       this.skipJavaIdentifierTransformationInMapKeys = skipJavaIdentifierTransformationInMapKeys;
+   }
+
+   /**
+    * Removes a DefaultValueProcessor.
+    *
+    * @param target a class used for searching a DefaultValueProcessor.
+    */
+   public void unregisterDefaultValueProcessor( Class target ) {
+      if( target != null ){
+         defaultValueMap.remove( target );
+      }
    }
 
    /**

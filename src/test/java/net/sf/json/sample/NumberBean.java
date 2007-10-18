@@ -31,6 +31,12 @@ public class NumberBean {
    private int pint;
    private long plong;
    private short pshort;
+   private Byte pwbyte;
+   private Double pwdouble;
+   private Float pwfloat;
+   private Integer pwint;
+   private Long pwlong;
+   private Short pwshort;
 
    public BigDecimal getPbigdec() {
       return pbigdec;
@@ -64,6 +70,30 @@ public class NumberBean {
       return pshort;
    }
 
+   public Byte getPwbyte() {
+      return pwbyte;
+   }
+
+   public Double getPwdouble() {
+      return pwdouble;
+   }
+
+   public Float getPwfloat() {
+      return pwfloat;
+   }
+
+   public Integer getPwint() {
+      return pwint;
+   }
+
+   public Long getPwlong() {
+      return pwlong;
+   }
+
+   public Short getPwshort() {
+      return pwshort;
+   }
+
    public void setPbigdec( BigDecimal pbigdec ) {
       this.pbigdec = pbigdec;
    }
@@ -94,5 +124,29 @@ public class NumberBean {
 
    public void setPshort( short pshort ) {
       this.pshort = pshort;
+   }
+
+   public void setPwbyte( Byte pwbyte ) {
+      this.pwbyte = pwbyte;
+   }
+
+   public void setPwdouble( Double pwdouble ) {
+      this.pwdouble = pwdouble;
+   }
+
+   public void setPwfloat( Float pwfloat ) {
+      this.pwfloat = pwfloat;
+   }
+
+   public void setPwint( Integer pwint ) {
+      this.pwint = pwint;
+   }
+
+   public void setPwlong( Long pwlong ) {
+      this.pwlong = pwlong;
+   }
+
+   public void setPwshort( Short pwshort ) {
+      this.pwshort = pwshort;
    }
 }

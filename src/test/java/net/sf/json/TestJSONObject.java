@@ -22,14 +22,18 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import junit.framework.TestCase;
 import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.bean.MorphDynaBean;
 import net.sf.ezmorph.bean.MorphDynaClass;
 import net.sf.ezmorph.test.ArrayAssertions;
+import net.sf.json.processors.DefaultValueProcessor;
+import net.sf.json.processors.DefaultValueProcessorMatcher;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;
@@ -764,6 +768,49 @@ public class TestJSONObject extends TestCase {
       assertTrue( json.isEmpty() );
    }
 
+   public void testFromObject_withCustomDefaultValueProcessor() {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.registerDefaultValueProcessor( Integer.class, new NumberDefaultValueProcessor() );
+      JSONObject jsonObject = JSONObject.fromObject( new NumberBean(), jsonConfig );
+      assertNotNull( jsonObject );
+      assertEquals( new Integer( 0 ), jsonObject.get( "pwbyte" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "pwshort" ) );
+      assertEquals( NumberDefaultValueProcessor.NUMBER, jsonObject.get( "pwint" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "pwlong" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "pwfloat" ) );
+      assertEquals( new Double( 0 ), jsonObject.get( "pwdouble" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "pbigdec" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "pbigint" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "pbyte" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "pshort" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "pint" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "plong" ) );
+      assertEquals( new Double( 0 ), jsonObject.get( "pfloat" ) );
+      assertEquals( new Double( 0 ), jsonObject.get( "pdouble" ) );
+   }
+
+   public void testFromObject_withCustomDefaultValueProcessor_andMatcher() {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.registerDefaultValueProcessor( Integer.class, new NumberDefaultValueProcessor() );
+      jsonConfig.setDefaultValueProcessorMatcher( new NumberDefaultValueProcessorMatcher() );
+      JSONObject jsonObject = JSONObject.fromObject( new NumberBean(), jsonConfig );
+      assertNotNull( jsonObject );
+      assertEquals( NumberDefaultValueProcessor.NUMBER, jsonObject.get( "pbigdec" ) );
+      assertEquals( NumberDefaultValueProcessor.NUMBER, jsonObject.get( "pbigint" ) );
+      assertEquals( NumberDefaultValueProcessor.NUMBER, jsonObject.get( "pwbyte" ) );
+      assertEquals( NumberDefaultValueProcessor.NUMBER, jsonObject.get( "pwshort" ) );
+      assertEquals( NumberDefaultValueProcessor.NUMBER, jsonObject.get( "pwint" ) );
+      assertEquals( NumberDefaultValueProcessor.NUMBER, jsonObject.get( "pwlong" ) );
+      assertEquals( NumberDefaultValueProcessor.NUMBER, jsonObject.get( "pwfloat" ) );
+      assertEquals( NumberDefaultValueProcessor.NUMBER, jsonObject.get( "pwdouble" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "pbyte" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "pshort" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "pint" ) );
+      assertEquals( new Integer( 0 ), jsonObject.get( "plong" ) );
+      assertEquals( new Double( 0 ), jsonObject.get( "pfloat" ) );
+      assertEquals( new Double( 0 ), jsonObject.get( "pdouble" ) );
+   }
+
    public void testFromObject_withFilters() {
       PrimitiveBean bean = new PrimitiveBean();
       JsonConfig jsonConfig = new JsonConfig();
@@ -1403,6 +1450,26 @@ public class TestJSONObject extends TestCase {
          return false;
       }
 
+   }
+
+   public static class NumberDefaultValueProcessor implements DefaultValueProcessor {
+      public static final Integer NUMBER = new Integer( 42 );
+
+      public Object getDefaultValue( Class type ) {
+         return NUMBER;
+      }
+   }
+
+   public static class NumberDefaultValueProcessorMatcher extends DefaultValueProcessorMatcher {
+      public Object getMatch( Class target, Set set ) {
+         for( Iterator i = set.iterator(); i.hasNext(); ){
+            Class c = (Class) i.next();
+            if( Number.class.isAssignableFrom( c ) ){
+               return c;
+            }
+         }
+         return null;
+      }
    }
 
    public static class NumberPropertyFilter implements PropertyFilter {

@@ -88,6 +88,19 @@
 	 to overcome this "restriction", just register a <code>NewBeanInstanceStrategy</code> into JsonConfig and you are in business.
          </subsection>
 
+         <subsection name="Changing the default value of a null reference">
+	 The JSON spec states that null values can only be assigned to objects, but in Java you can have null assigned to any
+	 reference, when Json-lib encounters a null reference it follows these rules<ul>
+	 <li>value is 0 if the reference is a number (wrapper or primitive)</li>
+	 <li>value is '' if the reference is a String, Character or char</li>
+	 <li>value is [] if the reference is a Collection or array</li>
+	 </ul>
+	 But sometimes it would be useful to change that rule, for example instead of assigning 'null' to a null reference of MyBean
+	 you would like to assign '{ "empty": true }' because that's what your client code expects. <code>DefaultValueProcessor</code> 
+	 will let you change that rules, along with <code>DefaultValueProcessorMatcher</code> which will let you select the most
+	 appropriate processor, as it is done with JsonBeanProcessors.
+         </subsection>
+         
       </section>
    </body>
 </document>

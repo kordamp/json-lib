@@ -58,6 +58,8 @@ import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.array.ObjectArrayMorpher;
 import net.sf.ezmorph.bean.BeanMorpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
@@ -675,7 +677,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          try{
             json = processor.processBean( bean, jsonConfig );
             if( json == null ){
-               json = new JSONObject( true );
+               json = (JSONObject) jsonConfig.findDefaultValueProcessor( bean.getClass() )
+                     .getDefaultValue( bean.getClass() );
+               if( json == null ){
+                  json = new JSONObject( true );
+               }
             }
             removeInstance( bean );
             fireObjectEndEvent( jsonConfig );
@@ -1153,20 +1159,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          JsonConfig jsonConfig ) {
       boolean accumulated = false;
       if( value == null ){
-         if( JSONUtils.isArray( type ) ){
-            value = new JSONArray();
-         }else if( JSONUtils.isNumber( type ) ){
-            if( JSONUtils.isDouble( type ) ){
-               value = new Double( 0 );
-            }else{
-               value = new Integer( 0 );
-            }
-         }else if( JSONUtils.isBoolean( type ) ){
-            value = Boolean.FALSE;
-         }else if( JSONUtils.isString( type ) ){
-            value = "";
-         }else{
-            value = JSONNull.getInstance();
+         value = jsonConfig.findDefaultValueProcessor( type )
+               .getDefaultValue( type );
+         if( !JsonVerifier.isValidJsonValue( value ) ){
+            throw new JSONException( "Value is not a valid JSON value. " + value );
          }
       }
       if( jsonObject.properties.containsKey( key ) ){

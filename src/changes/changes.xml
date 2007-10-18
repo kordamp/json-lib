@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="add"
+            issue="1815456">
+            Allow default value to be changed when a reference is null
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
             issue="1813520">
             Allow 'type' to be parsed from XML to JSON
          </action>

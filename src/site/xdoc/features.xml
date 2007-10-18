@@ -18,7 +18,9 @@
                 <li>register a JsonBeanProcessor for the whole bean</li>
                 <li>register a JsonValueProcessor for a bean property (key and/or type)</li>
           </ul></li>
-          <li>plugin your own startegy for selection JsonBeanProcessors with JsonBeanProcessorMatcher</li>
+          <li>register a DefaultValueProcessor for returning a default value when a null reference is encountered</li>
+          <li>plugin your own strategy for selecting a JsonBeanProcessor with JsonBeanProcessorMatcher</li>
+          <li>plugin your own strategy for selecting a DefaultValueProcessor with DefaultValueProcessorMatcher</li>
           <li>modify the target property name when transforming from JSON to Java if the name is not a valid JavaIdentifier</li>
           <li>skip modifying map keys when transforming form JSON to Java if the key is not a valid JavaIdentifier</li>
           <li>register your own JavaIdentifierTransformer strategy</li>
