@@ -24,6 +24,7 @@
           <li>modify the target property name when transforming from JSON to Java if the name is not a valid JavaIdentifier</li>
           <li>skip modifying map keys when transforming form JSON to Java if the key is not a valid JavaIdentifier</li>
           <li>register your own JavaIdentifierTransformer strategy</li>
+          <li>plugin your own strategy for setting properties into a bean when transforming from JSON to Java thanks to PropertySetStrategy</li>
           <li>publish events when building a JSONObject or JSONarray. The available events are:<ul>
              <li>object start/end</li>
              <li>array start/end</li>

@@ -100,6 +100,12 @@
 	 will let you change that rules, along with <code>DefaultValueProcessorMatcher</code> which will let you select the most
 	 appropriate processor, as it is done with JsonBeanProcessors.
          </subsection>
+
+	 <subsection name="Setting properties on beans">
+	 JSONObject knows how to set values on a Map or bean when transforming JSON to Java. For those rare ocasions wher you would want
+	 to handle the set by yourself you can register a <code>PropertySetStrategy</code> through JsonConfig. This feature comes in handy
+	 with map backed beans that are neither a Map nor a DynaBean.
+         </subsection>
          
       </section>
    </body>

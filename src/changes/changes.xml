@@ -15,6 +15,13 @@
          <action
             dev="Andres Almiray"
             type="add"
+            issue="1815457">
+            Allow direct property acces when transforming JSON to Java.
+            Thanks to Gino Miceli (provided a patch).
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
             issue="1815456">
             Allow default value to be changed when a reference is null
          </action>

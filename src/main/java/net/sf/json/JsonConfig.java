@@ -34,6 +34,7 @@ import net.sf.json.util.JavaIdentifierTransformer;
 import net.sf.json.util.JsonEventListener;
 import net.sf.json.util.NewBeanInstanceStrategy;
 import net.sf.json.util.PropertyFilter;
+import net.sf.json.util.PropertySetStrategy;
 
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.commons.lang.StringUtils;
@@ -53,6 +54,7 @@ public class JsonConfig {
    private static final String[] DEFAULT_EXCLUDES = new String[] { "class", "declaringClass",
          "metaClass" };
    private static final JavaIdentifierTransformer DEFAULT_JAVA_IDENTIFIER_TRANSFORMER = JavaIdentifierTransformer.NOOP;
+   private static final PropertySetStrategy DEFAULT_PROPERTY_SET_STRATEGY = PropertySetStrategy.DEFAULT;
    private static final DefaultValueProcessor DEFAULT_VALUE_PROCESSOR = new DefaultDefaultValueProcessor();
    private static final String[] EMPTY_EXCLUDES = new String[0];
 
@@ -78,6 +80,7 @@ public class JsonConfig {
    private Map keyMap = new HashMap();
    private NewBeanInstanceStrategy newBeanInstanceStrategy = DEFAULT_NEW_BEAN_INSTANCE_STRATEGY;
    private Map processorMap = new HashMap();
+   private PropertySetStrategy propertySetStrategy = DEFAULT_PROPERTY_SET_STRATEGY;
    /** Root class used when converting to an specific bean */
    private Class rootClass;
    private boolean skipJavaIdentifierTransformationInMapKeys;
@@ -160,6 +163,7 @@ public class JsonConfig {
       jsc.newBeanInstanceStrategy = newBeanInstanceStrategy;
       jsc.defaultValueProcessorMatcher = defaultValueProcessorMatcher;
       jsc.defaultValueMap.putAll( defaultValueMap );
+      jsc.propertySetStrategy = propertySetStrategy;
       return jsc;
    }
 
@@ -176,6 +180,7 @@ public class JsonConfig {
    public void enableEventTriggering() {
       triggerEvents = true;
    }
+
    /**
     * Finds a DefaultValueProcessor registered to the target class.<br>
     * Returns null if none is registered. <br>
@@ -403,6 +408,14 @@ public class JsonConfig {
    }
 
    /**
+    * Returns the configured PropertySetStrategy.<br>
+    * Default value is PropertySetStrategy.DEFAULT
+    */
+   public PropertySetStrategy getPropertySetStrategy() {
+      return propertySetStrategy;
+   }
+
+   /**
     * Returns the current root Class.
     *
     * @return the target class for conversion
@@ -576,6 +589,7 @@ public class JsonConfig {
       newBeanInstanceStrategy = DEFAULT_NEW_BEAN_INSTANCE_STRATEGY;
       defaultValueProcessorMatcher = DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER;
       defaultValueMap.clear();
+      propertySetStrategy = DEFAULT_PROPERTY_SET_STRATEGY;
    }
 
    /**
@@ -707,6 +721,15 @@ public class JsonConfig {
    public void setNewBeanInstanceStrategy( NewBeanInstanceStrategy newBeanInstanceStrategy ) {
       this.newBeanInstanceStrategy = newBeanInstanceStrategy == null ? DEFAULT_NEW_BEAN_INSTANCE_STRATEGY
             : newBeanInstanceStrategy;
+   }
+
+   /**
+    * Sets a PropertySetStrategy to use.<br>
+    * Will set default value (PropertySetStrategy.DEFAULT) if null.
+    */
+   public void setPropertySetStrategy( PropertySetStrategy propertySetStrategy ) {
+      this.propertySetStrategy = propertySetStrategy == null ? DEFAULT_PROPERTY_SET_STRATEGY
+            : propertySetStrategy;
    }
 
    /**
