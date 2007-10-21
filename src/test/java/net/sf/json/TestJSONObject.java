@@ -58,6 +58,7 @@ import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
 import net.sf.json.util.PropertyFilter;
+import net.sf.json.util.PropertySetStrategy;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -1409,6 +1410,17 @@ public class TestJSONObject extends TestCase {
       assertEquals( "json", bean.getWhitespace() );
    }
 
+   public void testToBean_withPropertySetStrategy() {
+      JSONObject json = new JSONObject().element( "key", "value" );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( MappingBean.class );
+      jsonConfig.setPropertySetStrategy( new MappingPropertySetStrategy() );
+      MappingBean bean = (MappingBean) JSONObject.toBean( json, jsonConfig );
+      assertNotNull( bean );
+      assertEquals( "value", bean.getAttributes()
+            .get( "key" ) );
+   }
+
    public void testToJSONArray() {
       String json = "{bool:true,integer:1,string:\"json\"}";
       JSONArray names = JSONArray.fromObject( "['string','integer','bool']" );
@@ -1450,6 +1462,12 @@ public class TestJSONObject extends TestCase {
          return false;
       }
 
+   }
+
+   public static class MappingPropertySetStrategy extends PropertySetStrategy {
+      public void setProperty( Object bean, String key, Object value ) throws JSONException {
+         ((MappingBean) bean).addAttribute( key, value );
+      }
    }
 
    public static class NumberDefaultValueProcessor implements DefaultValueProcessor {
