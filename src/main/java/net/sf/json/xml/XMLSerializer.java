@@ -1247,10 +1247,18 @@ public class XMLSerializer {
          XomSerializer serializer = (encoding == null) ? new XomSerializer( baos )
                : new XomSerializer( baos, encoding );
          serializer.write( doc );
+         encoding = serializer.getEncoding();
       }catch( IOException ioe ){
          throw new JSONException( ioe );
       }
-      return baos.toString();
+
+      String str = null;
+      try{
+         str = baos.toString( encoding );
+      }catch( UnsupportedEncodingException uee ){
+         throw new JSONException( uee );
+      }
+      return str;
    }
 
    private static class CustomElement extends Element {

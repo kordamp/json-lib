@@ -15,6 +15,13 @@
          <action
             dev="Andres Almiray"
             type="add"
+            issue="1819159">
+            Encoding problem of XMLSerializer#writeDocument. Thanks to
+            Masato Nagai (provided a patch).
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
             issue="1815457">
             Allow direct property acces when transforming JSON to Java.
             Thanks to Gino Miceli (provided a patch).
