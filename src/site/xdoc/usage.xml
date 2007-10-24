@@ -63,7 +63,7 @@
    map.put( "arr", new String[]{"a","b"} );
    map.put( "func", "function(i){ return this.arr[i]; }" );
 
-   JSONObject json = JSONObject.fromObject( map );
+   JSONObject jsonObject = JSONObject.fromObject( map );
    System.out.println( jsonObject );
    // prints ["name":"json","bool":true,"int":1,"arr":["a","b"],"func":function(i){ return this.arr[i]; }]</textarea>
 
