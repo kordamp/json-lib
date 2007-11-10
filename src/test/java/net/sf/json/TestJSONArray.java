@@ -306,6 +306,22 @@ public class TestJSONArray extends TestCase {
             "[function(a){ return a; },[function(b){ return b; }]]" );
    }
 
+   public void testCycleDetection_arrays() {
+      Object[] array1 = new Object[2];
+      Object[] array2 = new Object[2];
+      array1[0] = new Integer( 1 );
+      array1[1] = array2;
+      array2[0] = new Integer( 2 );
+      array2[1] = array1;
+      try{
+         JSONArray.fromObject( array1 );
+         fail( "A JSONException was expected" );
+      }catch( JSONException expected ){
+         assertTrue( expected.getMessage()
+               .endsWith( "There is a cycle in the hierarchy!" ) );
+      }
+   }
+
    public void testElement_Array() {
       JSONArray array = new JSONArray();
       int[] ints = { 1, 2 };
@@ -1183,6 +1199,26 @@ public class TestJSONArray extends TestCase {
       Assertions.assertEquals( expected, actual );
    }
 
+   public void testToArray_StringToInt() {
+      int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
+      String[] input = new String[] { "1", "2", "3", "4", "5", "6" };
+      JSONArray jsonArray = JSONArray.fromObject( input );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( Integer.TYPE );
+      Object actual = JSONArray.toArray( jsonArray, jsonConfig );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testToArray_StringToInteger() {
+      int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
+      String[] input = new String[] { "1", "2", "3", "4", "5", "6" };
+      JSONArray jsonArray = JSONArray.fromObject( input );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( Integer.class );
+      Object actual = JSONArray.toArray( jsonArray, jsonConfig );
+      Assertions.assertEquals( expected, actual );
+   }
+
    public void testToJSONObject() {
       JSONArray jsonArray = JSONArray.fromObject( "[\"json\",1,true]" );
       JSONObject expected = JSONObject.fromObject( "{\"string\":\"json\",\"int\":1,\"bool\":true}" );
@@ -1383,22 +1419,6 @@ public class TestJSONArray extends TestCase {
       StringWriter sw = new StringWriter();
       jsonArray.write( sw );
       assertEquals( "[[],{},1,true,\"json\"]", sw.toString() );
-   }
-
-   public void testCycleDetection_arrays() {
-      Object[] array1 = new Object[2];
-      Object[] array2 = new Object[2];
-      array1[0] = new Integer( 1 );
-      array1[1] = array2;
-      array2[0] = new Integer( 2 );
-      array2[1] = array1;
-      try{
-         JSONArray.fromObject( array1 );
-         fail( "A JSONException was expected" );
-      }catch( JSONException expected ){
-         assertTrue( expected.getMessage()
-               .endsWith( "There is a cycle in the hierarchy!" ) );
-      }
    }
 
    private MorphDynaBean createDynaBean() throws Exception {

@@ -23,28 +23,24 @@ import net.sf.json.JSONArray
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 class ArrayListMetaClass extends DelegatingMetaClass {
-   ArrayListMetaClass( final Class clazz ){
-      super( clazz )
-      initialize()
-   }
-   ArrayListMetaClass( MetaClassRegistry registry, final Class clazz ){
-      super( clazz )
+   ArrayListMetaClass( final MetaClass metaClazz ){
+      super( metaClazz )
    }
 
    public Object invokeMethod(Object instance, String methodName, Object[] args )
    {
        if( methodName == "asType" ){
-          return asType( instance, args[0] )
+          return jsonAsType( instance, args[0] )
        }else{
-          return super.invokeMethod( instance, methodName, args )
+          return delegate.invokeMethod( instance, methodName, args )
        }
    }
 
-   private Object asType( list, clazz ){
+   private Object jsonAsType( list, clazz ){
       if( clazz == JSONArray ){
          return JSONArray.fromObject( list )
       }else{
-         return super.invokeMethod( list, "asType", [clazz] )
+         return delegate.invokeMethod( list, "asType", [clazz] )
       }
    }
 }

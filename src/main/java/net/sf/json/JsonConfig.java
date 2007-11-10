@@ -54,7 +54,6 @@ public class JsonConfig {
    private static final String[] DEFAULT_EXCLUDES = new String[] { "class", "declaringClass",
          "metaClass" };
    private static final JavaIdentifierTransformer DEFAULT_JAVA_IDENTIFIER_TRANSFORMER = JavaIdentifierTransformer.NOOP;
-   private static final PropertySetStrategy DEFAULT_PROPERTY_SET_STRATEGY = PropertySetStrategy.DEFAULT;
    private static final DefaultValueProcessor DEFAULT_VALUE_PROCESSOR = new DefaultDefaultValueProcessor();
    private static final String[] EMPTY_EXCLUDES = new String[0];
 
@@ -80,7 +79,7 @@ public class JsonConfig {
    private Map keyMap = new HashMap();
    private NewBeanInstanceStrategy newBeanInstanceStrategy = DEFAULT_NEW_BEAN_INSTANCE_STRATEGY;
    private Map processorMap = new HashMap();
-   private PropertySetStrategy propertySetStrategy/* = DEFAULT_PROPERTY_SET_STRATEGY*/;
+   private PropertySetStrategy propertySetStrategy;
    /** Root class used when converting to an specific bean */
    private Class rootClass;
    private boolean skipJavaIdentifierTransformationInMapKeys;
@@ -728,8 +727,7 @@ public class JsonConfig {
     * Will set default value (PropertySetStrategy.DEFAULT) if null.
     */
    public void setPropertySetStrategy( PropertySetStrategy propertySetStrategy ) {
-      this.propertySetStrategy = /*propertySetStrategy == null ? DEFAULT_PROPERTY_SET_STRATEGY
-            :*/ propertySetStrategy;
+      this.propertySetStrategy = propertySetStrategy;
    }
 
    /**

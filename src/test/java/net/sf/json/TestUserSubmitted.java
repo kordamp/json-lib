@@ -18,16 +18,20 @@ package net.sf.json;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.sf.ezmorph.object.MapToDateMorpher;
 import net.sf.json.sample.ArrayBean;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanA1763699;
 import net.sf.json.sample.BeanB1763699;
 import net.sf.json.sample.BeanC;
+import net.sf.json.sample.DateBean;
 import net.sf.json.sample.IdBean;
 import net.sf.json.sample.JSONTestBean;
 import net.sf.json.sample.MappedBean;
@@ -138,7 +142,7 @@ public class TestUserSubmitted extends TestCase {
       assertTrue( object.get( "info2" ) instanceof String );
       assertTrue( object.get( "info3" ) instanceof String );
    }
-
+/*
    public void testBug_1650535_setters() {
       JSONObject object = new JSONObject();
       object.element( "obj", "{}" );
@@ -297,6 +301,26 @@ public class TestUserSubmitted extends TestCase {
       assertEquals( UnstandardBean.class, bean.getClass() );
       assertEquals( 1, bean.getId() );
    }
+*/
+   public void testFromObjectCurliesOnString() {
+      String json = "{'prop':'{value}'}";
+      JSONObject jsonObject = JSONObject.fromObject( json );
+      assertNotNull( jsonObject );
+      assertEquals( 1, jsonObject.size() );
+      assertEquals( "{value}", jsonObject.get( "prop" ) );
+
+      json = "{'prop':'{{value}}'}";
+      jsonObject = JSONObject.fromObject( json );
+      assertNotNull( jsonObject );
+      assertEquals( 1, jsonObject.size() );
+      assertEquals( "{{value}}", jsonObject.get( "prop" ) );
+
+      json = "{'prop':'{{{value}}}'}";
+      jsonObject = JSONObject.fromObject( json );
+      assertNotNull( jsonObject );
+      assertEquals( 1, jsonObject.size() );
+      assertEquals( "{{{value}}}", jsonObject.get( "prop" ) );
+   }
 
    public void testHandleJettisonEmptyElement() {
       JSONObject jsonObject = JSONObject.fromObject( "{'beanA':'','beanB':''}" );
@@ -405,6 +429,38 @@ public class TestUserSubmitted extends TestCase {
       idBean = (IdBean) JSONObject.toBean( jsonObject, IdBean.class );
       assertNotNull( idBean );
       assertEquals( new IdBean.Id( 1L ), idBean.getId() );
+   }
+
+   public void testToBeanWithMultipleMorphersForTargetType() {
+      Calendar c = Calendar.getInstance();
+      c.set( Calendar.YEAR, 2007 );
+      c.set( Calendar.MONTH, 5 );
+      c.set( Calendar.DATE, 17 );
+      c.set( Calendar.HOUR_OF_DAY, 12 );
+      c.set( Calendar.MINUTE, 13 );
+      c.set( Calendar.SECOND, 14 );
+      c.set( Calendar.MILLISECOND, 150 );
+      Date date = c.getTime();
+
+      DateBean bean = new DateBean();
+      bean.setDate( date );
+      JSONObject jsonObject = JSONObject.fromObject( bean );
+
+      JSONUtils.getMorpherRegistry()
+            .registerMorpher( new MapToDateMorpher() );
+
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( DateBean.class );
+      DateBean actual = (DateBean) JSONObject.toBean( jsonObject, jsonConfig );
+      Calendar d = Calendar.getInstance();
+      d.setTime( actual.getDate() );
+      assertEquals( c.get( Calendar.YEAR ), d.get( Calendar.YEAR ) );
+      assertEquals( c.get( Calendar.MONTH ), d.get( Calendar.MONTH ) );
+      assertEquals( c.get( Calendar.DATE ), d.get( Calendar.DATE ) );
+      assertEquals( c.get( Calendar.HOUR_OF_DAY ), d.get( Calendar.HOUR_OF_DAY ) );
+      assertEquals( c.get( Calendar.MINUTE ), d.get( Calendar.MINUTE ) );
+      assertEquals( c.get( Calendar.SECOND ), d.get( Calendar.SECOND ) );
+      assertEquals( c.get( Calendar.MILLISECOND ), d.get( Calendar.MILLISECOND ) );
    }
 
    protected void setUp() throws Exception {

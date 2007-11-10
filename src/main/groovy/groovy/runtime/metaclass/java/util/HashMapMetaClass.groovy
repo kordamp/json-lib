@@ -23,28 +23,24 @@ import net.sf.json.JSONObject
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 class HashMapMetaClass extends DelegatingMetaClass {
-   HashMapMetaClass( final Class clazz ){
-      super( clazz )
-      initialize()
-   }
-   HashMapMetaClass( MetaClassRegistry registry, final Class clazz ){
-      super( clazz )
+   HashMapMetaClass( final MetaClass metaClazz ){
+      super( metaClazz )
    }
 
    public Object invokeMethod(Object instance, String methodName, Object[] args )
    {
        if( methodName == "asType" ){
-          return asType( instance, args[0] )
+          return jsonAsType( instance, args[0] )
        }else{
-          return super.invokeMethod( instance, methodName, args )
+          return delegate.invokeMethod( instance, methodName, args )
        }
    }
 
-   private Object asType( map, clazz ){
+   private Object jsonAsType( map, clazz ){
       if( clazz == JSONObject ){
          return JSONObject.fromObject( map )
       }else{
-         return super.invokeMethod( map, "asType", [clazz] )
+         return delegate.invokeMethod( map, "asType", [clazz] )
       }
    }
 }

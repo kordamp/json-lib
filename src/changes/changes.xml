@@ -16,7 +16,7 @@
             dev="Andres Almiray"
             type="add"
             issue="1828093">
-            JSONArray.toArray can't transform from String[] to int[]
+            Extra quotes on string values with {} and []
          </action>
          <action
             dev="Andres Almiray"

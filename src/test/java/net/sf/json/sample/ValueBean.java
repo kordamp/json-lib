@@ -16,6 +16,9 @@
 
 package net.sf.json.sample;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
@@ -28,5 +31,9 @@ public class ValueBean {
 
    public void setValue( int value ) {
       this.value = value;
+   }
+
+   public String toString() {
+      return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
    }
 }

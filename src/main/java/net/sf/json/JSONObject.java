@@ -1550,7 +1550,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       }
       if( value != null ){
          value = processValue( key, value, jsonConfig );
-         setInternal( key, value, jsonConfig );
+         _setInternal( key, value, jsonConfig );
       }else{
          remove( key );
       }
@@ -2423,7 +2423,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             if( value == null ){
                return "";
             }else{
-               return str;
+               String tmp = JSONUtils.stripQuotes( str );
+               return JSONUtils.mayBeJSON( tmp )?tmp:str;
             }
          }
       }else if( JSONUtils.isNumber( value ) ){
@@ -2453,7 +2454,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          throw new JSONException( "Null key." );
       }
 
-      this.properties.put( key, _processValue( value, jsonConfig ) );
+      if( JSONUtils.isString( value ) && JSONUtils.mayBeJSON( String.valueOf( value ) ) ){
+         this.properties.put( key, value );
+      }else{
+         this.properties.put( key, _processValue( value, jsonConfig ) );
+      }
 
       return this;
    }

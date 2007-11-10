@@ -36,10 +36,10 @@ public class Assertions extends JSONAssert {
    public static void assertEquals( String message, List expecteds, List actuals ) {
       String header = message == null ? "" : message + ": ";
       if( expecteds == null ){
-         fail( header + "expected array was null" );
+         fail( header + "expected list was null" );
       }
       if( actuals == null ){
-         fail( header + "actual array was null" );
+         fail( header + "actual list was null" );
       }
       if( expecteds == actuals || expecteds.equals( actuals ) ){
          return;

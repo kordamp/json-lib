@@ -22,27 +22,22 @@ import net.sf.json.JSONObject
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 class JSONObjectMetaClass extends groovy.lang.DelegatingMetaClass {
-   JSONObjectMetaClass( final Class clazz ){
-      super( clazz )
-      initialize()
-   }
-
-   JSONObjectMetaClass( MetaClassRegistry registry, final Class clazz ){
-      super( clazz )
+   JSONObjectMetaClass( final MetaClass metaClazz ){
+      super( metaClazz )
    }
 
    public Object invokeMethod(Object instance, String methodName, Object[] args )
    {
        if( methodName == "leftShift" && args?.length == 1 ){
-          return leftShift( instance, args[0] )
+          return this.jsonLeftShift( instance, args[0] )
        }else if( methodName == "get" && args?.length == 2 ){
-          return getWithDefaultValue( instance, args[0], args[1] )
+          return this.getWithDefaultValue( instance, args[0], args[1] )
        }else{
-          return super.invokeMethod( instance, methodName, args )
+          return delegate.invokeMethod( instance, methodName, args )
        }
    }
 
-   private Object leftShift( instance, args ){
+   private Object jsonLeftShift( instance, args ){
       if( args instanceof Map ){
          instance.putAll( args )
          instance

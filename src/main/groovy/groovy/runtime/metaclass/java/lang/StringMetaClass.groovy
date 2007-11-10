@@ -23,24 +23,20 @@ import net.sf.json.*
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 class StringMetaClass extends DelegatingMetaClass {
-   StringMetaClass( final Class clazz ){
-      super( clazz )
-      initialize()
-   }
-   StringMetaClass( MetaClassRegistry registry, final Class clazz ){
-      super( clazz )
+   StringMetaClass( final MetaClass metaClazz ){
+      super( metaClazz )
    }
 
    public Object invokeMethod(Object instance, String methodName, Object[] args )
    {
        if( methodName == "asType" ){
-          return asType( instance, args[0] )
+          return jsonAsType( instance, args[0] )
        }else{
-          return super.invokeMethod( instance, methodName, args )
+          return delegate.invokeMethod( instance, methodName, args )
        }
    }
 
-   private Object asType( string, clazz ){
+   private Object jsonAsType( string, clazz ){
       if( clazz == JSON ){
          return JSONSerializer.toJSON( string )
       }else if( clazz == JSONArray ){
@@ -50,7 +46,7 @@ class StringMetaClass extends DelegatingMetaClass {
       }else if( clazz == JSONFunction ){
          return JSONFunction.parse( string )
       }else{
-         return super.invokeMethod( string, methodName, args )
+         return delegate.invokeMethod( string, methodName, args )
       }
    }
 }

@@ -264,6 +264,10 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                   || Boolean.class.isAssignableFrom( type )
                   || Character.class.isAssignableFrom( type )
                   || JSONFunction.class.isAssignableFrom( type ) ){
+               if( objectClass != null && !objectClass.isAssignableFrom( type ) ){
+                  value = JSONUtils.getMorpherRegistry()
+                        .morph( objectClass, value );
+               }
                Array.set( array, i, value );
             }else if( JSONUtils.isNumber( type ) ){
                if( objectClass != null
@@ -316,6 +320,10 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                   || Boolean.class.isAssignableFrom( type ) || JSONUtils.isNumber( type )
                   || Character.class.isAssignableFrom( type )
                   || JSONFunction.class.isAssignableFrom( type ) ){
+               if( objectClass != null && !objectClass.isAssignableFrom( type ) ){
+                  value = JSONUtils.getMorpherRegistry()
+                        .morph( objectClass, value );
+               }
                Array.set( array, i, value );
             }else{
                try{
@@ -393,6 +401,10 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                   || Boolean.class.isAssignableFrom( type ) || JSONUtils.isNumber( type )
                   || Character.class.isAssignableFrom( type )
                   || JSONFunction.class.isAssignableFrom( type ) ){
+               if( objectClass != null && !objectClass.isAssignableFrom( type ) ){
+                  value = JSONUtils.getMorpherRegistry()
+                        .morph( objectClass, value );
+               }
                list.add( value );
             }else{
                if( objectClass != null ){
