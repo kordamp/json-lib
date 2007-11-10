@@ -15,6 +15,18 @@
          <action
             dev="Andres Almiray"
             type="add"
+            issue="1828093">
+            JSONArray.toArray can't transform from String[] to int[]
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1828093">
+            JSONArray.toArray can't transform from String[] to int[]
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
             issue="1819159">
             Encoding problem of XMLSerializer#writeDocument. Thanks to
             Masato Nagai (provided a patch).
