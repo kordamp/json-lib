@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.bean.MorphDynaBean;
 import net.sf.ezmorph.bean.MorphDynaClass;
@@ -196,5 +197,19 @@ public class TestJSONObjectJdk15 extends TestCase
       EnumBean bean = (EnumBean) JSONObject.toBean( json, EnumBean.class );
       assertNotNull( bean );
       assertEquals( bean.getJsonEnum(), JsonEnum.OBJECT );
+   }
+
+   public void testToBean_EnumBean_autoRegisterMorpher()
+   {
+      JSONObject json = new JSONObject();
+      json.element( "jsonEnum", "OBJECT" );
+      EnumBean bean = (EnumBean) JSONObject.toBean( json, EnumBean.class );
+      assertNotNull( bean );
+      assertEquals( bean.getJsonEnum(), JsonEnum.OBJECT );
+   }
+
+   protected void setUp() throws Exception {
+      Morpher morpher = JSONUtils.getMorpherRegistry().getMorpherFor( JsonEnum.class );
+      JSONUtils.getMorpherRegistry().deregisterMorpher( morpher );
    }
 }

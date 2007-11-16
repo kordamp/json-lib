@@ -62,6 +62,7 @@ import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
 import net.sf.json.regexp.RegexpUtils;
+import net.sf.json.util.EnumMorpher;
 import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.PropertyFilter;
@@ -1173,9 +1174,14 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       if( IdentityObjectMorpher.getInstance()
             .equals( morpher ) ){
          log.warn( "Can't transform property '" + key + "' from " + type.getName() + " into "
-               + targetType.getName() + ". Will register a default BeanMorpher" );
-         JSONUtils.getMorpherRegistry()
-               .registerMorpher( new BeanMorpher( targetType, JSONUtils.getMorpherRegistry() ) );
+               + targetType.getName() + ". Will register a default Morpher" );
+         if( Enum.class.isAssignableFrom( targetType ) ){
+            JSONUtils.getMorpherRegistry()
+                  .registerMorpher( new EnumMorpher( targetType ) );
+         }else{
+            JSONUtils.getMorpherRegistry()
+                  .registerMorpher( new BeanMorpher( targetType, JSONUtils.getMorpherRegistry() ) );
+         }
       }
       value = JSONUtils.getMorpherRegistry()
             .morph( targetType, value );
