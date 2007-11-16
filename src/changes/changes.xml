@@ -14,6 +14,12 @@
          desc="Current development release">
          <action
             dev="Andres Almiray"
+            type="fix"
+            issue="1832055">
+            NewBeanInstanceStrategy ignored when you pass a root obj
+         </action>
+         <action
+            dev="Andres Almiray"
             type="add"
             issue="1828093">
             Extra quotes on string values with {} and []

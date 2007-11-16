@@ -52,6 +52,7 @@ import java.util.Map;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
+import net.sf.json.JSONObject;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
 import net.sf.json.util.JSONTokener;
@@ -332,10 +333,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                Array.set( array, i, value );
             }else{
                try{
-                  Object newRoot = root.getClass()
-                        .newInstance();
-                  Array.set( array, i,
-                        JSONObject.toBean( (JSONObject) value, newRoot, jsonConfig ) );
+                  Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
+                        .newInstance( root.getClass(), null );
+                  Array.set( array, i, JSONObject.toBean( (JSONObject) value, newRoot, jsonConfig ) );
                }catch( JSONException jsone ){
                   throw jsone;
                }catch( Exception e ){
@@ -451,8 +451,8 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                list.add( value );
             }else{
                try{
-                  Object newRoot = root.getClass()
-                        .newInstance();
+                  Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
+                        .newInstance( root.getClass(), null );
                   list.add( JSONObject.toBean( (JSONObject) value, newRoot, jsonConfig ) );
                }catch( JSONException jsone ){
                   throw jsone;

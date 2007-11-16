@@ -463,7 +463,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      Class targetClass = findTargetClass( key, classMap );
                      targetClass = targetClass == null ? findTargetClass( name, classMap )
                            : targetClass;
-                     Object newRoot = targetClass.newInstance();
+                     Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
+                           .newInstance( targetClass, null );
                      List list = JSONArray.toList( (JSONArray) value, newRoot, jsonConfig );
                      setProperty( root, key, list, jsonConfig );
                   }else{
@@ -473,7 +474,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                            && !targetInnerType.equals( Object.class ) ){
                         innerType = targetInnerType;
                      }
-                     Object newRoot = innerType.newInstance();
+                     Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
+                           .newInstance( innerType, null );
                      Object array = JSONArray.toArray( (JSONArray) value, newRoot, jsonConfig );
                      if( innerType.isPrimitive() || JSONUtils.isNumber( innerType )
                            || Boolean.class.isAssignableFrom( innerType )
@@ -542,7 +544,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                         Class newTargetClass = findTargetClass( key, classMap );
                         newTargetClass = newTargetClass == null ? findTargetClass( name, classMap )
                               : newTargetClass;
-                        Object newRoot = newTargetClass.newInstance();
+                        Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
+                              .newInstance( newTargetClass, null );
                         if( targetClass.isArray() ){
                            setProperty( root, key, JSONArray.toArray( array, newRoot, jsonConfig ),
                                  jsonConfig );
@@ -561,7 +564,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                            targetClass = targetClass == null ? findTargetClass( name, classMap )
                                  : targetClass;
                         }
-                        Object newRoot = targetClass.newInstance();
+                        Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
+                              .newInstance( targetClass, null );
                         setProperty( root, key, toBean( (JSONObject) value, newRoot, jsonConfig ),
                               jsonConfig );
                      }
@@ -569,7 +573,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      Class targetClass = findTargetClass( key, classMap );
                      targetClass = targetClass == null ? findTargetClass( name, classMap )
                            : targetClass;
-                     Object newRoot = targetClass.newInstance();
+                     Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
+                           .newInstance( targetClass, null );
                      setProperty( root, key, toBean( (JSONObject) value, newRoot, jsonConfig ),
                            jsonConfig );
                   }else{
