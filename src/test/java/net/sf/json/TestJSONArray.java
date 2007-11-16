@@ -1219,6 +1219,16 @@ public class TestJSONArray extends TestCase {
       Assertions.assertEquals( expected, actual );
    }
 
+   public void testToArray_StringToInteger_empty() {
+      int[] expected = new int[] {};
+      String[] input = new String[] {};
+      JSONArray jsonArray = JSONArray.fromObject( input );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( Integer.class );
+      Object actual = JSONArray.toArray( jsonArray, jsonConfig );
+      Assertions.assertEquals( expected, actual );
+   }
+
    public void testToJSONObject() {
       JSONArray jsonArray = JSONArray.fromObject( "[\"json\",1,true]" );
       JSONObject expected = JSONObject.fromObject( "{\"string\":\"json\",\"int\":1,\"bool\":true}" );

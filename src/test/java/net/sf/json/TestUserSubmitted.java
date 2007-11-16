@@ -26,24 +26,15 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.ezmorph.object.MapToDateMorpher;
-import net.sf.json.sample.ArrayBean;
-import net.sf.json.sample.BeanA;
-import net.sf.json.sample.BeanA1763699;
-import net.sf.json.sample.BeanB1763699;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.DateBean;
 import net.sf.json.sample.IdBean;
-import net.sf.json.sample.JSONTestBean;
-import net.sf.json.sample.MappedBean;
 import net.sf.json.sample.Media;
 import net.sf.json.sample.MediaBean;
 import net.sf.json.sample.MediaList;
 import net.sf.json.sample.MediaListBean;
-import net.sf.json.sample.NumberArrayBean;
 import net.sf.json.sample.Player;
 import net.sf.json.sample.PlayerList;
-import net.sf.json.sample.UnstandardBean;
-import net.sf.json.sample.UnstandardBeanInstanceStrategy;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
 

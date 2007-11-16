@@ -241,12 +241,12 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * Creates a java array from a JSONArray.<br>
     */
    public static Object toArray( JSONArray jsonArray, JsonConfig jsonConfig ) {
-      if( jsonArray.size() == 0 ){
-         return new Object[0];
-      }
-
       Class objectClass = jsonConfig.getRootClass();
       Map classMap = jsonConfig.getClassMap();
+
+      if( jsonArray.size() == 0 ){
+         return Array.newInstance( objectClass == null ? Object.class : objectClass, 0 );
+      }
 
       int[] dimensions = JSONArray.getDimensions( jsonArray );
       Object array = Array.newInstance( objectClass == null ? Object.class : objectClass,
@@ -298,11 +298,10 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * Creates a java array from a JSONArray.<br>
     */
    public static Object toArray( JSONArray jsonArray, Object root, JsonConfig jsonConfig ) {
-      if( jsonArray.size() == 0 || root == null ){
-         return new Object[0];
-      }
-
       Class objectClass = root.getClass();
+      if( jsonArray.size() == 0 ){
+         return Array.newInstance( objectClass, 0 );
+      }
 
       int[] dimensions = JSONArray.getDimensions( jsonArray );
       Object array = Array.newInstance( objectClass == null ? Object.class : objectClass,
