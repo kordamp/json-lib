@@ -16,6 +16,10 @@
 
 package net.sf.json.util;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 /**
@@ -41,10 +45,21 @@ public abstract class NewBeanInstanceStrategy {
          throws InstantiationException, IllegalAccessException;
 
    private static final class DefaultNewBeanInstanceStrategy extends NewBeanInstanceStrategy {
+      private static final Object[] EMPTY_ARGS = new Object[0];
+      private static final Class[] EMPTY_PARAM_TYPES = new Class[0];
+
       public Object newInstance( Class target, JSONObject source ) throws InstantiationException,
             IllegalAccessException {
          if( target != null ){
-            return target.newInstance();
+            try{
+               Constructor c = target.getDeclaredConstructor( EMPTY_PARAM_TYPES );
+               c.setAccessible( true );
+               return c.newInstance( EMPTY_ARGS );
+            }catch( NoSuchMethodException nsme ){
+               throw new JSONException( nsme );
+            }catch( InvocationTargetException ite ){
+               throw new JSONException( ite );
+            }
          }
          return null;
       }

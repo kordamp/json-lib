@@ -15,9 +15,16 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1832047">
+            Use private no-arg constructors when available. Thanks to
+            Dan Fabulich (provided workaround)
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1832139">
             Enums should be serialized by name(), not by String.valueOf.
-            Thanks to Dan Fabulich (provided workaround).
+            Thanks to Dan Fabulich (provided workaround)
          </action>
          <action
             dev="Andres Almiray"
@@ -42,14 +49,14 @@
             type="add"
             issue="1819159">
             Encoding problem of XMLSerializer#writeDocument. Thanks to
-            Masato Nagai (provided a patch).
+            Masato Nagai (provided a patch)
          </action>
          <action
             dev="Andres Almiray"
             type="add"
             issue="1815457">
             Allow direct property acces when transforming JSON to Java.
-            Thanks to Gino Miceli (provided a patch).
+            Thanks to Gino Miceli (provided a patch)
          </action>
          <action
             dev="Andres Almiray"
