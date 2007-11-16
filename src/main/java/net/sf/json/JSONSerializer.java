@@ -73,7 +73,9 @@ public class JSONSerializer {
    }
 
    /**
-    * Creates a JSONObject, JSONArray or a JSONNull from object.
+    * Creates a JSONObject, JSONArray or a JSONNull from object.<br>
+    * Accepts JSON formatted strings, Maps, arrays, Collections, DynaBeans and
+    * JavaBeans.
     *
     * @param object any java Object
     * @throws JSONException if the object can not be converted
@@ -83,7 +85,9 @@ public class JSONSerializer {
    }
 
    /**
-    * Creates a JSONObject, JSONArray or a JSONNull from object.
+    * Creates a JSONObject, JSONArray or a JSONNull from object.<br>
+    * Accepts JSON formatted strings, Maps, arrays, Collections, DynaBeans and
+    * JavaBeans.
     *
     * @param object any java Object
     * @param jsonConfig additional configuration

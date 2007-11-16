@@ -112,6 +112,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    /**
     * Creates a JSONArray.<br>
     * Inspects the object type to call the correct JSONArray factory method.
+    * Accepts JSON formatted strings, arrays, Collections and Enums.
     *
     * @param object
     * @throws JSONException if the object can not be converted to a proper
@@ -124,6 +125,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    /**
     * Creates a JSONArray.<br>
     * Inspects the object type to call the correct JSONArray factory method.
+    * Accepts JSON formatted strings, arrays, Collections and Enums.
     *
     * @param object
     * @throws JSONException if the object can not be converted to a proper

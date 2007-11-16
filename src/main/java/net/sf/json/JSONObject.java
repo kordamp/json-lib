@@ -135,6 +135,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    /**
     * Creates a JSONObject.<br>
     * Inspects the object type to call the correct JSONObject factory method.
+    * Accepts JSON formatted strings, Maps, DynaBeans and JavaBeans.
     *
     * @param object
     * @throws JSONException if the object can not be converted to a proper
@@ -148,6 +149,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    /**
     * Creates a JSONObject.<br>
     * Inspects the object type to call the correct JSONObject factory method.
+    * Accepts JSON formatted strings, Maps, DynaBeans and JavaBeans.
     *
     * @param object
     * @throws JSONException if the object can not be converted to a proper

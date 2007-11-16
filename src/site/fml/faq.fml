@@ -57,7 +57,8 @@
       </question>
       <answer><p>You'll have to register a Morpher that can handle your Enum. Json-lib conveniently includes
       such a Morpher, so the only thing left to do is configure it and register the Morpher into the MorpherRegistry
-      as follows <code>JSONUtils.getMorpherRegistry().registerMorpher( new EnumMorpher( MyEnum.class ) ); </code>
+      as follows <code>JSONUtils.getMorpherRegistry().registerMorpher( new EnumMorpher( MyEnum.class ) ); </code><br/>
+      This step is optional since Json-lib 2.2
       </p></answer>
     </faq>
     
