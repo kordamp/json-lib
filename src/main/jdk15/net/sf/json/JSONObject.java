@@ -2444,7 +2444,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       }else if( JSONUtils.isBoolean( value ) ){
          return value;
       }else if( value != null && Enum.class.isAssignableFrom( value.getClass() ) ){
-         return String.valueOf( value );
+         return ((Enum) value).name();
       }else{
          return fromObject( value, jsonConfig );
       }

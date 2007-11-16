@@ -15,6 +15,13 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1832139">
+            Enums should be serialized by name(), not by String.valueOf.
+            Thanks to Dan Fabulich (provided workaround).
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1832055">
             NewBeanInstanceStrategy ignored when you pass a root obj
          </action>
