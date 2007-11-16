@@ -42,24 +42,20 @@ public abstract class NewBeanInstanceStrategy {
     *        instance
     */
    public abstract Object newInstance( Class target, JSONObject source )
-         throws InstantiationException, IllegalAccessException;
+         throws InstantiationException, IllegalAccessException, SecurityException,
+         NoSuchMethodException, InvocationTargetException;
 
    private static final class DefaultNewBeanInstanceStrategy extends NewBeanInstanceStrategy {
       private static final Object[] EMPTY_ARGS = new Object[0];
       private static final Class[] EMPTY_PARAM_TYPES = new Class[0];
 
       public Object newInstance( Class target, JSONObject source ) throws InstantiationException,
-            IllegalAccessException {
+            IllegalAccessException, SecurityException, NoSuchMethodException,
+            InvocationTargetException {
          if( target != null ){
-            try{
-               Constructor c = target.getDeclaredConstructor( EMPTY_PARAM_TYPES );
-               c.setAccessible( true );
-               return c.newInstance( EMPTY_ARGS );
-            }catch( NoSuchMethodException nsme ){
-               throw new JSONException( nsme );
-            }catch( InvocationTargetException ite ){
-               throw new JSONException( ite );
-            }
+            Constructor c = target.getDeclaredConstructor( EMPTY_PARAM_TYPES );
+            c.setAccessible( true );
+            return c.newInstance( EMPTY_ARGS );
          }
          return null;
       }
