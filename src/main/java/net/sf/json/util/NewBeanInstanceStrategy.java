@@ -19,7 +19,6 @@ package net.sf.json.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 /**
