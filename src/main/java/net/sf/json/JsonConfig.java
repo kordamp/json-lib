@@ -71,6 +71,7 @@ public class JsonConfig {
    private boolean handleJettisonEmptyElement;
    private boolean handleJettisonSingleElementArray;
    private boolean ignoreDefaultExcludes;
+   private boolean ignoreJPATransient;
    private boolean ignoreTransientFields;
    private JavaIdentifierTransformer javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
    private PropertyFilter javaPropertyFilter;
@@ -163,6 +164,7 @@ public class JsonConfig {
       jsc.defaultValueProcessorMatcher = defaultValueProcessorMatcher;
       jsc.defaultValueMap.putAll( defaultValueMap );
       jsc.propertySetStrategy = propertySetStrategy;
+      jsc.ignoreJPATransient = ignoreJPATransient;
       return jsc;
    }
 
@@ -453,15 +455,23 @@ public class JsonConfig {
 
    /**
     * Returns true if default excludes will not be used.<br>
-    * Default value is false
+    * Default value is false.
     */
    public boolean isIgnoreDefaultExcludes() {
       return ignoreDefaultExcludes;
    }
 
    /**
+    * Returns true if JPA Transient annotated methods should be ignored.<br>
+    * Default value is false.
+    */
+   public boolean isIgnoreJPATransient() {
+      return ignoreJPATransient;
+   }
+
+   /**
     * Returns true if transient fields of a bean will be ignored.<br>
-    * Default value is false
+    * Default value is false.
     */
    public boolean isIgnoreTransientFields() {
       return ignoreTransientFields;
@@ -469,7 +479,7 @@ public class JsonConfig {
 
    /**
     * Returns true if map keys will not be transformed.<br>
-    * Default value is false
+    * Default value is false.
     */
    public boolean isSkipJavaIdentifierTransformationInMapKeys() {
       return skipJavaIdentifierTransformationInMapKeys;
@@ -588,7 +598,8 @@ public class JsonConfig {
       newBeanInstanceStrategy = DEFAULT_NEW_BEAN_INSTANCE_STRATEGY;
       defaultValueProcessorMatcher = DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER;
       defaultValueMap.clear();
-      propertySetStrategy = null/*DEFAULT_PROPERTY_SET_STRATEGY*/;
+      propertySetStrategy = null/* DEFAULT_PROPERTY_SET_STRATEGY */;
+      ignoreJPATransient = false;
    }
 
    /**
@@ -668,6 +679,13 @@ public class JsonConfig {
     */
    public void setIgnoreDefaultExcludes( boolean ignoreDefaultExcludes ) {
       this.ignoreDefaultExcludes = ignoreDefaultExcludes;
+   }
+
+   /**
+    * Sets if JPA Transient annotated methods woul be skipped when building.<br>
+    */
+   public void setIgnoreJPATransient( boolean ignoreJPATransient ) {
+      this.ignoreJPATransient = ignoreJPATransient;
    }
 
    /**

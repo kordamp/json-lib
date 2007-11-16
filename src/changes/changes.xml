@@ -15,6 +15,13 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1832041">
+            Ignore getters annotated with @Transient. Thanks to Dan
+            Fabulich (provided workaround)
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1832047">
             Use private no-arg constructors when available. Thanks to
             Dan Fabulich (provided workaround)

@@ -679,6 +679,18 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
 
             Class type = pds[i].getPropertyType();
             if( pds[i].getReadMethod() != null ){
+               if( jsonConfig.isIgnoreJPATransient() ){
+                  try{
+                     Class transientClass = Class.forName( "javax.persistence.Transient" );
+                     if( pds[i].getReadMethod()
+                           .getAnnotation( transientClass ) != null ){
+                        continue;
+                     }
+                  }catch( ClassNotFoundException cnfe ){
+                     // ignore
+                  }
+               }
+
                Object value = PropertyUtils.getProperty( bean, key );
                if( jsonPropertyFilter != null && jsonPropertyFilter.apply( bean, key, value ) ){
                   continue;
