@@ -3,7 +3,7 @@
 	<bannerLeft>
 		<name>Json-lib</name>
 		<src>/images/json-lib.png</src>
-		<href>http://json-lib.sf.net/</href>
+		<href>http://json-lib.sourceforge.net/</href>
 	</bannerLeft>
 
 	<poweredBy>
@@ -25,7 +25,9 @@
 			<item name="Feature List" href="features.html" />
 			<item name="Getting Started" href="usage.html" />
 			<item name="Advanced features" href="advanced.html" />
+			<item name="Snippets" href="snippets.html" />
 			<item name="Groovy integration" href="groovy.html" />
+			<item name="JRuby integration" href="jruby.html" />
 			<item name="Build instructions" href="package.html" />
 			<item name="Who is using it?" href="users.html" />
 			<item name="FAQ" href="faq.html" />

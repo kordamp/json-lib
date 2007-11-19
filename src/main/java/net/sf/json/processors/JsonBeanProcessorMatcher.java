@@ -31,10 +31,11 @@ public abstract class JsonBeanProcessorMatcher {
    public static final JsonBeanProcessorMatcher DEFAULT = new DefaultJsonBeanProcessorMatcher();
 
    /**
-    * Returns true if the target class is a match in the provided set.
+    * Returns the matching class calculated with the target class and the
+    * provided set.
     *
     * @param target the target class to match
-    * @praram set a set of possible matches
+    * @param set a set of possible matches
     */
    public abstract Object getMatch( Class target, Set set );
 

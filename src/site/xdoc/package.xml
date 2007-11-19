@@ -64,7 +64,7 @@
                      .
                   </li>
                   <li>
-                     Execute 'ant jar.jdk15', the distribution jar
+                     Execute 'ant jar.jdk5', the distribution jar
                      should be inside the
                      <i>target</i>
                      directory.

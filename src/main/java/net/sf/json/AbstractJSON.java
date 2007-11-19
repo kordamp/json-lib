@@ -45,7 +45,7 @@ abstract class AbstractJSON {
     * Adds a reference for cycle detection check.
     *
     * @param instance the reference to add
-    * @param true if the instance has not been added previously, false
+    * @return true if the instance has not been added previously, false
     *        otherwise.
     */
    protected static boolean addInstance( Object instance ) {

@@ -303,6 +303,8 @@
     <script language="javaScript" src="$relativePath/scripts/shCore.js"></script>
     <script language="javaScript" src="$relativePath/scripts/shBrushGroovy.js"></script>
     <script language="javaScript" src="$relativePath/scripts/shBrushJava.js"></script>
+    <script language="javaScript" src="$relativePath/scripts/shBrushJScript.js"></script>
+    <script language="javaScript" src="$relativePath/scripts/shBrushRuby.js"></script>
     <script language="javaScript" src="$relativePath/scripts/shBrushXml.js"></script>
   </head>
   <body class="composite">

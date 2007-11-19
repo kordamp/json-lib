@@ -37,7 +37,7 @@ public abstract class NewBeanInstanceStrategy {
     * Creates a new instance.
     *
     * @param target the source class
-    * @param target additional properties that may be needed to create the
+    * @param source additional properties that may be needed to create the
     *        instance
     */
    public abstract Object newInstance( Class target, JSONObject source )

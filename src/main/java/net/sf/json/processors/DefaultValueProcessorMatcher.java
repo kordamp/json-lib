@@ -23,7 +23,7 @@ import java.util.Set;
  * <ul>
  * <li>DEFAULT - matches the target class with equals().</li>
  * </ul>
- * 
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class DefaultValueProcessorMatcher {
@@ -33,9 +33,9 @@ public abstract class DefaultValueProcessorMatcher {
    /**
     * Returns the matching class calculated with the target class and the
     * provided set.
-    * 
+    *
     * @param target the target class to match
-    * @praram set a set of possible matches
+    * @param set a set of possible matches
     */
    public abstract Object getMatch( Class target, Set set );
 

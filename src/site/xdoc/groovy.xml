@@ -7,6 +7,7 @@
 
    <body>
       <section name="Using Json-lib with Groovy">
+	      <p><center><a href="http://groovy.codehaus.org"><img src="images/logos/groovy-logo.png"/></a></center></p>
 	      <p>Since version 2.0 Json-lib has integrated <a href="http://groovy.codehaus.org">Groovy</a> support, meaning that POGOs can be transformed into JSON and back, in the same manner as you do now with POJOs. There are other features as well:<ul>
 	      <li>Type transformations with the <tt>as</tt> keyword.<br/>
 	A Groovy List (default type is ArrayList) can be transformed into a JSONArray.<br/>	      
@@ -20,7 +21,7 @@
 	def strAsJsonObject = "{integer:1, bool: true}" as JSONObject
 	def strAsJsonArray = "[1,2,3]" as JSONArray
 	def strAsFunc = "function(param){ this.param = param; }" as JSONFunction</textarea></li>
-<li>JSONObject supports the lefftShift (&lt;&lt;) operator to append values, the following rules apply:<ul>
+<li>JSONObject supports the leftShift (&lt;&lt;) operator to append values, the following rules apply:<ul>
 <li>If the shifted arg is a Map, it will call putAll() on the object.</li>
 <li>If the shifted arg is a List and its size == 2, the first element will be the key, and the second will be the value.</li>
 <li>If the shifted arg is a List and its size > 2, the first element will be the key, the arg will be shifted by 1 and passed as the value (will create a JSONArray because it is a List).</li>

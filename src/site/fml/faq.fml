@@ -42,13 +42,14 @@
       </question>
       <answer><p>As Json-lib comes in two flavors (for the time being) you'll have to add &lt;classifier&gt; to
       your dependency declaration, like the following:
-      </p><p><textarea name="srcode" class="xml:nocontrols:nogutter" cols="80" rows="6">
+      </p><p><textarea name="srccode" class="xml:nocontrols:nogutter" cols="80" rows="6">
 <dependency> 
    <groupId>net.sf.json-lib</groupId> 
    <artifactId>json-lib</artifactId> 
    <version>1.0</version> 
    <classifier>jdk15</classifier> 
-</dependency></textarea></p></answer>
+</dependency>
+</textarea></p></answer>
     </faq>
     
     <faq id="enum">
@@ -66,7 +67,7 @@
       <question>
         <strong>How can I transform a simple value into a complex one when serializing back to Java ?</strong>
       </question>
-      <answer><p>Perhaps you've come across an scenario where you'll want a JSON string like "{'id':1}" transformed
+      <answer><p>Perhaps you've come across a scenario where you'll want a JSON string like "{'id':1}" transformed
       back to a Java class, but the catch is that the id property is not a simple value but another class (a complex value),
       say a wrapper around a primitive long. If you try to serialize such a string back to Java you'll get a ClassCastException. 
       The solution to this problem is registering a Morpher that can handle the input and transform it into an
@@ -83,6 +84,15 @@
       The same applies to beans declared as inner classes (which by the way must also be declared static).
       Its a good practice to define each bean in its own file, but if you can't please make your inner
       beans public and static if possible.
+      </p></answer>
+    </faq>
+
+    <faq id="xpath">
+      <question>
+        <strong>I'd like to use XPath-like expressions with JSON, how do I do it ?</strong>
+      </question>
+      <answer><p>Use <a href="http://commons.apache.org/jxpath/">JXPath</a>, which is a simple yet powerful project that
+      enables XPath-like expressions to be used with java beans and maps.
       </p></answer>
     </faq>
 
