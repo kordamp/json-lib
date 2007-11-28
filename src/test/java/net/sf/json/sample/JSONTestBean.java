@@ -1,7 +1,7 @@
 package net.sf.json.sample;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class JSONTestBean {
    private String email = "";

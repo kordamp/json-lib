@@ -28,6 +28,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class PrimitiveBean {
+   private Object[] oarray;
    private int[] parray;
    private ObjectBean pbean;
    private boolean pboolean;
@@ -44,6 +45,10 @@ public class PrimitiveBean {
    private Map pmap;
    private short pshort;
    private String pstring;
+
+   public Object[] getOarray() {
+      return oarray;
+   }
 
    public int[] getParray() {
       return parray;
@@ -107,6 +112,10 @@ public class PrimitiveBean {
 
    public boolean isPboolean() {
       return pboolean;
+   }
+
+   public void setOarray( Object[] oarray ) {
+      this.oarray = oarray;
    }
 
    public void setParray( int[] parray ) {

@@ -39,20 +39,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
-import net.sf.json.JSONObject;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
 import net.sf.json.util.JSONTokener;
@@ -191,6 +196,45 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       }else{
          throw new JSONException( "Unsupported type" );
       }
+   }
+
+   /**
+    * Get the collection type from a getter or setter, or null if no type was
+    * found.<br/>
+    * Contributed by [Matt Small @ WaveMaker].
+    */
+   public static Class[] getCollectionType( PropertyDescriptor pd, boolean useGetter )
+         throws JSONException {
+
+      Type type;
+      if( useGetter ){
+         Method m = pd.getReadMethod();
+         type = m.getGenericReturnType();
+      }else{
+         Method m = pd.getWriteMethod();
+         Type[] gpts = m.getGenericParameterTypes();
+
+         if( 1 != gpts.length ){
+            throw new JSONException( "method " + m + " is not a standard setter" );
+         }
+         type = gpts[0];
+      }
+
+      if( !(type instanceof ParameterizedType) ){
+         return null;
+         // throw new JSONException("type not instanceof ParameterizedType:
+         // "+type.getClass());
+      }
+
+      ParameterizedType pType = (ParameterizedType) type;
+      Type[] actualTypes = pType.getActualTypeArguments();
+
+      Class[] ret = new Class[actualTypes.length];
+      for( int i = 0; i < ret.length; i++ ){
+         ret[i] = (Class) actualTypes[i];
+      }
+
+      return ret;
    }
 
    /**
@@ -350,6 +394,79 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    }
 
    /**
+    * Returns a List or a Set taking generics into account.<br/>
+    * Contributed by [Matt Small @ WaveMaker].
+    */
+   public static Collection toCollection( JSONArray jsonArray, JsonConfig jsonConfig,
+         Class collectionType, Class enclosedType ) {
+
+      Collection ret;
+      if( collectionType.isInterface() ){
+         if( collectionType.equals( List.class ) ){
+            ret = new ArrayList();
+         }else if( collectionType.equals( Set.class ) ){
+            ret = new HashSet();
+         }else{
+            throw new JSONException( "unknown interface: " + collectionType );
+         }
+      }else{
+         try{
+            ret = (Collection) collectionType.newInstance();
+         }catch( InstantiationException e ){
+            throw new JSONException( e );
+         }catch( IllegalAccessException e ){
+            throw new JSONException( e );
+         }
+      }
+
+      int size = jsonArray.size();
+      for( int i = 0; i < size; i++ ){
+         Object value = jsonArray.get( i );
+         Class enclosedTypeE = enclosedType;
+
+         if( null == enclosedTypeE ){
+            enclosedTypeE = value.getClass();
+         }
+
+         if( JSONUtils.isNull( value ) ){
+            ret.add( null );
+         }else{
+            if( JSONArray.class.isAssignableFrom( value.getClass() ) ){
+               throw new RuntimeException( "can't have nested collections" );
+               // list.add( toList( (JSONArray) value, root, jsonConfig ) );
+            }else if( String.class.isAssignableFrom( enclosedTypeE )
+                  || Boolean.class.isAssignableFrom( enclosedTypeE )
+                  || JSONUtils.isNumber( enclosedTypeE )
+                  || Character.class.isAssignableFrom( enclosedTypeE )
+                  || JSONFunction.class.isAssignableFrom( enclosedTypeE ) ){
+
+               if( !value.getClass()
+                     .isAssignableFrom( enclosedTypeE ) ){
+                  throw new JSONException( "can't assign value " + value + " of type "
+                        + value.getClass() + " to Collection of type " + enclosedTypeE );
+               }
+               ret.add( value );
+            }else{
+               try{
+                  if( JSON.class.isAssignableFrom( enclosedTypeE ) ){
+                     ret.add( JSONObject.toBean( (JSONObject) value ) );
+                  }else{
+                     Object newRoot = enclosedTypeE.newInstance();
+                     ret.add( JSONObject.toBean( (JSONObject) value, newRoot, jsonConfig ) );
+                  }
+               }catch( JSONException jsone ){
+                  throw jsone;
+               }catch( Exception e ){
+                  throw new JSONException( e );
+               }
+            }
+         }
+      }
+
+      return ret;
+   }
+
+   /**
     * Creates a List from a JSONArray.
     */
    public static List toList( JSONArray jsonArray ) {
@@ -387,7 +504,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * Creates a List from a JSONArray.<br>
     */
    public static List toList( JSONArray jsonArray, JsonConfig jsonConfig ) {
-      if( jsonArray.size() == 0  ){
+      if( jsonArray.size() == 0 ){
          return new ArrayList();
       }
 
@@ -466,7 +583,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       }
       return list;
    }
-
 
    /**
     * Construct a JSONArray from an boolean[].<br>
@@ -617,8 +733,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @param e A enum value.
     * @throws JSONException If there is a syntax error.
     */
-   private static JSONArray _fromArray( Enum e, JsonConfig jsonConfig )
-   {
+   private static JSONArray _fromArray( Enum e, JsonConfig jsonConfig ) {
 
       fireArrayStartEvent( jsonConfig );
       if( !addInstance( e ) ){
@@ -639,7 +754,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       if( e != null ){
          jsonArray.elements.add( e.toString() );
-         fireElementAddedEvent( 0, jsonArray.get(0), jsonConfig );
+         fireElementAddedEvent( 0, jsonArray.get( 0 ), jsonConfig );
       }else{
          JSONException jsone = new JSONException( "enum value is null" );
          removeInstance( e );
@@ -648,7 +763,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       }
 
       removeInstance( e );
-      fireArrayEndEvent(jsonConfig);
+      fireArrayEndEvent( jsonConfig );
       return jsonArray;
    }
 

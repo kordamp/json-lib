@@ -26,17 +26,27 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.ezmorph.object.MapToDateMorpher;
+import net.sf.json.sample.ArrayBean;
+import net.sf.json.sample.BeanA;
+import net.sf.json.sample.BeanA1763699;
+import net.sf.json.sample.BeanB1763699;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.DateBean;
 import net.sf.json.sample.IdBean;
+import net.sf.json.sample.JSONTestBean;
+import net.sf.json.sample.MappedBean;
 import net.sf.json.sample.Media;
 import net.sf.json.sample.MediaBean;
 import net.sf.json.sample.MediaList;
 import net.sf.json.sample.MediaListBean;
+import net.sf.json.sample.NumberArrayBean;
 import net.sf.json.sample.PackageProtectedBean;
 import net.sf.json.sample.Player;
 import net.sf.json.sample.PlayerList;
+import net.sf.json.sample.PrimitiveBean;
 import net.sf.json.sample.PrivateConstructorBean;
+import net.sf.json.sample.UnstandardBean;
+import net.sf.json.sample.UnstandardBeanInstanceStrategy;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
 
@@ -136,6 +146,198 @@ public class TestUserSubmitted extends TestCase {
       assertTrue( object.get( "info3" ) instanceof String );
    }
 
+   public void testBug_1650535_setters() {
+      JSONObject object = new JSONObject();
+      object.element( "obj", "{}" );
+      object.element( "notobj", "{string}" );
+      object.element( "array", "[]" );
+      object.element( "notarray", "[string]" );
+      assertTrue( object.get( "obj" ) instanceof JSONObject );
+      assertTrue( object.get( "array" ) instanceof JSONArray );
+      assertTrue( object.get( "notobj" ) instanceof String );
+      assertTrue( object.get( "notarray" ) instanceof String );
+      object.element( "str", "json,json" );
+      assertTrue( object.get( "str" ) instanceof String );
+   }
+
+   public void testBug_1753528_ArrayStringLiteralToString() {
+      // submited bysckimos[at]gmail[dot]com
+      BeanA bean = new BeanA();
+      bean.setString( "[1234]" );
+      JSONObject jsonObject = JSONObject.fromObject( bean );
+      assertEquals( "[1234]", jsonObject.get( "string" ) );
+      bean.setString( "{'key':'1234'}" );
+      jsonObject = JSONObject.fromObject( bean );
+      assertEquals( "{'key':'1234'}", jsonObject.get( "string" ) );
+   }
+
+   public void testBug_1763699_toBean() {
+      JSONObject json = JSONObject.fromObject( "{'bbeans':[{'str':'test'}]}" );
+      BeanA1763699 bean = (BeanA1763699) JSONObject.toBean( json, BeanA1763699.class );
+      assertNotNull( bean );
+      BeanB1763699[] bbeans = bean.getBbeans();
+      assertNotNull( bbeans );
+      assertEquals( 1, bbeans.length );
+      assertEquals( "test", bbeans[0].getStr() );
+   }
+
+   public void testBug_1764768_toBean() {
+      JSONObject json = JSONObject.fromObject( "{'beanA':''}" );
+      Map classMap = new HashMap();
+      classMap.put( "beanA", BeanA.class );
+      BeanC bean = (BeanC) JSONObject.toBean( json, BeanC.class, classMap );
+      assertNotNull( bean );
+      assertNotNull( bean.getBeanA() );
+      assertEquals( new BeanA(), bean.getBeanA() );
+   }
+
+   public void testBug_1769559_array_conversion() {
+      JSONObject jsonObject = new JSONObject().element( "beans", new JSONArray().element( "{}" )
+            .element( "{'bool':false,'integer':216,'string':'JsOn'}" ) );
+      ArrayBean bean = (ArrayBean) JSONObject.toBean( jsonObject, ArrayBean.class );
+      assertNotNull( bean ); // no error should happen here
+      JSONArray jsonArray = jsonObject.getJSONArray( "beans" );
+      BeanA[] beans = (BeanA[]) JSONArray.toArray( jsonArray, BeanA.class );
+      assertNotNull( beans );
+      assertEquals( 2, beans.length );
+      assertEquals( new BeanA(), beans[0] );
+      assertEquals( new BeanA( false, 216, "JsOn" ), beans[1] );
+   }
+
+   public void testBug_1769578_array_conversion() {
+      JSONObject jsonObject = JSONObject.fromObject( "{'media':[{'title':'Giggles'},{'title':'Dreamland?'}]}" );
+      Map classMap = new HashMap();
+      classMap.put( "media", MediaBean.class );
+      MediaListBean bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class,
+            classMap );
+      assertNotNull( bean );
+      assertNotNull( bean.getMedia() );
+      assertTrue( bean.getMedia()
+            .getClass()
+            .isArray() );
+      Object[] media = (Object[]) bean.getMedia();
+      assertEquals( 2, media.length );
+      Object mediaItem1 = media[0];
+      assertTrue( mediaItem1 instanceof MediaBean );
+      assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() );
+   }
+
+   public void testBug_1812682() {
+      int[] numbers = new int[] { 1, 2, 3, 4, 5 };
+      JSONObject json = new JSONObject().element( "bytes", numbers )
+            .element( "shorts", numbers )
+            .element( "ints", numbers )
+            .element( "longs", numbers )
+            .element( "floats", numbers )
+            .element( "doubles", numbers );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( NumberArrayBean.class );
+      NumberArrayBean bean = (NumberArrayBean) JSONObject.toBean( json, jsonConfig );
+      assertNotNull( bean );
+   }
+
+   public void testBug_1813301() {
+      List list = new ArrayList();
+      list.add( "1" );
+      list.add( "2" );
+      list.add( "3" );
+      JSONObject jsonObject = new JSONObject().element( "name", "JSON" )
+            .element( "list", list );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( MappedBean.class );
+      MappedBean bean = (MappedBean) JSONObject.toBean( jsonObject, jsonConfig );
+      assertNotNull( bean );
+      assertEquals( "JSON", bean.getName() );
+      Assertions.assertEquals( list, bean.getList() );
+   }
+
+   public void testConstructor_Object__nullArray() {
+      // submitted by Matt Small
+      String[] strarr = null;
+      JSONObject jsonObject = JSONObject.fromObject( strarr, jsonConfig );
+      assertTrue( jsonObject.isNullObject() );
+   }
+
+   public void testConstructor_Object_EnclosedArray() {
+      // submitted by Matt Small
+      PrimitiveBean bean = new PrimitiveBean();
+      bean.setOarray( new String[] { "hi", "bye" } );
+      JSONObject jsonObject = JSONObject.fromObject( bean, jsonConfig );
+      assertFalse( jsonObject.isNullObject() );
+      assertFalse( jsonObject.getJSONArray( "oarray" )
+            .isEmpty() );
+   }
+
+   public void testConstructor_Object_EnclosedNullArray() {
+      // submitted by Matt Small
+      PrimitiveBean bean = new PrimitiveBean();
+      bean.setOarray( null );
+      JSONObject jsonObject = JSONObject.fromObject( bean, jsonConfig );
+      assertFalse( jsonObject.isNullObject() );
+      assertTrue( jsonObject.getJSONArray( "oarray" )
+            .isEmpty() );
+   }
+
+   public void testConstructorAndToBean_Object_RoundTrip_EnclosedNullArray() {
+
+      PrimitiveBean bean = new PrimitiveBean();
+      bean.setOarray( null );
+      JSONObject jsonObject = JSONObject.fromObject( bean, jsonConfig );
+      PrimitiveBean bean2 = (PrimitiveBean) JSONObject.toBean( jsonObject, PrimitiveBean.class );
+      assertNotNull( bean2 );
+      // bean.oarray == null
+      // jsonObject.oarray == [] therefore
+      // bean2.oarray != null
+      assertEquals( 0, bean2.getOarray().length );
+   }
+
+   public void testDynaBeanAttributeMap() throws NoSuchMethodException, IllegalAccessException,
+         InvocationTargetException {
+      // submited by arco.vandenheuvel[at]points[dot].com
+      JSONObject jsonObject = JSONObject.fromObject( new JSONTestBean() );
+      String jsonString = jsonObject.toString();
+      DynaBean jsonBean = (DynaBean) JSONObject.toBean( JSONObject.fromObject( jsonString ) );
+      assertNotNull( jsonBean );
+      assertEquals( "wrong inventoryID", "", jsonBean.get( "inventoryID" ) );
+   }
+
+   public void testFR_1768960_array_conversion() { // 2 items
+      JSONObject jsonObject = JSONObject.fromObject( "{'media2':[{'title':'Giggles'},{'title':'Dreamland?'}]}" );
+      Map classMap = new HashMap();
+      classMap.put( "media2", MediaBean.class );
+      MediaListBean bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class,
+            classMap );
+      assertNotNull( bean );
+      assertNotNull( bean.getMedia2() );
+      List media2 = bean.getMedia2();
+      assertEquals( 2, media2.size() );
+      Object mediaItem1 = media2.get( 0 );
+      assertTrue( mediaItem1 instanceof MediaBean );
+      assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() ); // 1
+      // item
+      jsonObject = JSONObject.fromObject( "{'media2':[{'title':'Giggles'}]}" );
+      bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class, classMap );
+      assertNotNull( bean );
+      assertNotNull( bean.getMedia2() );
+      media2 = bean.getMedia2();
+      assertEquals( 1, media2.size() );
+      mediaItem1 = media2.get( 0 );
+      assertTrue( mediaItem1 instanceof MediaBean );
+      assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() );
+   }
+
+   public void testFR_1808430_newBeanInstance() {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setNewBeanInstanceStrategy( new UnstandardBeanInstanceStrategy() );
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.element( "id", 1 );
+      jsonConfig.setRootClass( UnstandardBean.class );
+      UnstandardBean bean = (UnstandardBean) JSONObject.toBean( jsonObject, jsonConfig );
+      assertNotNull( bean );
+      assertEquals( UnstandardBean.class, bean.getClass() );
+      assertEquals( 1, bean.getId() );
+   }
+
    public void testFR_1832047_packageProtectedBean() {
       JSONObject jsonObject = new JSONObject().element( "value", "42" );
       JsonConfig jsonConfig = new JsonConfig();
@@ -155,96 +357,6 @@ public class TestUserSubmitted extends TestCase {
       assertEquals( 42, bean.getValue() );
    }
 
-   /*
-    * public void testBug_1650535_setters() { JSONObject object = new
-    * JSONObject(); object.element( "obj", "{}" ); object.element( "notobj",
-    * "{string}" ); object.element( "array", "[]" ); object.element( "notarray",
-    * "[string]" ); assertTrue( object.get( "obj" ) instanceof JSONObject );
-    * assertTrue( object.get( "array" ) instanceof JSONArray ); assertTrue(
-    * object.get( "notobj" ) instanceof String ); assertTrue( object.get(
-    * "notarray" ) instanceof String ); object.element( "str", "json,json" );
-    * assertTrue( object.get( "str" ) instanceof String ); } public void
-    * testBug_1753528_ArrayStringLiteralToString() { // submited by
-    * sckimos[at]gmail[dot]com BeanA bean = new BeanA(); bean.setString(
-    * "[1234]" ); JSONObject jsonObject = JSONObject.fromObject( bean );
-    * assertEquals( "[1234]", jsonObject.get( "string" ) ); bean.setString(
-    * "{'key':'1234'}" ); jsonObject = JSONObject.fromObject( bean );
-    * assertEquals( "{'key':'1234'}", jsonObject.get( "string" ) ); } public
-    * void testBug_1763699_toBean() { JSONObject json = JSONObject.fromObject(
-    * "{'bbeans':[{'str':'test'}]}" ); BeanA1763699 bean = (BeanA1763699)
-    * JSONObject.toBean( json, BeanA1763699.class ); assertNotNull( bean );
-    * BeanB1763699[] bbeans = bean.getBbeans(); assertNotNull( bbeans );
-    * assertEquals( 1, bbeans.length ); assertEquals( "test", bbeans[0].getStr() ); }
-    * public void testBug_1764768_toBean() { JSONObject json =
-    * JSONObject.fromObject( "{'beanA':''}" ); Map classMap = new HashMap();
-    * classMap.put( "beanA", BeanA.class ); BeanC bean = (BeanC)
-    * JSONObject.toBean( json, BeanC.class, classMap ); assertNotNull( bean );
-    * assertNotNull( bean.getBeanA() ); assertEquals( new BeanA(),
-    * bean.getBeanA() ); } public void testBug_1769559_array_conversion() {
-    * JSONObject jsonObject = new JSONObject().element( "beans", new
-    * JSONArray().element( "{}" ) .element(
-    * "{'bool':false,'integer':216,'string':'JsOn'}" ) ); ArrayBean bean =
-    * (ArrayBean) JSONObject.toBean( jsonObject, ArrayBean.class );
-    * assertNotNull( bean ); // no error should happen here JSONArray jsonArray =
-    * jsonObject.getJSONArray( "beans" ); BeanA[] beans = (BeanA[])
-    * JSONArray.toArray( jsonArray, BeanA.class ); assertNotNull( beans );
-    * assertEquals( 2, beans.length ); assertEquals( new BeanA(), beans[0] );
-    * assertEquals( new BeanA( false, 216, "JsOn" ), beans[1] ); } public void
-    * testBug_1769578_array_conversion() { JSONObject jsonObject =
-    * JSONObject.fromObject(
-    * "{'media':[{'title':'Giggles'},{'title':'Dreamland?'}]}" ); Map classMap =
-    * new HashMap(); classMap.put( "media", MediaBean.class ); MediaListBean
-    * bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class,
-    * classMap ); assertNotNull( bean ); assertNotNull( bean.getMedia() );
-    * assertTrue( bean.getMedia() .getClass() .isArray() ); Object[] media =
-    * (Object[]) bean.getMedia(); assertEquals( 2, media.length ); Object
-    * mediaItem1 = media[0]; assertTrue( mediaItem1 instanceof MediaBean );
-    * assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() ); } public
-    * void testBug_1812682() { int[] numbers = new int[] { 1, 2, 3, 4, 5 };
-    * JSONObject json = new JSONObject().element( "bytes", numbers ) .element(
-    * "shorts", numbers ) .element( "ints", numbers ) .element( "longs", numbers )
-    * .element( "floats", numbers ) .element( "doubles", numbers ); JsonConfig
-    * jsonConfig = new JsonConfig(); jsonConfig.setRootClass(
-    * NumberArrayBean.class ); NumberArrayBean bean = (NumberArrayBean)
-    * JSONObject.toBean( json, jsonConfig ); assertNotNull( bean ); } public
-    * void testBug_1813301() { List list = new ArrayList(); list.add( "1" );
-    * list.add( "2" ); list.add( "3" ); JSONObject jsonObject = new
-    * JSONObject().element( "name", "JSON" ) .element( "list", list );
-    * JsonConfig jsonConfig = new JsonConfig(); jsonConfig.setRootClass(
-    * MappedBean.class ); MappedBean bean = (MappedBean) JSONObject.toBean(
-    * jsonObject, jsonConfig ); assertNotNull( bean ); assertEquals( "JSON",
-    * bean.getName() ); Assertions.assertEquals( list, bean.getList() ); }
-    * public void testDynaBeanAttributeMap() throws NoSuchMethodException,
-    * IllegalAccessException, InvocationTargetException { // submited by
-    * arco.vandenheuvel[at]points[dot].com JSONObject jsonObject =
-    * JSONObject.fromObject( new JSONTestBean() ); String jsonString =
-    * jsonObject.toString(); DynaBean jsonBean = (DynaBean) JSONObject.toBean(
-    * JSONObject.fromObject( jsonString ) ); assertNotNull( jsonBean );
-    * assertEquals( "wrong inventoryID", "", jsonBean.get( "inventoryID" ) ); }
-    * public void testFR_1768960_array_conversion() { // 2 items JSONObject
-    * jsonObject = JSONObject.fromObject(
-    * "{'media2':[{'title':'Giggles'},{'title':'Dreamland?'}]}" ); Map classMap =
-    * new HashMap(); classMap.put( "media2", MediaBean.class ); MediaListBean
-    * bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class,
-    * classMap ); assertNotNull( bean ); assertNotNull( bean.getMedia2() ); List
-    * media2 = bean.getMedia2(); assertEquals( 2, media2.size() ); Object
-    * mediaItem1 = media2.get( 0 ); assertTrue( mediaItem1 instanceof MediaBean );
-    * assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() ); // 1 item
-    * jsonObject = JSONObject.fromObject( "{'media2':[{'title':'Giggles'}]}" );
-    * bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class,
-    * classMap ); assertNotNull( bean ); assertNotNull( bean.getMedia2() );
-    * media2 = bean.getMedia2(); assertEquals( 1, media2.size() ); mediaItem1 =
-    * media2.get( 0 ); assertTrue( mediaItem1 instanceof MediaBean );
-    * assertEquals( "Giggles", ((MediaBean) mediaItem1).getTitle() ); } public
-    * void testFR_1808430_newBeanInstance() { JsonConfig jsonConfig = new
-    * JsonConfig(); jsonConfig.setNewBeanInstanceStrategy( new
-    * UnstandardBeanInstanceStrategy() ); JSONObject jsonObject = new
-    * JSONObject(); jsonObject.element( "id", 1 ); jsonConfig.setRootClass(
-    * UnstandardBean.class ); UnstandardBean bean = (UnstandardBean)
-    * JSONObject.toBean( jsonObject, jsonConfig ); assertNotNull( bean );
-    * assertEquals( UnstandardBean.class, bean.getClass() ); assertEquals( 1,
-    * bean.getId() ); }
-    */
    public void testFromObjectCurliesOnString() {
       String json = "{'prop':'{value}'}";
       JSONObject jsonObject = JSONObject.fromObject( json );

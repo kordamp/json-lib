@@ -16,46 +16,19 @@
 
 package net.sf.json;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.ezmorph.Morpher;
-import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.bean.MorphDynaBean;
 import net.sf.ezmorph.bean.MorphDynaClass;
-import net.sf.ezmorph.test.ArrayAssertions;
 import net.sf.json.sample.AnnotationBean;
-import net.sf.json.sample.BeanA;
-import net.sf.json.sample.BeanB;
-import net.sf.json.sample.BeanC;
-import net.sf.json.sample.BeanFoo;
-import net.sf.json.sample.BeanWithFunc;
-import net.sf.json.sample.ClassBean;
-import net.sf.json.sample.EmptyBean;
-import net.sf.json.sample.JavaIdentifierBean;
 import net.sf.json.sample.EnumBean;
 import net.sf.json.sample.JsonEnum;
-import net.sf.json.sample.ListingBean;
-import net.sf.json.sample.MappingBean;
-import net.sf.json.sample.NumberBean;
-import net.sf.json.sample.ObjectBean;
-import net.sf.json.sample.ObjectJSONStringBean;
-import net.sf.json.sample.PropertyBean;
-import net.sf.json.sample.ValueBean;
 import net.sf.json.util.EnumMorpher;
-import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
-import net.sf.json.util.JavaIdentifierTransformer;
-
-import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>

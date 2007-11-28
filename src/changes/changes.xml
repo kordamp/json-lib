@@ -14,6 +14,12 @@
          desc="Current development release">
          <action
             dev="Andres Almiray"
+            type="add">
+            Initial generics support. Many thanks to Matt Small (and WaveMaker)
+            (provided patch and tests).
+         </action>
+         <action
+            dev="Andres Almiray"
             type="add"
             issue="1832146">
             Don't require the user to register Enum morphs by hand

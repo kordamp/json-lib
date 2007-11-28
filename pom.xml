@@ -83,6 +83,52 @@
       </developer>
    </developers>
 
+   <contributors>
+      <contributor>
+         <name>Matt Small</name>
+         <organization>WaveMaker</organization>
+	 <roles>
+            <role>Contributed generics support</role>
+	 </roles>
+      </contributor>
+      <contributor>
+         <name>Dan Fabulich</name>
+	 <roles>
+            <role>Feedback on JDK5 and JEE features</role>
+	 </roles>
+      </contributor>
+      <contributor>
+         <name>Masato Nagai</name>
+	 <roles>
+            <role>Patch for XMLSerializer</role>
+	 </roles>
+      </contributor>
+      <contributor>
+         <name>Gino Miceli</name>
+	 <roles>
+            <role>Patch for PropertySet strategy</role>
+	 </roles>
+      </contributor>
+      <contributor>
+         <name>Mino Tonga</name>
+      </contributor>
+      <contributor>
+         <name>Yee_Keat Phuah</name>
+	 <roles>
+	    <role>Patch for thread safety in JSONObject/JSONArray</role>
+	 </roles>
+      </contributor>
+      <contributor>
+         <name>Oliver Zyngier</name>
+      </contributor>
+      <contributor>
+         <name>Marcelo Liberato</name>
+      </contributor>
+      <contributor>
+         <name>Mathias Herberst</name>
+      </contributor>
+   </contributors>
+
    <dependencies>
       <dependency>
          <groupId>junit</groupId>
@@ -293,12 +339,12 @@
             <artifactId>javancss-maven-plugin</artifactId>
             <version>2.0-beta-1</version>
          </plugin>
+	 <!--
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>findbugs-maven-plugin</artifactId>
             <version>1.0.0</version>
          </plugin>
-	 <!--
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>jdiff-maven-plugin</artifactId>

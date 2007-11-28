@@ -15,27 +15,13 @@
  */
 package net.sf.json;
 
-import java.io.StringWriter;
 import java.lang.annotation.Annotation;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.TestCase;
-import net.sf.ezmorph.MorphUtils;
-import net.sf.ezmorph.bean.MorphDynaBean;
-import net.sf.ezmorph.bean.MorphDynaClass;
-import net.sf.ezmorph.test.ArrayAssertions;
 import net.sf.json.sample.AnnotationBean;
-import net.sf.json.sample.ArrayJSONStringBean;
-import net.sf.json.sample.BeanA;
 import net.sf.json.sample.JsonEnum;
-import net.sf.json.util.JSONTokener;
-
-import org.apache.commons.beanutils.DynaBean;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
