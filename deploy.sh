@@ -1,11 +1,11 @@
-#!/bin/sh -ex
+#!/bin/sh
 VERSION="2.1"
 GROUPID="org.kohsuke.stapler"
 ARTIFACTID="json-lib"
 REPO_URL="java-net:/maven2-repository/trunk/www/repository/"
 REPOSITORYID="java.net"
 
-mkdir build
+mkdir build || true
 ant source.jar
 mv target/${ARTIFACTID}-${VERSION}-jdk13-sources.jar build
 ant source.jar.jdk5
