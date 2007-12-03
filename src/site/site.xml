@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Maven">
+	<bannerLeft>
+		<name>Json-lib</name>
+		<src>/images/json-lib.png</src>
+		<href>http://json-lib.sf.net/</href>
+	</bannerLeft>
+
+	<poweredBy>
+		<logo name="Hosted on SourceForge.net" href="http://sourceforge.net" img="http://sflogo.sourceforge.net/sflogo.php?group_id=171425&amp;type=2" />
+		<logo name="Build with Maven 2" href="http://maven.apache.org" img="images/logos/maven-feather.png" />
+		<logo name="Listed at JavaToolbox" href="http://javatoolbox.org" img="images/javatoolbox.png" />
+		<logo name="Listed at LinuxLinks" href="http://www.linuxlinks.com/" img="http://www.linuxlinks.com/portal/content/logos/newlogo2.gif" />
+	</poweredBy>
+
+	<body>
+		<links>
+			<item name="Json.org" href="http://www.json.org/" />
+			<item name="Maven 2" href="http://maven.apache.org/maven2/" />
+		</links>
+
+		<menu name="Json-lib">
+			<item name="Introduction" href="index.html" />
+			<item name="Download" href="https://sourceforge.net/project/showfiles.php?group_id=171425" />
+			<item name="Feature List" href="features.html" />
+			<item name="Getting Started" href="usage.html" />
+			<item name="Advanced features" href="advanced.html" />
+			<item name="Groovy integration" href="groovy.html" />
+			<item name="Build instructions" href="package.html" />
+			<item name="Who is using it?" href="users.html" />
+			<item name="FAQ" href="faq.html" />
+			<item name="Changes" href="changes-report.html" />
+			<item name="Javadoc (jdk13)" href="apidocs/index.html" />
+			<item name="Javadoc (jdk15)" href="apidocs/jdk15/index.html" />
+		</menu>
+
+    ${reports}
+
+  </body>
+</project>

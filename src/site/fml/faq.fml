@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faqs title="Frequently Asked Questions">
+
+  <part id="general">
+    <title>General</title>
+
+    <!--
+    <faq id="">
+      <question>
+        <strong></strong>
+      </question>
+      <answer><p>
+      </p></answer>
+    </faq>
+    -->
+
+    <faq id="listOrder">
+      <question>
+        <strong>If I use a LinkedHasMap to create a JSONObject the order is not preserved, why ?</strong>
+      </question>
+      <answer><p>The answer is in the JSON specification "An <i>object is an unordered set</i> of
+      name/value pairs.  An object begins with { (left brace) and ends with } (right brace).
+      Each name is followed by : (colon)  and the name/value pairs are separated by , (comma).".<br/>
+      JSONObject uses a HashMap for its properties representation because the order of its properties
+      is not important.
+      </p></answer>
+    </faq>
+
+    <faq id="javaBean">
+      <question>
+        <strong>Json-lib creates empty JSONObjects from my bean class, help me!</strong>
+      </question>
+      <answer><p>Json-lib uses the JavaBeans convention to inspect your beans and create JSONObjects.
+      If the properties of your beans do not adhere to the convention, the resulting JSONObject will be
+      empty or half empty. You must provide a read/write method pair for each property.
+      </p></answer>
+    </faq>
+
+    <faq id="maven2">
+      <question>
+        <strong>How do I configure Json-lib as a dependency with Maven2 ?</strong>
+      </question>
+      <answer><p>As Json-lib comes in two flavors (for the time being) you'll have to add &lt;classifier&gt; to
+      your dependency declaration, like the following:
+      </p><p><textarea name="srcode" class="xml:nocontrols:nogutter" cols="80" rows="6">
+<dependency> 
+   <groupId>net.sf.json-lib</groupId> 
+   <artifactId>json-lib</artifactId> 
+   <version>1.0</version> 
+   <classifier>jdk15</classifier> 
+</dependency></textarea></p></answer>
+    </faq>
+    
+    <faq id="enum">
+      <question>
+        <strong>How can I transform a JSON string into a bean with an Enum property ?</strong>
+      </question>
+      <answer><p>You'll have to register a Morpher that can handle your Enum. Json-lib conveniently includes
+      such a Morpher, so the only thing left to do is configure it and register the Morpher into the MorpherRegistry
+      as follows <code>JSONUtils.getMorpherRegistry().registerMorpher( new EnumMorpher( MyEnum.class ) ); </code>
+      </p></answer>
+    </faq>
+    
+    <faq id="simple2complex">
+      <question>
+        <strong>How can I transform a simple value into a complex one when serializing back to Java ?</strong>
+      </question>
+      <answer><p>Perhaps you've come across an scenario where you'll want a JSON string like "{'id':1}" transformed
+      back to a Java class, but the catch is that the id property is not a simple value but another class (a complex value),
+      say a wrapper around a primitive long. If you try to serialize such a string back to Java you'll get a ClassCastException. 
+      The solution to this problem is registering a Morpher that can handle the input and transform it into an
+      instance of the expected type, in this case the class of the id property.      
+      </p></answer>
+    </faq>
+    
+    <faq id="inner_bean">
+      <question>
+        <strong>Json-lib does not find my inner bean, help!</strong>
+      </question>
+      <answer><p>In order for Json-lib (in fact the PropertyDescriptors) to find and inspect your beans
+      they have to be declared public, and all desired properties must have a public pair of reader/writer.
+      The same applies to beans declared as inner classes (which by the way must also be declared static).
+      Its a good practice to define each bean in its own file, but if you can't please make your inner
+      beans public and static if possible.
+      </p></answer>
+    </faq>
+
+    <faq id="sintax">
+      <question>
+        <strong>Where can I get the code for the source code syntax highlighter ?</strong>
+      </question>
+      <answer><p>The SintaxHighlighter is availabe from Alex Gorbatchev at <a href="http://www.dreamprojections.com/SyntaxHighlighter">
+      http://www.dreamprojections.com/SyntaxHighlighter</a>.
+      </p></answer>
+    </faq>
+  </part>
+  
+</faqs>

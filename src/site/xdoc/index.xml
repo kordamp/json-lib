@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+
+   <properties>
+      <title>Json-lib::Welcome</title>
+   </properties>
+
+   <body>
+      <section name="Welcome to Json-lib">
+         <p>
+            JSON-lib is a java library for transforming beans, maps, collections,
+            java arrays and XML to JSON and back again to beans and DynaBeans.<br/> 
+            It is based on the work by Douglas Crockford
+            in <a href="http://www.json.org/java">http://www.json.org/java</a>.
+         </p>
+         <p>
+            The following tables sumarizes the types conversion between java and
+            javascript:<br/>
+            <table>
+   <thead>
+     <th>JSON</th>
+     <th> </th>
+     <th>Java</th>
+   </thead>
+   <tbody>
+      <tr>
+         <td>string</td><td>&lt;=&gt;</td><td>java.lang.String, java.lang.Character, char</td>
+      </tr>
+      <tr>
+         <td>number</td><td>&lt;=&gt;</td><td>java.lang.Number, byte, short, int, long, float, double</td>
+      </tr>
+      <tr>
+         <td>true|false</td><td>&lt;=&gt;</td><td>java.lang.Boolean, boolean</td>
+      </tr>
+      <tr>
+         <td>null</td><td>&lt;=&gt;</td><td>null</td>
+      </tr>
+      <tr>
+         <td>function</td><td>&lt;=&gt;</td><td>net.sf.json.JSONFunction</td>
+      </tr>
+      <tr>
+         <td>array</td><td>&lt;=&gt;</td><td>net.sf.json.JSONArray (object, string, number, boolean, function)</td>
+      </tr>
+      <tr>
+         <td>object</td><td>&lt;=&gt;</td><td>net.sf.json.JSONObject</td>
+      </tr>
+   </tbody>
+   </table>
+   <br/>
+      The <code>function</code> type from javascript is not part of the JSON
+      format "officially" (please refer to <a href="http://www.json.org">http://www.json.org</a>)
+      but it is supported as well.</p>
+      <p>Json-lib comes in two flavors, depending on the jdk compatibility. 
+      json-lib-x.x-jdk13 is compatible with JDK 1.3.1 and upwards. 
+      json-lib-x.x-jdk15 is compatible with JDK 1.5, includes support for Enums in JSONArray and JSONObject.
+      Please reffer to the appropriate javadoc links available in the project menu.
+      </p>
+      <p>Json-lib requires (at least) the following dependencies in your classpath:
+         <ul>
+            <li>jakarta commons-lang 2.3</li>
+            <li>jakarta commons-beanutils 1.7.0</li>
+            <li>jakarta commons-collections 3.2</li>
+             <li>jakarta commons-logging 1.1</li>
+            <li>ezmorph 1.0.3</li>
+         </ul>
+         Other dependencies are needed if working with XML, Groovy and JRuby. Please review the 
+         <a href="http://json-lib.sourceforge.net/dependencies.html">Dependencies report</a> to know more about 
+         those extra dependencies.
+      </p>
+      </section>
+      <section name="What is JSON ?">
+         <p>
+            JSON (JavaScript Object Notation) is a lightweight
+            data-interchange format. It is easy for humans to read
+            and write. It is easy for machines to parse and
+            generate. It is based on a subset of the JavaScript
+            Programming Language, Standard ECMA-262 3rd Edition -
+            December 1999. JSON is a text format that is completely
+            language independent but uses conventions that are
+            familiar to programmers of the C-family of languages,
+            including C, C++, C#, Java, JavaScript, Perl, Python,
+            and many others.
+            <br />
+            These properties make JSON an ideal data-interchange
+            language.
+         </p>
+      </section>
+   </body>
+</document>

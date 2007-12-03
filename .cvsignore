@@ -1,0 +1,8 @@
+target
+velocity.log
+cobertura.ser
+build.properties
+.classpath
+.project
+.settings
+.jruby
