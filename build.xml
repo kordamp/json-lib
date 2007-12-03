@@ -59,12 +59,12 @@
    </target>
 
    <target name="compile.groovy" depends="compile" description="Compile the code (Groovy)">
-      <groovyc srcdir="${project.src.groovy.dir}" destdir="${maven.build.output}">
+      <!--groovyc srcdir="${project.src.groovy.dir}" destdir="${maven.build.output}">
          <classpath>
             <path refid="build.classpath" />
             <pathelement location="${maven.build.output}" />
          </classpath>
-      </groovyc>
+      </groovyc-->
    </target>
 
    <target name="compile-tests" depends="junit-present, compile" description="Compile the test code (jdk1.3)" if="junit.present">

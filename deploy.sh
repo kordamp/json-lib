@@ -1,8 +1,8 @@
 #!/bin/sh
 VERSION="2.1"
-GROUPID="net.sf.json-lib"
+GROUPID="org.jvnet.hudson"
 ARTIFACTID="json-lib"
-REPO_URL="scp://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo/release"
+REPO_URL="java-net:/maven2-repository/trunk/www/repository/"
 REPOSITORYID="sf_release"
 
 mkdir build
