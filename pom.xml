@@ -4,7 +4,7 @@
    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
    <modelVersion>4.0.0</modelVersion>
-   <groupId>org.jvnet.hudson</groupId>
+   <groupId>org.kohsuke.stapler</groupId>
    <artifactId>json-lib</artifactId>
    <packaging>jar</packaging>
    <version>2.1</version>

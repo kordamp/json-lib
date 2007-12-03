@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/sh -ex
 VERSION="2.1"
-GROUPID="org.jvnet.hudson"
+GROUPID="org.kohsuke.stapler"
 ARTIFACTID="json-lib"
 REPO_URL="java-net:/maven2-repository/trunk/www/repository/"
-REPOSITORYID="sf_release"
+REPOSITORYID="java.net"
 
 mkdir build
 ant source.jar
