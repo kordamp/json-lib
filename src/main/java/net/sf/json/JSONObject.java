@@ -1405,6 +1405,18 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    }
 
    /**
+    * Remove a name and its value, if present.
+    *
+    * @param key A key string.
+    * @return this.
+    */
+   public JSONObject discard( String key ) {
+      verifyIsNull();
+      this.properties.remove( key );
+      return this;
+   }
+
+   /**
     * Put a key/boolean pair in the JSONObject.
     *
     * @param key A key string.

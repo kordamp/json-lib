@@ -130,6 +130,21 @@ public class TestJSONObject extends TestCase {
       }
    }
 
+   public void testDiscard() {
+      JSONObject jsonObject = new JSONObject().element( "int", "1" )
+            .element( "long", "1" )
+            .element( "boolean", "true" )
+            .element( "string", "string" )
+            .element( "func", "function(){ return this; }" )
+            .element( "array", "[1,2,3]" );
+      assertEquals( 6, jsonObject.size() );
+      jsonObject.discard( "int" )
+            .discard( "func" );
+      assertEquals( 4, jsonObject.size() );
+      assertFalse( jsonObject.has( "int" ) );
+      assertFalse( jsonObject.has( "func" ) );
+   }
+
    public void testElement__duplicateProperty() {
       JSONObject jsonObject = new JSONObject();
       jsonObject.element( "duplicated", "json1" );

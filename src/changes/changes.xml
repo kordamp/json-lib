@@ -14,9 +14,15 @@
          desc="Current development release">
          <action
             dev="Andres Almiray"
+            type="add"
+            fix="1847144">
+            Add a chained version of remove to JSONObject.
+         </action>
+         <action
+            dev="Andres Almiray"
             type="add">
-            Initial generics support. Many thanks to Matt Small (and WaveMaker)
-            (provided patch and tests).
+            Initial generics support. Many thanks to Matt Small (and
+            WaveMaker) (provided patch and tests).
          </action>
          <action
             dev="Andres Almiray"

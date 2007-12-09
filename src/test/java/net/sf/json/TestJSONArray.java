@@ -45,6 +45,20 @@ public class TestJSONArray extends TestCase {
       super( testName );
    }
 
+   public void testDiscard() {
+      JSONArray jsonArray = new JSONArray().element( "1" )
+            .element( "true" )
+            .element( "string" )
+            .element( "function(){ return this; }" )
+            .element( "[1,2,3]" );
+      assertEquals( 5, jsonArray.size() );
+      jsonArray.discard( "string" )
+            .discard( 0 );
+      assertEquals( 3, jsonArray.size() );
+      assertFalse( jsonArray.contains( "string" ) );
+      assertFalse( jsonArray.contains( "1" ) );
+   }
+
    public void testConstructor_Collection() {
       List l = new ArrayList();
       l.add( Boolean.TRUE );

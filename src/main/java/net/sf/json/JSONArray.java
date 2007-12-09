@@ -1077,6 +1077,28 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    }
 
    /**
+    * Remove an element, if present.
+    *
+    * @param index the index of the element.
+    * @return this.
+    */
+   public JSONArray discard( int index ) {
+      elements.remove( index );
+      return this;
+   }
+
+   /**
+    * Remove an element, if present.
+    *
+    * @param index the element.
+    * @return this.
+    */
+   public JSONArray discard( Object o ) {
+      elements.remove( o );
+      return this;
+   }
+
+   /**
     * Append a boolean value. This increases the array's length by one.
     *
     * @param value A boolean value.
