@@ -967,7 +967,7 @@ public class TestJSONObject extends TestCase {
       assertEquals( jsonObject.get( "int" ), PropertyUtils.getProperty( bean, "int" ) );
       assertEquals( jsonObject.get( "double" ), PropertyUtils.getProperty( bean, "double" ) );
       assertEquals( jsonObject.get( "func" ), PropertyUtils.getProperty( bean, "func" ) );
-      List expected = JSONArray.toList( jsonObject.getJSONArray( "array" ) );
+      List expected = (List) JSONArray.toCollection( jsonObject.getJSONArray( "array" ) );
       Assertions.assertEquals( expected, (List) PropertyUtils.getProperty( bean, "array" ) );
    }
 

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.json.processors.DefaultDefaultValueProcessor;
 import net.sf.json.processors.DefaultValueProcessor;
@@ -50,6 +51,8 @@ public class JsonConfig {
    public static final NewBeanInstanceStrategy DEFAULT_NEW_BEAN_INSTANCE_STRATEGY = NewBeanInstanceStrategy.DEFAULT;
    public static final int MODE_LIST = 1;
    public static final int MODE_OBJECT_ARRAY = 2;
+   public static final int MODE_SET = 2;
+   private static final Class DEFAULT_COLLECTION_TYPE = List.class;
    private static final CycleDetectionStrategy DEFAULT_CYCLE_DETECTION_STRATEGY = CycleDetectionStrategy.STRICT;
    private static final String[] DEFAULT_EXCLUDES = new String[] { "class", "declaringClass",
          "metaClass" };
@@ -63,9 +66,11 @@ public class JsonConfig {
    private MultiKeyMap beanTypeMap = new MultiKeyMap();
    /** Map of attribute/class */
    private Map classMap;
+   private Class collectionType = DEFAULT_COLLECTION_TYPE;
    private CycleDetectionStrategy cycleDetectionStrategy = DEFAULT_CYCLE_DETECTION_STRATEGY;
    private Map defaultValueMap = new HashMap();
    private DefaultValueProcessorMatcher defaultValueProcessorMatcher = DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER;
+   private Class enclosedType;
    private List eventListeners = new ArrayList();
    private String[] excludes = EMPTY_EXCLUDES;
    private boolean handleJettisonEmptyElement;
@@ -165,6 +170,8 @@ public class JsonConfig {
       jsc.defaultValueMap.putAll( defaultValueMap );
       jsc.propertySetStrategy = propertySetStrategy;
       jsc.ignoreJPATransient = ignoreJPATransient;
+      jsc.collectionType = collectionType;
+      jsc.enclosedType = enclosedType;
       return jsc;
    }
 
@@ -300,7 +307,7 @@ public class JsonConfig {
    /**
     * Returns the current array mode conversion
     *
-    * @return either MODE_OBJECT_ARRAY or MODE_LIST
+    * @return MODE_OBJECT_ARRAY, MODE_LIST or MODE_SET
     */
    public int getArrayMode() {
       return arrayMode;
@@ -313,6 +320,15 @@ public class JsonConfig {
     */
    public Map getClassMap() {
       return classMap;
+   }
+
+   /**
+    * Returns the current collection type used for collection transformations.
+    *
+    * @return the target collection class for conversion
+    */
+   public Class getCollectionType() {
+      return collectionType;
    }
 
    /**
@@ -329,6 +345,15 @@ public class JsonConfig {
     */
    public DefaultValueProcessorMatcher getDefaultValueProcessorMatcher() {
       return defaultValueProcessorMatcher;
+   }
+
+   /**
+    * Returns the current enclosed type for generic collection transformations.
+    *
+    * @return the target type for conversion
+    */
+   public Class getEnclosedType() {
+      return enclosedType;
    }
 
    /**
@@ -600,20 +625,26 @@ public class JsonConfig {
       defaultValueMap.clear();
       propertySetStrategy = null/* DEFAULT_PROPERTY_SET_STRATEGY */;
       ignoreJPATransient = false;
+      collectionType = DEFAULT_COLLECTION_TYPE;
+      enclosedType = null;
    }
 
    /**
     * Sets the current array mode for conversion.<br>
-    * If the value is not MODE_LIST neither MODE_OBJECT_ARRAY, then MODE_LIST
-    * will be used.
+    * If the value is not MODE_LIST, MODE_OBJECT_ARRAY nor MODE_SET, then
+    * MODE_LIST will be used.
     *
     * @param arrayMode array mode for conversion
     */
    public void setArrayMode( int arrayMode ) {
-      if( arrayMode != MODE_LIST && arrayMode != MODE_OBJECT_ARRAY ){
-         this.arrayMode = MODE_LIST;
-      }else{
+      if( arrayMode == MODE_OBJECT_ARRAY ){
          this.arrayMode = arrayMode;
+      }else if( arrayMode == MODE_SET ){
+         this.arrayMode = arrayMode;
+         this.collectionType = Set.class;
+      }else{
+         this.arrayMode = MODE_LIST;
+         this.enclosedType = DEFAULT_COLLECTION_TYPE;
       }
    }
 
@@ -625,6 +656,23 @@ public class JsonConfig {
     */
    public void setClassMap( Map classMap ) {
       this.classMap = classMap;
+   }
+
+   /**
+    * Sets the current collection type used for collection transformations.
+    *
+    * @param collectionType the target collection class for conversion
+    */
+   public void setCollectionType( Class collectionType ) {
+      if( collectionType != null ){
+         if( !Collection.class.isAssignableFrom( collectionType ) ){
+            throw new JSONException( "The configured collectionType is not a Collection: "
+                  + collectionType.getName() );
+         }
+         this.collectionType = collectionType;
+      }else{
+         collectionType = DEFAULT_COLLECTION_TYPE;
+      }
    }
 
    /**
@@ -644,6 +692,15 @@ public class JsonConfig {
          DefaultValueProcessorMatcher defaultValueProcessorMatcher ) {
       this.defaultValueProcessorMatcher = defaultValueProcessorMatcher == null ? DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER
             : defaultValueProcessorMatcher;
+   }
+
+   /**
+    * Sets the current enclosed type for generic collection transformations.
+    *
+    * @param enclosedType the target type for conversion
+    */
+   public void setEnclosedType( Class enclosedType ) {
+      this.enclosedType = enclosedType;
    }
 
    /**

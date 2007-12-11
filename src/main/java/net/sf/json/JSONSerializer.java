@@ -63,7 +63,7 @@ public class JSONSerializer {
          if( jsonConfig.getArrayMode() == JsonConfig.MODE_OBJECT_ARRAY ){
             object = JSONArray.toArray( (JSONArray) json, jsonConfig );
          }else{
-            object = JSONArray.toList( (JSONArray) json, jsonConfig );
+            object = JSONArray.toCollection( (JSONArray) json, jsonConfig );
          }
       }else{
          object = JSONObject.toBean( (JSONObject) json, jsonConfig );

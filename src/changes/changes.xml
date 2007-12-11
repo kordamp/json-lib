@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="add"
+            issue="1847116">
+            Add support of Sets in JSONObject.toBean
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
             fix="1847144">
             Add a chained version of remove to JSONObject.
          </action>
@@ -22,7 +28,7 @@
             dev="Andres Almiray"
             type="add">
             Initial generics support. Many thanks to Matt Small (and
-            WaveMaker) (provided patch and tests).
+            WaveMaker) (provided patch and tests). (rolled-back)
          </action>
          <action
             dev="Andres Almiray"

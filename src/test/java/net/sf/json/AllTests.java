@@ -55,6 +55,7 @@ public class AllTests extends TestSuite {
       suite.addTest( new TestSuite( TestJSONArrayAsList.class ) );
 
       suite.addTest( new TestSuite( TestUserSubmitted.class ) );
+      suite.addTest( new TestSuite( TestJSONArrayCollections.class ) );
 
       return suite;
    }

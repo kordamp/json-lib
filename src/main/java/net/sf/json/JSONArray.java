@@ -44,10 +44,12 @@ import java.io.Writer;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
@@ -343,7 +345,92 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    }
 
    /**
-    * Creates a List from a JSONArray.
+    * Creates a Collection from a JSONArray.
+    */
+   public static Collection toCollection( JSONArray jsonArray ) {
+      return toCollection( jsonArray, new JsonConfig() );
+   }
+
+   /**
+    * Creates a Collection from a JSONArray.
+    */
+   public static Collection toCollection( JSONArray jsonArray, Class objectClass ) {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( objectClass );
+      return toCollection( jsonArray, jsonConfig );
+   }
+
+   /**
+    * Returns a List or a Set taking generics into account.<br/> Contributed by
+    * [Matt Small @ WaveMaker].
+    */
+   public static Collection toCollection( JSONArray jsonArray, JsonConfig jsonConfig ) {
+      Collection collection = null;
+      Class collectionType = jsonConfig.getCollectionType();
+
+      if( collectionType.isInterface() ){
+         if( collectionType.equals( List.class ) ){
+            collection = new ArrayList();
+         }else if( collectionType.equals( Set.class ) ){
+            collection = new HashSet();
+         }else{
+            throw new JSONException( "unknown interface: " + collectionType );
+         }
+      }else{
+         try{
+            collection = (Collection) collectionType.newInstance();
+         }catch( InstantiationException e ){
+            throw new JSONException( e );
+         }catch( IllegalAccessException e ){
+            throw new JSONException( e );
+         }
+      }
+
+      Class objectClass = jsonConfig.getRootClass();
+      Map classMap = jsonConfig.getClassMap();
+
+      int size = jsonArray.size();
+      for( int i = 0; i < size; i++ ){
+         Object value = jsonArray.get( i );
+
+         if( JSONUtils.isNull( value ) ){
+            collection.add( null );
+         }else{
+            Class type = value.getClass();
+            if( JSONArray.class.isAssignableFrom( value.getClass() ) ){
+               collection.add( toCollection( (JSONArray) value, jsonConfig ) );
+            }else if( String.class.isAssignableFrom( type )
+                  || Boolean.class.isAssignableFrom( type ) || JSONUtils.isNumber( type )
+                  || Character.class.isAssignableFrom( type )
+                  || JSONFunction.class.isAssignableFrom( type ) ){
+
+               if( !value.getClass()
+                     .isAssignableFrom( type ) ){
+                  throw new JSONException( "can't assign value " + value + " of type "
+                        + value.getClass() + " to Collection of type " + type );
+               }
+               collection.add( value );
+            }else{
+               if( objectClass != null ){
+                  JsonConfig jsc = jsonConfig.copy();
+                  jsc.setRootClass( objectClass );
+                  jsc.setClassMap( classMap );
+                  collection.add( JSONObject.toBean( (JSONObject) value, jsc ) );
+               }else{
+                  collection.add( JSONObject.toBean( (JSONObject) value ) );
+               }
+            }
+         }
+      }
+
+      return collection;
+   }
+
+   /**
+    * Creates a List from a JSONArray.<br>
+    *
+    * @deprecated replaced by toCollection
+    * @see #toCollection(JSONArray)
     */
    public static List toList( JSONArray jsonArray ) {
       return toList( jsonArray, new JsonConfig() );
@@ -351,6 +438,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
 
    /**
     * Creates a List from a JSONArray.
+    *
+    * @deprecated replaced by toCollection
+    * @see #toCollection(JSONArray,Class)
     */
    public static List toList( JSONArray jsonArray, Class objectClass ) {
       JsonConfig jsonConfig = new JsonConfig();
@@ -368,6 +458,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * <li>Every value must be a Class.</li>
     * <li>A key may be a regular expression.</li>
     * </ul>
+    *
+    * @deprecated replaced by toCollection
+    * @see #toCollection(JSONArray,Class,Map)
     */
    public static List toList( JSONArray jsonArray, Class objectClass, Map classMap ) {
       JsonConfig jsonConfig = new JsonConfig();
@@ -378,9 +471,12 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
 
    /**
     * Creates a List from a JSONArray.<br>
+    *
+    * @deprecated replaced by toCollection
+    * @see #toCollection(JSONArray,JsonConfig)
     */
    public static List toList( JSONArray jsonArray, JsonConfig jsonConfig ) {
-      if( jsonArray.size() == 0  ){
+      if( jsonArray.size() == 0 ){
          return new ArrayList();
       }
 
@@ -459,7 +555,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       }
       return list;
    }
-
 
    /**
     * Construct a JSONArray from an boolean[].<br>
