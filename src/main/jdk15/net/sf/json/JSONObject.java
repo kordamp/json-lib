@@ -322,8 +322,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                if( JSONUtils.isNull( value ) ){
                   setProperty( bean, key, value, jsonConfig );
                }else if( value instanceof JSONArray ){
-                  setProperty( bean, key, convertPropertyValueToList( key, value, jsonConfig, name,
-                        classMap ), jsonConfig );
+                  setProperty( bean, key, convertPropertyValueToCollection( key, value, jsonConfig, name,
+                        classMap, List.class ), jsonConfig );
                }else if( String.class.isAssignableFrom( type ) || JSONUtils.isBoolean( type )
                      || JSONUtils.isNumber( type ) || JSONUtils.isString( type )
                      || JSONFunction.class.isAssignableFrom( type ) ){
@@ -357,8 +357,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   if( !JSONUtils.isNull( value ) ){
                      if( value instanceof JSONArray ){
                         if( List.class.isAssignableFrom( pd.getPropertyType() ) ){
-                           setProperty( bean, key, convertPropertyValueToList( key, value,
-                                 jsonConfig, name, classMap ), jsonConfig );
+                           setProperty( bean, key, convertPropertyValueToCollection( key, value,
+                                 jsonConfig, name, classMap, pd.getPropertyType() ), jsonConfig );
+                        }else if( Set.class.isAssignableFrom( pd.getPropertyType() ) ){
+                           setProperty( bean, key, convertPropertyValueToCollection( key, value,
+                                 jsonConfig, name, classMap, pd.getPropertyType() ), jsonConfig );
                         }else{
                            setProperty( bean, key, convertPropertyValueToArray( key, value,
                                  targetType, jsonConfig, classMap ), jsonConfig );
@@ -393,11 +396,13 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                            jsc.setClassMap( classMap );
                            if( targetType.isArray() ){
                               setProperty( bean, key, JSONArray.toArray( array, jsc ), jsonConfig );
-                           }else if( Collection.class.isAssignableFrom( targetType ) ){
-                              setProperty( bean, key, JSONArray.toCollection( array, jsc ),
-                                    jsonConfig );
                            }else if( JSONArray.class.isAssignableFrom( targetType ) ){
                               setProperty( bean, key, array, jsonConfig );
+                           }else if( List.class.isAssignableFrom( targetType )
+                                 || Set.class.isAssignableFrom( targetType ) ){
+                              jsc.setCollectionType( targetType );
+                              setProperty( bean, key, JSONArray.toCollection( array, jsc ),
+                                    jsonConfig );
                            }else{
                               setProperty( bean, key, toBean( (JSONObject) value, jsc ), jsonConfig );
                            }
@@ -426,8 +431,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                }else{
                   if( !JSONUtils.isNull( value ) ){
                      if( value instanceof JSONArray ){
-                        setProperty( bean, key, convertPropertyValueToList( key, value, jsonConfig,
-                              name, classMap ), jsonConfig );
+                        setProperty( bean, key, convertPropertyValueToCollection( key, value,
+                              jsonConfig, name, classMap, List.class ), jsonConfig );
                      }else if( String.class.isAssignableFrom( type ) || JSONUtils.isBoolean( type )
                            || JSONUtils.isNumber( type ) || JSONUtils.isString( type )
                            || JSONFunction.class.isAssignableFrom( type ) ){
@@ -1353,6 +1358,17 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       jsc.setClassMap( classMap );
       List list = (List) JSONArray.toCollection( (JSONArray) value, jsc );
       return list;
+   }
+
+   private static Collection convertPropertyValueToCollection( String key, Object value, JsonConfig jsonConfig,
+         String name, Map classMap, Class collectionType ) {
+      Class targetClass = findTargetClass( key, classMap );
+      targetClass = targetClass == null ? findTargetClass( name, classMap ) : targetClass;
+      JsonConfig jsc = jsonConfig.copy();
+      jsc.setRootClass( targetClass );
+      jsc.setClassMap( classMap );
+      jsc.setCollectionType( collectionType );
+      return JSONArray.toCollection( (JSONArray) value, jsc );
    }
 
    /*

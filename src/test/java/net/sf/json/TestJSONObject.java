@@ -51,6 +51,7 @@ import net.sf.json.sample.ObjectJSONStringBean;
 import net.sf.json.sample.ParentBean;
 import net.sf.json.sample.PrimitiveBean;
 import net.sf.json.sample.PropertyBean;
+import net.sf.json.sample.SetBean;
 import net.sf.json.sample.TransientBean;
 import net.sf.json.sample.ValueBean;
 import net.sf.json.util.CycleDetectionStrategy;
@@ -1205,6 +1206,44 @@ public class TestJSONObject extends TestCase {
       assertTrue( bb instanceof MorphDynaBean );
       assertEquals( new Integer( beanA.getValue() ), ((MorphDynaBean) ba).get( "value" ) );
       assertEquals( new Integer( beanB.getValue() ), ((MorphDynaBean) bb).get( "value" ) );
+   }
+
+   public void testToBean_nested_beans_in_set__beans() {
+      // FR 1847116
+
+      SetBean setBean = new SetBean();
+
+      ValueBean beanA1 = new ValueBean();
+      beanA1.setValue( 90000 );
+      ValueBean beanA2 = new ValueBean();
+      beanA2.setValue( 91000 );
+
+      setBean.addAttribute( beanA1 );
+      setBean.addAttribute( beanA2 );
+
+      JSONObject jsonObject = JSONObject.fromObject( setBean );
+      Map classMap = new HashMap();
+      classMap.put( "attributes", ValueBean.class );
+      SetBean setBean2 = (SetBean) JSONObject.toBean( jsonObject, SetBean.class, classMap );
+      assertEquals( setBean, setBean2 );
+   }
+
+   public void testToBean_nested_beans_in_set__DynaBean() {
+      // FR 1847116
+
+      SetBean setBean = new SetBean();
+
+      ValueBean beanA1 = new ValueBean();
+      beanA1.setValue( 90000 );
+      ValueBean beanA2 = new ValueBean();
+      beanA2.setValue( 91000 );
+
+      setBean.addAttribute( beanA1 );
+      setBean.addAttribute( beanA2 );
+
+      JSONObject jsonObject = JSONObject.fromObject( setBean );
+      /*SetBean setBean2 = (SetBean)*/ JSONObject.toBean( jsonObject, SetBean.class );
+      //assertEquals( setBean, setBean2 );
    }
 
    public void testToBean_nested_dynabeans__null_object() throws Exception {

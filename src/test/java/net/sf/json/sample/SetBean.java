@@ -16,6 +16,9 @@
 
 package net.sf.json.sample;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -24,8 +27,12 @@ import org.apache.commons.lang.builder.ToStringStyle;
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class ValueBean {
-   private int value;
+public class SetBean {
+   private Set attributes = new HashSet();
+
+   public void addAttribute( Object value ) {
+      this.attributes.add( value );
+   }
 
    public boolean equals( Object obj ) {
       if( obj == this ){
@@ -34,22 +41,22 @@ public class ValueBean {
       if( obj == null ){
          return false;
       }
-      if( !ValueBean.class.isAssignableFrom( obj.getClass() ) ){
+      if( !SetBean.class.isAssignableFrom( obj.getClass() ) ){
          return false;
       }
       return EqualsBuilder.reflectionEquals( this, obj );
    }
 
-   public int getValue() {
-      return value;
+   public Set getAttributes() {
+      return attributes;
    }
 
    public int hashCode() {
       return HashCodeBuilder.reflectionHashCode( this );
    }
 
-   public void setValue( int value ) {
-      this.value = value;
+   public void setAttributes( Set attributes ) {
+      this.attributes = attributes;
    }
 
    public String toString() {
