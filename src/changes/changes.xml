@@ -71,8 +71,7 @@
          </action>
          <action
             dev="Andres Almiray"
-            type="add"
-            issue="1828093">
+            type="add">
             Extra quotes on string values with {} and []
          </action>
          <action
