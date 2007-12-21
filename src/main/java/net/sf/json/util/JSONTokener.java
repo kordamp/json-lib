@@ -390,7 +390,7 @@ public class JSONTokener {
       if( s.equalsIgnoreCase( "false" ) ){
          return Boolean.FALSE;
       }
-      if( s.equalsIgnoreCase( "null" ) ){
+      if( s.equals( "null" ) ){
          return JSONNull.getInstance();
       }
 

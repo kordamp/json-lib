@@ -137,7 +137,7 @@ public class JSONSerializer {
          json = JSONArray.fromObject( string, jsonConfig );
       }else if( string.startsWith( "{" ) ){
          json = JSONObject.fromObject( string, jsonConfig );
-      }else if( "null".equalsIgnoreCase( string ) ){
+      }else if( "null".equals( string ) ){
          json = JSONNull.getInstance();
       }else{
          throw new JSONException( "Invalid JSON String" );

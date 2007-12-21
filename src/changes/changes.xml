@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="add"
+            issue="1855019">
+            JSONUtils.mayBeJSON is broken
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
             issue="1847116">
             Add support of Sets in JSONObject.toBean
          </action>

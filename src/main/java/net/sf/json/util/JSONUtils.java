@@ -386,7 +386,7 @@ public final class JSONUtils {
     */
    public static boolean mayBeJSON( String string ) {
       return string != null
-            && ("null".equalsIgnoreCase( string )
+            && ("null".equals( string )
                   || (string.startsWith( "[" ) && string.endsWith( "]" )) || (string.startsWith( "{" ) && string.endsWith( "}" )));
    }
 

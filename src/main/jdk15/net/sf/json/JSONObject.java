@@ -1303,7 +1303,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    }
 
    private static JSONObject _fromString( String str, JsonConfig jsonConfig ) {
-      if( str == null || "null".compareToIgnoreCase( str ) == 0 ){
+      if( str == null || "null".equals( str ) ){
          fireObjectStartEvent( jsonConfig );
          fireObjectEndEvent( jsonConfig );
          return new JSONObject( true );
