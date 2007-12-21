@@ -9,9 +9,9 @@
    <body>
 
       <release
-         version="2.2-SNAPSHOT"
-         date="N/A"
-         desc="Current development release">
+         version="2.2"
+         date="2007-12-20"
+         desc="Release 2.2">
          <action
             dev="Andres Almiray"
             type="add"

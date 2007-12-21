@@ -89,6 +89,12 @@
        to refresh only a part of the screen.<br/>
        Json-lib is used in Tree-rendering components. Thanks to Jerome Denolf.</td>
          </tr>
+         <tr>
+       <td valign="top" align="center"><a href="http://www.mulesource.org/display/JIRA/Home">Mule JIRA Transport</a></td>
+       <td valign="top">JIRA Transport is a transport provider that allows your Mule and other integrated services to communicate 
+       with one or more JIRA systems easily.<br/>
+       Json-lib is used to transform JSON objects into XML and Java. Thanks to Yuen Chi Lian.</td>
+         </tr>
       </tbody>
    </table>
    <table>
