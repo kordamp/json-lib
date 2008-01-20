@@ -30,6 +30,7 @@ import net.sf.json.processors.DefaultValueProcessorMatcher;
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonBeanProcessorMatcher;
 import net.sf.json.processors.JsonValueProcessor;
+import net.sf.json.processors.JsonValueProcessorMatcher;
 import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JavaIdentifierTransformer;
 import net.sf.json.util.JsonEventListener;
@@ -48,6 +49,7 @@ import org.apache.commons.lang.StringUtils;
 public class JsonConfig {
    public static final DefaultValueProcessorMatcher DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER = DefaultValueProcessorMatcher.DEFAULT;
    public static final JsonBeanProcessorMatcher DEFAULT_JSON_BEAN_PROCESSOR_MATCHER = JsonBeanProcessorMatcher.DEFAULT;
+   public static final JsonValueProcessorMatcher DEFAULT_JSON_VALUE_PROCESSOR_MATCHER = JsonValueProcessorMatcher.DEFAULT;
    public static final NewBeanInstanceStrategy DEFAULT_NEW_BEAN_INSTANCE_STRATEGY = NewBeanInstanceStrategy.DEFAULT;
    public static final int MODE_LIST = 1;
    public static final int MODE_OBJECT_ARRAY = 2;
@@ -82,6 +84,7 @@ public class JsonConfig {
    private PropertyFilter javaPropertyFilter;
    private JsonBeanProcessorMatcher jsonBeanProcessorMatcher = DEFAULT_JSON_BEAN_PROCESSOR_MATCHER;
    private PropertyFilter jsonPropertyFilter;
+   private JsonValueProcessorMatcher jsonValueProcessorMatcher = DEFAULT_JSON_VALUE_PROCESSOR_MATCHER;
    private Map keyMap = new HashMap();
    private NewBeanInstanceStrategy newBeanInstanceStrategy = DEFAULT_NEW_BEAN_INSTANCE_STRATEGY;
    private Map processorMap = new HashMap();
@@ -172,6 +175,7 @@ public class JsonConfig {
       jsc.ignoreJPATransient = ignoreJPATransient;
       jsc.collectionType = collectionType;
       jsc.enclosedType = enclosedType;
+      jsc.jsonValueProcessorMatcher = jsonValueProcessorMatcher;
       return jsc;
    }
 
@@ -227,7 +231,8 @@ public class JsonConfig {
    public JsonValueProcessor findJsonValueProcessor( Class propertyType ) {
       JsonValueProcessor jsonValueProcessor = null;
 
-      jsonValueProcessor = (JsonValueProcessor) typeMap.get( propertyType );
+      Object key = jsonValueProcessorMatcher.getMatch( propertyType, typeMap.keySet() );
+      jsonValueProcessor = (JsonValueProcessor) typeMap.get( key );
       if( jsonValueProcessor != null ){
          return jsonValueProcessor;
       }
@@ -268,7 +273,8 @@ public class JsonConfig {
          return jsonValueProcessor;
       }
 
-      jsonValueProcessor = (JsonValueProcessor) typeMap.get( propertyType );
+      Object tkey = jsonValueProcessorMatcher.getMatch( propertyType, typeMap.keySet() );
+      jsonValueProcessor = (JsonValueProcessor) typeMap.get( tkey );
       if( jsonValueProcessor != null ){
          return jsonValueProcessor;
       }
@@ -296,7 +302,8 @@ public class JsonConfig {
          return jsonValueProcessor;
       }
 
-      jsonValueProcessor = (JsonValueProcessor) typeMap.get( propertyType );
+      Object tkey = jsonValueProcessorMatcher.getMatch( propertyType, typeMap.keySet() );
+      jsonValueProcessor = (JsonValueProcessor) typeMap.get( tkey );
       if( jsonValueProcessor != null ){
          return jsonValueProcessor;
       }
@@ -400,6 +407,14 @@ public class JsonConfig {
     */
    public PropertyFilter getJsonPropertyFilter() {
       return jsonPropertyFilter;
+   }
+
+   /**
+    * Returns the configured JsonValueProcessorMatcher.<br>
+    * Default value is JsonValueProcessorMatcher.DEFAULT
+    */
+   public JsonValueProcessorMatcher getJsonValueProcessorMatcher() {
+      return jsonValueProcessorMatcher;
    }
 
    /**
@@ -627,6 +642,7 @@ public class JsonConfig {
       ignoreJPATransient = false;
       collectionType = DEFAULT_COLLECTION_TYPE;
       enclosedType = null;
+      jsonValueProcessorMatcher = DEFAULT_JSON_VALUE_PROCESSOR_MATCHER;
    }
 
    /**
@@ -786,6 +802,15 @@ public class JsonConfig {
     */
    public void setJsonPropertyFilter( PropertyFilter jsonPropertyFilter ) {
       this.jsonPropertyFilter = jsonPropertyFilter;
+   }
+
+   /**
+    * Sets a JsonValueProcessorMatcher to use.<br>
+    * Will set default value (JsonValueProcessorMatcher.DEFAULT) if null.
+    */
+   public void setJsonValueProcessorMatcher( JsonValueProcessorMatcher jsonValueProcessorMatcher ) {
+      this.jsonValueProcessorMatcher = jsonValueProcessorMatcher == null ? DEFAULT_JSON_VALUE_PROCESSOR_MATCHER
+            : jsonValueProcessorMatcher;
    }
 
    /**

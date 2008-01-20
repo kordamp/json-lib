@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="add"
+            issue="1873231">
+            Need configurable JsonValueProcessorMatcher
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
             issue="1858073">
             Use order-preserving map in JSONObject
          </action>
