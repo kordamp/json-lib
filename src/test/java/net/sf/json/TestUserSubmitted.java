@@ -371,6 +371,17 @@ public class TestUserSubmitted extends TestCase {
       assertEquals( 42, bean.getValue() );
    }
 
+   public void testFR_1858073_preserveInsertionOrder() {
+      JSONObject jsonObject = new JSONObject().element( "one", "one" )
+            .element( "two", "two" )
+            .element( "three", "three" );
+      JSONArray actual = jsonObject.names();
+      JSONArray expected = new JSONArray().element( "one" )
+            .element( "two" )
+            .element( "three" );
+      Assertions.assertEquals( expected, actual );
+   }
+
    public void testFromObjectCurliesOnString() {
       String json = "{'prop':'{value}'}";
       JSONObject jsonObject = JSONObject.fromObject( json );

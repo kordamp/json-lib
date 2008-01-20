@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="add"
+            issue="1858073">
+            Use order-preserving map in JSONObject
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
             issue="1875695">
             Add a skipWhitespace flag to XMLSerializer
          </action>
