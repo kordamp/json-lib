@@ -251,6 +251,20 @@ public class TestUserSubmitted extends TestCase {
       Assertions.assertEquals( list, bean.getList() );
    }
 
+   public void testBug_1875600_1() {
+      JSONArray jArray = JSONArray.fromObject( "[]" );
+      int[] iArray = (int[]) JSONArray.toArray( jArray, int.class );
+      JSONArray actual = JSONArray.fromObject( iArray );
+      Assertions.assertEquals( new JSONArray(), actual );
+   }
+
+   public void testBug_1875600_2() {
+      JSONArray jArray = JSONArray.fromObject( "[ [] ]" );
+      int[][] iArray = (int[][]) JSONArray.toArray( jArray, int.class );
+      JSONArray actual = JSONArray.fromObject( iArray );
+      Assertions.assertEquals( new JSONArray().element( new JSONArray() ), actual );
+   }
+
    public void testConstructor_Object__nullArray() {
       // submitted by Matt Small
       String[] strarr = null;
