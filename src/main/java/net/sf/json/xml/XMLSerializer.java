@@ -103,6 +103,8 @@ public class XMLSerializer {
    private Map rootNamespace = new TreeMap();
    /** flag for skipping namespaces while reading */
    private boolean skipNamespaces;
+   /** flag for skipping whitespace elements while reading */
+   private boolean skipWhitespace;
    /** flag for trimming spaces from string values */
    private boolean trimSpaces;
    /** flag for type hints naming compatibility */
@@ -136,6 +138,7 @@ public class XMLSerializer {
       setRemoveNamespacePrefixFromElements( false );
       setTrimSpaces( false );
       setExpandableProperties( EMPTY_ARRAY );
+      setSkipNamespaces( false );
    }
 
    /**
@@ -256,6 +259,13 @@ public class XMLSerializer {
     */
    public boolean isSkipNamespaces() {
       return skipNamespaces;
+   }
+
+   /**
+    * Returns wether this serializer will skip whitespace or not.
+    */
+   public boolean isSkipWhitespace() {
+      return skipWhitespace;
    }
 
    /**
@@ -503,6 +513,13 @@ public class XMLSerializer {
    }
 
    /**
+    * Sets if this serializer will skip whitespace when reading.
+    */
+   public void setSkipWhitespace( boolean skipWhitespace ) {
+      this.skipWhitespace = skipWhitespace;
+   }
+
+   /**
     * Sets if this serializer will trim leading and trealing whitespace from
     * values when reading.
     */
@@ -622,7 +639,7 @@ public class XMLSerializer {
             return true;
          }
          if( elementCount == 1 ){
-            if( element.getChild( 0 ) instanceof Text ){
+            if( skipWhitespace || element.getChild( 0 ) instanceof Text ){
                return true;
             }else{
                return false;
@@ -635,7 +652,8 @@ public class XMLSerializer {
             Node node = element.getChild( i );
             if( node instanceof Text ){
                Text text = (Text) node;
-               if( StringUtils.isNotBlank( StringUtils.strip( text.getValue() ) ) ){
+               if( StringUtils.isNotBlank( StringUtils.strip( text.getValue() ) )
+                     && !skipWhitespace ){
                   return false;
                }
             }
@@ -777,6 +795,9 @@ public class XMLSerializer {
                && (element.getAttribute( addJsonPrefix( "class" ) ) != null && element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
             return true;
          }
+      }
+      if( skipWhitespace && element.getChildCount() == 1 && element.getChild( 0 ) instanceof Text ){
+         return true;
       }
       return false;
    }
@@ -1260,7 +1281,6 @@ public class XMLSerializer {
       }
       return str;
    }
-
    private static class CustomElement extends Element {
       private static String getName( String name ) {
          int colon = name.indexOf( ':' );

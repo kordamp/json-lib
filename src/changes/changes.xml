@@ -9,6 +9,18 @@
    <body>
 
       <release
+         version="2.3-SNAPSHOT"
+         date="N/A"
+         desc="Current development release">
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1875695">
+            Add a skipWhitespace flag to XMLSerializer
+         </action>
+      </release>
+
+      <release
          version="2.2"
          date="2007-12-20"
          desc="Release 2.2">
