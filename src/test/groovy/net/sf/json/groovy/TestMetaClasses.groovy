@@ -23,6 +23,9 @@ import net.sf.json.test.JSONAssert
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 class TestMetaClasses extends GroovyTestCase {
+    protected void setUp() throws Exception {
+        GJson.enhanceClasses()
+    }
 
 	void testJONObjectGet_withDefaultValue(){
 	   def json = new JSONObject();

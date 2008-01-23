@@ -23,6 +23,10 @@ import net.sf.json.test.JSONAssert
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 class TestJSONArrayGroovy extends GroovyTestCase {
+    protected void setUp() throws Exception {
+       GJson.enhanceClasses()
+    }
+
     public void testEqualsOperator(){
        def json = new JSONArray().element(1)
        assertTrue json == json

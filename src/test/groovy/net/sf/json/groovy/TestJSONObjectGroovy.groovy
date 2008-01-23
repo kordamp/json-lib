@@ -23,6 +23,10 @@ import net.sf.json.test.JSONAssert
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 class TestJSONObjectGroovy extends GroovyTestCase {
+   protected void setUp() throws Exception {
+       GJson.enhanceClasses()
+   }
+
    public void testLeftShift_with_map(){
       def actual = new JSONObject()
       actual << [key:1]
