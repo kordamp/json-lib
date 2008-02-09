@@ -111,6 +111,7 @@ public class XMLSerializer {
    private boolean typeHintsCompatibility;
    /** flag for adding JSON types hints as attributes */
    private boolean typeHintsEnabled;
+   private boolean forceTopLevelObject;
 
    /**
     * Creates a new XMLSerializer with default options.<br>
@@ -309,6 +310,10 @@ public class XMLSerializer {
          String defaultType = getType( root, JSONTypes.STRING );
          if( isArray( root, true ) ){
             json = processArrayElement( root, defaultType );
+            if( forceTopLevelObject ){
+               String key = removeNamespacePrefix( root.getQualifiedName() );
+               json = new JSONObject().element( key, json );
+            }
          }else{
             json = processObjectElement( root, defaultType );
          }
@@ -1375,5 +1380,13 @@ public class XMLSerializer {
          writeAttributes( element );
          writeNamespaceDeclarations( element );
       }
+   }
+
+   public boolean isForceTopLevelObject() {
+      return forceTopLevelObject;
+   }
+
+   public void setForceTopLevelObject( boolean forceTopLevelObject ) {
+      this.forceTopLevelObject = forceTopLevelObject;
    }
 }

@@ -9,9 +9,15 @@
    <body>
 
       <release
-         version="2.3-SNAPSHOT"
-         date="N/A"
-         desc="Current development release">
+         version="2.2.1"
+         date="02/08/08"
+         desc="Service release">
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1889973">
+            Add a CycleDetectionStrategy that skips the property
+         </action>
          <action
             dev="Andres Almiray"
             type="fix"

@@ -115,7 +115,14 @@ public class TestXMLSerializer_reads extends TestCase {
       JSON actual = xmlSerializer.read( xml );
       JSON expected = new JSONArray().element( "json" );
       Assertions.assertEquals( expected, actual );
+   }
 
+   public void testReadArray_forceTopLevelObject() {
+      String xml = "<a>json</a>";
+      xmlSerializer.setForceTopLevelObject( true );
+      JSON actual = xmlSerializer.read( xml );
+      JSON expected = new JSONObject().element( "a", new JSONArray().element( "json" ) );
+      Assertions.assertEquals( expected, actual );
    }
 
    public void testReadBooleanArray_withDefaultType() {
