@@ -10,8 +10,14 @@
 
       <release
          version="2.2.1"
-         date="02/08/08"
+         date="2008-02-08"
          desc="Service release">
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1889982">
+            Force top JSONObject while reading from XML
+         </action>
          <action
             dev="Andres Almiray"
             type="add"
