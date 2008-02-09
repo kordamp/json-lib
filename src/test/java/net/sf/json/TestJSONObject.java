@@ -107,6 +107,17 @@ public class TestJSONObject extends TestCase {
       assertTrue( jsonObject.isNullObject() );
    }
 
+   public void testCycleDetection_beans_noprop() {
+      jsonConfig.setCycleDetectionStrategy( CycleDetectionStrategy.NOPROP );
+      ParentBean parent = new ParentBean();
+      parent.setChild( new ChildBean() );
+
+      JSONObject actual = JSONObject.fromObject( parent, jsonConfig );
+      JSONObject expected = new JSONObject().element( "value", 0 )
+            .element( "child", new JSONObject().element( "value", 0 ) );
+      Assertions.assertEquals( expected, actual );
+   }
+
    public void testCycleDetection_beans_null() {
       jsonConfig.setCycleDetectionStrategy( CycleDetectionStrategy.LENIENT );
       ParentBean parent = new ParentBean();

@@ -33,8 +33,16 @@ import net.sf.json.JSONObject;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class CycleDetectionStrategy {
+   public static final JSONArray IGNORE_PROPERTY_ARR = new JSONArray();
+   public static final JSONObject IGNORE_PROPERTY_OBJ = new JSONObject();
+
    /** Returns empty array and null object */
    public static final CycleDetectionStrategy LENIENT = new LenientCycleDetectionStrategy();
+   /**
+    * Returns a special object (IGNORE_PROPERTY_OBJ) that indicates the entire
+    * property should be ignored
+    */
+   public static final CycleDetectionStrategy NOPROP = new LenientNoRefCycleDetectionStrategy();
    /** Throws a JSONException */
    public static final CycleDetectionStrategy STRICT = new StrictCycleDetectionStrategy();
 
@@ -61,6 +69,22 @@ public abstract class CycleDetectionStrategy {
 
       public JSONObject handleRepeatedReferenceAsObject( Object reference ) {
          return new JSONObject( true );
+      }
+   }
+
+   /**
+    * A cycle detection strategy that prevents any mention of the possible
+    * conflict from appearing.
+    *
+    * @author small
+    */
+   private static final class LenientNoRefCycleDetectionStrategy extends CycleDetectionStrategy {
+      public JSONArray handleRepeatedReferenceAsArray( Object reference ) {
+         return IGNORE_PROPERTY_ARR;
+      }
+
+      public JSONObject handleRepeatedReferenceAsObject( Object reference ) {
+         return IGNORE_PROPERTY_OBJ;
       }
    }
 

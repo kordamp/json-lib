@@ -63,6 +63,7 @@ import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
 import net.sf.json.regexp.RegexpUtils;
+import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.EnumMorpher;
 import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
@@ -2773,7 +2774,13 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       if( JSONUtils.isString( value ) && JSONUtils.mayBeJSON( String.valueOf( value ) ) ){
          this.properties.put( key, value );
       }else{
-         this.properties.put( key, _processValue( value, jsonConfig ) );
+         Object jo = _processValue( value, jsonConfig );
+         if( CycleDetectionStrategy.IGNORE_PROPERTY_OBJ == jo
+               || CycleDetectionStrategy.IGNORE_PROPERTY_ARR == jo ){
+            // do nothing
+         }else{
+            this.properties.put( key, jo );
+         }
       }
 
       return this;
