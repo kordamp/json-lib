@@ -8,6 +8,24 @@
    </properties>
    <body>
 
+
+      <release
+         version="2.2.2-SNAPSHOT"
+         date="N/A"
+         desc="Development version">
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1913932">
+            Interface Fields Support
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add">
+            Added JsonSlurper
+         </action>
+      </release>
+
       <release
          version="2.2.1"
          date="2008-02-08"

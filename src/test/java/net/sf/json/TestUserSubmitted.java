@@ -33,6 +33,7 @@ import net.sf.json.sample.BeanB1763699;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.DateBean;
 import net.sf.json.sample.IdBean;
+import net.sf.json.sample.InterfaceBean;
 import net.sf.json.sample.JSONTestBean;
 import net.sf.json.sample.MappedBean;
 import net.sf.json.sample.Media;
@@ -205,16 +206,15 @@ public class TestUserSubmitted extends TestCase {
    }
 
    public void testBug_1769578_array_conversion() {
-      JSONObject jsonObject = JSONObject.fromObject( "{'media':[{'title':'Giggles'},{'title':'Dreamland?'}]}" );
+      JSONObject jsonObject = JSONObject
+            .fromObject( "{'media':[{'title':'Giggles'},{'title':'Dreamland?'}]}" );
       Map classMap = new HashMap();
       classMap.put( "media", MediaBean.class );
       MediaListBean bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class,
             classMap );
       assertNotNull( bean );
       assertNotNull( bean.getMedia() );
-      assertTrue( bean.getMedia()
-            .getClass()
-            .isArray() );
+      assertTrue( bean.getMedia().getClass().isArray() );
       Object[] media = (Object[]) bean.getMedia();
       assertEquals( 2, media.length );
       Object mediaItem1 = media[0];
@@ -224,11 +224,8 @@ public class TestUserSubmitted extends TestCase {
 
    public void testBug_1812682() {
       int[] numbers = new int[] { 1, 2, 3, 4, 5 };
-      JSONObject json = new JSONObject().element( "bytes", numbers )
-            .element( "shorts", numbers )
-            .element( "ints", numbers )
-            .element( "longs", numbers )
-            .element( "floats", numbers )
+      JSONObject json = new JSONObject().element( "bytes", numbers ).element( "shorts", numbers )
+            .element( "ints", numbers ).element( "longs", numbers ).element( "floats", numbers )
             .element( "doubles", numbers );
       JsonConfig jsonConfig = new JsonConfig();
       jsonConfig.setRootClass( NumberArrayBean.class );
@@ -241,8 +238,7 @@ public class TestUserSubmitted extends TestCase {
       list.add( "1" );
       list.add( "2" );
       list.add( "3" );
-      JSONObject jsonObject = new JSONObject().element( "name", "JSON" )
-            .element( "list", list );
+      JSONObject jsonObject = new JSONObject().element( "name", "JSON" ).element( "list", list );
       JsonConfig jsonConfig = new JsonConfig();
       jsonConfig.setRootClass( MappedBean.class );
       MappedBean bean = (MappedBean) JSONObject.toBean( jsonObject, jsonConfig );
@@ -278,8 +274,7 @@ public class TestUserSubmitted extends TestCase {
       bean.setOarray( new String[] { "hi", "bye" } );
       JSONObject jsonObject = JSONObject.fromObject( bean, jsonConfig );
       assertFalse( jsonObject.isNullObject() );
-      assertFalse( jsonObject.getJSONArray( "oarray" )
-            .isEmpty() );
+      assertFalse( jsonObject.getJSONArray( "oarray" ).isEmpty() );
    }
 
    public void testConstructor_Object_EnclosedNullArray() {
@@ -288,8 +283,7 @@ public class TestUserSubmitted extends TestCase {
       bean.setOarray( null );
       JSONObject jsonObject = JSONObject.fromObject( bean, jsonConfig );
       assertFalse( jsonObject.isNullObject() );
-      assertTrue( jsonObject.getJSONArray( "oarray" )
-            .isEmpty() );
+      assertTrue( jsonObject.getJSONArray( "oarray" ).isEmpty() );
    }
 
    public void testConstructorAndToBean_Object_RoundTrip_EnclosedNullArray() {
@@ -316,7 +310,8 @@ public class TestUserSubmitted extends TestCase {
    }
 
    public void testFR_1768960_array_conversion() { // 2 items
-      JSONObject jsonObject = JSONObject.fromObject( "{'media2':[{'title':'Giggles'},{'title':'Dreamland?'}]}" );
+      JSONObject jsonObject = JSONObject
+            .fromObject( "{'media2':[{'title':'Giggles'},{'title':'Dreamland?'}]}" );
       Map classMap = new HashMap();
       classMap.put( "media2", MediaBean.class );
       MediaListBean bean = (MediaListBean) JSONObject.toBean( jsonObject, MediaListBean.class,
@@ -372,13 +367,10 @@ public class TestUserSubmitted extends TestCase {
    }
 
    public void testFR_1858073_preserveInsertionOrder() {
-      JSONObject jsonObject = new JSONObject().element( "one", "one" )
-            .element( "two", "two" )
+      JSONObject jsonObject = new JSONObject().element( "one", "one" ).element( "two", "two" )
             .element( "three", "three" );
       JSONArray actual = jsonObject.names();
-      JSONArray expected = new JSONArray().element( "one" )
-            .element( "two" )
-            .element( "three" );
+      JSONArray expected = new JSONArray().element( "one" ).element( "two" ).element( "three" );
       Assertions.assertEquals( expected, actual );
    }
 
@@ -447,7 +439,8 @@ public class TestUserSubmitted extends TestCase {
    }
 
    public void testHandleJettisonSingleElementArray3() {
-      JSONObject jsonObject = JSONObject.fromObject( "{'player':{'mediaList':{'media':{'title':'Giggles'}}}}" );
+      JSONObject jsonObject = JSONObject
+            .fromObject( "{'player':{'mediaList':{'media':{'title':'Giggles'}}}}" );
       Map classMap = new HashMap();
       classMap.put( "media", Media.class );
       classMap.put( "mediaList", MediaList.class );
@@ -500,11 +493,9 @@ public class TestUserSubmitted extends TestCase {
       idBean = (IdBean) JSONObject.toBean( jsonObject, IdBean.class );
       assertNotNull( idBean );
       assertNotNull( idBean.getId() );
-      assertEquals( 0L, idBean.getId()
-            .getValue() );
+      assertEquals( 0L, idBean.getId().getValue() );
 
-      JSONUtils.getMorpherRegistry()
-            .registerMorpher( new IdBean.IdMorpher(), true );
+      JSONUtils.getMorpherRegistry().registerMorpher( new IdBean.IdMorpher(), true );
       jsonObject = JSONObject.fromObject( "{'id':1}" );
       idBean = (IdBean) JSONObject.toBean( jsonObject, IdBean.class );
       assertNotNull( idBean );
@@ -526,8 +517,7 @@ public class TestUserSubmitted extends TestCase {
       bean.setDate( date );
       JSONObject jsonObject = JSONObject.fromObject( bean );
 
-      JSONUtils.getMorpherRegistry()
-            .registerMorpher( new MapToDateMorpher() );
+      JSONUtils.getMorpherRegistry().registerMorpher( new MapToDateMorpher() );
 
       JsonConfig jsonConfig = new JsonConfig();
       jsonConfig.setRootClass( DateBean.class );
@@ -541,6 +531,25 @@ public class TestUserSubmitted extends TestCase {
       assertEquals( c.get( Calendar.MINUTE ), d.get( Calendar.MINUTE ) );
       assertEquals( c.get( Calendar.SECOND ), d.get( Calendar.SECOND ) );
       assertEquals( c.get( Calendar.MILLISECOND ), d.get( Calendar.MILLISECOND ) );
+   }
+
+   public void testToBeanWithInterfaceField() {
+      JSONObject jsonObject = JSONObject.fromObject( "{runnable:{}}" );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( InterfaceBean.class );
+      Map classMap = new HashMap();
+      classMap.put( "runnable", RunnableImpl.class );
+      jsonConfig.setClassMap( classMap );
+      InterfaceBean bean = (InterfaceBean) JSONObject.toBean( jsonObject, jsonConfig );
+      assertNotNull( bean );
+      assertNotNull( bean.getRunnable() );
+      assertTrue( bean.getRunnable() instanceof RunnableImpl );
+   }
+
+   public static class RunnableImpl implements Runnable {
+      public void run() {
+
+      }
    }
 
    protected void setUp() throws Exception {

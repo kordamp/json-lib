@@ -1253,7 +1253,7 @@ public class TestJSONObject extends TestCase {
       setBean.addAttribute( beanA2 );
 
       JSONObject jsonObject = JSONObject.fromObject( setBean );
-      /*SetBean setBean2 = (SetBean)*/ JSONObject.toBean( jsonObject, SetBean.class );
+      //SetBean setBean2 = (SetBean) JSONObject.toBean( jsonObject, SetBean.class );
       //assertEquals( setBean, setBean2 );
    }
 
