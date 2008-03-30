@@ -409,9 +409,12 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                               setProperty( bean, key, toBean( (JSONObject) value, jsc ), jsonConfig );
                            }
                         }else{
-                           if( targetType == Object.class ){
+                           if( targetType == Object.class || targetType.isInterface() ) {
+                              Class targetTypeCopy = targetType;
                               targetType = findTargetClass( key, classMap );
                               targetType = targetType == null ? findTargetClass( name, classMap )
+                                    : targetType;
+                              targetType = targetType == null && targetTypeCopy.isInterface() ? targetTypeCopy
                                     : targetType;
                            }
                            JsonConfig jsc = jsonConfig.copy();

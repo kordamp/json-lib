@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-package net.sf.json.groovy
-
-import junit.framework.TestSuite
+package net.sf.json.sample;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-class AllTests extends GroovyTestCase {
-   public static TestSuite suite() throws Exception {
-      TestSuite suite = new TestSuite()
-      suite.setName( "groovy" )
+public class InterfaceBean {
+   private Runnable runnable;
 
-      suite.addTest( new TestSuite( TestJsonGroovyBuilder ) )
-      suite.addTest( new TestSuite( TestJSONObjectGroovy ) )
-      suite.addTest( new TestSuite( TestJSONArrayGroovy ) )
-      suite.addTest( new TestSuite( TestMetaClasses ) )
-      suite.addTest( new TestSuite( TestJsonSlurper ) )
+   public Runnable getRunnable() {
+      return runnable;
+   }
 
-      return suite
+   public void setRunnable( Runnable runnable ) {
+      this.runnable = runnable;
    }
 }
