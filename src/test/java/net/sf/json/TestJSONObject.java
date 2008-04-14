@@ -34,6 +34,7 @@ import net.sf.ezmorph.bean.MorphDynaClass;
 import net.sf.ezmorph.test.ArrayAssertions;
 import net.sf.json.processors.DefaultValueProcessor;
 import net.sf.json.processors.DefaultValueProcessorMatcher;
+import net.sf.json.processors.PropertyNameProcessor;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;
@@ -1486,6 +1487,18 @@ public class TestJSONObject extends TestCase {
             .get( "key" ) );
    }
 
+   public void testToBeanWithPropertyNameProcessor(){
+      String json = "{bool:false}";
+      JSONObject jsonObject = JSONObject.fromObject( json );
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.registerPropertyNameProcessor( BeanA.class, new SwapPropertyNameProcessor() );
+      jsonConfig.setRootClass( BeanA.class );
+      BeanA bean = (BeanA) JSONObject.toBean( jsonObject, jsonConfig );
+      assertNotNull( bean );
+      assertTrue( bean.isBool() );
+      assertEquals( "false", bean.getString() );
+   }
+   
    public void testToJSONArray() {
       String json = "{bool:true,integer:1,string:\"json\"}";
       JSONArray names = JSONArray.fromObject( "['string','integer','bool']" );
@@ -1561,6 +1574,15 @@ public class TestJSONObject extends TestCase {
             return true;
          }
          return false;
+      }
+   }
+   
+   public static class SwapPropertyNameProcessor implements PropertyNameProcessor {
+      public String processPropertyName( Class beanClass, String name ) {
+         if( name.equals("bool")){
+            return "string";
+         }
+         return name;
       }
    }
 }

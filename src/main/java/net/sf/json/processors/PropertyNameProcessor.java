@@ -16,23 +16,19 @@
 
 package net.sf.json.processors;
 
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
 
 /**
- * Base interface for custom serialization per Bean.
+ * Base interface for mutating property names of a Bean.
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public interface JsonBeanProcessor {
+public interface PropertyNameProcessor {
    /**
-    * Processes the bean an returns a suitable JSONObject representation.
+    * Processes the property name.
     *
-    * @param bean the input bean
-    * @param jsonConfig the current configuration environment
-    * @return a JSONObject that represents the input bean
-    * @throws JSONException if an error occurs during transformation
+    * @param beanClass the input bean's class
+    * @param name the current property name
+    * @return an updated property name
     */
-   JSONObject processBean( Object bean, JsonConfig jsonConfig );
+   String processPropertyName( Class beanClass, String name );
 }

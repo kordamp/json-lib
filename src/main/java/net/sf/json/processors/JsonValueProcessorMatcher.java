@@ -27,7 +27,7 @@ import java.util.Set;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class JsonValueProcessorMatcher {
-   /** Macthes the target with equals() */
+   /** Matches the target with equals() */
    public static final JsonValueProcessorMatcher DEFAULT = new DefaultJsonValueProcessorMatcher();
 
    /**

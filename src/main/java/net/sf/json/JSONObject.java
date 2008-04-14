@@ -60,6 +60,7 @@ import net.sf.ezmorph.object.IdentityObjectMorpher;
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
+import net.sf.json.processors.PropertyNameProcessor;
 import net.sf.json.regexp.RegexpUtils;
 import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JSONTokener;
@@ -309,6 +310,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          String key = Map.class.isAssignableFrom( beanClass )
                && jsonConfig.isSkipJavaIdentifierTransformationInMapKeys() ? name
                : JSONUtils.convertToJavaIdentifier( name, jsonConfig );
+         PropertyNameProcessor propertyNameProcessor = jsonConfig.findPropertyNameProcessor( beanClass );
+         if( propertyNameProcessor != null ){
+            key = propertyNameProcessor.processPropertyName( beanClass, key );
+         }
          try{
             if( jsonConfig.getPropertySetStrategy() != null
                   || Map.class.isAssignableFrom( beanClass ) ){

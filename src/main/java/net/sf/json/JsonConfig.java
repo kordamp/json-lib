@@ -31,6 +31,8 @@ import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonBeanProcessorMatcher;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonValueProcessorMatcher;
+import net.sf.json.processors.PropertyNameProcessor;
+import net.sf.json.processors.PropertyNameProcessorMatcher;
 import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JavaIdentifierTransformer;
 import net.sf.json.util.JsonEventListener;
@@ -43,7 +45,7 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Utility class that helps configuring the serialization process.
- *
+ * 
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JsonConfig {
@@ -51,13 +53,13 @@ public class JsonConfig {
    public static final JsonBeanProcessorMatcher DEFAULT_JSON_BEAN_PROCESSOR_MATCHER = JsonBeanProcessorMatcher.DEFAULT;
    public static final JsonValueProcessorMatcher DEFAULT_JSON_VALUE_PROCESSOR_MATCHER = JsonValueProcessorMatcher.DEFAULT;
    public static final NewBeanInstanceStrategy DEFAULT_NEW_BEAN_INSTANCE_STRATEGY = NewBeanInstanceStrategy.DEFAULT;
+   public static final PropertyNameProcessorMatcher DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER = PropertyNameProcessorMatcher.DEFAULT;
    public static final int MODE_LIST = 1;
    public static final int MODE_OBJECT_ARRAY = 2;
    public static final int MODE_SET = 2;
    private static final Class DEFAULT_COLLECTION_TYPE = List.class;
    private static final CycleDetectionStrategy DEFAULT_CYCLE_DETECTION_STRATEGY = CycleDetectionStrategy.STRICT;
-   private static final String[] DEFAULT_EXCLUDES = new String[] { "class", "declaringClass",
-         "metaClass" };
+   private static final String[] DEFAULT_EXCLUDES = new String[] { "class", "declaringClass", "metaClass" };
    private static final JavaIdentifierTransformer DEFAULT_JAVA_IDENTIFIER_TRANSFORMER = JavaIdentifierTransformer.NOOP;
    private static final DefaultValueProcessor DEFAULT_VALUE_PROCESSOR = new DefaultDefaultValueProcessor();
    private static final String[] EMPTY_EXCLUDES = new String[0];
@@ -65,6 +67,7 @@ public class JsonConfig {
    /** Array conversion mode */
    private int arrayMode = MODE_LIST;
    private MultiKeyMap beanKeyMap = new MultiKeyMap();
+   private Map beanProcessorMap = new HashMap();
    private MultiKeyMap beanTypeMap = new MultiKeyMap();
    /** Map of attribute/class */
    private Map classMap;
@@ -87,7 +90,8 @@ public class JsonConfig {
    private JsonValueProcessorMatcher jsonValueProcessorMatcher = DEFAULT_JSON_VALUE_PROCESSOR_MATCHER;
    private Map keyMap = new HashMap();
    private NewBeanInstanceStrategy newBeanInstanceStrategy = DEFAULT_NEW_BEAN_INSTANCE_STRATEGY;
-   private Map processorMap = new HashMap();
+   private Map propertyNameProcessorMap = new HashMap();
+   private PropertyNameProcessorMatcher propertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
    private PropertySetStrategy propertySetStrategy;
    /** Root class used when converting to an specific bean */
    private Class rootClass;
@@ -100,16 +104,16 @@ public class JsonConfig {
 
    /**
     * Registers a listener for Json events.<br>
-    * The events will be triggered only when using the static builders and if
-    * event triggering is enabled.
-    *
+    * The events will be triggered only when using the static builders and if event triggering is
+    * enabled.
+    * 
     * @see #enableEventTriggering
     * @see #disableEventTriggering
     * @see #removeJsonEventListener(JsonEventListener)
     * @param listener a listener for events
     */
    public synchronized void addJsonEventListener( JsonEventListener listener ) {
-      if( !eventListeners.contains( listener ) ){
+      if( !eventListeners.contains( listener ) ) {
          eventListeners.add( listener );
       }
    }
@@ -118,7 +122,7 @@ public class JsonConfig {
     * Removes all registered JsonBeanProcessors.
     */
    public void clearJsonBeanProcessors() {
-      processorMap.clear();
+      beanProcessorMap.clear();
    }
 
    /**
@@ -138,19 +142,26 @@ public class JsonConfig {
       typeMap.clear();
    }
 
+   /**
+    * Removes all registered PropertyNameProcessors.
+    */
+   public void clearPropertyNameProcessors() {
+      propertyNameProcessorMap.clear();
+   }
+
    public JsonConfig copy() {
       JsonConfig jsc = new JsonConfig();
       jsc.beanKeyMap.putAll( beanKeyMap );
       jsc.beanTypeMap.putAll( beanTypeMap );
       jsc.classMap = new HashMap();
-      if( classMap != null ){
+      if( classMap != null ) {
          jsc.classMap.putAll( classMap );
       }
       jsc.cycleDetectionStrategy = cycleDetectionStrategy;
-      if( eventListeners != null ){
+      if( eventListeners != null ) {
          jsc.eventListeners.addAll( eventListeners );
       }
-      if( excludes != null ){
+      if( excludes != null ) {
          jsc.excludes = new String[excludes.length];
          System.arraycopy( excludes, 0, jsc.excludes, 0, excludes.length );
       }
@@ -160,7 +171,7 @@ public class JsonConfig {
       jsc.ignoreTransientFields = ignoreTransientFields;
       jsc.javaIdentifierTransformer = javaIdentifierTransformer;
       jsc.keyMap.putAll( keyMap );
-      jsc.processorMap.putAll( processorMap );
+      jsc.beanProcessorMap.putAll( beanProcessorMap );
       jsc.rootClass = rootClass;
       jsc.skipJavaIdentifierTransformationInMapKeys = skipJavaIdentifierTransformationInMapKeys;
       jsc.triggerEvents = triggerEvents;
@@ -176,6 +187,8 @@ public class JsonConfig {
       jsc.collectionType = collectionType;
       jsc.enclosedType = enclosedType;
       jsc.jsonValueProcessorMatcher = jsonValueProcessorMatcher;
+      jsc.propertyNameProcessorMatcher = propertyNameProcessorMatcher;
+      jsc.propertyNameProcessorMap.putAll( propertyNameProcessorMap );
       return jsc;
    }
 
@@ -197,14 +210,16 @@ public class JsonConfig {
     * Finds a DefaultValueProcessor registered to the target class.<br>
     * Returns null if none is registered. <br>
     * Used when transforming from Java to Json.
-    *
+    * 
     * @param target a class used for searching a DefaultValueProcessor.
     */
    public DefaultValueProcessor findDefaultValueProcessor( Class target ) {
-      Object key = defaultValueProcessorMatcher.getMatch( target, defaultValueMap.keySet() );
-      DefaultValueProcessor processor = (DefaultValueProcessor) defaultValueMap.get( key );
-      if( processor != null ){
-         return processor;
+      if( !defaultValueMap.isEmpty() ) {
+         Object key = defaultValueProcessorMatcher.getMatch( target, defaultValueMap.keySet() );
+         DefaultValueProcessor processor = (DefaultValueProcessor) defaultValueMap.get( key );
+         if( processor != null ) {
+            return processor;
+         }
       }
       return DEFAULT_VALUE_PROCESSOR;
    }
@@ -213,30 +228,30 @@ public class JsonConfig {
     * Finds a JsonBeanProcessor registered to the target class.<br>
     * Returns null if none is registered. <br>
     * Used when transforming from Java to Json.
-    *
+    * 
     * @param target a class used for searching a JsonBeanProcessor.
     */
    public JsonBeanProcessor findJsonBeanProcessor( Class target ) {
-      Object key = jsonBeanProcessorMatcher.getMatch( target, processorMap.keySet() );
-      return (JsonBeanProcessor) processorMap.get( key );
+      if( !beanProcessorMap.isEmpty() ) {
+         Object key = jsonBeanProcessorMatcher.getMatch( target, beanProcessorMap.keySet() );
+         return (JsonBeanProcessor) beanProcessorMap.get( key );
+      }
+      return null;
    }
 
    /**
     * Finds a JsonValueProcessor registered to the target type.<br>
     * Returns null if none is registered. <br>
-    * Used when tramsforming from Java to Json.
-    *
+    * Used when transforming from Java to Json.
+    * 
     * @param propertyType a class used for searching a JsonValueProcessor.
     */
    public JsonValueProcessor findJsonValueProcessor( Class propertyType ) {
-      JsonValueProcessor jsonValueProcessor = null;
+      if( !typeMap.isEmpty() ) {
+         Object key = jsonValueProcessorMatcher.getMatch( propertyType, typeMap.keySet() );
+         return (JsonValueProcessor) typeMap.get( key );
 
-      Object key = jsonValueProcessorMatcher.getMatch( propertyType, typeMap.keySet() );
-      jsonValueProcessor = (JsonValueProcessor) typeMap.get( key );
-      if( jsonValueProcessor != null ){
-         return jsonValueProcessor;
       }
-
       return null;
    }
 
@@ -250,8 +265,8 @@ public class JsonConfig {
     * <li>type</li>
     * </ol>
     * Returns null if none is registered. <br>
-    * Used when tramsforming from Java to Json.
-    *
+    * Used when transforming from Java to Json.
+    * 
     * @param beanClass the class to which the property may belong
     * @param propertyType the type of the property
     * @param key the name of the property which may belong to the target class
@@ -259,23 +274,23 @@ public class JsonConfig {
    public JsonValueProcessor findJsonValueProcessor( Class beanClass, Class propertyType, String key ) {
       JsonValueProcessor jsonValueProcessor = null;
       jsonValueProcessor = (JsonValueProcessor) beanKeyMap.get( beanClass, key );
-      if( jsonValueProcessor != null ){
+      if( jsonValueProcessor != null ) {
          return jsonValueProcessor;
       }
 
       jsonValueProcessor = (JsonValueProcessor) beanTypeMap.get( beanClass, propertyType );
-      if( jsonValueProcessor != null ){
+      if( jsonValueProcessor != null ) {
          return jsonValueProcessor;
       }
 
       jsonValueProcessor = (JsonValueProcessor) keyMap.get( key );
-      if( jsonValueProcessor != null ){
+      if( jsonValueProcessor != null ) {
          return jsonValueProcessor;
       }
 
       Object tkey = jsonValueProcessorMatcher.getMatch( propertyType, typeMap.keySet() );
       jsonValueProcessor = (JsonValueProcessor) typeMap.get( tkey );
-      if( jsonValueProcessor != null ){
+      if( jsonValueProcessor != null ) {
          return jsonValueProcessor;
       }
 
@@ -290,21 +305,21 @@ public class JsonConfig {
     * <li>type</li>
     * </ol>
     * Returns null if none is registered. <br>
-    * Used when tramsforming from Java to Json.
-    *
+    * Used when transforming from Java to Json.
+    * 
     * @param propertyType the type of the property
     * @param key the name of the property which may belong to the target class
     */
    public JsonValueProcessor findJsonValueProcessor( Class propertyType, String key ) {
       JsonValueProcessor jsonValueProcessor = null;
       jsonValueProcessor = (JsonValueProcessor) keyMap.get( key );
-      if( jsonValueProcessor != null ){
+      if( jsonValueProcessor != null ) {
          return jsonValueProcessor;
       }
 
       Object tkey = jsonValueProcessorMatcher.getMatch( propertyType, typeMap.keySet() );
       jsonValueProcessor = (JsonValueProcessor) typeMap.get( tkey );
-      if( jsonValueProcessor != null ){
+      if( jsonValueProcessor != null ) {
          return jsonValueProcessor;
       }
 
@@ -312,8 +327,24 @@ public class JsonConfig {
    }
 
    /**
+    * Finds a PropertyNameProcessor registered to the target class.<br>
+    * Returns null if none is registered. <br>
+    * Used when transforming from Json to Java.
+    * 
+    * @param propertyType a class used for searching a PropertyNameProcessor.
+    */
+   public PropertyNameProcessor findPropertyNameProcessor( Class beanClass ) {
+      if( !propertyNameProcessorMap.isEmpty() ) {
+         Object key = propertyNameProcessorMatcher.getMatch( beanClass, propertyNameProcessorMap.keySet() );
+         return (PropertyNameProcessor) propertyNameProcessorMap.get( key );
+
+      }
+      return null;
+   }
+
+   /**
     * Returns the current array mode conversion
-    *
+    * 
     * @return MODE_OBJECT_ARRAY, MODE_LIST or MODE_SET
     */
    public int getArrayMode() {
@@ -322,7 +353,7 @@ public class JsonConfig {
 
    /**
     * Returns the current attribute/class Map
-    *
+    * 
     * @return a Map of classes, every key identifies a property or a regexp
     */
    public Map getClassMap() {
@@ -331,7 +362,7 @@ public class JsonConfig {
 
    /**
     * Returns the current collection type used for collection transformations.
-    *
+    * 
     * @return the target collection class for conversion
     */
    public Class getCollectionType() {
@@ -356,7 +387,7 @@ public class JsonConfig {
 
    /**
     * Returns the current enclosed type for generic collection transformations.
-    *
+    * 
     * @return the target type for conversion
     */
    public Class getEnclosedType() {
@@ -365,7 +396,7 @@ public class JsonConfig {
 
    /**
     * Returns the configured properties for exclusion. <br>
-    * Used when tramsforming from Java to Json.
+    * Used when transforming from Java to Json.
     */
    public String[] getExcludes() {
       return excludes;
@@ -422,16 +453,16 @@ public class JsonConfig {
     */
    public Collection getMergedExcludes() {
       Collection exclusions = new HashSet();
-      for( int i = 0; i < excludes.length; i++ ){
+      for( int i = 0; i < excludes.length; i++ ) {
          String exclusion = excludes[i];
-         if( !StringUtils.isBlank( excludes[i] ) ){
+         if( !StringUtils.isBlank( excludes[i] ) ) {
             exclusions.add( exclusion.trim() );
          }
       }
 
-      if( !ignoreDefaultExcludes ){
-         for( int i = 0; i < DEFAULT_EXCLUDES.length; i++ ){
-            if( !exclusions.contains( DEFAULT_EXCLUDES[i] ) ){
+      if( !ignoreDefaultExcludes ) {
+         for( int i = 0; i < DEFAULT_EXCLUDES.length; i++ ) {
+            if( !exclusions.contains( DEFAULT_EXCLUDES[i] ) ) {
                exclusions.add( DEFAULT_EXCLUDES[i] );
             }
          }
@@ -449,6 +480,14 @@ public class JsonConfig {
    }
 
    /**
+    * Returns the configured PropertyNameProcessorMatcher.<br>
+    * Default value is PropertyNameProcessorMatcher.DEFAULT
+    */
+   public PropertyNameProcessorMatcher getPropertyNameProcessorMatcher() {
+      return propertyNameProcessorMatcher;
+   }
+
+   /**
     * Returns the configured PropertySetStrategy.<br>
     * Default value is PropertySetStrategy.DEFAULT
     */
@@ -458,7 +497,7 @@ public class JsonConfig {
 
    /**
     * Returns the current root Class.
-    *
+    * 
     * @return the target class for conversion
     */
    public Class getRootClass() {
@@ -474,20 +513,18 @@ public class JsonConfig {
    }
 
    /**
-    * Returns true if this jettison convention will be handled when converting
-    * to Java.<br>
-    * Jettison assumes that "" (empty string) can be assigned to empty elements
-    * (objects), which clearly violates the JSON spec.
+    * Returns true if this jettison convention will be handled when converting to Java.<br>
+    * Jettison assumes that "" (empty string) can be assigned to empty elements (objects), which
+    * clearly violates the JSON spec.
     */
    public boolean isHandleJettisonEmptyElement() {
       return handleJettisonEmptyElement;
    }
 
    /**
-    * Returns true if this jettison convention will be handled when converting
-    * to Java.<br>
-    * Jettison states the following JSON {'media':{'title':'hello'}} can be set
-    * as a single element JSONArray (media is the array).
+    * Returns true if this jettison convention will be handled when converting to Java.<br>
+    * Jettison states the following JSON {'media':{'title':'hello'}} can be set as a single element
+    * JSONArray (media is the array).
     */
    public boolean isHandleJettisonSingleElementArray() {
       return handleJettisonSingleElementArray;
@@ -527,84 +564,93 @@ public class JsonConfig {
 
    /**
     * Registers a DefaultValueProcessor.<br>
-    *
+    * 
     * @param target the class to use as key
     * @param defaultValueProcessor the processor to register
     */
-   public void registerDefaultValueProcessor( Class target,
-         DefaultValueProcessor defaultValueProcessor ) {
-      if( target != null && defaultValueProcessor != null ){
+   public void registerDefaultValueProcessor( Class target, DefaultValueProcessor defaultValueProcessor ) {
+      if( target != null && defaultValueProcessor != null ) {
          defaultValueMap.put( target, defaultValueProcessor );
       }
    }
 
    /**
     * Registers a JsonBeanProcessor.<br>
-    *
+    * 
     * @param target the class to use as key
     * @param jsonBeanProcessor the processor to register
     */
    public void registerJsonBeanProcessor( Class target, JsonBeanProcessor jsonBeanProcessor ) {
-      if( target != null && jsonBeanProcessor != null ){
-         processorMap.put( target, jsonBeanProcessor );
+      if( target != null && jsonBeanProcessor != null ) {
+         beanProcessorMap.put( target, jsonBeanProcessor );
       }
    }
 
    /**
     * Registers a JsonValueProcessor.<br>
-    *
+    * 
     * @param beanClass the class to use as key
     * @param propertyType the property type to use as key
     * @param jsonValueProcessor the processor to register
     */
-   public void registerJsonValueProcessor( Class beanClass, Class propertyType,
-         JsonValueProcessor jsonValueProcessor ) {
-      if( beanClass != null && propertyType != null && jsonValueProcessor != null ){
+   public void registerJsonValueProcessor( Class beanClass, Class propertyType, JsonValueProcessor jsonValueProcessor ) {
+      if( beanClass != null && propertyType != null && jsonValueProcessor != null ) {
          beanTypeMap.put( beanClass, propertyType, jsonValueProcessor );
       }
    }
 
    /**
     * Registers a JsonValueProcessor.<br>
-    *
+    * 
     * @param propertyType the property type to use as key
     * @param jsonValueProcessor the processor to register
     */
    public void registerJsonValueProcessor( Class propertyType, JsonValueProcessor jsonValueProcessor ) {
-      if( propertyType != null && jsonValueProcessor != null ){
+      if( propertyType != null && jsonValueProcessor != null ) {
          typeMap.put( propertyType, jsonValueProcessor );
       }
    }
 
    /**
     * Registers a JsonValueProcessor.<br>
-    *
+    * 
     * @param beanClass the class to use as key
     * @param key the property name to use as key
     * @param jsonValueProcessor the processor to register
     */
-   public void registerJsonValueProcessor( Class beanClass, String key,
-         JsonValueProcessor jsonValueProcessor ) {
-      if( beanClass != null && key != null && jsonValueProcessor != null ){
+   public void registerJsonValueProcessor( Class beanClass, String key, JsonValueProcessor jsonValueProcessor ) {
+      if( beanClass != null && key != null && jsonValueProcessor != null ) {
          beanKeyMap.put( beanClass, key, jsonValueProcessor );
       }
    }
 
    /**
     * Registers a JsonValueProcessor.<br>
-    *
+    * 
     * @param key the property name to use as key
     * @param jsonValueProcessor the processor to register
     */
    public void registerJsonValueProcessor( String key, JsonValueProcessor jsonValueProcessor ) {
-      if( key != null && jsonValueProcessor != null ){
+      if( key != null && jsonValueProcessor != null ) {
          keyMap.put( key, jsonValueProcessor );
       }
    }
 
    /**
+    * Registers a PropertyNameProcessor.<br>
+    * 
+    * @param target the class to use as key
+    * @param propertyNameProcessor the processor to register
+    */
+   public void registerPropertyNameProcessor( Class target, PropertyNameProcessor propertyNameProcessor ) {
+      if( target != null && propertyNameProcessor != null ) {
+         propertyNameProcessorMap.put( target, propertyNameProcessor );
+      }
+   }
+
+   /**
     * Removes a listener for Json events.<br>
-    *
+    * 
     * @see #addJsonEventListener(JsonEventListener)
     * @param listener a listener for events
     */
@@ -643,22 +689,24 @@ public class JsonConfig {
       collectionType = DEFAULT_COLLECTION_TYPE;
       enclosedType = null;
       jsonValueProcessorMatcher = DEFAULT_JSON_VALUE_PROCESSOR_MATCHER;
+      propertyNameProcessorMap.clear();
+      propertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
+      beanProcessorMap.clear();
    }
 
    /**
     * Sets the current array mode for conversion.<br>
-    * If the value is not MODE_LIST, MODE_OBJECT_ARRAY nor MODE_SET, then
-    * MODE_LIST will be used.
-    *
+    * If the value is not MODE_LIST, MODE_OBJECT_ARRAY nor MODE_SET, then MODE_LIST will be used.
+    * 
     * @param arrayMode array mode for conversion
     */
    public void setArrayMode( int arrayMode ) {
-      if( arrayMode == MODE_OBJECT_ARRAY ){
+      if( arrayMode == MODE_OBJECT_ARRAY ) {
          this.arrayMode = arrayMode;
-      }else if( arrayMode == MODE_SET ){
+      } else if( arrayMode == MODE_SET ) {
          this.arrayMode = arrayMode;
          this.collectionType = Set.class;
-      }else{
+      } else {
          this.arrayMode = MODE_LIST;
          this.enclosedType = DEFAULT_COLLECTION_TYPE;
       }
@@ -666,9 +714,8 @@ public class JsonConfig {
 
    /**
     * Sets the current attribute/Class Map
-    *
-    * @param classMap a Map of classes, every key identifies a property or a
-    *        regexp
+    * 
+    * @param classMap a Map of classes, every key identifies a property or a regexp
     */
    public void setClassMap( Map classMap ) {
       this.classMap = classMap;
@@ -676,17 +723,16 @@ public class JsonConfig {
 
    /**
     * Sets the current collection type used for collection transformations.
-    *
+    * 
     * @param collectionType the target collection class for conversion
     */
    public void setCollectionType( Class collectionType ) {
-      if( collectionType != null ){
-         if( !Collection.class.isAssignableFrom( collectionType ) ){
-            throw new JSONException( "The configured collectionType is not a Collection: "
-                  + collectionType.getName() );
+      if( collectionType != null ) {
+         if( !Collection.class.isAssignableFrom( collectionType ) ) {
+            throw new JSONException( "The configured collectionType is not a Collection: " + collectionType.getName() );
          }
          this.collectionType = collectionType;
-      }else{
+      } else {
          collectionType = DEFAULT_COLLECTION_TYPE;
       }
    }
@@ -704,15 +750,14 @@ public class JsonConfig {
     * Sets a DefaultValueProcessorMatcher to use.<br>
     * Will set default value (DefaultValueProcessorMatcher.DEFAULT) if null.
     */
-   public void setDefaultValueProcessorMatcher(
-         DefaultValueProcessorMatcher defaultValueProcessorMatcher ) {
+   public void setDefaultValueProcessorMatcher( DefaultValueProcessorMatcher defaultValueProcessorMatcher ) {
       this.defaultValueProcessorMatcher = defaultValueProcessorMatcher == null ? DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER
             : defaultValueProcessorMatcher;
    }
 
    /**
     * Sets the current enclosed type for generic collection transformations.
-    *
+    * 
     * @param enclosedType the target type for conversion
     */
    public void setEnclosedType( Class enclosedType ) {
@@ -728,19 +773,17 @@ public class JsonConfig {
    }
 
    /**
-    * Activate/Deactive handling this jettison convention when converting to
-    * Java.<br>
-    * Jettison states that "" (empty string) can be assigned to empty elements
-    * (objects), which clearly violates the JSON spec.
+    * Activate/Deactivate handling this jettison convention when converting to Java.<br>
+    * Jettison states that "" (empty string) can be assigned to empty elements (objects), which
+    * clearly violates the JSON spec.
     */
    public void setHandleJettisonEmptyElement( boolean handleJettisonEmptyElement ) {
       this.handleJettisonEmptyElement = handleJettisonEmptyElement;
    }
 
    /**
-    * Activate/Deactive handling this jettison convention when converting to
-    * Java.<br> * Jettison states the following JSON
-    * {'media':{'title':'hello'}} can be set as a single element JSONArray
+    * Activate/Deactivate handling this jettison convention when converting to Java.<br> * Jettison
+    * states the following JSON {'media':{'title':'hello'}} can be set as a single element JSONArray
     * (media is the array).
     */
    public void setHandleJettisonSingleElementArray( boolean handleJettisonSingleElementArray ) {
@@ -748,7 +791,7 @@ public class JsonConfig {
    }
 
    /**
-    * Sets if default ecludes would be skipped when building.<br>
+    * Sets if default excludes would be skipped when building.<br>
     */
    public void setIgnoreDefaultExcludes( boolean ignoreDefaultExcludes ) {
       this.ignoreDefaultExcludes = ignoreDefaultExcludes;
@@ -779,7 +822,7 @@ public class JsonConfig {
 
    /**
     * Sets a property filter used when serializing to Java.
-    *
+    * 
     * @param javaPropertyFilter the property filter
     */
    public void setJavaPropertyFilter( PropertyFilter javaPropertyFilter ) {
@@ -797,7 +840,7 @@ public class JsonConfig {
 
    /**
     * Sets a property filter used when serializing to JSON.
-    *
+    * 
     * @param jsonPropertyFilter the property filter
     */
    public void setJsonPropertyFilter( PropertyFilter jsonPropertyFilter ) {
@@ -823,6 +866,15 @@ public class JsonConfig {
    }
 
    /**
+    * Sets a PropertyNameProcessorMatcher to use.<br>
+    * Will set default value (PropertyNameProcessorMatcher.DEFAULT) if null.
+    */
+   public void setPropertyNameProcessorMatcher( PropertyNameProcessorMatcher propertyNameProcessorMatcher ) {
+      this.propertyNameProcessorMatcher = propertyNameProcessorMatcher == null ? DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER
+            : propertyNameProcessorMatcher;
+   }
+
+   /**
     * Sets a PropertySetStrategy to use.<br>
     * Will set default value (PropertySetStrategy.DEFAULT) if null.
     */
@@ -832,7 +884,7 @@ public class JsonConfig {
 
    /**
     * Sets the current root Class
-    *
+    * 
     * @param rootClass the target class for conversion
     */
    public void setRootClass( Class rootClass ) {
@@ -842,76 +894,86 @@ public class JsonConfig {
    /**
     * Sets if transient fields of beans would be skipped when building.<br>
     */
-   public void setSkipJavaIdentifierTransformationInMapKeys(
-         boolean skipJavaIdentifierTransformationInMapKeys ) {
+   public void setSkipJavaIdentifierTransformationInMapKeys( boolean skipJavaIdentifierTransformationInMapKeys ) {
       this.skipJavaIdentifierTransformationInMapKeys = skipJavaIdentifierTransformationInMapKeys;
    }
 
    /**
     * Removes a DefaultValueProcessor.
-    *
+    * 
     * @param target a class used for searching a DefaultValueProcessor.
     */
    public void unregisterDefaultValueProcessor( Class target ) {
-      if( target != null ){
+      if( target != null ) {
          defaultValueMap.remove( target );
       }
    }
 
    /**
     * Removes a JsonBeanProcessor.
-    *
+    * 
     * @param target a class used for searching a JsonBeanProcessor.
     */
    public void unregisterJsonBeanProcessor( Class target ) {
-      if( target != null ){
-         processorMap.remove( target );
+      if( target != null ) {
+         beanProcessorMap.remove( target );
       }
    }
 
    /**
     * Removes a JsonValueProcessor.
-    *
+    * 
     * @param propertyType a class used for searching a JsonValueProcessor.
     */
    public void unregisterJsonValueProcessor( Class propertyType ) {
-      if( propertyType != null ){
+      if( propertyType != null ) {
          typeMap.remove( propertyType );
       }
    }
 
    /**
     * Removes a JsonValueProcessor.
-    *
+    * 
     * @param beanClass the class to which the property may belong
     * @param propertyType the type of the property
     */
    public void unregisterJsonValueProcessor( Class beanClass, Class propertyType ) {
-      if( beanClass != null && propertyType != null ){
+      if( beanClass != null && propertyType != null ) {
          beanTypeMap.remove( beanClass, propertyType );
       }
    }
 
    /**
     * Removes a JsonValueProcessor.
-    *
+    * 
     * @param beanClass the class to which the property may belong
     * @param key the name of the property which may belong to the target class
     */
    public void unregisterJsonValueProcessor( Class beanClass, String key ) {
-      if( beanClass != null && key != null ){
+      if( beanClass != null && key != null ) {
          beanKeyMap.remove( beanClass, key );
       }
    }
 
    /**
     * Removes a JsonValueProcessor.
-    *
+    * 
     * @param key the name of the property which may belong to the target class
     */
    public void unregisterJsonValueProcessor( String key ) {
-      if( key != null ){
+      if( key != null ) {
          keyMap.remove( key );
+      }
+   }
+
+   /**
+    * Removes a PropertyNameProcessor.
+    * 
+    * @param target a class used for searching a PropertyNameProcessor.
+    */
+   public void unregisterPropertyNameProcessor( Class target ) {
+      if( target != null ) {
+         propertyNameProcessorMap.remove( target );
       }
    }
 }

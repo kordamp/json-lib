@@ -19,16 +19,16 @@ package net.sf.json.processors;
 import java.util.Set;
 
 /**
- * Base class for finding a matching DefaultValueProcessor.<br>
+ * Base class for finding a matching PropertyNameProcessor.<br>
  * <ul>
  * <li>DEFAULT - matches the target class with equals().</li>
  * </ul>
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public abstract class DefaultValueProcessorMatcher {
+public abstract class PropertyNameProcessorMatcher {
    /** Matches the target with equals() */
-   public static final DefaultValueProcessorMatcher DEFAULT = new DefaultDefaultValueProcessorMatcher();
+   public static final PropertyNameProcessorMatcher DEFAULT = new DefaultPropertyNameProcessorMatcher();
 
    /**
     * Returns the matching class calculated with the target class and the
@@ -39,8 +39,7 @@ public abstract class DefaultValueProcessorMatcher {
     */
    public abstract Object getMatch( Class target, Set set );
 
-   private static final class DefaultDefaultValueProcessorMatcher extends
-         DefaultValueProcessorMatcher {
+   private static final class DefaultPropertyNameProcessorMatcher extends PropertyNameProcessorMatcher {
       public Object getMatch( Class target, Set set ) {
          if( target != null && set != null && set.contains( target ) ){
             return target;

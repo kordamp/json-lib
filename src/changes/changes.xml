@@ -8,11 +8,16 @@
    </properties>
    <body>
 
-
       <release
          version="2.2.2-SNAPSHOT"
          date="N/A"
          desc="Development version">
+         <action
+            dev="Andres Almiray"
+            type="add"
+            issue="1942504">
+            Add a strategy for mutating a bean's property name
+         </action>
          <action
             dev="Andres Almiray"
             type="add"
