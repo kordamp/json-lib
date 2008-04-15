@@ -146,7 +146,17 @@ public class TestUserSubmitted extends TestCase {
       Assertions.assertEquals( json2, json1 );
    }
 
-   /*
+   public void testXMLRoundtrip() {
+      String json = "{\"entries\": [ { \"credits\": \"p1\", \"id\": 1, \"status\": true, \"text\": \"1\" }, { \"credits\": \"p2\", \"id\": 2, \"status\": true, \"text\": \"2\" } ]}";
+      JSONObject json1 = JSONObject.fromObject( json );
+      XMLSerializer xmlSerializer = new XMLSerializer();
+      String xml =  xmlSerializer.write(json1);
+      JSONObject json2 = (JSONObject) xmlSerializer.read( xml );
+      JSONAssert.assertEquals( json1, json2 );
+      assertTrue(json1.getJSONArray( "entries" ).getJSONObject( 0 ).get( "id" ) instanceof Integer );
+      assertTrue(json2.getJSONArray( "entries" ).getJSONObject( 0 ).get( "id" ) instanceof Integer );
+   }
+   
    public void testXMLWithArraySingleElement() {
       String testXML =
                         "    <rate>" +
@@ -163,7 +173,7 @@ public class TestUserSubmitted extends TestCase {
                         "      <totalAmount>219.48</totalAmount>\n" +
                         "    </rate>";
 
-      JSON expected = JSONSerializer.toJSON("{\"rateBreakdown\":{\"rate\":[{\"amount\":\"109.74\",\"date\":{\"month\":\"1\",\"day\":\"15\",\"year\":\"2007\"}}]},\"totalAmount\":\"219.48\"}");
+      JSON expected = JSONSerializer.toJSON("{\"rate\":{\"rateBreakdown\":[{\"amount\":\"109.74\",\"date\":{\"month\":\"1\",\"day\":\"15\",\"year\":\"2007\"}}],\"totalAmount\":\"219.48\"}}");
 
       // rate.rateBreakdown.rate should be a single entry array.
 
@@ -176,8 +186,8 @@ public class TestUserSubmitted extends TestCase {
       XMLSerializer xmlSerializer = new XMLSerializer();
       xmlSerializer.setSkipWhitespace( true );
       xmlSerializer.setArrayName( "rate" );
+      xmlSerializer.setForceTopLevelObject( true );
       JSON jsonElement = xmlSerializer.read( testXML );
       return (JSONObject) jsonElement;
    }
-   */
 }

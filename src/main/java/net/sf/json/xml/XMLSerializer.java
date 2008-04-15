@@ -1200,6 +1200,8 @@ public class XMLSerializer {
       String type = getType( element );
       type = (type == null) ? defaultType : type;
   
+      
+      
       String key = removeNamespacePrefix( element.getQualifiedName() );
       if( hasNamespaces( element ) && !skipNamespaces ){
          setOrAccumulate( jsonObject, key, simplifyValue( jsonObject,
@@ -1208,16 +1210,15 @@ public class XMLSerializer {
       }else if( element.getAttributeCount() > 0 ){
          if( isFunction( element ) ){
             Attribute paramsAttribute = element.getAttribute( addJsonPrefix( "params" ) );
-            String[] params = null;
             String text = element.getValue();
-            params = StringUtils.split( paramsAttribute.getValue(), "," );
+            String[] params = StringUtils.split( paramsAttribute.getValue(), "," );
             setOrAccumulate( jsonObject, key, new JSONFunction( params, text ) );
             return;
-         }else{
+         }/*else{
             setOrAccumulate( jsonObject, key, simplifyValue( jsonObject, processElement( element,
                   type ) ) );
             return;
-         }
+         }*/
       }
 
       boolean classProcessed = false;
