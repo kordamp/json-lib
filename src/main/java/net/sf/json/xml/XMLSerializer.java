@@ -89,6 +89,7 @@ public class XMLSerializer {
    private String elementName;
    /** list of properties to be expanded from child to parent */
    private String[] expandableProperties;
+   private boolean forceTopLevelObject;
    /** flag to be tolerant for incomplete namespace prefixes */
    private boolean namespaceLenient;
    /** Map of namespaces per element */
@@ -111,7 +112,6 @@ public class XMLSerializer {
    private boolean typeHintsCompatibility;
    /** flag for adding JSON types hints as attributes */
    private boolean typeHintsEnabled;
-   private boolean forceTopLevelObject;
 
    /**
     * Creates a new XMLSerializer with default options.<br>
@@ -238,6 +238,10 @@ public class XMLSerializer {
       return rootName;
    }
 
+   public boolean isForceTopLevelObject() {
+      return forceTopLevelObject;
+   }
+
    /**
     * Returns wether this serializer is tolerant to namespaces without URIs or
     * not.
@@ -314,8 +318,12 @@ public class XMLSerializer {
                String key = removeNamespacePrefix( root.getQualifiedName() );
                json = new JSONObject().element( key, json );
             }
-         }else{
+         }else{ 
             json = processObjectElement( root, defaultType );
+            if( forceTopLevelObject ) {
+               String key = removeNamespacePrefix( root.getQualifiedName() );
+               json = new JSONObject().element( key, json );
+            }
          }
       }catch( JSONException jsone ){
          throw jsone;
@@ -436,6 +444,10 @@ public class XMLSerializer {
     */
    public void setExpandableProperties( String[] expandableProperties ) {
       this.expandableProperties = expandableProperties == null ? EMPTY_ARRAY : expandableProperties;
+   }
+
+   public void setForceTopLevelObject( boolean forceTopLevelObject ) {
+      this.forceTopLevelObject = forceTopLevelObject;
    }
 
    /**
@@ -814,6 +826,32 @@ public class XMLSerializer {
             return true;
          }
 
+         int attributeCount = element.getAttributeCount();
+         if( attributeCount > 0 ){
+            int attrs = element.getAttribute( addJsonPrefix( "null" )) == null ? 0 : 1;
+            attrs += element.getAttribute( addJsonPrefix( "class" )) == null ? 0: 1;
+            attrs += element.getAttribute( addJsonPrefix( "type" ))== null ? 0 : 1;
+            switch( attributeCount ){
+               case 1:
+                  if( attrs == 0){
+                     return true;
+                  }
+                  break;
+               case 2:
+                  if( attrs < 2 ){
+                     return true;
+                  }
+                  break;
+               case 3: 
+                  if(  attrs < 3 ){
+                     return true;
+                  }
+                  break;
+               default:
+                  return true;
+            }
+         }
+         
          int childCount = element.getChildCount();
          if( childCount == 1 && element.getChild( 0 ) instanceof Text ){
             return isTopLevel;
@@ -852,8 +890,7 @@ public class XMLSerializer {
    private Object processElement( Element element, String type ) {
       if( isNullObject( element ) ){
          return JSONNull.getInstance();
-      }
-      if( isArray( element, false ) ){
+      }else if( isArray( element, false ) ){
          return processArrayElement( element, type );
       }else if( isObject( element, false ) ){
          return processObjectElement( element, type );
@@ -1029,7 +1066,7 @@ public class XMLSerializer {
             setOrAccumulate( jsonObject, "@xmlns" + prefix, trimSpaceFromValue( uri ) );
          }
       }
-
+     
       // process attributes first
       int attrCount = element.getAttributeCount();
       for( int i = 0; i < attrCount; i++ ){
@@ -1162,7 +1199,7 @@ public class XMLSerializer {
       String clazz = getClass( element );
       String type = getType( element );
       type = (type == null) ? defaultType : type;
-
+  
       String key = removeNamespacePrefix( element.getQualifiedName() );
       if( hasNamespaces( element ) && !skipNamespaces ){
          setOrAccumulate( jsonObject, key, simplifyValue( jsonObject,
@@ -1259,14 +1296,12 @@ public class XMLSerializer {
       }
       return json;
    }
-
    private String trimSpaceFromValue( String value ) {
       if( isTrimSpaces() ){
          return value.trim();
       }
       return value;
    }
-
    private String writeDocument( Document doc, String encoding ) {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       try{
@@ -1286,6 +1321,7 @@ public class XMLSerializer {
       }
       return str;
    }
+
    private static class CustomElement extends Element {
       private static String getName( String name ) {
          int colon = name.indexOf( ':' );
@@ -1318,6 +1354,7 @@ public class XMLSerializer {
          }
       }
    }
+
    private class XomSerializer extends Serializer {
       public XomSerializer( OutputStream out ) {
          super( out );
@@ -1380,13 +1417,5 @@ public class XMLSerializer {
          writeAttributes( element );
          writeNamespaceDeclarations( element );
       }
-   }
-
-   public boolean isForceTopLevelObject() {
-      return forceTopLevelObject;
-   }
-
-   public void setForceTopLevelObject( boolean forceTopLevelObject ) {
-      this.forceTopLevelObject = forceTopLevelObject;
    }
 }
