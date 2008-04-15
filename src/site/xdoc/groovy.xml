@@ -31,6 +31,7 @@
 <li>JSONObject implements java.util.Map and JSONArray implements java.util.List, anything you can do with Maps and List can be done with JSONObject and JSONArray.</li>
 <li>JsonGroovyBuilder behaves like the JsonBuilder found in Grails but it will create a JSONObject/JSONArray instead of writing the built structure into a String.</li>
       </ul>
+      <p><center><table><td valign="middle"><img src="images/icon_warning_sml.gif"/></td><td><strong><font color="#FF0000">CAUTION:</font> Since version 2.2.1 Json-lib will not automatically enhance class through custom metaclasses, you must call GJson.enhanceClasses() before executing the examples shown on this page.</strong></td><td valign="middle"><img src="images/icon_warning_sml.gif"/></td></table></center></p>
       </p>
       </section>
    </body>
