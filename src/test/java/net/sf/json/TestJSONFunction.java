@@ -47,7 +47,13 @@ public class TestJSONFunction extends TestCase {
    }
 
    public void testParse_String() {
-      assertEquals( "function(){ return a; }", JSONFunction.parse( "function(){ return a; }" )
-            .toString() );
+      assertEquals( "function(){ return a; }", JSONFunction.parse( "function(){ return a; }" ).toString() );
+   }
+
+   public void testParse_String_withWhiteSpacechars() {
+      assertEquals( "function(){ return a; }", JSONFunction.parse( "function() { return a; }" ).toString() );
+      assertEquals( "function(){ return a; }", JSONFunction.parse( "function()  { return a; }" ).toString() );
+      assertEquals( "function(){ return a; }", JSONFunction.parse( "function()\n{ return a; }" ).toString() );
+      assertEquals( "function(){ return a; }", JSONFunction.parse( "function()\t{ return a; }" ).toString() );
    }
 }

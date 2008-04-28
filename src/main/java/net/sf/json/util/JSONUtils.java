@@ -58,14 +58,14 @@ public final class JSONUtils {
    private static RegexpMatcher FUNCTION_MACTHER;
    private static RegexpMatcher FUNCTION_PARAMS_MATCHER;
    private static final String FUNCTION_PARAMS_PATTERN = "^function[ ]?\\((.*?)\\)$";
-   private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*\\)[ ]?\\{.*\\}$";
+   private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*\\)[ \n\t]*\\{.*\\}$";
 
    private static final MorpherRegistry morpherRegistry = new MorpherRegistry();
 
    static{
       FUNCTION_HEADER_MATCHER = RegexpUtils.getMatcher( FUNCTION_HEADER_PATTERN );
       FUNCTION_PARAMS_MATCHER = RegexpUtils.getMatcher( FUNCTION_PARAMS_PATTERN );
-      FUNCTION_MACTHER = RegexpUtils.getMatcher( FUNCTION_PATTERN );
+      FUNCTION_MACTHER = RegexpUtils.getMatcher( FUNCTION_PATTERN, true );
 
       // register standard morphers
       MorphUtils.registerStandardMorphers( morpherRegistry );

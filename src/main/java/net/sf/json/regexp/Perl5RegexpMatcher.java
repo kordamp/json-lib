@@ -25,8 +25,7 @@ import org.apache.oro.text.regex.Perl5Matcher;
 
 /**
  * Jakarta-oro RegexpMatcher Implementation.<br>
- * Runs on older JVMs (1.3.1). You must have oro-2.0.8.jar configured in your
- * classpath.
+ * Runs on older JVMs (1.3.1). You must have oro-2.0.8.jar configured in your classpath.
  * 
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
@@ -35,18 +34,25 @@ public class Perl5RegexpMatcher implements RegexpMatcher {
    private Pattern pattern;
 
    public Perl5RegexpMatcher( String pattern ) {
-      try{
-         this.pattern = compiler.compile( pattern, Perl5Compiler.READ_ONLY_MASK );
-      }catch( MalformedPatternException mpe ){
+      this( pattern, false );
+   }
+
+   public Perl5RegexpMatcher( String pattern, boolean multiline ) {
+      try {
+         if( multiline ) {
+            this.pattern = compiler.compile( pattern, Perl5Compiler.READ_ONLY_MASK | Perl5Compiler.MULTILINE_MASK );
+         } else {
+            this.pattern = compiler.compile( pattern, Perl5Compiler.READ_ONLY_MASK );
+         }
+      } catch( MalformedPatternException mpe ) {
          throw new NestableRuntimeException( mpe );
       }
    }
 
    public String getGroupIfMatches( String str, int group ) {
       PatternMatcher matcher = new Perl5Matcher();
-      if( matcher.matches( str, pattern ) ){
-         return matcher.getMatch()
-               .group( 1 );
+      if( matcher.matches( str, pattern ) ) {
+         return matcher.getMatch().group( 1 );
       }
       return "";
    }

@@ -67,8 +67,11 @@ public class JSONFunction implements Serializable {
             if( ch == '}' ){
                i--;
             }
+            if( i == 0 && Character.isWhitespace( ch )){
+               continue;
+            }
             sb.append( ch );
-            if( i == 0 ){
+            if( i == 0 && !x.more() ){
                break;
             }
          }

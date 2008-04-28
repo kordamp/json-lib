@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1952095">
+            Parsing error with line break after "function()"
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1942571">
             XML/JSON roundtrip looses types
          </action>
