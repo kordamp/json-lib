@@ -53,18 +53,21 @@ public final class JSONUtils {
    /** Constant for char ' */
    public static final String SINGLE_QUOTE = "'";
 
+   private static RegexpMatcher FUNCTION_BODY_MATCHER;
+   private static final String FUNCTION_BODY_PATTERN = "^function[ ]?\\(.*?\\)[ \n\t]*\\{(.*?)\\}$";
    private static RegexpMatcher FUNCTION_HEADER_MATCHER;
-   private static final String FUNCTION_HEADER_PATTERN = "^function[ ]?\\(.*\\)$";
+   private static final String FUNCTION_HEADER_PATTERN = "^function[ ]?\\(.*?\\)$";
    private static RegexpMatcher FUNCTION_MACTHER;
    private static RegexpMatcher FUNCTION_PARAMS_MATCHER;
-   private static final String FUNCTION_PARAMS_PATTERN = "^function[ ]?\\((.*?)\\)$";
-   private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*\\)[ \n\t]*\\{.*\\}$";
+   private static final String FUNCTION_PARAMS_PATTERN = "^function[ ]?\\((.*?)\\).*";
+   private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*?\\)[ \n\t]*\\{.*?\\}$";
 
    private static final MorpherRegistry morpherRegistry = new MorpherRegistry();
 
    static{
       FUNCTION_HEADER_MATCHER = RegexpUtils.getMatcher( FUNCTION_HEADER_PATTERN );
       FUNCTION_PARAMS_MATCHER = RegexpUtils.getMatcher( FUNCTION_PARAMS_PATTERN );
+      FUNCTION_BODY_MATCHER = RegexpUtils.getMatcher( FUNCTION_BODY_PATTERN );
       FUNCTION_MACTHER = RegexpUtils.getMatcher( FUNCTION_PATTERN, true );
 
       // register standard morphers
@@ -72,7 +75,7 @@ public final class JSONUtils {
    }
 
    /**
-    * Transformes the string into a valid Java Identifier.<br>
+    * Transforms the string into a valid Java Identifier.<br>
     * The default strategy is JavaIdentifierTransformer.NOOP
     *
     * @throws JSONException if the string can not be transformed.
@@ -82,7 +85,7 @@ public final class JSONUtils {
    }
 
    /**
-    * Transformes the string into a valid Java Identifier.<br>
+    * Transforms the string into a valid Java Identifier.<br>
     * The default strategy is JavaIdentifierTransformer.NOOP
     *
     * @throws JSONException if the string can not be transformed.
@@ -124,6 +127,13 @@ public final class JSONUtils {
       return s;
    }
 
+   /**
+    * Returns the body of a function literal.
+    */
+   public static String getFunctionBody( String function ) {
+      return FUNCTION_BODY_MATCHER.getGroupIfMatches( function, 1 );
+   }
+   
    /**
     * Returns the params of a function literal.
     */

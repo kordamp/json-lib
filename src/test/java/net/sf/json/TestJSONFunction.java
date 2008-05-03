@@ -16,6 +16,7 @@
 
 package net.sf.json;
 
+import net.sf.json.test.JSONAssert;
 import junit.framework.TestCase;
 
 /**
@@ -55,5 +56,22 @@ public class TestJSONFunction extends TestCase {
       assertEquals( "function(){ return a; }", JSONFunction.parse( "function()  { return a; }" ).toString() );
       assertEquals( "function(){ return a; }", JSONFunction.parse( "function()\n{ return a; }" ).toString() );
       assertEquals( "function(){ return a; }", JSONFunction.parse( "function()\t{ return a; }" ).toString() );
+   }
+   
+   public void testParse_withSingleArg(){
+      JSONFunction expected = new JSONFunction(new String[]{"a"},"return this");
+      JSONFunction actual = JSONFunction.parse( "function(a){ return this}" );
+      JSONAssert.assertEquals( expected, actual );
+   }
+  
+   public void testParse_withMultipleArgs(){
+      JSONFunction expected = new JSONFunction(new String[]{"a","b"},"return this");
+      JSONAssert.assertEquals( expected, JSONFunction.parse( "function(a,b){ return this }" ) );
+      JSONAssert.assertEquals( expected, JSONFunction.parse( "function( a,b ){ return this }" ) );
+      JSONAssert.assertEquals( expected, JSONFunction.parse( "function( a,b){ return this }" ) );
+      JSONAssert.assertEquals( expected, JSONFunction.parse( "function(a, b ){ return this }" ) );
+      JSONAssert.assertEquals( expected, JSONFunction.parse( "function( a, b ){ return this }" ) );
+      JSONAssert.assertEquals( expected, JSONFunction.parse( "function ( a, b ){ return this }" ) );
+      JSONAssert.assertEquals( expected, JSONFunction.parse( "function ( a, b ) { return this }" ) );
    }
 }

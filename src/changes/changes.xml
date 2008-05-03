@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1955163">
+            Json-lib cannot parse functions with more than one argument
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1952095">
             Parsing error with line break after "function()"
          </action>

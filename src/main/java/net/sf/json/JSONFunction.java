@@ -18,7 +18,6 @@ package net.sf.json;
 
 import java.io.Serializable;
 
-import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,56 +32,18 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class JSONFunction implements Serializable {
    /** constant array for empty parameters */
    private static final String[] EMPTY_PARAM_ARRAY = new String[0];
-
-   private static final long serialVersionUID = 4808252866627073811L;
+   
 
    /**
     * Constructs a JSONFunction from a text representation
     */
    public static JSONFunction parse( String str ) {
-      return parse( new JSONTokener( str ) );
-   }
-
-   /**
-    * Constructs a JSONFunction from a text representation
-    */
-   private static JSONFunction parse( JSONTokener x ) {
-      Object v = x.nextValue();
-      if( !JSONUtils.isFunctionHeader( v ) ){
-         throw new JSONException( "String is not a function. " + v );
-      }else{
-         // read params if any
-         String params = JSONUtils.getFunctionParams( (String) v );
-         // read function text
-         int i = 0;
-         StringBuffer sb = new StringBuffer();
-         for( ;; ){
-            char ch = x.next();
-            if( ch == 0 ){
-               break;
-            }
-            if( ch == '{' ){
-               i++;
-            }
-            if( ch == '}' ){
-               i--;
-            }
-            if( i == 0 && Character.isWhitespace( ch )){
-               continue;
-            }
-            sb.append( ch );
-            if( i == 0 && !x.more() ){
-               break;
-            }
-         }
-         if( i != 0 ){
-            throw x.syntaxError( "Unbalanced '{' or '}' on prop: " + v );
-         }
-         // trim '{' at start and '}' at end
-         String text = sb.toString();
-         text = text.substring( 1, text.length() - 1 )
-               .trim();
-         return new JSONFunction( (params != null) ? StringUtils.split( params, "," ) : null, text );
+      if( !JSONUtils.isFunction( str ) ) {
+         throw new JSONException( "String is not a function. " + str );
+      } else {
+         String params = JSONUtils.getFunctionParams( str );
+         String text = JSONUtils.getFunctionBody( str );
+         return new JSONFunction( (params != null) ? StringUtils.split( params, "," ) : null, text != null ? text : "" );
       }
    }
 
