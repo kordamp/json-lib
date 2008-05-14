@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSON;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
 import net.sf.json.JsonConfig;
 
@@ -35,16 +36,10 @@ import org.springframework.web.servlet.view.AbstractView;
 public class JsonView extends AbstractView {
    /** Default content type. Overridable as bean property. */
    private static final String DEFAULT_JSON_CONTENT_TYPE = "application/json";
+   private boolean forceTopLevelArray = false;
    /** Json confiiguration */
    private JsonConfig jsonConfig = new JsonConfig();
-   /** Set of properties to be excluded in the JSON rendering. */
-   private String[] excludedProperties;
-   /**
-    * Tells the JSONSerializer to ignore or not its internal property
-    * exclusions.
-    */
-   private boolean ignoreDefaultExcludes;
-
+   
    public JsonView() {
       super();
       setContentType( DEFAULT_JSON_CONTENT_TYPE );
@@ -54,10 +49,10 @@ public class JsonView extends AbstractView {
       return jsonConfig;
    }
 
-   public void setJsonConfig( JsonConfig jsonConfig ){
-     this.jsonConfig = jsonConfig != null ? jsonConfig : new JsonConfig();
+   public boolean isForceTopLevelArray() {
+      return forceTopLevelArray;
    }
-   
+
    /**
     * Returns wether the JSONSerializer will ignore or not its internal property
     * exclusions.
@@ -72,6 +67,10 @@ public class JsonView extends AbstractView {
    public void setExcludedProperties( String[] excludedProperties ) {
       jsonConfig.setExcludes( excludedProperties );
    }
+   
+   public void setForceTopLevelArray( boolean forceTopLevelArray ) {
+      this.forceTopLevelArray = forceTopLevelArray;
+   }
 
    /**
     * Sets wether the JSONSerializer will ignore or not its internal property
@@ -79,6 +78,10 @@ public class JsonView extends AbstractView {
     */
    public void setIgnoreDefaultExcludes( boolean ignoreDefaultExcludes ) {
       jsonConfig.setIgnoreDefaultExcludes( ignoreDefaultExcludes );
+   }
+
+   public void setJsonConfig( JsonConfig jsonConfig ){
+     this.jsonConfig = jsonConfig != null ? jsonConfig : new JsonConfig();
    }
 
    /**
@@ -99,7 +102,7 @@ public class JsonView extends AbstractView {
     * Returns the group of properties to be excluded.
     */
    protected String[] getExcludedProperties() {
-      return excludedProperties;
+      return jsonConfig.getExcludes();
    }
 
    protected void renderMergedOutputModel( Map model, HttpServletRequest request,
@@ -110,8 +113,10 @@ public class JsonView extends AbstractView {
 
    protected void writeJSON( Map model, HttpServletRequest request,
          HttpServletResponse response ) throws Exception {
-      
       JSON json = createJSON( model, request, response );
+      if( forceTopLevelArray ){
+         json = new JSONArray().element(json);
+      }
       json.write( response.getWriter() );
    }
 }

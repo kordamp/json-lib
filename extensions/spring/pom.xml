@@ -7,7 +7,7 @@
    <groupId>net.sf.json-lib</groupId>
    <artifactId>json-lib-ext-spring</artifactId>
    <packaging>jar</packaging>
-   <version>1.0</version>
+   <version>1.0.1</version>
    <name>Json-lib4Spring</name>
 
    <url>http://json-lib.sourceforge.net</url>
@@ -79,7 +79,7 @@
       <dependency>
          <groupId>net.sf.json-lib</groupId>
          <artifactId>json-lib</artifactId>
-         <version>2.2</version>
+         <version>2.2.1</version>
          <classifier>jdk15</classifier>
       </dependency>
       <dependency>
@@ -106,13 +106,13 @@
       <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
-         <version>3.8.1</version>
+         <version>3.8.2</version>
          <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>net.sf.jstester</groupId>
          <artifactId>jstester</artifactId>
-         <version>1.4</version>
+         <version>1.4.1</version>
          <classifier>jdk14</classifier>
          <scope>test</scope>
       </dependency>
@@ -139,7 +139,7 @@
    </dependencies>
 
    <prerequisites>
-      <maven>2.0.7</maven>
+      <maven>2.0.9</maven>
    </prerequisites>
 
    <build>
@@ -195,5 +195,16 @@
    </reporting>
 
    <distributionManagement />
+
+   <repositories>
+      <repository>
+         <id>json-lib</id>
+         <url>http://json-lib.sf.net/m2/repo/release/</url>
+      </repository>
+      <repository>
+         <id>jstester</id>
+         <url>http://jstester.sf.net/m2/repo/release/</url>
+      </repository>
+   </repositories>
 
 </project>

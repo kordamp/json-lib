@@ -111,6 +111,24 @@ public class JsonViewTest extends TestCase {
       jsTester.assertEquals( "json.integer", "1" );
       jsTester.assertEquals( "json.str", "'string'" );
    }
+   
+   public void testForceTopLevelArray() throws Exception {
+      JsonView view = new JsonView();
+      view.setForceTopLevelArray( true );
+      Map model = new HashMap();
+      model.put( "bool", Boolean.TRUE );
+      model.put( "integer", new Integer( 1 ) );
+      model.put( "str", "string" );
+
+      view.render( model, servletRequest, servletResponse );
+      jsTester.eval( toJsScript( servletResponse ) );
+
+      jsTester.assertNotNull( "json" );
+      jsTester.assertIsArray( "json" );
+      jsTester.assertEquals( "json[0].bool", "true" );
+      jsTester.assertEquals( "json[0].integer", "1" );
+      jsTester.assertEquals( "json[0].str", "'string'" );
+   }
 
    protected void setUp() throws Exception {
       servletContext = new MockServletContext();
@@ -118,6 +136,7 @@ public class JsonViewTest extends TestCase {
       wac.setServletContext( servletContext );
       servletRequest = new MockHttpServletRequest( servletContext );
       servletResponse = new MockHttpServletResponse();
+      servletResponse.setBufferSize(100);
 
       jsTester = new JsTester();
       jsTester.onSetUp();
@@ -130,6 +149,7 @@ public class JsonViewTest extends TestCase {
    private String toJsScript( MockHttpServletResponse response ) throws Exception {
       // looks like MockHttpServletResponse is broken
       String json = response.getContentAsString();
+      if( json.startsWith("[{") && !json.endsWith("}]") ){ json += "}]"; }
       if( json.startsWith("{") && !json.endsWith("}") ){ json += "}"; }
       if( json.startsWith("[") && !json.endsWith("]") ){ json += "]"; }
       return "var json = eval('(" + json + ")');";
