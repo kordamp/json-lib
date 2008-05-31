@@ -59,6 +59,8 @@ import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.array.ObjectArrayMorpher;
 import net.sf.ezmorph.bean.BeanMorpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
+import net.sf.json.JSONArray;
+import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
@@ -201,12 +203,13 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
 
       DynaBean dynaBean = null;
 
+      JsonConfig jsonConfig = new JsonConfig();
       Map props = JSONUtils.getProperties( jsonObject );
-      dynaBean = JSONUtils.newDynaBean( jsonObject, new JsonConfig() );
-      for( Iterator entries = jsonObject.names()
+      dynaBean = JSONUtils.newDynaBean( jsonObject, jsonConfig );
+      for( Iterator entries = jsonObject.names( jsonConfig )
             .iterator(); entries.hasNext(); ){
          String name = (String) entries.next();
-         String key = JSONUtils.convertToJavaIdentifier( name, new JsonConfig() );
+         String key = JSONUtils.convertToJavaIdentifier( name, jsonConfig );
          Class type = (Class) props.get( name );
          Object value = jsonObject.get( name );
          try{
@@ -307,7 +310,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
 
       Map props = JSONUtils.getProperties( jsonObject );
       PropertyFilter javaPropertyFilter = jsonConfig.getJavaPropertyFilter();
-      for( Iterator entries = jsonObject.names()
+      for( Iterator entries = jsonObject.names( jsonConfig )
             .iterator(); entries.hasNext(); ){
          String name = (String) entries.next();
          Class type = (Class) props.get( name );
@@ -685,7 +688,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
 
       Map props = JSONUtils.getProperties( jsonObject );
       PropertyFilter javaPropertyFilter = jsonConfig.getJavaPropertyFilter();
-      for( Iterator entries = jsonObject.names()
+      for( Iterator entries = jsonObject.names( jsonConfig )
             .iterator(); entries.hasNext(); ){
          String name = (String) entries.next();
          Class type = (Class) props.get( name );
@@ -1052,7 +1055,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          }
       }
 
-      JSONArray sa = object.names();
+      JSONArray sa = object.names(jsonConfig);
       Collection exclusions = jsonConfig.getMergedExcludes();
       JSONObject jsonObject = new JSONObject();
       PropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
@@ -2252,6 +2255,23 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       Iterator keys = keys();
       while( keys.hasNext() ){
          ja.element( keys.next() );
+      }
+      return ja;
+   }
+   
+   /**
+    * Produce a JSONArray containing the names of the elements of this
+    * JSONObject.
+    *
+    * @return A JSONArray containing the key strings, or null if the JSONObject
+    *         is empty.
+    */
+   public JSONArray names( JsonConfig jsonConfig ) {
+      verifyIsNull();
+      JSONArray ja = new JSONArray();
+      Iterator keys = keys();
+      while( keys.hasNext() ){
+         ja.element( keys.next(), jsonConfig );
       }
       return ja;
    }
