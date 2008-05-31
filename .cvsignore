@@ -6,3 +6,5 @@ build.properties
 .project
 .settings
 .jruby
+build.sh
+build

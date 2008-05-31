@@ -61,6 +61,7 @@ public final class JSONUtils {
    private static RegexpMatcher FUNCTION_PARAMS_MATCHER;
    private static final String FUNCTION_PARAMS_PATTERN = "^function[ ]?\\((.*?)\\).*";
    private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*?\\)[ \n\t]*\\{.*?\\}$";
+   private static final String FUNCTION_PREFIX = "function";
 
    private static final MorpherRegistry morpherRegistry = new MorpherRegistry();
 
@@ -285,7 +286,7 @@ public final class JSONUtils {
    public static boolean isFunction( Object obj ) {
       if( obj instanceof String ){
          String str = (String) obj;
-         return FUNCTION_MACTHER.matches( str );
+         return str.startsWith( FUNCTION_PREFIX ) && FUNCTION_MACTHER.matches( str );
       }
       if( obj instanceof JSONFunction ){
          return true;
@@ -300,7 +301,7 @@ public final class JSONUtils {
    public static boolean isFunctionHeader( Object obj ) {
       if( obj instanceof String ){
          String str = (String) obj;
-         return FUNCTION_HEADER_MATCHER.matches( str );
+         return str.startsWith( FUNCTION_PREFIX ) && FUNCTION_HEADER_MATCHER.matches( str );
       }
       return false;
    }

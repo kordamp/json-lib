@@ -31,6 +31,7 @@ import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanA1763699;
 import net.sf.json.sample.BeanB1763699;
 import net.sf.json.sample.BeanC;
+import net.sf.json.sample.ChildBean;
 import net.sf.json.sample.DateBean;
 import net.sf.json.sample.IdBean;
 import net.sf.json.sample.InterfaceBean;
@@ -42,6 +43,7 @@ import net.sf.json.sample.MediaList;
 import net.sf.json.sample.MediaListBean;
 import net.sf.json.sample.NumberArrayBean;
 import net.sf.json.sample.PackageProtectedBean;
+import net.sf.json.sample.ParentBean;
 import net.sf.json.sample.Player;
 import net.sf.json.sample.PlayerList;
 import net.sf.json.sample.PrimitiveBean;
@@ -544,6 +546,15 @@ public class TestUserSubmitted extends TestCase {
       assertNotNull( bean );
       assertNotNull( bean.getRunnable() );
       assertTrue( bean.getRunnable() instanceof RunnableImpl );
+   }
+   
+   public void testCycleDetection_withExclusions() {
+      ParentBean parent = new ParentBean();
+      parent.setChild( new ChildBean() );
+
+      // will fail if throws an exception
+      jsonConfig.setExcludes( new String[] { "parent" } );
+      JSONObject.fromObject( parent, jsonConfig );
    }
 
    public static class RunnableImpl implements Runnable {
