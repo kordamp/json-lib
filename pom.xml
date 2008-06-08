@@ -7,7 +7,7 @@
    <groupId>net.sf.json-lib</groupId>
    <artifactId>json-lib</artifactId>
    <packaging>jar</packaging>
-   <version>2.2.2-SNAPSHOT</version>
+   <version>2.2.2</version>
    <name>json-lib</name>
 
    <url>http://json-lib.sourceforge.net</url>
@@ -127,6 +127,13 @@
       <contributor>
          <name>Mathias Herberst</name>
       </contributor>
+      <contributor>
+         <name>Ales Novy</name>
+	 <roles>
+	    <role>Patch for performance improvements in JSONUtils</role>
+	    <role>Patch for propagating JsonConfig to missing methods on JSONObject</role>
+	 </roles>
+      </contributor>
    </contributors>
 
    <dependencies>
@@ -215,7 +222,7 @@
       <dependency>
          <groupId>org.codehaus.groovy</groupId>
          <artifactId>groovy-all</artifactId>
-         <version>1.5.5</version>
+         <version>1.5.6</version>
          <scope>compile</scope>
          <optional>true</optional>
       </dependency>

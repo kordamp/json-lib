@@ -60,7 +60,7 @@
             <li>jakarta commons-lang 2.3</li>
             <li>jakarta commons-beanutils 1.7.0</li>
             <li>jakarta commons-collections 3.2</li>
-            <li>jakarta commons-logging 1.1</li>
+            <li>jakarta commons-logging 1.1.1</li>
             <li>ezmorph 1.0.4</li>
          </ul>
          Other dependencies are needed if working with XML, Groovy and JRuby. Please review the 
