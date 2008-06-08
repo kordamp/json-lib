@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1984546">
+            JsonVerifier does not account for Short values
+         </action>           
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1976920">
             Propagation of JsonConfig in JSONObject methods. Thanks to Ales Novy (provided a patch)
          </action>         

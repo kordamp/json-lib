@@ -18,11 +18,14 @@ package net.sf.json;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.json.processors.JsDateJsonBeanProcessor;
 import net.sf.json.processors.JsDateJsonValueProcessor;
 import net.sf.json.sample.DateBean;
+import net.sf.json.sample.IdentityJsonValueProcessor;
 import net.sf.json.test.JSONAssert;
 
 /**
@@ -119,6 +122,24 @@ public class TestJSONObjectWithProcessors extends TestCase {
       jsonConfig.registerJsonBeanProcessor( Date.class, new JsDateJsonBeanProcessor() );
       JSONObject jsDate = JSONObject.fromObject( date, jsonConfig );
       assertJsDate( jsDate );
+   }
+   
+   public void testNumericValueWithProcessor_Byte(){
+      Map bean = new HashMap();
+      bean.put( "value", new Byte(Byte.MAX_VALUE) );
+      jsonConfig.registerJsonValueProcessor( "value", new IdentityJsonValueProcessor() );
+      JSONObject jsonObject = JSONObject.fromObject( bean, jsonConfig );
+      assertNotNull( jsonObject );
+      assertEquals( new Integer(Byte.MAX_VALUE), jsonObject.get( "value" ));
+   }
+   
+   public void testNumericValueWithProcessor_Short(){
+      Map bean = new HashMap();
+      bean.put( "value", new Short(Short.MAX_VALUE) );
+      jsonConfig.registerJsonValueProcessor( "value", new IdentityJsonValueProcessor() );
+      JSONObject jsonObject = JSONObject.fromObject( bean, jsonConfig );
+      assertNotNull( jsonObject );
+      assertEquals( new Integer(Short.MAX_VALUE), jsonObject.get( "value" ));
    }
 
    protected void setUp() throws Exception {
