@@ -326,8 +326,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             key = propertyNameProcessor.processPropertyName( beanClass, key );
          }
          try{
-            if( jsonConfig.getPropertySetStrategy() != null
-                  || Map.class.isAssignableFrom( beanClass ) ){
+            if( Map.class.isAssignableFrom( beanClass ) ){
                // no type info available for conversion
                if( JSONUtils.isNull( value ) ){
                   setProperty( bean, key, value, jsonConfig );
@@ -449,13 +448,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      }else if( String.class.isAssignableFrom( type ) || JSONUtils.isBoolean( type )
                            || JSONUtils.isNumber( type ) || JSONUtils.isString( type )
                            || JSONFunction.class.isAssignableFrom( type ) ){
-                        if( pd != null ){
-                           if( jsonConfig.isHandleJettisonEmptyElement() && "".equals( value ) ){
-                              setProperty( bean, key, null, jsonConfig );
-                           }else{
-                              setProperty( bean, key, value, jsonConfig );
-                           }
-                        }else if( beanClass == null || bean instanceof Map ){
+                        if( beanClass == null || bean instanceof Map || jsonConfig.getPropertySetStrategy() != null ){
                            setProperty( bean, key, value, jsonConfig );
                         }else{
                            log.warn( "Tried to assign property " + key + ":" + type.getName()

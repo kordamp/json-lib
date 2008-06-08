@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="1974904">
+            Inner beans not deserialized when using PropertySetStrategy
+         </action> 
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="1984546">
             JsonVerifier does not account for Short values
          </action>           
