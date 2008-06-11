@@ -107,7 +107,7 @@ public class JsonView extends AbstractView {
     * Sets whether the JSONSerializer will skip or not any BindingResult related keys on the model.<p>
     * Models in Spring >= 2.5 will cause an exception as they contain a BindingResult that cycles back.
     */
-   public void setSkipBindingResult( boolean kipBindingResult ) {
+   public void setSkipBindingResult( boolean skipBindingResult ) {
       this.skipBindingResult = skipBindingResult;
    }
 
