@@ -59,6 +59,7 @@ import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
+import net.sf.json.util.PropertyExclusionClassMatcher;
 import net.sf.json.util.PropertyFilter;
 import net.sf.json.util.PropertySetStrategy;
 
@@ -851,6 +852,29 @@ public class TestJSONObject extends TestCase {
       assertEquals( new Double( 0 ), jsonObject.get( "pdouble" ) );
    }
 
+   public void testFromObject_withExcludesPerClass() {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.registerPropertyExclusion( BeanA.class, "bool" );
+      JSONObject jsonA = JSONObject.fromObject( new BeanA(), jsonConfig );
+      JSONObject jsonB = JSONObject.fromObject( new BeanB(), jsonConfig );
+      assertNotNull( jsonA );
+      assertNotNull( jsonB );
+      assertFalse( jsonA.has("bool") );
+      assertTrue( jsonB.has("bool") );
+   }
+
+   public void testFromObject_withExcludesPerClassAndMatcher() {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.registerPropertyExclusion( BeanA.class, "bool" );
+      jsonConfig.setPropertyExclusionClassMatcher( new BeanAPropertyExclusionClassMatcher() );
+      JSONObject jsonA = JSONObject.fromObject( new BeanA(), jsonConfig );
+      JSONObject jsonB = JSONObject.fromObject( new BeanB(), jsonConfig );
+      assertNotNull( jsonA );
+      assertNotNull( jsonB );
+      assertFalse( jsonA.has("bool") );
+      assertFalse( jsonB.has("bool") );
+   }
+   
    public void testFromObject_withFilters() {
       PrimitiveBean bean = new PrimitiveBean();
       JsonConfig jsonConfig = new JsonConfig();
@@ -875,7 +899,7 @@ public class TestJSONObject extends TestCase {
       assertTrue( !json.has( "pdouble" ) );
       assertTrue( json.has( "pchar" ) );
    }
-
+   
    public void testFromObject_withFiltersAndExcludes() {
       PrimitiveBean bean = new PrimitiveBean();
       JsonConfig jsonConfig = new JsonConfig();
@@ -1543,6 +1567,18 @@ public class TestJSONObject extends TestCase {
       return dynaBean;
    }
 
+   public static class BeanAPropertyExclusionClassMatcher extends PropertyExclusionClassMatcher {
+      public Object getMatch( Class target, Set set ) {
+         for( Iterator i = set.iterator(); i.hasNext(); ){
+            Class c = (Class) i.next();
+            if( BeanA.class.isAssignableFrom( c ) ){
+               return c;
+            }
+         }
+         return null;
+      }
+   }
+
    public static class BeanAPropertyFilter implements PropertyFilter {
       public boolean apply( Object source, String name, Object value ) {
          if( "bool".equals( name ) || "integer".equals( name ) ){
@@ -1578,7 +1614,7 @@ public class TestJSONObject extends TestCase {
          return null;
       }
    }
-
+   
    public static class NumberPropertyFilter implements PropertyFilter {
       public boolean apply( Object source, String name, Object value ) {
          if( value != null && Number.class.isAssignableFrom( value.getClass() ) ){

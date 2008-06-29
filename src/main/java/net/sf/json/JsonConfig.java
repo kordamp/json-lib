@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +38,7 @@ import net.sf.json.util.CycleDetectionStrategy;
 import net.sf.json.util.JavaIdentifierTransformer;
 import net.sf.json.util.JsonEventListener;
 import net.sf.json.util.NewBeanInstanceStrategy;
+import net.sf.json.util.PropertyExclusionClassMatcher;
 import net.sf.json.util.PropertyFilter;
 import net.sf.json.util.PropertySetStrategy;
 
@@ -53,6 +55,7 @@ public class JsonConfig {
    public static final JsonBeanProcessorMatcher DEFAULT_JSON_BEAN_PROCESSOR_MATCHER = JsonBeanProcessorMatcher.DEFAULT;
    public static final JsonValueProcessorMatcher DEFAULT_JSON_VALUE_PROCESSOR_MATCHER = JsonValueProcessorMatcher.DEFAULT;
    public static final NewBeanInstanceStrategy DEFAULT_NEW_BEAN_INSTANCE_STRATEGY = NewBeanInstanceStrategy.DEFAULT;
+   public static final PropertyExclusionClassMatcher DEFAULT_PROPERTY_EXCLUSION_CLASS_MATCHER = PropertyExclusionClassMatcher.DEFAULT;
    public static final PropertyNameProcessorMatcher DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER = PropertyNameProcessorMatcher.DEFAULT;
    public static final int MODE_LIST = 1;
    public static final int MODE_OBJECT_ARRAY = 2;
@@ -78,6 +81,7 @@ public class JsonConfig {
    private Class enclosedType;
    private List eventListeners = new ArrayList();
    private String[] excludes = EMPTY_EXCLUDES;
+   private Map exclusionMap = new HashMap();
    private boolean handleJettisonEmptyElement;
    private boolean handleJettisonSingleElementArray;
    private boolean ignoreDefaultExcludes;
@@ -85,15 +89,16 @@ public class JsonConfig {
    private boolean ignoreTransientFields;
    private JavaIdentifierTransformer javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
    private PropertyFilter javaPropertyFilter;
+   private Map javaPropertyNameProcessorMap = new HashMap();
+   private PropertyNameProcessorMatcher javaPropertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
    private JsonBeanProcessorMatcher jsonBeanProcessorMatcher = DEFAULT_JSON_BEAN_PROCESSOR_MATCHER;
    private PropertyFilter jsonPropertyFilter;
+   private Map jsonPropertyNameProcessorMap = new HashMap();
+   private PropertyNameProcessorMatcher jsonPropertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
    private JsonValueProcessorMatcher jsonValueProcessorMatcher = DEFAULT_JSON_VALUE_PROCESSOR_MATCHER;
    private Map keyMap = new HashMap();
    private NewBeanInstanceStrategy newBeanInstanceStrategy = DEFAULT_NEW_BEAN_INSTANCE_STRATEGY;
-   private Map javaPropertyNameProcessorMap = new HashMap();
-   private PropertyNameProcessorMatcher javaPropertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
-   private Map jsonPropertyNameProcessorMap = new HashMap();
-   private PropertyNameProcessorMatcher jsonPropertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
+   private PropertyExclusionClassMatcher propertyExclusionClassMatcher = DEFAULT_PROPERTY_EXCLUSION_CLASS_MATCHER;
    private PropertySetStrategy propertySetStrategy;
    /** Root class used when converting to an specific bean */
    private Class rootClass;
@@ -122,6 +127,14 @@ public class JsonConfig {
    }
 
    /**
+    * Removes all registered PropertyNameProcessors.<br>
+    * [JSON -&gt; Java]
+    */
+   public void clearJavaPropertyNameProcessors() {
+      javaPropertyNameProcessorMap.clear();
+   }
+
+   /**
     * Removes all registered JsonBeanProcessors.<br>
     * [Java -&gt; JSON]
     */
@@ -138,6 +151,14 @@ public class JsonConfig {
    }
 
    /**
+    * Removes all registered PropertyNameProcessors.<br>
+    * [Java -&gt; JSON]
+    */
+   public void clearJsonPropertyNameProcessors() {
+      jsonPropertyNameProcessorMap.clear();
+   }   
+   
+   /**
     * Removes all registered JsonValueProcessors.<br>
     * [Java -&gt; JSON]
     */
@@ -146,6 +167,14 @@ public class JsonConfig {
       beanTypeMap.clear();
       keyMap.clear();
       typeMap.clear();
+   }
+   
+   /**
+    * Removes all property exclusions registered per class.<br>
+    * [Java -&gt; JSON]
+    */
+   public void clearPropertyExclusions() {
+      exclusionMap.clear();
    }
 
    /**
@@ -156,21 +185,6 @@ public class JsonConfig {
     */
    public void clearPropertyNameProcessors() {
       clearJavaPropertyNameProcessors();
-   }   
-   /**
-    * Removes all registered PropertyNameProcessors.<br>
-    * [JSON -&gt; Java]
-    */
-   public void clearJavaPropertyNameProcessors() {
-      javaPropertyNameProcessorMap.clear();
-   }
-
-   /**
-    * Removes all registered PropertyNameProcessors.<br>
-    * [Java -&gt; JSON]
-    */
-   public void clearJsonPropertyNameProcessors() {
-      jsonPropertyNameProcessorMap.clear();
    }
 
    public JsonConfig copy() {
@@ -215,6 +229,8 @@ public class JsonConfig {
       jsc.javaPropertyNameProcessorMap.putAll( javaPropertyNameProcessorMap );
       jsc.jsonPropertyNameProcessorMatcher = jsonPropertyNameProcessorMatcher;
       jsc.jsonPropertyNameProcessorMap.putAll( jsonPropertyNameProcessorMap );
+      jsc.propertyExclusionClassMatcher = propertyExclusionClassMatcher;
+      jsc.exclusionMap.putAll(  exclusionMap );
       return jsc;
    }
 
@@ -253,6 +269,22 @@ public class JsonConfig {
    }
 
    /**
+    * Finds a PropertyNameProcessor registered to the target class.<br>
+    * Returns null if none is registered.<br>
+    * [JSON -&gt; Java]
+    * 
+    * @param propertyType a class used for searching a PropertyNameProcessor.
+    */
+   public PropertyNameProcessor findJavaPropertyNameProcessor( Class beanClass ) {
+      if( !javaPropertyNameProcessorMap.isEmpty() ) {
+         Object key = javaPropertyNameProcessorMatcher.getMatch( beanClass, javaPropertyNameProcessorMap.keySet() );
+         return (PropertyNameProcessor) javaPropertyNameProcessorMap.get( key );
+
+      }
+      return null;
+   }
+
+   /**
     * Finds a JsonBeanProcessor registered to the target class.<br>
     * Returns null if none is registered.<br>
     * [Java -&gt; JSON]
@@ -263,6 +295,22 @@ public class JsonConfig {
       if( !beanProcessorMap.isEmpty() ) {
          Object key = jsonBeanProcessorMatcher.getMatch( target, beanProcessorMap.keySet() );
          return (JsonBeanProcessor) beanProcessorMap.get( key );
+      }
+      return null;
+   }
+
+   /**
+    * Finds a PropertyNameProcessor registered to the target class.<br>
+    * Returns null if none is registered.<br>
+    * [Java -&gt; JSON]
+    * 
+    * @param propertyType a class used for searching a PropertyNameProcessor.
+    */
+   public PropertyNameProcessor findJsonPropertyNameProcessor( Class beanClass ) {
+      if( !jsonPropertyNameProcessorMap.isEmpty() ) {
+         Object key = jsonPropertyNameProcessorMatcher.getMatch( beanClass, jsonPropertyNameProcessorMap.keySet() );
+         return (PropertyNameProcessor) jsonPropertyNameProcessorMap.get( key );
+
       }
       return null;
    }
@@ -353,7 +401,7 @@ public class JsonConfig {
 
       return null;
    }
-
+   
    /**
     * Finds a PropertyNameProcessor registered to the target class.<br>
     * Returns null if none is registered. <br>
@@ -365,38 +413,6 @@ public class JsonConfig {
     */
    public PropertyNameProcessor findPropertyNameProcessor( Class beanClass ) {
       return findJavaPropertyNameProcessor( beanClass );
-   }
-
-   /**
-    * Finds a PropertyNameProcessor registered to the target class.<br>
-    * Returns null if none is registered.<br>
-    * [JSON -&gt; Java]
-    * 
-    * @param propertyType a class used for searching a PropertyNameProcessor.
-    */
-   public PropertyNameProcessor findJavaPropertyNameProcessor( Class beanClass ) {
-      if( !javaPropertyNameProcessorMap.isEmpty() ) {
-         Object key = javaPropertyNameProcessorMatcher.getMatch( beanClass, javaPropertyNameProcessorMap.keySet() );
-         return (PropertyNameProcessor) javaPropertyNameProcessorMap.get( key );
-
-      }
-      return null;
-   }
-   
-   /**
-    * Finds a PropertyNameProcessor registered to the target class.<br>
-    * Returns null if none is registered.<br>
-    * [Java -&gt; JSON]
-    * 
-    * @param propertyType a class used for searching a PropertyNameProcessor.
-    */
-   public PropertyNameProcessor findJsonPropertyNameProcessor( Class beanClass ) {
-      if( !jsonPropertyNameProcessorMap.isEmpty() ) {
-         Object key = jsonPropertyNameProcessorMatcher.getMatch( beanClass, jsonPropertyNameProcessorMap.keySet() );
-         return (PropertyNameProcessor) jsonPropertyNameProcessorMap.get( key );
-
-      }
-      return null;
    }   
    
    /**
@@ -483,6 +499,15 @@ public class JsonConfig {
    }
 
    /**
+    * Returns the configured PropertyNameProcessorMatcher.<br>
+    * Default value is PropertyNameProcessorMatcher.DEFAULT<br>
+    * [JSON -&gt; Java]
+    */
+   public PropertyNameProcessorMatcher getJavaPropertyNameProcessorMatcher() {
+      return javaPropertyNameProcessorMatcher;
+   }
+   
+   /**
     * Returns the configured JsonBeanProcessorMatcher.<br>
     * Default value is JsonBeanProcessorMatcher.DEFAULT<br>
     * [JSON -&gt; Java]
@@ -505,6 +530,15 @@ public class JsonConfig {
     */
    public PropertyFilter getJsonPropertyFilter() {
       return jsonPropertyFilter;
+   }
+
+   /**
+    * Returns the configured PropertyNameProcessorMatcher.<br>
+    * Default value is PropertyNameProcessorMatcher.DEFAULT<br>
+    * [Java -&gt; JSON]
+    */
+   public PropertyNameProcessorMatcher getJsonPropertyNameProcessorMatcher() {
+      return javaPropertyNameProcessorMatcher;
    }
 
    /**
@@ -539,6 +573,33 @@ public class JsonConfig {
 
       return exclusions;
    }
+   
+   /**
+    * Returns a set of default excludes with user-defined excludes.<br>
+    * Takes into account any additional excludes per matching class.
+    * [Java -&gt; JSON]
+    */
+   public Collection getMergedExcludes( Class target ) {
+      if( target == null ) {
+         return getMergedExcludes();
+      }
+
+      Collection exclusionSet = getMergedExcludes();
+      if( !exclusionMap.isEmpty() ) {
+         Object key = propertyExclusionClassMatcher.getMatch( target, exclusionMap.keySet() );
+         Set set = (Set) exclusionMap.get( key );
+         if( set != null && !set.isEmpty() ) {
+            for( Iterator i = set.iterator(); i.hasNext(); ) {
+               Object e = i.next();
+               if( !exclusionSet.contains( e ) ) {
+                  exclusionSet.add( e );
+               }
+            }
+         }
+      }
+
+      return exclusionSet;
+   }
 
    /**
     * Returns the configured NewBeanInstanceStrategy.<br>
@@ -548,7 +609,16 @@ public class JsonConfig {
    public NewBeanInstanceStrategy getNewBeanInstanceStrategy() {
       return newBeanInstanceStrategy;
    }
-
+   
+   /**
+    * Returns the configured PropertyExclusionClassMatcher.<br>
+    * Default value is PropertyExclusionClassMatcher.DEFAULT<br>
+    * [JSON -&gt; Java]
+    */
+   public PropertyExclusionClassMatcher getPropertyExclusionClassMatcher() {
+      return propertyExclusionClassMatcher;
+   }
+   
    /**
     * Returns the configured PropertyNameProcessorMatcher.<br>
     * Default value is PropertyNameProcessorMatcher.DEFAULT<br>
@@ -558,24 +628,6 @@ public class JsonConfig {
     */
    public PropertyNameProcessorMatcher getPropertyNameProcessorMatcher() {
       return getJavaPropertyNameProcessorMatcher();
-   }
-   
-   /**
-    * Returns the configured PropertyNameProcessorMatcher.<br>
-    * Default value is PropertyNameProcessorMatcher.DEFAULT<br>
-    * [JSON -&gt; Java]
-    */
-   public PropertyNameProcessorMatcher getJavaPropertyNameProcessorMatcher() {
-      return javaPropertyNameProcessorMatcher;
-   }
-   
-   /**
-    * Returns the configured PropertyNameProcessorMatcher.<br>
-    * Default value is PropertyNameProcessorMatcher.DEFAULT<br>
-    * [Java -&gt; JSON]
-    */
-   public PropertyNameProcessorMatcher getJsonPropertyNameProcessorMatcher() {
-      return javaPropertyNameProcessorMatcher;
    }
 
    /**
@@ -676,6 +728,19 @@ public class JsonConfig {
    }
 
    /**
+    * Registers a PropertyNameProcessor.<br>
+    * [JSON -&gt; Java]
+    * 
+    * @param target the class to use as key
+    * @param propertyNameProcessor the processor to register
+    */
+   public void registerJavaPropertyNameProcessor( Class target, PropertyNameProcessor propertyNameProcessor ) {
+      if( target != null && propertyNameProcessor != null ) {
+         javaPropertyNameProcessorMap.put( target, propertyNameProcessor );
+      }
+   }
+   
+   /**
     * Registers a JsonBeanProcessor.<br>
     * [Java -&gt; JSON]
     * 
@@ -685,6 +750,19 @@ public class JsonConfig {
    public void registerJsonBeanProcessor( Class target, JsonBeanProcessor jsonBeanProcessor ) {
       if( target != null && jsonBeanProcessor != null ) {
          beanProcessorMap.put( target, jsonBeanProcessor );
+      }
+   }
+
+   /**
+    * Registers a PropertyNameProcessor.<br>
+    * [Java -&gt; JSON]
+    * 
+    * @param target the class to use as key
+    * @param propertyNameProcessor the processor to register
+    */
+   public void registerJsonPropertyNameProcessor( Class target, PropertyNameProcessor propertyNameProcessor ) {
+      if( target != null && propertyNameProcessor != null ) {
+         jsonPropertyNameProcessorMap.put( target, propertyNameProcessor );
       }
    }
 
@@ -741,7 +819,49 @@ public class JsonConfig {
          keyMap.put( key, jsonValueProcessor );
       }
    }
-
+   
+   /**
+    * Registers a exclusion for a target class.<br>
+    * [Java -&gt; JSON]
+    * 
+    * @param target the class to use as key
+    * @param propertyName the property to be excluded
+    */
+   public void registerPropertyExclusion( Class target, String propertyName ) {
+      if( target != null && propertyName != null ) {
+         Set set = (Set) exclusionMap.get( target );
+         if( set == null ){
+            set = new HashSet();
+            exclusionMap.put(  target, set );
+         }
+         if( !set.contains( propertyName )){
+            set.add(propertyName );
+         }
+      }
+   }
+   
+   /**
+    * Registers exclusions for a target class.<br>
+    * [Java -&gt; JSON]
+    * 
+    * @param target the class to use as key
+    * @param properties the properties to be excluded
+    */
+   public void registerPropertyExclusions( Class target, String[] properties ) {
+      if( target != null && properties != null && properties.length > 0 ) {
+         Set set = (Set) exclusionMap.get( target );
+         if( set == null ) {
+            set = new HashSet();
+            exclusionMap.put( target, set );
+         }
+         for( int i = 0; i < properties.length; i++ ) {
+            if( !set.contains( properties[i] ) ) {
+               set.add( properties[i] );
+            }
+         }
+      }
+   }
+   
    /**
     * Registers a PropertyNameProcessor.<br>
     * [JSON -&gt; Java]
@@ -753,32 +873,6 @@ public class JsonConfig {
     */
    public void registerPropertyNameProcessor( Class target, PropertyNameProcessor propertyNameProcessor ) {
       registerJavaPropertyNameProcessor( target, propertyNameProcessor );
-   }
-   
-   /**
-    * Registers a PropertyNameProcessor.<br>
-    * [JSON -&gt; Java]
-    * 
-    * @param target the class to use as key
-    * @param propertyNameProcessor the processor to register
-    */
-   public void registerJavaPropertyNameProcessor( Class target, PropertyNameProcessor propertyNameProcessor ) {
-      if( target != null && propertyNameProcessor != null ) {
-         javaPropertyNameProcessorMap.put( target, propertyNameProcessor );
-      }
-   }
-   
-   /**
-    * Registers a PropertyNameProcessor.<br>
-    * [Java -&gt; JSON]
-    * 
-    * @param target the class to use as key
-    * @param propertyNameProcessor the processor to register
-    */
-   public void registerJsonPropertyNameProcessor( Class target, PropertyNameProcessor propertyNameProcessor ) {
-      if( target != null && propertyNameProcessor != null ) {
-         jsonPropertyNameProcessorMap.put( target, propertyNameProcessor );
-      }
    }
 
    /**
@@ -828,6 +922,8 @@ public class JsonConfig {
       jsonPropertyNameProcessorMap.clear();
       jsonPropertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
       beanProcessorMap.clear();
+      propertyExclusionClassMatcher = DEFAULT_PROPERTY_EXCLUSION_CLASS_MATCHER;
+      exclusionMap.clear();
    }
 
    /**
@@ -980,6 +1076,16 @@ public class JsonConfig {
    }
 
    /**
+    * Sets a PropertyNameProcessorMatcher to use.<br>
+    * Will set default value (PropertyNameProcessorMatcher.DEFAULT) if null.<br>
+    * [JSON -&gt; Java]
+    */
+   public void setJavaPropertyNameProcessorMatcher( PropertyNameProcessorMatcher propertyNameProcessorMatcher ) {
+      this.javaPropertyNameProcessorMatcher = propertyNameProcessorMatcher == null ? DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER
+            : propertyNameProcessorMatcher;
+   }
+
+   /**
     * Sets a JsonBeanProcessorMatcher to use.<br>
     * Will set default value (JsonBeanProcessorMatcher.DEFAULT) if null.<br>
     * [Java -&gt; JSON]
@@ -1000,6 +1106,16 @@ public class JsonConfig {
    }
 
    /**
+    * Sets a PropertyNameProcessorMatcher to use.<br>
+    * Will set default value (PropertyNameProcessorMatcher.DEFAULT) if null.<br>
+    * [Java -&gt; JSON]
+    */
+   public void setJsonPropertyNameProcessorMatcher( PropertyNameProcessorMatcher propertyNameProcessorMatcher ) {
+      this.jsonPropertyNameProcessorMatcher = propertyNameProcessorMatcher == null ? DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER
+            : propertyNameProcessorMatcher;
+   }
+
+   /**
     * Sets a JsonValueProcessorMatcher to use.<br>
     * Will set default value (JsonValueProcessorMatcher.DEFAULT) if null.<br>
     * [Java -&gt; JSON]
@@ -1008,7 +1124,7 @@ public class JsonConfig {
       this.jsonValueProcessorMatcher = jsonValueProcessorMatcher == null ? DEFAULT_JSON_VALUE_PROCESSOR_MATCHER
             : jsonValueProcessorMatcher;
    }
-
+   
    /**
     * Sets the NewBeanInstanceStrategy to use.<br>
     * Will set default value (NewBeanInstanceStrategy.DEFAULT) if null.<br>
@@ -1018,7 +1134,17 @@ public class JsonConfig {
       this.newBeanInstanceStrategy = newBeanInstanceStrategy == null ? DEFAULT_NEW_BEAN_INSTANCE_STRATEGY
             : newBeanInstanceStrategy;
    }
-
+   
+   /**
+    * Sets a PropertyExclusionClassMatcher to use.<br>
+    * Will set default value (PropertyExclusionClassMatcher.DEFAULT) if null.<br>
+    * [Java -&gt; JSON]
+    */
+   public void setPropertyExclusionClassMatcher( PropertyExclusionClassMatcher propertyExclusionClassMatcher ) {
+      this.propertyExclusionClassMatcher = propertyExclusionClassMatcher == null ? DEFAULT_PROPERTY_EXCLUSION_CLASS_MATCHER
+            : propertyExclusionClassMatcher;
+   }
+   
    /**
     * Sets a PropertyNameProcessorMatcher to use.<br>
     * Will set default value (PropertyNameProcessorMatcher.DEFAULT) if null.<br>
@@ -1028,26 +1154,6 @@ public class JsonConfig {
     */
    public void setPropertyNameProcessorMatcher( PropertyNameProcessorMatcher propertyNameProcessorMatcher ) {
       setJavaPropertyNameProcessorMatcher( propertyNameProcessorMatcher );
-   }
-   
-   /**
-    * Sets a PropertyNameProcessorMatcher to use.<br>
-    * Will set default value (PropertyNameProcessorMatcher.DEFAULT) if null.<br>
-    * [JSON -&gt; Java]
-    */
-   public void setJavaPropertyNameProcessorMatcher( PropertyNameProcessorMatcher propertyNameProcessorMatcher ) {
-      this.javaPropertyNameProcessorMatcher = propertyNameProcessorMatcher == null ? DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER
-            : propertyNameProcessorMatcher;
-   }
-   
-   /**
-    * Sets a PropertyNameProcessorMatcher to use.<br>
-    * Will set default value (PropertyNameProcessorMatcher.DEFAULT) if null.<br>
-    * [Java -&gt; JSON]
-    */
-   public void setJsonPropertyNameProcessorMatcher( PropertyNameProcessorMatcher propertyNameProcessorMatcher ) {
-      this.jsonPropertyNameProcessorMatcher = propertyNameProcessorMatcher == null ? DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER
-            : propertyNameProcessorMatcher;
    }
 
    /**
@@ -1090,6 +1196,18 @@ public class JsonConfig {
    }
 
    /**
+    * Removes a PropertyNameProcessor.<br>
+    * [JSON -&gt; Java]
+    * 
+    * @param target a class used for searching a PropertyNameProcessor.
+    */
+   public void unregisterJavaPropertyNameProcessor( Class target ) {
+      if( target != null ) {
+         javaPropertyNameProcessorMap.remove( target );
+      }
+   }
+   
+   /**
     * Removes a JsonBeanProcessor.<br>
     * [Java -&gt; JSON]
     * 
@@ -1098,6 +1216,18 @@ public class JsonConfig {
    public void unregisterJsonBeanProcessor( Class target ) {
       if( target != null ) {
          beanProcessorMap.remove( target );
+      }
+   }
+
+   /**
+    * Removes a PropertyNameProcessor.<br>
+    * [Java -&gt; JSON]
+    * 
+    * @param target a class used for searching a PropertyNameProcessor.
+    */
+   public void unregisterJsonPropertyNameProcessor( Class target ) {
+      if( target != null ) {
+         jsonPropertyNameProcessorMap.remove( target );
       }
    }
 
@@ -1152,6 +1282,39 @@ public class JsonConfig {
    }
 
    /**
+    * Removes a property exclusion assigned to the target class.<br>
+    * [Java -&gt; JSON]
+    * 
+    * @param target a class used for searching property exclusions.
+    * @param propertyName the name of the property to be removed from the exclusion list.
+    */
+   public void unregisterPropertyExclusion( Class target, String propertyName ) {
+      if( target != null && propertyName != null ) {
+         Set set = (Set) exclusionMap.get( target );
+         if( set == null ) {
+            set = new HashSet();
+            exclusionMap.put( target, set );
+         }
+         set.remove( propertyName );
+      }
+   }
+   
+   /**
+    * Removes all property exclusions assigned to the target class.<br>
+    * [Java -&gt; JSON]
+    * 
+    * @param target a class used for searching property exclusions.
+    */
+   public void unregisterPropertyExclusions( Class target ) {
+      if( target != null ) {
+         Set set = (Set) exclusionMap.get( target );
+         if( set != null ) {
+            set.clear();
+         }
+      }
+   }
+   
+   /**
     * Removes a PropertyNameProcessor.<br>
     * [JSON -&gt; Java]
     * 
@@ -1161,29 +1324,5 @@ public class JsonConfig {
     */
    public void unregisterPropertyNameProcessor( Class target ) {
       unregisterJavaPropertyNameProcessor( target );
-   }
-   
-   /**
-    * Removes a PropertyNameProcessor.<br>
-    * [JSON -&gt; Java]
-    * 
-    * @param target a class used for searching a PropertyNameProcessor.
-    */
-   public void unregisterJavaPropertyNameProcessor( Class target ) {
-      if( target != null ) {
-         javaPropertyNameProcessorMap.remove( target );
-      }
-   }
-   
-   /**
-    * Removes a PropertyNameProcessor.<br>
-    * [Java -&gt; JSON]
-    * 
-    * @param target a class used for searching a PropertyNameProcessor.
-    */
-   public void unregisterJsonPropertyNameProcessor( Class target ) {
-      if( target != null ) {
-         jsonPropertyNameProcessorMap.remove( target );
-      }
    }
 }

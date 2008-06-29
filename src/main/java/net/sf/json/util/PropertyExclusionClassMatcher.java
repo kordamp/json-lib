@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package net.sf.json.processors;
+package net.sf.json.util;
 
 import java.util.Set;
 
 /**
- * Base class for finding a matching JsonBeanProcessor.<br>
+ * Base class for finding a matching property exlucsion.<br>
  * <ul>
  * <li>DEFAULT - matches the target class with equals().</li>
  * </ul>
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public abstract class JsonBeanProcessorMatcher {
+public abstract class PropertyExclusionClassMatcher {
    /** Matches the target with equals() */
-   public static final JsonBeanProcessorMatcher DEFAULT = new DefaultJsonBeanProcessorMatcher();
+   public static final PropertyExclusionClassMatcher DEFAULT = new DefaultPropertyExclusionClassMatcher();
 
    /**
     * Returns the matching class calculated with the target class and the
@@ -39,7 +39,7 @@ public abstract class JsonBeanProcessorMatcher {
     */
    public abstract Object getMatch( Class target, Set set );
 
-   private static final class DefaultJsonBeanProcessorMatcher extends JsonBeanProcessorMatcher {
+   private static final class DefaultPropertyExclusionClassMatcher extends PropertyExclusionClassMatcher {
       public Object getMatch( Class target, Set set ) {
          if( target != null && set != null && set.contains( target ) ){
             return target;

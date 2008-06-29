@@ -898,7 +898,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
 
       Class beanClass = bean.getClass();
       PropertyNameProcessor propertyNameProcessor = jsonConfig.findJsonPropertyNameProcessor( beanClass );      
-      Collection exclusions = jsonConfig.getMergedExcludes();
+      Collection exclusions = jsonConfig.getMergedExcludes( beanClass );
       JSONObject jsonObject = new JSONObject();
       try{
          PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors( bean );
