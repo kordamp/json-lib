@@ -90,8 +90,10 @@ public class JsonConfig {
    private JsonValueProcessorMatcher jsonValueProcessorMatcher = DEFAULT_JSON_VALUE_PROCESSOR_MATCHER;
    private Map keyMap = new HashMap();
    private NewBeanInstanceStrategy newBeanInstanceStrategy = DEFAULT_NEW_BEAN_INSTANCE_STRATEGY;
-   private Map propertyNameProcessorMap = new HashMap();
-   private PropertyNameProcessorMatcher propertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
+   private Map javaPropertyNameProcessorMap = new HashMap();
+   private PropertyNameProcessorMatcher javaPropertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
+   private Map jsonPropertyNameProcessorMap = new HashMap();
+   private PropertyNameProcessorMatcher jsonPropertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
    private PropertySetStrategy propertySetStrategy;
    /** Root class used when converting to an specific bean */
    private Class rootClass;
@@ -103,9 +105,10 @@ public class JsonConfig {
    }
 
    /**
-    * Registers a listener for Json events.<br>
+    * Registers a listener for JSON events.<br>
     * The events will be triggered only when using the static builders and if event triggering is
-    * enabled.
+    * enabled.<br>
+    * [Java -&gt; JSON]
     * 
     * @see #enableEventTriggering
     * @see #disableEventTriggering
@@ -119,21 +122,24 @@ public class JsonConfig {
    }
 
    /**
-    * Removes all registered JsonBeanProcessors.
+    * Removes all registered JsonBeanProcessors.<br>
+    * [Java -&gt; JSON]
     */
    public void clearJsonBeanProcessors() {
       beanProcessorMap.clear();
    }
 
    /**
-    * Removes all registered listener for Json Events.
+    * Removes all registered listener for JSON Events.<br>
+    * [Java -&gt; JSON]
     */
    public synchronized void clearJsonEventListeners() {
       eventListeners.clear();
    }
 
    /**
-    * Removes all registered JsonValueProcessors.
+    * Removes all registered JsonValueProcessors.<br>
+    * [Java -&gt; JSON]
     */
    public void clearJsonValueProcessors() {
       beanKeyMap.clear();
@@ -143,10 +149,28 @@ public class JsonConfig {
    }
 
    /**
-    * Removes all registered PropertyNameProcessors.
+    * Removes all registered PropertyNameProcessors.<br>
+    * [JSON -&gt; Java]
+    * 
+    * @deprecated use clearJavaPropertyNameProcessors() instead
     */
    public void clearPropertyNameProcessors() {
-      propertyNameProcessorMap.clear();
+      clearJavaPropertyNameProcessors();
+   }   
+   /**
+    * Removes all registered PropertyNameProcessors.<br>
+    * [JSON -&gt; Java]
+    */
+   public void clearJavaPropertyNameProcessors() {
+      javaPropertyNameProcessorMap.clear();
+   }
+
+   /**
+    * Removes all registered PropertyNameProcessors.<br>
+    * [Java -&gt; JSON]
+    */
+   public void clearJsonPropertyNameProcessors() {
+      jsonPropertyNameProcessorMap.clear();
    }
 
    public JsonConfig copy() {
@@ -187,20 +211,24 @@ public class JsonConfig {
       jsc.collectionType = collectionType;
       jsc.enclosedType = enclosedType;
       jsc.jsonValueProcessorMatcher = jsonValueProcessorMatcher;
-      jsc.propertyNameProcessorMatcher = propertyNameProcessorMatcher;
-      jsc.propertyNameProcessorMap.putAll( propertyNameProcessorMap );
+      jsc.javaPropertyNameProcessorMatcher = javaPropertyNameProcessorMatcher;
+      jsc.javaPropertyNameProcessorMap.putAll( javaPropertyNameProcessorMap );
+      jsc.jsonPropertyNameProcessorMatcher = jsonPropertyNameProcessorMatcher;
+      jsc.jsonPropertyNameProcessorMap.putAll( jsonPropertyNameProcessorMap );
       return jsc;
    }
 
    /**
-    * Disables event triggering when building.
+    * Disables event triggering when building.<br>
+    * [Java -&gt; JSON]
     */
    public void disableEventTriggering() {
       triggerEvents = false;
    }
 
    /**
-    * Enables event triggering when building.
+    * Enables event triggering when building.<br>
+    * [Java -&gt; JSON]
     */
    public void enableEventTriggering() {
       triggerEvents = true;
@@ -208,8 +236,8 @@ public class JsonConfig {
 
    /**
     * Finds a DefaultValueProcessor registered to the target class.<br>
-    * Returns null if none is registered. <br>
-    * Used when transforming from Java to Json.
+    * Returns null if none is registered.<br>
+    * [Java -&gt; JSON]
     * 
     * @param target a class used for searching a DefaultValueProcessor.
     */
@@ -226,8 +254,8 @@ public class JsonConfig {
 
    /**
     * Finds a JsonBeanProcessor registered to the target class.<br>
-    * Returns null if none is registered. <br>
-    * Used when transforming from Java to Json.
+    * Returns null if none is registered.<br>
+    * [Java -&gt; JSON]
     * 
     * @param target a class used for searching a JsonBeanProcessor.
     */
@@ -241,8 +269,8 @@ public class JsonConfig {
 
    /**
     * Finds a JsonValueProcessor registered to the target type.<br>
-    * Returns null if none is registered. <br>
-    * Used when transforming from Java to Json.
+    * Returns null if none is registered.<br>
+    * [Java -&gt; JSON]
     * 
     * @param propertyType a class used for searching a JsonValueProcessor.
     */
@@ -264,8 +292,8 @@ public class JsonConfig {
     * <li>key</li>
     * <li>type</li>
     * </ol>
-    * Returns null if none is registered. <br>
-    * Used when transforming from Java to Json.
+    * Returns null if none is registered.<br>
+    * [Java -&gt; JSON]
     * 
     * @param beanClass the class to which the property may belong
     * @param propertyType the type of the property
@@ -304,8 +332,8 @@ public class JsonConfig {
     * <li>key</li>
     * <li>type</li>
     * </ol>
-    * Returns null if none is registered. <br>
-    * Used when transforming from Java to Json.
+    * Returns null if none is registered.<br>
+    * [Java -&gt; JSON]
     * 
     * @param propertyType the type of the property
     * @param key the name of the property which may belong to the target class
@@ -329,21 +357,51 @@ public class JsonConfig {
    /**
     * Finds a PropertyNameProcessor registered to the target class.<br>
     * Returns null if none is registered. <br>
-    * Used when transforming from Json to Java.
+    * [JSON -&gt; Java]
+    * 
+    * @param propertyType a class used for searching a PropertyNameProcessor.
+    * 
+    * @deprecated use findJavaPropertyNameProcessor() instead
+    */
+   public PropertyNameProcessor findPropertyNameProcessor( Class beanClass ) {
+      return findJavaPropertyNameProcessor( beanClass );
+   }
+
+   /**
+    * Finds a PropertyNameProcessor registered to the target class.<br>
+    * Returns null if none is registered.<br>
+    * [JSON -&gt; Java]
     * 
     * @param propertyType a class used for searching a PropertyNameProcessor.
     */
-   public PropertyNameProcessor findPropertyNameProcessor( Class beanClass ) {
-      if( !propertyNameProcessorMap.isEmpty() ) {
-         Object key = propertyNameProcessorMatcher.getMatch( beanClass, propertyNameProcessorMap.keySet() );
-         return (PropertyNameProcessor) propertyNameProcessorMap.get( key );
+   public PropertyNameProcessor findJavaPropertyNameProcessor( Class beanClass ) {
+      if( !javaPropertyNameProcessorMap.isEmpty() ) {
+         Object key = javaPropertyNameProcessorMatcher.getMatch( beanClass, javaPropertyNameProcessorMap.keySet() );
+         return (PropertyNameProcessor) javaPropertyNameProcessorMap.get( key );
 
       }
       return null;
    }
-
+   
    /**
-    * Returns the current array mode conversion
+    * Finds a PropertyNameProcessor registered to the target class.<br>
+    * Returns null if none is registered.<br>
+    * [Java -&gt; JSON]
+    * 
+    * @param propertyType a class used for searching a PropertyNameProcessor.
+    */
+   public PropertyNameProcessor findJsonPropertyNameProcessor( Class beanClass ) {
+      if( !jsonPropertyNameProcessorMap.isEmpty() ) {
+         Object key = jsonPropertyNameProcessorMatcher.getMatch( beanClass, jsonPropertyNameProcessorMap.keySet() );
+         return (PropertyNameProcessor) jsonPropertyNameProcessorMap.get( key );
+
+      }
+      return null;
+   }   
+   
+   /**
+    * Returns the current array mode conversion.<br>
+    * [JSON -&gt; Java]
     * 
     * @return MODE_OBJECT_ARRAY, MODE_LIST or MODE_SET
     */
@@ -352,7 +410,8 @@ public class JsonConfig {
    }
 
    /**
-    * Returns the current attribute/class Map
+    * Returns the current attribute/class Map.<br>
+    * [JSON -&gt; Java]
     * 
     * @return a Map of classes, every key identifies a property or a regexp
     */
@@ -361,7 +420,8 @@ public class JsonConfig {
    }
 
    /**
-    * Returns the current collection type used for collection transformations.
+    * Returns the current collection type used for collection transformations.<br>
+    * [JSON -&gt; Java]
     * 
     * @return the target collection class for conversion
     */
@@ -371,7 +431,8 @@ public class JsonConfig {
 
    /**
     * Returns the configured CycleDetectionStrategy.<br>
-    * Default value is CycleDetectionStrategy.STRICT
+    * Default value is CycleDetectionStrategy.STRICT<br>
+    * [Java -&gt; JSON]
     */
    public CycleDetectionStrategy getCycleDetectionStrategy() {
       return cycleDetectionStrategy;
@@ -379,14 +440,16 @@ public class JsonConfig {
 
    /**
     * Returns the configured DefaultValueProcessorMatcher.<br>
-    * Default value is DefaultValueProcessorMatcher.DEFAULT
+    * Default value is DefaultValueProcessorMatcher.DEFAULT<br>
+    * [Java -&gt; JSON]
     */
    public DefaultValueProcessorMatcher getDefaultValueProcessorMatcher() {
       return defaultValueProcessorMatcher;
    }
 
    /**
-    * Returns the current enclosed type for generic collection transformations.
+    * Returns the current enclosed type for generic collection transformations.<br>
+    * [JSON -&gt; Java]
     * 
     * @return the target type for conversion
     */
@@ -396,7 +459,7 @@ public class JsonConfig {
 
    /**
     * Returns the configured properties for exclusion. <br>
-    * Used when transforming from Java to Json.
+    * [Java -&gt; JSON]
     */
    public String[] getExcludes() {
       return excludes;
@@ -404,15 +467,16 @@ public class JsonConfig {
 
    /**
     * Returns the configured JavaIdentifierTransformer. <br>
-    * Used when transforming from Json to Java.<br>
-    * Default value is JavaIdentifierTransformer.NOOP
+    * Default value is JavaIdentifierTransformer.NOOP<br>
+    * [JSON -&gt; Java]
     */
    public JavaIdentifierTransformer getJavaIdentifierTransformer() {
       return javaIdentifierTransformer;
    }
 
    /**
-    * Returns the configured property filter when serializing to Java.
+    * Returns the configured property filter when serializing to Java.<br>
+    * [JSON -&gt; Java]
     */
    public PropertyFilter getJavaPropertyFilter() {
       return javaPropertyFilter;
@@ -420,21 +484,24 @@ public class JsonConfig {
 
    /**
     * Returns the configured JsonBeanProcessorMatcher.<br>
-    * Default value is JsonBeanProcessorMatcher.DEFAULT
+    * Default value is JsonBeanProcessorMatcher.DEFAULT<br>
+    * [JSON -&gt; Java]
     */
    public JsonBeanProcessorMatcher getJsonBeanProcessorMatcher() {
       return jsonBeanProcessorMatcher;
    }
 
    /**
-    * Returns a list of registered listeners for Json events.
+    * Returns a list of registered listeners for JSON events.<br>
+    * [JSON -&gt; Java]
     */
    public synchronized List getJsonEventListeners() {
       return eventListeners;
    }
 
    /**
-    * Returns the configured property filter when serializing to JSON.
+    * Returns the configured property filter when serializing to JSON.<br>
+    * [Java -&gt; JSON]
     */
    public PropertyFilter getJsonPropertyFilter() {
       return jsonPropertyFilter;
@@ -442,14 +509,16 @@ public class JsonConfig {
 
    /**
     * Returns the configured JsonValueProcessorMatcher.<br>
-    * Default value is JsonValueProcessorMatcher.DEFAULT
+    * Default value is JsonValueProcessorMatcher.DEFAULT<br>
+    * [Java -&gt; JSON]
     */
    public JsonValueProcessorMatcher getJsonValueProcessorMatcher() {
       return jsonValueProcessorMatcher;
    }
 
    /**
-    * Returns a set of default excludes with user-defined excludes.
+    * Returns a set of default excludes with user-defined excludes.<br>
+    * [Java -&gt; JSON]
     */
    public Collection getMergedExcludes() {
       Collection exclusions = new HashSet();
@@ -473,7 +542,8 @@ public class JsonConfig {
 
    /**
     * Returns the configured NewBeanInstanceStrategy.<br>
-    * Default value is NewBeanInstanceStrategy.DEFAULT
+    * Default value is NewBeanInstanceStrategy.DEFAULT<br>
+    * [JSON -&gt; Java]
     */
    public NewBeanInstanceStrategy getNewBeanInstanceStrategy() {
       return newBeanInstanceStrategy;
@@ -481,22 +551,45 @@ public class JsonConfig {
 
    /**
     * Returns the configured PropertyNameProcessorMatcher.<br>
-    * Default value is PropertyNameProcessorMatcher.DEFAULT
+    * Default value is PropertyNameProcessorMatcher.DEFAULT<br>
+    * [JSON -&gt; Java]
+    * 
+    * @deprecated use getJavaPropertyNameProcessorMatcher() instead
     */
    public PropertyNameProcessorMatcher getPropertyNameProcessorMatcher() {
-      return propertyNameProcessorMatcher;
+      return getJavaPropertyNameProcessorMatcher();
+   }
+   
+   /**
+    * Returns the configured PropertyNameProcessorMatcher.<br>
+    * Default value is PropertyNameProcessorMatcher.DEFAULT<br>
+    * [JSON -&gt; Java]
+    */
+   public PropertyNameProcessorMatcher getJavaPropertyNameProcessorMatcher() {
+      return javaPropertyNameProcessorMatcher;
+   }
+   
+   /**
+    * Returns the configured PropertyNameProcessorMatcher.<br>
+    * Default value is PropertyNameProcessorMatcher.DEFAULT<br>
+    * [Java -&gt; JSON]
+    */
+   public PropertyNameProcessorMatcher getJsonPropertyNameProcessorMatcher() {
+      return javaPropertyNameProcessorMatcher;
    }
 
    /**
     * Returns the configured PropertySetStrategy.<br>
-    * Default value is PropertySetStrategy.DEFAULT
+    * Default value is PropertySetStrategy.DEFAULT<br>
+    * [JSON -&gt; Java]
     */
    public PropertySetStrategy getPropertySetStrategy() {
       return propertySetStrategy;
    }
 
    /**
-    * Returns the current root Class.
+    * Returns the current root Class.<br>
+    * [JSON -&gt; Java]
     * 
     * @return the target class for conversion
     */
@@ -506,16 +599,18 @@ public class JsonConfig {
 
    /**
     * Returns true if event triggering is enabled during building.<br>
-    * Default value is false
+    * Default value is false<br>
+    * [Java -&gt; JSON]
     */
    public boolean isEventTriggeringEnabled() {
       return triggerEvents;
    }
 
    /**
-    * Returns true if this jettison convention will be handled when converting to Java.<br>
+    * Returns true if this Jettison convention will be handled when converting to Java.<br>
     * Jettison assumes that "" (empty string) can be assigned to empty elements (objects), which
-    * clearly violates the JSON spec.
+    * clearly violates the JSON spec.<br>
+    * [JSON -&gt; Java]
     */
    public boolean isHandleJettisonEmptyElement() {
       return handleJettisonEmptyElement;
@@ -524,7 +619,8 @@ public class JsonConfig {
    /**
     * Returns true if this jettison convention will be handled when converting to Java.<br>
     * Jettison states the following JSON {'media':{'title':'hello'}} can be set as a single element
-    * JSONArray (media is the array).
+    * JSONArray (media is the array).<br>
+    * [JSON -&gt; Java]
     */
    public boolean isHandleJettisonSingleElementArray() {
       return handleJettisonSingleElementArray;
@@ -532,7 +628,8 @@ public class JsonConfig {
 
    /**
     * Returns true if default excludes will not be used.<br>
-    * Default value is false.
+    * Default value is false.<br>
+    * [Java -&gt; JSON]
     */
    public boolean isIgnoreDefaultExcludes() {
       return ignoreDefaultExcludes;
@@ -540,7 +637,8 @@ public class JsonConfig {
 
    /**
     * Returns true if JPA Transient annotated methods should be ignored.<br>
-    * Default value is false.
+    * Default value is false.<br>
+    * [Java -&gt; JSON]
     */
    public boolean isIgnoreJPATransient() {
       return ignoreJPATransient;
@@ -548,7 +646,8 @@ public class JsonConfig {
 
    /**
     * Returns true if transient fields of a bean will be ignored.<br>
-    * Default value is false.
+    * Default value is false.<br>
+    * [Java -&gt; JSON]
     */
    public boolean isIgnoreTransientFields() {
       return ignoreTransientFields;
@@ -556,7 +655,8 @@ public class JsonConfig {
 
    /**
     * Returns true if map keys will not be transformed.<br>
-    * Default value is false.
+    * Default value is false.<br>
+    * [JSON -&gt; Java]
     */
    public boolean isSkipJavaIdentifierTransformationInMapKeys() {
       return skipJavaIdentifierTransformationInMapKeys;
@@ -564,6 +664,7 @@ public class JsonConfig {
 
    /**
     * Registers a DefaultValueProcessor.<br>
+    * [Java -&gt; JSON]
     * 
     * @param target the class to use as key
     * @param defaultValueProcessor the processor to register
@@ -576,6 +677,7 @@ public class JsonConfig {
 
    /**
     * Registers a JsonBeanProcessor.<br>
+    * [Java -&gt; JSON]
     * 
     * @param target the class to use as key
     * @param jsonBeanProcessor the processor to register
@@ -588,6 +690,7 @@ public class JsonConfig {
 
    /**
     * Registers a JsonValueProcessor.<br>
+    * [Java -&gt; JSON]
     * 
     * @param beanClass the class to use as key
     * @param propertyType the property type to use as key
@@ -601,6 +704,7 @@ public class JsonConfig {
 
    /**
     * Registers a JsonValueProcessor.<br>
+    * [Java -&gt; JSON]
     * 
     * @param propertyType the property type to use as key
     * @param jsonValueProcessor the processor to register
@@ -613,6 +717,7 @@ public class JsonConfig {
 
    /**
     * Registers a JsonValueProcessor.<br>
+    * [Java -&gt; JSON]
     * 
     * @param beanClass the class to use as key
     * @param key the property name to use as key
@@ -626,6 +731,7 @@ public class JsonConfig {
 
    /**
     * Registers a JsonValueProcessor.<br>
+    * [Java -&gt; JSON]
     * 
     * @param key the property name to use as key
     * @param jsonValueProcessor the processor to register
@@ -638,18 +744,46 @@ public class JsonConfig {
 
    /**
     * Registers a PropertyNameProcessor.<br>
+    * [JSON -&gt; Java]
+    * 
+    * @param target the class to use as key
+    * @param propertyNameProcessor the processor to register
+    * 
+    * @deprecated use registerJavaPropertyNameProcessor() instead
+    */
+   public void registerPropertyNameProcessor( Class target, PropertyNameProcessor propertyNameProcessor ) {
+      registerJavaPropertyNameProcessor( target, propertyNameProcessor );
+   }
+   
+   /**
+    * Registers a PropertyNameProcessor.<br>
+    * [JSON -&gt; Java]
     * 
     * @param target the class to use as key
     * @param propertyNameProcessor the processor to register
     */
-   public void registerPropertyNameProcessor( Class target, PropertyNameProcessor propertyNameProcessor ) {
+   public void registerJavaPropertyNameProcessor( Class target, PropertyNameProcessor propertyNameProcessor ) {
       if( target != null && propertyNameProcessor != null ) {
-         propertyNameProcessorMap.put( target, propertyNameProcessor );
+         javaPropertyNameProcessorMap.put( target, propertyNameProcessor );
+      }
+   }
+   
+   /**
+    * Registers a PropertyNameProcessor.<br>
+    * [Java -&gt; JSON]
+    * 
+    * @param target the class to use as key
+    * @param propertyNameProcessor the processor to register
+    */
+   public void registerJsonPropertyNameProcessor( Class target, PropertyNameProcessor propertyNameProcessor ) {
+      if( target != null && propertyNameProcessor != null ) {
+         jsonPropertyNameProcessorMap.put( target, propertyNameProcessor );
       }
    }
 
    /**
-    * Removes a listener for Json events.<br>
+    * Removes a listener for JSON events.<br>
+    * [Java -&gt; JSON]
     * 
     * @see #addJsonEventListener(JsonEventListener)
     * @param listener a listener for events
@@ -689,14 +823,17 @@ public class JsonConfig {
       collectionType = DEFAULT_COLLECTION_TYPE;
       enclosedType = null;
       jsonValueProcessorMatcher = DEFAULT_JSON_VALUE_PROCESSOR_MATCHER;
-      propertyNameProcessorMap.clear();
-      propertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
+      javaPropertyNameProcessorMap.clear();
+      javaPropertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
+      jsonPropertyNameProcessorMap.clear();
+      jsonPropertyNameProcessorMatcher = DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER;
       beanProcessorMap.clear();
    }
 
    /**
     * Sets the current array mode for conversion.<br>
-    * If the value is not MODE_LIST, MODE_OBJECT_ARRAY nor MODE_SET, then MODE_LIST will be used.
+    * If the value is not MODE_LIST, MODE_OBJECT_ARRAY nor MODE_SET, then MODE_LIST will be used.<br>
+    * [JSON -&gt; Java]
     * 
     * @param arrayMode array mode for conversion
     */
@@ -713,7 +850,8 @@ public class JsonConfig {
    }
 
    /**
-    * Sets the current attribute/Class Map
+    * Sets the current attribute/Class Map<br>
+    * [JSON -&gt; Java]
     * 
     * @param classMap a Map of classes, every key identifies a property or a regexp
     */
@@ -722,7 +860,8 @@ public class JsonConfig {
    }
 
    /**
-    * Sets the current collection type used for collection transformations.
+    * Sets the current collection type used for collection transformations.<br>
+    * [JSON -&gt; Java]
     * 
     * @param collectionType the target collection class for conversion
     */
@@ -739,7 +878,8 @@ public class JsonConfig {
 
    /**
     * Sets a CycleDetectionStrategy to use.<br>
-    * Will set default value (CycleDetectionStrategy.STRICT) if null.
+    * Will set default value (CycleDetectionStrategy.STRICT) if null.<br>
+    * [Java -&gt; JSON]
     */
    public void setCycleDetectionStrategy( CycleDetectionStrategy cycleDetectionStrategy ) {
       this.cycleDetectionStrategy = cycleDetectionStrategy == null ? DEFAULT_CYCLE_DETECTION_STRATEGY
@@ -748,7 +888,8 @@ public class JsonConfig {
 
    /**
     * Sets a DefaultValueProcessorMatcher to use.<br>
-    * Will set default value (DefaultValueProcessorMatcher.DEFAULT) if null.
+    * Will set default value (DefaultValueProcessorMatcher.DEFAULT) if null.<br>
+    * [Java -&gt; JSON]
     */
    public void setDefaultValueProcessorMatcher( DefaultValueProcessorMatcher defaultValueProcessorMatcher ) {
       this.defaultValueProcessorMatcher = defaultValueProcessorMatcher == null ? DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER
@@ -756,7 +897,8 @@ public class JsonConfig {
    }
 
    /**
-    * Sets the current enclosed type for generic collection transformations.
+    * Sets the current enclosed type for generic collection transformations.<br>
+    * [JSON -&gt; Java]
     * 
     * @param enclosedType the target type for conversion
     */
@@ -766,7 +908,8 @@ public class JsonConfig {
 
    /**
     * Sets the excludes to use.<br>
-    * Will set default value ([]) if null.
+    * Will set default value ([]) if null.<br>
+    * [Java -&gt; JSON]
     */
    public void setExcludes( String[] excludes ) {
       this.excludes = excludes == null ? EMPTY_EXCLUDES : excludes;
@@ -775,7 +918,8 @@ public class JsonConfig {
    /**
     * Activate/Deactivate handling this jettison convention when converting to Java.<br>
     * Jettison states that "" (empty string) can be assigned to empty elements (objects), which
-    * clearly violates the JSON spec.
+    * clearly violates the JSON spec.<br>
+    * [JSON -&gt; Java]
     */
    public void setHandleJettisonEmptyElement( boolean handleJettisonEmptyElement ) {
       this.handleJettisonEmptyElement = handleJettisonEmptyElement;
@@ -784,7 +928,8 @@ public class JsonConfig {
    /**
     * Activate/Deactivate handling this jettison convention when converting to Java.<br> * Jettison
     * states the following JSON {'media':{'title':'hello'}} can be set as a single element JSONArray
-    * (media is the array).
+    * (media is the array).<br>
+    * [JSON -&gt; Java]
     */
    public void setHandleJettisonSingleElementArray( boolean handleJettisonSingleElementArray ) {
       this.handleJettisonSingleElementArray = handleJettisonSingleElementArray;
@@ -792,6 +937,7 @@ public class JsonConfig {
 
    /**
     * Sets if default excludes would be skipped when building.<br>
+    * [Java -&gt; JSON]
     */
    public void setIgnoreDefaultExcludes( boolean ignoreDefaultExcludes ) {
       this.ignoreDefaultExcludes = ignoreDefaultExcludes;
@@ -799,6 +945,7 @@ public class JsonConfig {
 
    /**
     * Sets if JPA Transient annotated methods woul be skipped when building.<br>
+    * [Java -&gt; JSON]
     */
    public void setIgnoreJPATransient( boolean ignoreJPATransient ) {
       this.ignoreJPATransient = ignoreJPATransient;
@@ -806,6 +953,7 @@ public class JsonConfig {
 
    /**
     * Sets if transient fields would be skipped when building.<br>
+    * [Java -&gt; JSON]
     */
    public void setIgnoreTransientFields( boolean ignoreTransientFields ) {
       this.ignoreTransientFields = ignoreTransientFields;
@@ -813,7 +961,8 @@ public class JsonConfig {
 
    /**
     * Sets the JavaIdentifierTransformer to use.<br>
-    * Will set default value (JavaIdentifierTransformer.NOOP) if null.
+    * Will set default value (JavaIdentifierTransformer.NOOP) if null.<br>
+    * [JSON -&gt; Java]
     */
    public void setJavaIdentifierTransformer( JavaIdentifierTransformer javaIdentifierTransformer ) {
       this.javaIdentifierTransformer = javaIdentifierTransformer == null ? DEFAULT_JAVA_IDENTIFIER_TRANSFORMER
@@ -821,7 +970,8 @@ public class JsonConfig {
    }
 
    /**
-    * Sets a property filter used when serializing to Java.
+    * Sets a property filter used when serializing to Java.<br>
+    * [JSON -&gt; Java]
     * 
     * @param javaPropertyFilter the property filter
     */
@@ -831,7 +981,8 @@ public class JsonConfig {
 
    /**
     * Sets a JsonBeanProcessorMatcher to use.<br>
-    * Will set default value (JsonBeanProcessorMatcher.DEFAULT) if null.
+    * Will set default value (JsonBeanProcessorMatcher.DEFAULT) if null.<br>
+    * [Java -&gt; JSON]
     */
    public void setJsonBeanProcessorMatcher( JsonBeanProcessorMatcher jsonBeanProcessorMatcher ) {
       this.jsonBeanProcessorMatcher = jsonBeanProcessorMatcher == null ? DEFAULT_JSON_BEAN_PROCESSOR_MATCHER
@@ -839,7 +990,8 @@ public class JsonConfig {
    }
 
    /**
-    * Sets a property filter used when serializing to JSON.
+    * Sets a property filter used when serializing to JSON.<br>
+    * [Java -&gt; JSON]
     * 
     * @param jsonPropertyFilter the property filter
     */
@@ -849,7 +1001,8 @@ public class JsonConfig {
 
    /**
     * Sets a JsonValueProcessorMatcher to use.<br>
-    * Will set default value (JsonValueProcessorMatcher.DEFAULT) if null.
+    * Will set default value (JsonValueProcessorMatcher.DEFAULT) if null.<br>
+    * [Java -&gt; JSON]
     */
    public void setJsonValueProcessorMatcher( JsonValueProcessorMatcher jsonValueProcessorMatcher ) {
       this.jsonValueProcessorMatcher = jsonValueProcessorMatcher == null ? DEFAULT_JSON_VALUE_PROCESSOR_MATCHER
@@ -858,7 +1011,8 @@ public class JsonConfig {
 
    /**
     * Sets the NewBeanInstanceStrategy to use.<br>
-    * Will set default value (NewBeanInstanceStrategy.DEFAULT) if null.
+    * Will set default value (NewBeanInstanceStrategy.DEFAULT) if null.<br>
+    * [JSON -&gt; Java]
     */
    public void setNewBeanInstanceStrategy( NewBeanInstanceStrategy newBeanInstanceStrategy ) {
       this.newBeanInstanceStrategy = newBeanInstanceStrategy == null ? DEFAULT_NEW_BEAN_INSTANCE_STRATEGY
@@ -867,23 +1021,47 @@ public class JsonConfig {
 
    /**
     * Sets a PropertyNameProcessorMatcher to use.<br>
-    * Will set default value (PropertyNameProcessorMatcher.DEFAULT) if null.
+    * Will set default value (PropertyNameProcessorMatcher.DEFAULT) if null.<br>
+    * [JSON -&gt; Java]
+    * 
+    * @deprecated use setJavaPropertyNameProcessorMatcher() instead
     */
    public void setPropertyNameProcessorMatcher( PropertyNameProcessorMatcher propertyNameProcessorMatcher ) {
-      this.propertyNameProcessorMatcher = propertyNameProcessorMatcher == null ? DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER
+      setJavaPropertyNameProcessorMatcher( propertyNameProcessorMatcher );
+   }
+   
+   /**
+    * Sets a PropertyNameProcessorMatcher to use.<br>
+    * Will set default value (PropertyNameProcessorMatcher.DEFAULT) if null.<br>
+    * [JSON -&gt; Java]
+    */
+   public void setJavaPropertyNameProcessorMatcher( PropertyNameProcessorMatcher propertyNameProcessorMatcher ) {
+      this.javaPropertyNameProcessorMatcher = propertyNameProcessorMatcher == null ? DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER
+            : propertyNameProcessorMatcher;
+   }
+   
+   /**
+    * Sets a PropertyNameProcessorMatcher to use.<br>
+    * Will set default value (PropertyNameProcessorMatcher.DEFAULT) if null.<br>
+    * [Java -&gt; JSON]
+    */
+   public void setJsonPropertyNameProcessorMatcher( PropertyNameProcessorMatcher propertyNameProcessorMatcher ) {
+      this.jsonPropertyNameProcessorMatcher = propertyNameProcessorMatcher == null ? DEFAULT_PROPERTY_NAME_PROCESSOR_MATCHER
             : propertyNameProcessorMatcher;
    }
 
    /**
     * Sets a PropertySetStrategy to use.<br>
-    * Will set default value (PropertySetStrategy.DEFAULT) if null.
+    * Will set default value (PropertySetStrategy.DEFAULT) if null.<br>
+    * [JSON -&gt; Java]
     */
    public void setPropertySetStrategy( PropertySetStrategy propertySetStrategy ) {
       this.propertySetStrategy = propertySetStrategy;
    }
 
    /**
-    * Sets the current root Class
+    * Sets the current root Class.<br>
+    * [JSON -&gt; Java]
     * 
     * @param rootClass the target class for conversion
     */
@@ -892,14 +1070,16 @@ public class JsonConfig {
    }
 
    /**
-    * Sets if transient fields of beans would be skipped when building.<br>
+    * Sets if property name as JavaIndetifier transformations would be skipped.<br>
+    * [JSON -&gt; Java]
     */
    public void setSkipJavaIdentifierTransformationInMapKeys( boolean skipJavaIdentifierTransformationInMapKeys ) {
       this.skipJavaIdentifierTransformationInMapKeys = skipJavaIdentifierTransformationInMapKeys;
    }
 
    /**
-    * Removes a DefaultValueProcessor.
+    * Removes a DefaultValueProcessor.<br>
+    * [Java -&gt; JSON]
     * 
     * @param target a class used for searching a DefaultValueProcessor.
     */
@@ -910,7 +1090,8 @@ public class JsonConfig {
    }
 
    /**
-    * Removes a JsonBeanProcessor.
+    * Removes a JsonBeanProcessor.<br>
+    * [Java -&gt; JSON]
     * 
     * @param target a class used for searching a JsonBeanProcessor.
     */
@@ -921,7 +1102,8 @@ public class JsonConfig {
    }
 
    /**
-    * Removes a JsonValueProcessor.
+    * Removes a JsonValueProcessor.<br>
+    * [Java -&gt; JSON]
     * 
     * @param propertyType a class used for searching a JsonValueProcessor.
     */
@@ -932,7 +1114,8 @@ public class JsonConfig {
    }
 
    /**
-    * Removes a JsonValueProcessor.
+    * Removes a JsonValueProcessor.<br>
+    * [Java -&gt; JSON]
     * 
     * @param beanClass the class to which the property may belong
     * @param propertyType the type of the property
@@ -944,7 +1127,8 @@ public class JsonConfig {
    }
 
    /**
-    * Removes a JsonValueProcessor.
+    * Removes a JsonValueProcessor.<br>
+    * [Java -&gt; JSON]
     * 
     * @param beanClass the class to which the property may belong
     * @param key the name of the property which may belong to the target class
@@ -956,7 +1140,8 @@ public class JsonConfig {
    }
 
    /**
-    * Removes a JsonValueProcessor.
+    * Removes a JsonValueProcessor.<br>
+    * [Java -&gt; JSON]
     * 
     * @param key the name of the property which may belong to the target class
     */
@@ -967,13 +1152,38 @@ public class JsonConfig {
    }
 
    /**
-    * Removes a PropertyNameProcessor.
+    * Removes a PropertyNameProcessor.<br>
+    * [JSON -&gt; Java]
+    * 
+    * @param target a class used for searching a PropertyNameProcessor.
+    * 
+    * @deprecated use unregisterJavaPropertyNameProcessor() instead
+    */
+   public void unregisterPropertyNameProcessor( Class target ) {
+      unregisterJavaPropertyNameProcessor( target );
+   }
+   
+   /**
+    * Removes a PropertyNameProcessor.<br>
+    * [JSON -&gt; Java]
     * 
     * @param target a class used for searching a PropertyNameProcessor.
     */
-   public void unregisterPropertyNameProcessor( Class target ) {
+   public void unregisterJavaPropertyNameProcessor( Class target ) {
       if( target != null ) {
-         propertyNameProcessorMap.remove( target );
+         javaPropertyNameProcessorMap.remove( target );
+      }
+   }
+   
+   /**
+    * Removes a PropertyNameProcessor.<br>
+    * [Java -&gt; JSON]
+    * 
+    * @param target a class used for searching a PropertyNameProcessor.
+    */
+   public void unregisterJsonPropertyNameProcessor( Class target ) {
+      if( target != null ) {
+         jsonPropertyNameProcessorMap.remove( target );
       }
    }
 }

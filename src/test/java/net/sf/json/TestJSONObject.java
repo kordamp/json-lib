@@ -502,6 +502,17 @@ public class TestJSONObject extends TestCase {
       assertTrue( json.isEmpty() );
    }
 
+   public void testFromBeanWithJsonPropertyNameProcessor(){
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.registerJsonPropertyNameProcessor( BeanA.class, new PrefixerPropertyNameProcessor("json") );
+      JSONObject jsonObject = JSONObject.fromObject( new BeanA(), jsonConfig );
+      assertNotNull( jsonObject );
+      assertEquals( 3, jsonObject.names().size() );
+      assertTrue( jsonObject.has( "jsonbool" ) );
+      assertTrue( jsonObject.has( "jsonstring" ) );
+      assertTrue( jsonObject.has( "jsoninteger" ) );
+   }
+
    public void testFromDynaBean_full() throws Exception {
       Map properties = new HashMap();
       properties.put( "string", String.class );
@@ -1486,12 +1497,12 @@ public class TestJSONObject extends TestCase {
       assertEquals( "value", bean.getAttributes()
             .get( "key" ) );
    }
-
-   public void testToBeanWithPropertyNameProcessor(){
+   
+   public void testToBeanWithJavaPropertyNameProcessor(){
       String json = "{bool:false}";
       JSONObject jsonObject = JSONObject.fromObject( json );
       JsonConfig jsonConfig = new JsonConfig();
-      jsonConfig.registerPropertyNameProcessor( BeanA.class, new SwapPropertyNameProcessor() );
+      jsonConfig.registerJavaPropertyNameProcessor( BeanA.class, new SwapPropertyNameProcessor() );
       jsonConfig.setRootClass( BeanA.class );
       BeanA bean = (BeanA) JSONObject.toBean( jsonObject, jsonConfig );
       assertNotNull( bean );
@@ -1574,6 +1585,18 @@ public class TestJSONObject extends TestCase {
             return true;
          }
          return false;
+      }
+   }
+   
+   public static class PrefixerPropertyNameProcessor implements PropertyNameProcessor {
+      private final String prefix;
+
+      public PrefixerPropertyNameProcessor( String prefix ) {
+         this.prefix = prefix;
+      }
+
+      public String processPropertyName( Class beanClass, String name ) {
+         return prefix + name;
       }
    }
    

@@ -14,7 +14,13 @@
          desc="Current development release">
          <action
             dev="Andres Almiray"
-            type="fix"
+            type="add"
+            issue="1996152">
+            Define reverse PropertyNameProcessor
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="add"
             issue="2005661">
             Add class name to skipped properties messages
          </action>

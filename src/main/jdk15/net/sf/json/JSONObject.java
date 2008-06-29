@@ -60,6 +60,7 @@ import net.sf.ezmorph.array.ObjectArrayMorpher;
 import net.sf.ezmorph.bean.BeanMorpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
@@ -321,7 +322,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          String key = Map.class.isAssignableFrom( beanClass )
                && jsonConfig.isSkipJavaIdentifierTransformationInMapKeys() ? name
                : JSONUtils.convertToJavaIdentifier( name, jsonConfig );
-         PropertyNameProcessor propertyNameProcessor = jsonConfig.findPropertyNameProcessor( beanClass );
+         PropertyNameProcessor propertyNameProcessor = jsonConfig.findJavaPropertyNameProcessor( beanClass );
          if( propertyNameProcessor != null ){
             key = propertyNameProcessor.processPropertyName( beanClass, key );
          }
@@ -895,12 +896,13 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          return json;
       }
 
+      Class beanClass = bean.getClass();
+      PropertyNameProcessor propertyNameProcessor = jsonConfig.findJsonPropertyNameProcessor( beanClass );      
       Collection exclusions = jsonConfig.getMergedExcludes();
       JSONObject jsonObject = new JSONObject();
       try{
          PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors( bean );
          PropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
-         Class beanClass = bean.getClass();
          for( int i = 0; i < pds.length; i++ ){
             String key = pds[i].getName();
             if( exclusions.contains( key ) ){
@@ -936,6 +938,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   if( !JsonVerifier.isValidJsonValue( value ) ){
                      throw new JSONException( "Value is not a valid JSON value. " + value );
                   }
+               }
+               if( propertyNameProcessor != null ){
+                  key = propertyNameProcessor.processPropertyName( beanClass, key );
                }
                setValue( jsonObject, key, value, type, jsonConfig );
             }else{
