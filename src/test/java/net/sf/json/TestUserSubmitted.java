@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -555,6 +557,31 @@ public class TestUserSubmitted extends TestCase {
       // will fail if throws an exception
       jsonConfig.setExcludes( new String[] { "parent" } );
       JSONObject.fromObject( parent, jsonConfig );
+   }
+   
+   public void testJSONArrayIterator() {
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.add( "1" );
+      jsonArray.add( "2" );
+      jsonArray.add( "3" );
+
+      List list = new LinkedList();
+      list.add( "4" );
+      list.add( "5" );
+      list.add( "6" );
+      jsonArray.add( list );
+
+      List newList = new LinkedList();
+      newList.add( "7" );
+      newList.add( "8" );
+      newList.add( "9" );
+
+      Assertions.assertEquals( JSONArray.fromObject( "['1','2','3',['4','5','6']]" ), jsonArray );
+
+      ListIterator listIterator = jsonArray.listIterator();
+      listIterator.add( newList );
+
+      Assertions.assertEquals( JSONArray.fromObject( "[['7','8','9'],'1','2','3',['4','5','6']]" ), jsonArray );
    }
 
    public static class RunnableImpl implements Runnable {

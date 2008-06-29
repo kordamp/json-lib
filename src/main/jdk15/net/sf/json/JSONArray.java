@@ -49,11 +49,13 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import net.sf.ezmorph.Morpher;
@@ -2060,7 +2062,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * Returns an Iterator for this JSONArray
     */
    public Iterator iterator() {
-      return this.elements.iterator();
+      return new JSONArrayListIterator();
    }
 
    /**
@@ -2104,11 +2106,14 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    }
 
    public ListIterator listIterator() {
-      return elements.listIterator();
+      return listIterator( 0 );
    }
 
    public ListIterator listIterator( int index ) {
-      return elements.listIterator( index );
+      if( index < 0 || index > size() )
+         throw new IndexOutOfBoundsException( "Index: " + index );
+
+      return new JSONArrayListIterator( index );
    }
 
    /**
@@ -2586,5 +2591,90 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
          }
       }
       return _processValue( value, jsonConfig );
+   }
+   
+   private class JSONArrayListIterator implements ListIterator {
+      int currentIndex = 0;
+      int lastIndex = -1;
+      
+      JSONArrayListIterator() {
+         
+      }
+      
+      JSONArrayListIterator( int index ) {
+         currentIndex = index;
+      }
+
+      public boolean hasNext() {
+         return currentIndex != size();
+      }
+
+      public Object next() {
+         try {
+            Object next = get( currentIndex );
+            lastIndex = currentIndex++;
+            return next;
+         } catch( IndexOutOfBoundsException e ) {
+            throw new NoSuchElementException();
+         }
+      }
+
+      public void remove() {
+         if( lastIndex == -1 )
+            throw new IllegalStateException();
+         try {
+            JSONArray.this.remove( lastIndex );
+            if( lastIndex < currentIndex ){
+               currentIndex--;
+            }
+            lastIndex = -1;
+         } catch( IndexOutOfBoundsException e ) {
+            throw new ConcurrentModificationException();
+         }
+      }
+
+      public boolean hasPrevious() {
+         return currentIndex != 0;
+      }
+
+      public Object previous() {
+         try {
+            int index = currentIndex - 1;
+            Object previous = get( index );
+            lastIndex = currentIndex = index;
+            return previous;
+         } catch( IndexOutOfBoundsException e ) {
+            throw new NoSuchElementException();
+         }
+      }
+
+      public int nextIndex() {
+         return currentIndex;
+      }
+
+      public int previousIndex() {
+         return currentIndex - 1;
+      }
+
+      public void set( Object obj ) {
+         if( lastIndex == -1 ){
+            throw new IllegalStateException();
+         }
+
+         try {
+            JSONArray.this.set( lastIndex, obj );
+         } catch( IndexOutOfBoundsException ex ) {
+            throw new ConcurrentModificationException();
+         }
+      }
+
+      public void add( Object obj ) {
+         try {
+            JSONArray.this.add( currentIndex++, obj );
+            lastIndex = -1;
+         } catch( IndexOutOfBoundsException ex ) {
+            throw new ConcurrentModificationException();
+         }
+      }
    }
 }

@@ -1916,7 +1916,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    }
 
    public Set entrySet() {
-      return properties.entrySet();
+      return Collections.unmodifiableSet( properties.entrySet() );
    }
 
    public boolean equals( Object obj ) {
@@ -2232,12 +2232,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     */
    public Iterator keys() {
       verifyIsNull();
-      return this.properties.keySet()
-            .iterator();
+      return keySet().iterator();
    }
 
    public Set keySet() {
-      return properties.keySet();
+      return Collections.unmodifiableSet( properties.keySet() );
    }
 
    /**

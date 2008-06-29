@@ -97,7 +97,7 @@ import org.apache.commons.logging.LogFactory;
  * The generic <code>get()</code> and <code>opt()</code> methods return an
  * object, which you can cast or query for type. There are also typed
  * <code>get</code> and <code>opt</code> methods that do type checking and
- * type coersion for you.
+ * type coercion for you.
  * <p>
  * The <code>put</code> methods adds values to an object. For example,
  *
@@ -107,7 +107,7 @@ import org.apache.commons.logging.LogFactory;
  * produces the string <code>{"JSON": "Hello, World"}</code>.
  * <p>
  * The texts produced by the <code>toString</code> methods strictly conform to
- * the JSON sysntax rules. The constructors are more forgiving in the texts they
+ * the JSON syntax rules. The constructors are more forgiving in the texts they
  * will accept:
  * <ul>
  * <li>An extra <code>,</code>&nbsp;<small>(comma)</small> may appear just
@@ -1684,7 +1684,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    }
 
    public Set entrySet() {
-      return properties.entrySet();
+      return Collections.unmodifiableSet( properties.entrySet() );
    }
 
    public boolean equals( Object obj ) {
@@ -2000,12 +2000,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     */
    public Iterator keys() {
       verifyIsNull();
-      return this.properties.keySet()
-            .iterator();
+      return keySet().iterator();
    }
 
    public Set keySet() {
-      return properties.keySet();
+      return Collections.unmodifiableSet( properties.keySet() );
    }
 
    /**
