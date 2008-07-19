@@ -49,6 +49,7 @@
    <target name="compile.jdk5" depends="compile" description="Compile the code (jdk5)">
       <delete file="${maven.build.output}/net/sf/json/JSONObject.class" />
       <delete file="${maven.build.output}/net/sf/json/JSONArray.class" />
+      <delete file="${maven.build.output}/net/sf/json/util/JSONUtils.class" />
       <javac destdir="${maven.build.output}" debug="true" deprecation="true" source="1.5" target="1.5">
          <src path="${project.src.jdk5.dir}" />
          <classpath>

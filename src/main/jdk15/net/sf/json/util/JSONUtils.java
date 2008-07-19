@@ -490,7 +490,7 @@ public final class JSONUtils {
       char c = 0;
       int i;
       int len = string.length();
-      StringBuffer sb = new StringBuffer( len * 2 );
+      StringBuilder sb = new StringBuilder( len * 2 );
       String t;
       char[] chars = string.toCharArray();
       char[] buffer = new char[1030];

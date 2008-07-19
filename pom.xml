@@ -134,6 +134,12 @@
 	    <role>Patch for propagating JsonConfig to missing methods on JSONObject</role>
 	 </roles>
       </contributor>
+      <contributor>
+         <name>Peter Schubert</name>
+	 <roles>
+            <role>Performance patch for JSONUtils</role>
+	 </roles>
+      </contributor>
    </contributors>
 
    <dependencies>

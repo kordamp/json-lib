@@ -14,6 +14,12 @@
          desc="Current development release">
          <action
             dev="Andres Almiray"
+            type="fix"
+            issue="2020482">
+            Performance improvement for JSONUtils.quote Thanks to Peter Schubert (provided a patch)
+         </action>
+         <action
+            dev="Andres Almiray"
             type="add"
             issue="1969942">
             Excludes should allow for exclusions based on class
