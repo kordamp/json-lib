@@ -498,7 +498,7 @@ public final class JSONUtils {
       sb.append( '"' );
       for( i = 0; i < len; i += 1 ) {
          if( bufferIndex > 1024 ) {
-            sb.append( buffer, 0, bufferIndex - 1 );
+            sb.append( buffer, 0, bufferIndex );
             bufferIndex = 0;
          }
          b = c;
