@@ -1130,8 +1130,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             }else if( c != ':' ){
                throw tokener.syntaxError( "Expected a ':' after a key" );
             }
+            
+            char peek = tokener.peek();
+            boolean quoted = peek == '"' || peek == '\'';
             Object v = tokener.nextValue( jsonConfig );
-            if( !JSONUtils.isFunctionHeader( v ) ){
+            if( quoted || !JSONUtils.isFunctionHeader( v ) ){
                if( exclusions.contains( key ) ){
                   switch( tokener.nextClean() ){
                      case ';':
@@ -1151,23 +1154,15 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   continue;
                }
                if( jsonPropertyFilter == null || !jsonPropertyFilter.apply( tokener, key, v ) ){
-                  if( v instanceof String && JSONUtils.mayBeJSON( (String) v ) ){
-                     value = JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE;
-                     if( jsonObject.properties.containsKey( key ) ){
-                        jsonObject.accumulate( key, value, jsonConfig );
-                        firePropertySetEvent( key, value, true, jsonConfig );
-                     }else{
-                        jsonObject.element( key, value, jsonConfig );
-                        firePropertySetEvent( key, value, false, jsonConfig );
-                     }
+                  if( quoted && v instanceof String && (JSONUtils.mayBeJSON( (String) v ) || JSONUtils.isFunction( v ))){
+                     v = JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE;
+                  }
+                  if( jsonObject.properties.containsKey( key ) ){
+                     jsonObject.accumulate( key, v, jsonConfig );
+                     firePropertySetEvent( key, v, true, jsonConfig );
                   }else{
-                     if( jsonObject.properties.containsKey( key ) ){
-                        jsonObject.accumulate( key, v, jsonConfig );
-                        firePropertySetEvent( key, v, true, jsonConfig );
-                     }else{
-                        jsonObject.element( key, v, jsonConfig );
-                        firePropertySetEvent( key, v, false, jsonConfig );
-                     }
+                     jsonObject.element( key, v, jsonConfig );
+                     firePropertySetEvent( key, v, false, jsonConfig );
                   }
                }
             }else{

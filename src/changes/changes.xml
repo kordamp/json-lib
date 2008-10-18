@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2140653">
+            JavaScript functions as quoted strings in values
+         </action>  
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2063201">
             Infinite loop in JSONArray._fromJSONTokener
          </action>         
