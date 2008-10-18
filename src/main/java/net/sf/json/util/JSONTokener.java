@@ -92,6 +92,21 @@ public class JSONTokener {
     */
    public JSONTokener( String s ) {
       this.myIndex = 0;
+      if( s!= null ) {
+         s = s.trim();
+      } else {
+         s = "";
+      }
+      if(  s.length() > 0 ){
+         char first = s.charAt( 0 );
+         char last = s.charAt( s.length() - 1 );
+         if( first == '[' && last != ']' ) {
+            throw syntaxError( "Found starting '[' but missing ']' at the end." );
+         }
+         if( first == '{' && last != '}' ) {
+            throw syntaxError( "Found starting '{' but missing '}' at the end." );
+         }
+      }
       this.mySource = s;
    }
 

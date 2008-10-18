@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2063201">
+            Infinite loop in JSONArray._fromJSONTokener
+         </action>         
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2020482">
             Performance improvement for JSONUtils.quote Thanks to Peter Schubert (provided a patch)
          </action>

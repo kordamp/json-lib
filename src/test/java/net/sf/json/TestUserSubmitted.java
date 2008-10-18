@@ -583,6 +583,26 @@ public class TestUserSubmitted extends TestCase {
 
       Assertions.assertEquals( JSONArray.fromObject( "[['7','8','9'],'1','2','3',['4','5','6']]" ), jsonArray );
    }
+   
+   public void testJSONArray_badFormattedString() {
+      String badJson = "[{\"a\":\"b\"},";
+      try {
+         JSONArray.fromObject(badJson);
+         fail("Expecting a syntax error from JSONTokener.");
+      }catch( JSONException jsone ) {
+         assertTrue( jsone.getMessage().startsWith( "Found starting '[' but missing ']' at the end." ));
+      }
+   }
+   
+   public void testJSONObject_badFormattedString() {
+      String badJson = "{\"a\":\"b\"},";
+      try {
+         JSONObject.fromObject(badJson);
+         fail("Expecting a syntax error from JSONTokener.");
+      }catch( JSONException jsone ) {
+         assertTrue( jsone.getMessage().startsWith( "Found starting '{' but missing '}' at the end." ));
+      }
+   }
 
    public static class RunnableImpl implements Runnable {
       public void run() {
