@@ -15,13 +15,19 @@
          <action
             dev="Andres Almiray"
             type="fix"
-            issue="2383773 ">
+            issue="2270596">
+            JSONUtils not thread safe
+         </action>  
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="2383773">
             Array of Maps with null key causes exception
          </action>         
          <action
             dev="Andres Almiray"
             type="fix"
-            issue="2408679 ">
+            issue="2408679">
             JsonSlurper.parse(Reader) does not work correctly. Thanks to Tom Nichols (provided testcase)
          </action>  
          <action
