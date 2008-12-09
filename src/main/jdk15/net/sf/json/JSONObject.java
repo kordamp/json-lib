@@ -60,6 +60,7 @@ import net.sf.ezmorph.array.ObjectArrayMorpher;
 import net.sf.ezmorph.bean.BeanMorpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonBeanProcessor;
@@ -1058,7 +1059,17 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       JSONObject jsonObject = new JSONObject();
       PropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
       for( Iterator i = sa.iterator(); i.hasNext(); ){
-         String key = (String) i.next();
+         Object k =  i.next();
+         if( k == null ){
+            throw new JSONException("JSON keys cannot be null.");
+         }
+         if( !(k instanceof String)) {
+            throw new ClassCastException("JSON keys must be strings.");
+         }
+         String key = String.valueOf( k );
+         if( "null".equals( key )){
+            throw new NullPointerException("JSON keys must not be null nor the 'null' string.");
+         }
          if( exclusions.contains( key ) ){
             continue;
          }
@@ -1264,7 +1275,16 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                .iterator(); entries.hasNext(); ){
             Map.Entry entry = (Map.Entry) entries.next();
             Object k = entry.getKey();
-            String key = (k instanceof String) ? (String) k : String.valueOf( k );
+            if( k == null ){
+               throw new JSONException("JSON keys cannot be null.");
+            }
+            if( !(k instanceof String)) {
+               throw new ClassCastException("JSON keys must be strings.");
+            }
+            String key = String.valueOf( k );
+            if( "null".equals( key )){
+               throw new NullPointerException("JSON keys must not be null nor the 'null' string.");
+            }
             if( exclusions.contains( key ) ){
                continue;
             }

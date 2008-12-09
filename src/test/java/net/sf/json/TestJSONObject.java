@@ -1644,4 +1644,7 @@ public class TestJSONObject extends TestCase {
          return name;
       }
    }
+
+   public void test_fromJSONObject() {
+   }
 }

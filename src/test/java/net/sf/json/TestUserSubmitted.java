@@ -609,6 +609,34 @@ public class TestUserSubmitted extends TestCase {
       assertTrue( json.get( "func" ) instanceof String );
       assertEquals( "\"function(){blah;}\"", json.get( "func" ));
    }
+ 
+   public void testJsonWithNullKeys() {
+      Map map = new HashMap();
+      map.put("key", "value");
+      map.put(null, "value2");
+
+      Object[] obj = {map};
+
+      try {
+         JSONSerializer.toJSON( obj );
+         fail( "Should have thrown a ClassCastException" );
+      } catch( JSONException expected ) {
+         // ok
+      }
+  }
+
+  public void testJsonWithNullKeys2() {
+      Map map = new HashMap();
+      map.put("key", "value");
+      map.put(null, "value2");
+
+      try {
+         System.err.println(JSONSerializer.toJSON( map ));
+         fail( "Should have thrown a ClassCastException" );
+      } catch( JSONException expected ) {
+         // ok
+      }
+  }
    
    public static class RunnableImpl implements Runnable {
       public void run() {

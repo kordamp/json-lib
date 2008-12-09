@@ -147,7 +147,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       }else if( object != null && object.getClass()
             .isArray() ){
          Class type = object.getClass()
-               .getComponentType();
+               .getComponentType();  
          if( !type.isPrimitive() ){
             return _fromArray( (Object[]) object, jsonConfig );
          }else{
