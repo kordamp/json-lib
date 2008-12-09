@@ -18,6 +18,7 @@ package net.sf.json.groovy;
 
 import groovy.lang.GroovyObjectSupport;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -66,10 +67,11 @@ public class JsonSlurper extends GroovyObjectSupport {
    public JSON parse( Reader reader ) throws IOException {
       // unfortunately JSONSerializer can't process the text as a stream
       // so we must read the full content first and then parse it
-      char[] chunk = new char[1024];
       StringBuffer buffer = new StringBuffer();
-      while( reader.read( chunk ) != -1 ) {
-         buffer.append( chunk );
+      BufferedReader in = new BufferedReader( reader );
+      String line = null;
+      while( (line = in.readLine()) != null ) {
+         buffer.append( line ).append( "\n" );
       }
       return parseText( buffer.toString() );
    }

@@ -19,6 +19,9 @@ package net.sf.json.groovy
 import net.sf.json.*
 import net.sf.json.test.JSONAssert
 
+import org.apache.commons.httpclient.HttpClient
+import org.apache.commons.httpclient.methods.GetMethod
+
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
@@ -69,5 +72,17 @@ class TestJsonSlurper extends GroovyTestCase {
        File file = new File(new File(".").absolutePath,"src/test/resources/net/sf/json/groovy/sample.json")
        JSON actual = new JsonSlurper().parseText( file.text )
        JSONAssert.assertEquals( expected, actual )
+    }
+    
+    void testParseReader_liveUrl() {
+       HttpClient http = new HttpClient()
+       GetMethod get = new GetMethod("http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=Calvin%20and%20Hobbes")
+       int resultCode = http.executeMethod(get)
+       if( resultCode != 200 ) {
+          fail("Http GET http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=Calvin%20and%20Hobbes returned with code $resultCode")
+       }
+       Reader reader = new InputStreamReader( get.responseStream, "utf-8" )
+       JSON actual = new JsonSlurper().parse( reader )
+       assertTrue( actual.has("responseData") )
     }
 }

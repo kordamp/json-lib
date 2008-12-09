@@ -100,6 +100,7 @@
       <groovyc srcdir="${project.test.groovy.dir}" destdir="${maven.test.output}">
          <classpath>
             <path refid="build.classpath" />
+            <path refid="test.classpath" />
             <pathelement location="${maven.build.output}" />
          </classpath>
       </groovyc>
@@ -194,6 +195,7 @@
       <java classname="org.jruby.Main" fork="true" maxmemory="256M" failonerror="true">
          <classpath>
             <path refid="build.classpath" />
+            <path refid="test.classpath" />
             <path refid="runtime.classpath" />
             <pathelement location="${maven.build.output}" />
             <pathelement location="${basedir}/src/main/jruby/" />
