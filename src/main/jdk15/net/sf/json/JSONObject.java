@@ -159,8 +159,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          return new JSONObject( true );
       }else if( object instanceof Enum ){
          throw new JSONException( "'object' is an Enum. Use JSONArray instead" );
-      }else if( object instanceof Annotation || (object != null && object.getClass()
-            .isAnnotation()) ){
+      }else if(object instanceof Annotation || (object.getClass().isAnnotation())){
          throw new JSONException( "'object' is an Annotation." );
       }else if( object instanceof JSONObject ){
          return _fromJSONObject( (JSONObject) object, jsonConfig );
@@ -195,7 +194,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          return null;
       }
 
-      DynaBean dynaBean = null;
+      DynaBean dynaBean;
 
       Map props = JSONUtils.getProperties( jsonObject );
       dynaBean = JSONUtils.newDynaBean( jsonObject, new JsonConfig() );
@@ -1524,11 +1523,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       JSONObject other = (JSONObject) obj;
 
       if( isNullObject() ){
-         if( other.isNullObject() ){
-            return true;
-         }else{
-            return false;
-         }
+         return other.isNullObject();
       }else{
          if( other.isNullObject() ){
             return false;
@@ -1915,7 +1910,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       try{
          Object o = opt( key );
          return o instanceof Number ? ((Number) o).doubleValue()
-               : new Double( (String) o ).doubleValue();
+               : Double.parseDouble((String) o);
       }catch( Exception e ){
          return defaultValue;
       }
@@ -2322,7 +2317,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          }
          return value;
       }else if( value instanceof JSONString ){
-         return JSONSerializer.toJSON( (JSONString) value, jsonConfig );
+         return JSONSerializer.toJSON(value, jsonConfig );
       }else if( JSONUtils.isArray( value ) ){
          return JSONArray.fromObject( value, jsonConfig );
       }else if( JSONUtils.isString( value ) ){
