@@ -40,23 +40,14 @@
 
    <target name="compile" description="Compile the code (jdk1.3)">
       <mkdir dir="${maven.build.output}" />
-      <javac destdir="${maven.build.output}" excludes="**/package.html" debug="true" deprecation="true" source="1.3" target="1.1">
+      <javac destdir="${maven.build.output}" excludes="**/package.html" debug="true" deprecation="true" source="1.5" target="1.5">
          <src path="${project.src.jdk3.dir}" />
+         <src path="${project.src.jdk5.dir}" />
          <classpath refid="build.classpath" />
       </javac>
    </target>
 
-   <target name="compile.jdk5" depends="compile" description="Compile the code (jdk5)">
-      <delete file="${maven.build.output}/net/sf/json/JSONObject.class" />
-      <delete file="${maven.build.output}/net/sf/json/JSONArray.class" />
-      <javac destdir="${maven.build.output}" debug="true" deprecation="true" source="1.5" target="1.5">
-         <src path="${project.src.jdk5.dir}" />
-         <classpath>
-            <path refid="build.classpath" />
-            <pathelement location="${maven.build.output}" />
-         </classpath>
-      </javac>
-   </target>
+   <target name="compile.jdk5" depends="compile" description="Compile the code (jdk5)" />
 
    <target name="compile.groovy" depends="compile" description="Compile the code (Groovy)">
       <!--groovyc srcdir="${project.src.groovy.dir}" destdir="${maven.build.output}">
