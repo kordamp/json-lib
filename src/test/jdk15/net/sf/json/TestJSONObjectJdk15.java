@@ -172,6 +172,32 @@ public class TestJSONObjectJdk15 extends TestCase
       assertEquals( bean.getJsonEnum(), JsonEnum.OBJECT );
    }
 
+   /*
+   public void testToBean_EnumBean2()
+   {
+      JSONUtils.getMorpherRegistry()
+            .registerMorpher( new EnumMorpher( JsonEnum.class ) );
+      EnumBean bean = new EnumBean();
+      bean.getEnums().add(JsonEnum.ARRAY);
+      bean.getEnums().add(JsonEnum.OBJECT);
+      JSONObject json = JSONObject.fromObject(bean);
+      System.err.println(json);
+      EnumBean bean2 = (EnumBean) JSONObject.toBean( json, EnumBean.class );
+      assertNotNull( bean2 );
+      System.err.println(bean.getEnums().toString());
+      System.err.println(bean2.getEnums().toString());
+      Map classMap = new HashMap();
+      classMap.put("enums", JsonEnum.class);
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( EnumBean.class );
+      jsonConfig.setClassMap(classMap);
+      EnumBean bean3 = (EnumBean) JSONObject.toBean( JSONObject.fromObject(json.toString()), jsonConfig );
+      assertNotNull( bean3 );
+      System.err.println(bean3.getEnums().toString());
+      for(java.util.Iterator i= bean3.getEnums().iterator(); i.hasNext();) System.err.println(i.next().getClass());
+   }
+   */
+
    public void testToBean_EnumBean_autoRegisterMorpher()
    {
       JSONObject json = new JSONObject();

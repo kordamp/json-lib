@@ -1782,6 +1782,8 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
          }catch( JSONException jsone ){
             this.elements.add( JSONUtils.stripQuotes( value ) );
          }
+      }else if( jsonConfig.isJavascriptCompliant() && "undefined".equals(value)) {
+         this.elements.add( JSONNull.getInstance() );
       }else{
          this.elements.add( JSONUtils.stripQuotes( value ) );
       }
@@ -2592,15 +2594,15 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       }
       return _processValue( value, jsonConfig );
    }
-   
+
    private class JSONArrayListIterator implements ListIterator {
       int currentIndex = 0;
       int lastIndex = -1;
-      
+
       JSONArrayListIterator() {
-         
+
       }
-      
+
       JSONArrayListIterator( int index ) {
          currentIndex = index;
       }

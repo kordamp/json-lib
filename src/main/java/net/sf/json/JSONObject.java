@@ -2545,6 +2545,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          }else{
             if( value == null ){
                return "";
+            }else if( jsonConfig.isJavascriptCompliant() && "undefined".equals(value)) {
+               return JSONNull.getInstance();
             }else{
                String tmp = JSONUtils.stripQuotes( str );
                return JSONUtils.mayBeJSON( tmp ) ? tmp : str;

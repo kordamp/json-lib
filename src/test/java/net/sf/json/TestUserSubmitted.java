@@ -637,6 +637,45 @@ public class TestUserSubmitted extends TestCase {
          // ok
       }
   }
+
+   public void testJSONArray_JavascriptCompliant() {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setJavascriptCompliant( true );
+      String json = "[null, undefined]";
+      JSONArray array = JSONArray.fromObject( json, jsonConfig );
+      assertNotNull(array);
+      Assertions.assertEquals( JSONNull.getInstance(), array.get(1) );
+   }
+  
+   public void testJSONArray_JavascriptComplian2t() {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setJavascriptCompliant( true );
+      JSONArray array = new JSONArray();
+      array.element("null", jsonConfig);
+      array.element("undefined", jsonConfig);
+      assertNotNull(array);
+      Assertions.assertEquals( JSONNull.getInstance(), array.get(0) );
+      Assertions.assertEquals( JSONNull.getInstance(), array.get(1) );
+   }
+   
+   public void testJSONObject_JavascriptCompliant() {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setJavascriptCompliant( true );
+      String json = "{key1: null, key2: undefined}";
+      JSONObject object = JSONObject.fromObject( json, jsonConfig );
+      assertNotNull(object);
+      Assertions.assertEquals( JSONNull.getInstance(), object.get("key2") );
+   }
+   
+   public void testJSONObject_JavascriptCompliant2() {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setJavascriptCompliant( true );
+      JSONObject object = new JSONObject();
+      object.element( "key1", "null", jsonConfig );
+      object.element( "key2", "undefined", jsonConfig );
+      assertNotNull(object);
+      Assertions.assertEquals( JSONNull.getInstance(), object.get("key2") );
+   }
    
    public static class RunnableImpl implements Runnable {
       public void run() {

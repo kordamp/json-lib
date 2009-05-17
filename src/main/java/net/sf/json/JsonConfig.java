@@ -87,6 +87,7 @@ public class JsonConfig {
    private boolean ignoreDefaultExcludes;
    private boolean ignoreJPATransient;
    private boolean ignoreTransientFields;
+   private boolean javascriptCompliant;
    private JavaIdentifierTransformer javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
    private PropertyFilter javaPropertyFilter;
    private Map javaPropertyNameProcessorMap = new HashMap();
@@ -208,6 +209,7 @@ public class JsonConfig {
       jsc.ignoreDefaultExcludes = ignoreDefaultExcludes;
       jsc.ignoreTransientFields = ignoreTransientFields;
       jsc.javaIdentifierTransformer = javaIdentifierTransformer;
+      jsc.javascriptCompliant = javascriptCompliant;
       jsc.keyMap.putAll( keyMap );
       jsc.beanProcessorMap.putAll( beanProcessorMap );
       jsc.rootClass = rootClass;
@@ -704,6 +706,15 @@ public class JsonConfig {
    public boolean isIgnoreTransientFields() {
       return ignoreTransientFields;
    }
+   
+   /**
+    * Returns true if Javascript compatibility is turned on.<br>
+    * Default value is false.<br>
+    * [Java -&gt; JSON]
+    */
+   public boolean isJavascriptCompliant() {
+      return javascriptCompliant;
+   }
 
    /**
     * Returns true if map keys will not be transformed.<br>
@@ -893,6 +904,7 @@ public class JsonConfig {
       excludes = EMPTY_EXCLUDES;
       ignoreDefaultExcludes = false;
       ignoreTransientFields = false;
+      javascriptCompliant = false;
       javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
       cycleDetectionStrategy = DEFAULT_CYCLE_DETECTION_STRATEGY;
       skipJavaIdentifierTransformationInMapKeys = false;
@@ -1055,6 +1067,14 @@ public class JsonConfig {
       this.ignoreTransientFields = ignoreTransientFields;
    }
 
+   /**
+    * Sets if Javascript compatibility is enabled when building.<br>
+    * [Java -&gt; JSON]
+    */
+   public void setJavascriptCompliant( boolean javascriptCompliant ) {
+      this.javascriptCompliant = javascriptCompliant;
+   }
+   
    /**
     * Sets the JavaIdentifierTransformer to use.<br>
     * Will set default value (JavaIdentifierTransformer.NOOP) if null.<br>

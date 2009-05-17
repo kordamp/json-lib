@@ -405,7 +405,8 @@ public class JSONTokener {
       if( s.equalsIgnoreCase( "false" ) ){
          return Boolean.FALSE;
       }
-      if( s.equals( "null" ) ){
+      if( s.equals( "null" ) || 
+          (jsonConfig.isJavascriptCompliant() && s.equals("undefined"))){
          return JSONNull.getInstance();
       }
 

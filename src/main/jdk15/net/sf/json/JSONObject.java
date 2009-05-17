@@ -758,7 +758,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                               .getMorpherFor( pd.getPropertyType() );
                         if( IdentityObjectMorpher.getInstance()
                               .equals( morpher ) ){
-                           log.warn( "Can't transform property '" + key + "' from "
+                           log.info( "Can't transform property '" + key + "' from "
                                  + type.getName() + " into " + pd.getPropertyType()
                                        .getName() + ". Will register a default BeanMorpher" );
                            JSONUtils.getMorpherRegistry()
@@ -1149,7 +1149,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             }else if( c != ':' ){
                throw tokener.syntaxError( "Expected a ':' after a key" );
             }
-            
+
             char peek = tokener.peek();
             boolean quoted = peek == '"' || peek == '\'';
             Object v = tokener.nextValue( jsonConfig );
@@ -1406,8 +1406,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    }
 
    /*
-   private static Collection convertPropertyValueToCollection( String key, Object value,
-         String name, Object bean, JsonConfig jsonConfig, Map classMap ) {
+   private static Collection convertPropertyValueToCollection( String key, Object value, JsonConfig jsonConfig,
+         String name, Map classMap, Object bean ) {
       Class targetClass = findTargetClass( key, classMap );
       targetClass = targetClass == null ? findTargetClass( name, classMap ) : targetClass;
 
@@ -1479,7 +1479,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             .getMorpherFor( targetType );
       if( IdentityObjectMorpher.getInstance()
             .equals( morpher ) ){
-         log.warn( "Can't transform property '" + key + "' from " + type.getName() + " into "
+         log.info( "Can't transform property '" + key + "' from " + type.getName() + " into "
                + targetType.getName() + ". Will register a default Morpher" );
          if( Enum.class.isAssignableFrom( targetType ) ){
             JSONUtils.getMorpherRegistry()
@@ -1489,6 +1489,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   .registerMorpher( new BeanMorpher( targetType, JSONUtils.getMorpherRegistry() ) );
          }
       }
+
       value = JSONUtils.getMorpherRegistry()
             .morph( targetType, value );
       return value;
@@ -2783,6 +2784,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          }else{
             if( value == null ){
                return "";
+            }else if( jsonConfig.isJavascriptCompliant() && "undefined".equals(value)) {
+               return JSONNull.getInstance();
             }else{
                String tmp = JSONUtils.stripQuotes( str );
                return JSONUtils.mayBeJSON( tmp ) ? tmp : str;

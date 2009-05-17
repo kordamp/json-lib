@@ -1611,6 +1611,8 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
          }catch( JSONException jsone ){
             this.elements.add( JSONUtils.stripQuotes( value ) );
          }
+      }else if( jsonConfig.isJavascriptCompliant() && "undefined".equals(value)) {
+         this.elements.add( JSONNull.getInstance() );
       }else{
          this.elements.add( JSONUtils.stripQuotes( value ) );
       }
