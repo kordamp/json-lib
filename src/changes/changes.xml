@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2665846">
+            Memory Leak in Cycle Detection
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2565295">
             Problems detecting an unreadable property
          </action>

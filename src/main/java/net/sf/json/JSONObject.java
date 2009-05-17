@@ -955,7 +955,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             }else if( c != ':' ){
                throw tokener.syntaxError( "Expected a ':' after a key" );
             }
-            
+
             char peek = tokener.peek();
             boolean quoted = peek == '"' || peek == '\'';
             Object v = tokener.nextValue( jsonConfig );

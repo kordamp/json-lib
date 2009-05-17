@@ -19,6 +19,7 @@ package net.sf.json;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.lang.ref.SoftReference;
 
 import net.sf.json.util.JsonEventListener;
 
@@ -31,13 +32,22 @@ import org.apache.commons.logging.LogFactory;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 abstract class AbstractJSON {
-   // private static Set cycleSet = new HashSet();
-
-   private static ThreadLocal cycleSet = new ThreadLocal(){
-      protected synchronized Object initialValue() {
-         return new HashSet();
+   private static class CycleSet extends ThreadLocal {
+      protected Object initialValue() {
+         return new SoftReference(new HashSet());
       }
-   };
+
+      public Set getSet() {
+         Set set = (Set) ((SoftReference)get()).get();
+         if( set == null ) {
+             set = new HashSet();
+             set(new SoftReference(set));
+         }
+         return set;
+      }
+   }
+   
+   private static CycleSet cycleSet = new CycleSet();
 
    private static final Log log = LogFactory.getLog( AbstractJSON.class );
 
@@ -208,6 +218,6 @@ abstract class AbstractJSON {
    }
 
    private static Set getCycleSet() {
-      return (Set) cycleSet.get();
+      return cycleSet.getSet();
    }
 }
