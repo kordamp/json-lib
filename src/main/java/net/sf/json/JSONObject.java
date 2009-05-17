@@ -1548,11 +1548,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     */
    public JSONObject element( String key, Collection value, JsonConfig jsonConfig ) {
       verifyIsNull();
-      if( value instanceof JSONArray ){
-         return setInternal( key, value, jsonConfig );
-      }else{
-         return element( key, JSONArray.fromObject( value, jsonConfig ) );
+      if( !(value instanceof JSONArray) ){
+         value = JSONArray.fromObject( value, jsonConfig );
       }
+      return setInternal( key, value, jsonConfig );
    }
 
    /**

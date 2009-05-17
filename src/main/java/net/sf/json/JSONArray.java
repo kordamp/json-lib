@@ -583,7 +583,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Boolean b = array[i] ? Boolean.TRUE : Boolean.FALSE;
-         jsonArray.elements.add( b );
+         jsonArray._addValue( b, jsonConfig );
          fireElementAddedEvent( i, b, jsonConfig );
       }
 
@@ -617,7 +617,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Number n = JSONUtils.transformNumber( new Byte( array[i] ) );
-         jsonArray.elements.add( n );
+         jsonArray._addValue( n, jsonConfig );
          fireElementAddedEvent( i, n, jsonConfig );
       }
 
@@ -651,7 +651,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Character c = new Character( array[i] );
-         jsonArray.elements.add( c );
+         jsonArray._addValue( c, jsonConfig );
          fireElementAddedEvent( i, c, jsonConfig );
       }
 
@@ -687,7 +687,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
          for( int i = 0; i < array.length; i++ ){
             Double d = new Double( array[i] );
             JSONUtils.testValidity( d );
-            jsonArray.elements.add( d );
+            jsonArray._addValue( d, jsonConfig );
             fireElementAddedEvent( i, d, jsonConfig );
          }
       }catch( JSONException jsone ){
@@ -728,7 +728,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
          for( int i = 0; i < array.length; i++ ){
             Float f = new Float( array[i] );
             JSONUtils.testValidity( f );
-            jsonArray.elements.add( f );
+            jsonArray._addValue( f, jsonConfig );
             fireElementAddedEvent( i, f, jsonConfig );
          }
       }catch( JSONException jsone ){
@@ -767,7 +767,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Number n = new Integer( array[i] );
-         jsonArray.elements.add( n );
+         jsonArray._addValue( n, jsonConfig );
          fireElementAddedEvent( i, n, jsonConfig );
       }
 
@@ -801,7 +801,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Number n = JSONUtils.transformNumber( new Long( array[i] ) );
-         jsonArray.elements.add( n );
+         jsonArray._addValue( n, jsonConfig );
          fireElementAddedEvent( i, n, jsonConfig );
       }
 
@@ -878,7 +878,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Number n = JSONUtils.transformNumber( new Short( array[i] ) );
-         jsonArray.elements.add( n );
+         jsonArray._addValue( n, jsonConfig );
          fireElementAddedEvent( i, n, jsonConfig );
       }
 
@@ -951,7 +951,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       int index = 0;
       for( Iterator elements = array.iterator(); elements.hasNext(); ){
          Object element = elements.next();
-         jsonArray.elements.add( element );
+         jsonArray.addValue( element, jsonConfig );
          fireElementAddedEvent( index++, element, jsonConfig );
       }
 

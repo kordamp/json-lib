@@ -13,6 +13,12 @@
          date="n/a"
          desc="Current development">
          <action
+             dev="Andres Almiray"
+             type="fix"
+             issue="2682840">
+            JsonValueProcessor not processing primitive arrays (breaking change!)
+         </action>
+         <action
             dev="Andres Almiray"
             type="fix"
             issue="2665846">

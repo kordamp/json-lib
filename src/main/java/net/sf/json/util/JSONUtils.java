@@ -604,7 +604,7 @@ public final class JSONUtils {
     */
    public static Number transformNumber( Number input ) {
       if( input instanceof Float ){
-         return new Double( input.doubleValue() );
+         return new Double( input.toString() );
       }else if( input instanceof Short ){
          return new Integer( input.intValue() );
       }else if( input instanceof Byte ){

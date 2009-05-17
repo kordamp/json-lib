@@ -1044,15 +1044,17 @@ public class TestJSONArray extends TestCase {
    }
 
    public void testToArray_char() {
-      char[] expected = new char[] { 'A', 'B' };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      String[] expected = new String[] { "A", "B" };
+      char[] input = new char[] { 'A', 'B' };
+      JSONArray jsonArray = JSONArray.fromObject( input );
       Object actual = JSONArray.toArray( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
 
    public void testToArray_char_multi() {
-      char[][] expected = new char[][] { { 'a', 'b' }, { 'c', 'd' } };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      String[][] expected = new String[][] { { "a", "b" }, { "c", "d" } };
+      char[][] input = new char[][] { { 'a', 'b' }, { 'c', 'd' } };
+      JSONArray jsonArray = JSONArray.fromObject( input );
       Object actual = JSONArray.toArray( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
@@ -1094,8 +1096,9 @@ public class TestJSONArray extends TestCase {
    }
 
    public void testToArray_float() {
-      float[] expected = new float[] { 1, 2, 3, 4, 5, 6 };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      double[] expected = new double[] { 1, 2, 3, 4, 5, 6 };
+      float[] input = new float[] { 1, 2, 3, 4, 5, 6 };
+      JSONArray jsonArray = JSONArray.fromObject( input );
       Object actual = JSONArray.toArray( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
@@ -1109,8 +1112,9 @@ public class TestJSONArray extends TestCase {
    }
 
    public void testToArray_float_multi() {
-      float[][] expected = new float[][] { { 1, 2, 3 }, { 4, 5, 6 } };
-      JSONArray jsonArray = JSONArray.fromObject( expected );
+      double[][] expected = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };
+      float[][] input = new float[][] { { 1, 2, 3 }, { 4, 5, 6 } };
+      JSONArray jsonArray = JSONArray.fromObject( input );
       Object actual = JSONArray.toArray( jsonArray );
       Assertions.assertEquals( expected, actual );
    }
