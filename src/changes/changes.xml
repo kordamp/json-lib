@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2792844">
+            Log level: warn vs. info for skipped properties
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2790052">
             Improve exception message on NewBeanInstanceStrategy. Thanks to Henrik Johansson (provided patch)
          </action>

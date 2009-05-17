@@ -347,7 +347,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             }else{
                PropertyDescriptor pd = PropertyUtils.getPropertyDescriptor( bean, key );
                if( pd != null && pd.getWriteMethod() == null ){
-                  log.warn( "Property '" + key + "' of "+ bean.getClass()+" has no write method. SKIPPED." );
+                  log.info( "Property '" + key + "' of "+ bean.getClass()+" has no write method. SKIPPED." );
                   continue;
                }
 
@@ -513,7 +513,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          try{
             PropertyDescriptor pd = PropertyUtils.getPropertyDescriptor( root, key );
             if( pd != null && pd.getWriteMethod() == null ){
-               log.warn( "Property '" + key + "' of "+ root.getClass()+" has no write method. SKIPPED." );
+               log.info( "Property '" + key + "' of "+ root.getClass()+" has no write method. SKIPPED." );
                continue;
             }
 
@@ -753,7 +753,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             }else{
                String warning = "Property '" + key + "' of "+ bean.getClass()+" has no read method. SKIPPED";
                fireWarnEvent( warning, jsonConfig );
-               log.warn( warning );
+               log.info( warning );
             }
          }
       }catch( JSONException jsone ){
