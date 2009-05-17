@@ -15,6 +15,12 @@
          <action
              dev="Andres Almiray"
              type="fix"
+             issue="2431487">
+            Allow JSONArray/JSONObject to be Serializable
+         </action>
+         <action
+             dev="Andres Almiray"
+             type="fix"
              issue="2682840">
             JsonValueProcessor not processing primitive arrays (breaking change!)
          </action>

@@ -16,6 +16,7 @@
 package net.sf.json;
 
 import java.io.Writer;
+import java.io.Serializable;
 
 /**
  * Marker interface, identifies a valid JSON value.<br>
@@ -24,7 +25,7 @@ import java.io.Writer;
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public interface JSON {
+public interface JSON extends Serializable {
    /**
     * Returns true if this object is a JSONArray, false otherwise.
     */
