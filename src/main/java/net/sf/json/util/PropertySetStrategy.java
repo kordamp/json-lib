@@ -16,9 +16,11 @@
 
 package net.sf.json.util;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import net.sf.json.JSONException;
+import net.sf.json.JsonConfig;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -33,18 +35,40 @@ public abstract class PropertySetStrategy {
    public static final PropertySetStrategy DEFAULT = new DefaultPropertySetStrategy();
 
    public abstract void setProperty( Object bean, String key, Object value ) throws JSONException;
+   
+   public void setProperty( Object bean, String key, Object value, JsonConfig jsonConfig ) throws JSONException {
+      setProperty( bean, key, value );
+   }
 
    private static final class DefaultPropertySetStrategy extends PropertySetStrategy {
       public void setProperty( Object bean, String key, Object value ) throws JSONException {
+         setProperty( bean, key, value, new JsonConfig());
+      }
+      
+      public void setProperty( Object bean, String key, Object value, JsonConfig jsonConfig ) throws JSONException {
          if( bean instanceof Map ){
             ((Map) bean).put( key, value );
-         }else{
-            try{
-               PropertyUtils.setSimpleProperty( bean, key, value );
-            }catch( Exception e ){
-               throw new JSONException( e );
+         } else {
+            if( !jsonConfig.isIgnorePublicFields() ) {
+               try {
+                  Field field = bean.getClass().getField( key );
+                  if( field != null ) field.set( bean, value );
+               } catch( Exception e ){
+                  _setProperty( bean, key, value );
+               }
+            } else {
+               _setProperty( bean, key, value );
             }
          }
       }
+      
+      private void _setProperty( Object bean, String key, Object value ) {
+         try {
+            PropertyUtils.setSimpleProperty( bean, key, value );
+         } catch( Exception e ) {
+            throw new JSONException( e );
+         }
+      }
+      
    }
 }

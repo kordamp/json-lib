@@ -87,6 +87,7 @@ public class JsonConfig {
    private boolean ignoreDefaultExcludes;
    private boolean ignoreJPATransient;
    private boolean ignoreTransientFields;
+   private boolean ignorePublicFields = true;
    private boolean javascriptCompliant;
    private JavaIdentifierTransformer javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
    private PropertyFilter javaPropertyFilter;
@@ -208,6 +209,7 @@ public class JsonConfig {
       jsc.handleJettisonSingleElementArray = handleJettisonSingleElementArray;
       jsc.ignoreDefaultExcludes = ignoreDefaultExcludes;
       jsc.ignoreTransientFields = ignoreTransientFields;
+      jsc.ignorePublicFields = ignorePublicFields;
       jsc.javaIdentifierTransformer = javaIdentifierTransformer;
       jsc.javascriptCompliant = javascriptCompliant;
       jsc.keyMap.putAll( keyMap );
@@ -708,6 +710,15 @@ public class JsonConfig {
    }
    
    /**
+    * Returns true if public fields of a bean will be ignored.<br>
+    * Default value is true.<br>
+    * [Java -&gt; JSON]
+    */
+   public boolean isIgnorePublicFields() {
+      return ignorePublicFields;
+   }
+   
+   /**
     * Returns true if Javascript compatibility is turned on.<br>
     * Default value is false.<br>
     * [Java -&gt; JSON]
@@ -904,6 +915,7 @@ public class JsonConfig {
       excludes = EMPTY_EXCLUDES;
       ignoreDefaultExcludes = false;
       ignoreTransientFields = false;
+      ignorePublicFields = true;
       javascriptCompliant = false;
       javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
       cycleDetectionStrategy = DEFAULT_CYCLE_DETECTION_STRATEGY;
@@ -1067,6 +1079,14 @@ public class JsonConfig {
       this.ignoreTransientFields = ignoreTransientFields;
    }
 
+   /**
+    * Sets if public fields would be skipped when building.<br>
+    * [Java -&gt; JSON]
+    */
+   public void setIgnorePublicFields( boolean ignorePublicFields ) {
+      this.ignorePublicFields = ignorePublicFields;
+   }
+   
    /**
     * Sets if Javascript compatibility is enabled when building.<br>
     * [Java -&gt; JSON]

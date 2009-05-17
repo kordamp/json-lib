@@ -35,6 +35,7 @@ import net.sf.json.sample.BeanB1763699;
 import net.sf.json.sample.BeanC;
 import net.sf.json.sample.ChildBean;
 import net.sf.json.sample.DateBean;
+import net.sf.json.sample.FieldBean;
 import net.sf.json.sample.IdBean;
 import net.sf.json.sample.InterfaceBean;
 import net.sf.json.sample.JSONTestBean;
@@ -675,6 +676,40 @@ public class TestUserSubmitted extends TestCase {
       object.element( "key2", "undefined", jsonConfig );
       assertNotNull(object);
       Assertions.assertEquals( JSONNull.getInstance(), object.get("key2") );
+   }
+   
+   public void testJSONObject_fromObject_FieldBean() {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setIgnorePublicFields( false );
+      FieldBean bean = new FieldBean();
+      bean.setValue( 42 );
+      bean.string = "stringy";
+      JSONObject jsonObject = JSONObject.fromObject( bean );
+      assertNotNull( jsonObject );
+      assertEquals( 42, jsonObject.getInt( "value" ));
+      assertFalse( jsonObject.has( "string" ));
+      jsonObject = JSONObject.fromObject( bean, jsonConfig );
+      assertNotNull( jsonObject );
+      assertEquals( 42, jsonObject.getInt( "value" ));
+      assertEquals( "stringy", jsonObject.getString( "string" ));
+   }
+   
+   public void testJSONObject_toBean_FieldBean() {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.element( "value", 42 );
+      jsonObject.element( "string", "stringy" );
+      FieldBean bean1 = (FieldBean) JSONObject.toBean( jsonObject, FieldBean.class );
+      assertNotNull( bean1 );
+      assertEquals( 42, bean1.getValue());
+      assertNull( bean1.string );
+
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setIgnorePublicFields( false );
+      jsonConfig.setRootClass( FieldBean.class );
+      FieldBean bean2 = (FieldBean) JSONObject.toBean( jsonObject, jsonConfig );
+      assertNotNull( bean2 );
+      assertEquals( 42, bean1.getValue());
+      assertEquals( "stringy", bean2.string );
    }
    
    public static class RunnableImpl implements Runnable {

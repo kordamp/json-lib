@@ -450,7 +450,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      }else if( String.class.isAssignableFrom( type ) || JSONUtils.isBoolean( type )
                            || JSONUtils.isNumber( type ) || JSONUtils.isString( type )
                            || JSONFunction.class.isAssignableFrom( type ) ){
-                        if( beanClass == null || bean instanceof Map || jsonConfig.getPropertySetStrategy() != null ){
+                        if( beanClass == null || bean instanceof Map || jsonConfig.getPropertySetStrategy() != null ||
+                            !jsonConfig.isIgnorePublicFields()){
                            setProperty( bean, key, value, jsonConfig );
                         }else{
                            log.warn( "Tried to assign property " + key + ":" + type.getName()
@@ -957,6 +958,44 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                fireWarnEvent( warning, jsonConfig );
                log.info( warning );
             }
+         }
+         // inspect public fields, this operation may fail under
+         // a SecurityManager so we will eat all exceptions
+         try {
+            if( !jsonConfig.isIgnorePublicFields() ) {
+               Field[] fields = beanClass.getFields();
+               for( int i = 0; i < fields.length; i++ ) {
+                  Field field = fields[i];
+                  String key = field.getName();
+                  if( exclusions.contains( key ) ) {
+                     continue;
+                  }
+
+                  if( jsonConfig.isIgnoreTransientFields() && isTransientField( field ) ) {
+                     continue;
+                  }
+
+                  Class type = field.getType();
+                  Object value = field.get( bean );
+                  if( jsonPropertyFilter != null && jsonPropertyFilter.apply( bean, key, value ) ) {
+                     continue;
+                  }
+                  JsonValueProcessor jsonValueProcessor = jsonConfig.findJsonValueProcessor( beanClass, type, key );
+                  if( jsonValueProcessor != null ) {
+                     value = jsonValueProcessor.processObjectValue( key, value, jsonConfig );
+                     if( !JsonVerifier.isValidJsonValue( value ) ) {
+                        throw new JSONException( "Value is not a valid JSON value. " + value );
+                     }
+                  }
+                  if( propertyNameProcessor != null ) {
+                     key = propertyNameProcessor.processPropertyName( beanClass, key );
+                  }
+                  setValue( jsonObject, key, value, type, jsonConfig );
+               }
+            }
+         }
+         catch( Exception e ){
+            log.trace( "Couldn't read public fields.", e );
          }
       }catch( JSONException jsone ){
          removeInstance( bean );
@@ -1466,12 +1505,15 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
 
    private static boolean isTransientField( String name, Class beanClass ) {
       try{
-         Field field = beanClass.getDeclaredField( name );
-         return (field.getModifiers() & Modifier.TRANSIENT) == Modifier.TRANSIENT;
+         return isTransientField(beanClass.getDeclaredField( name ));
       }catch( Exception e ){
          // swallow exception
       }
       return false;
+   }
+
+   private static boolean isTransientField( Field field ) {
+      return (field.getModifiers() & Modifier.TRANSIENT) == Modifier.TRANSIENT;
    }
 
    private static Object morphPropertyValue( String key, Object value, Class type, Class targetType ) {
@@ -1503,7 +1545,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          throws Exception {
       PropertySetStrategy propertySetStrategy = jsonConfig.getPropertySetStrategy() != null ? jsonConfig.getPropertySetStrategy()
             : PropertySetStrategy.DEFAULT;
-      propertySetStrategy.setProperty( bean, key, value );
+      propertySetStrategy.setProperty( bean, key, value, jsonConfig );
    }
 
    private static void setValue( JSONObject jsonObject, String key, Object value, Class type,
