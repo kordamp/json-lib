@@ -9,6 +9,17 @@
    <body>
 
       <release
+         version="2.3-SNAPSHOT"
+         date="n/a"
+         desc="Current development">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="2790052">
+            Improve exception message on NewBeanInstanceStrategy. Thanks to Henrik Johansson (provided patch)
+         </action>
+      </release>
+      <release
          version="2.2.3"
          date="2008-12-08"
          desc="Service release">
@@ -17,31 +28,31 @@
             type="fix"
             issue="2270596">
             JSONUtils not thread safe
-         </action>  
+         </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="2383773">
             Array of Maps with null key causes exception
-         </action>         
+         </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="2408679">
             JsonSlurper.parse(Reader) does not work correctly. Thanks to Tom Nichols (provided testcase)
-         </action>  
+         </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="2140653">
             JavaScript functions as quoted strings in values
-         </action>  
+         </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="2063201">
             Infinite loop in JSONArray._fromJSONTokener
-         </action>         
+         </action>
          <action
             dev="Andres Almiray"
             type="fix"
@@ -89,13 +100,13 @@
             type="fix"
             issue="1984546">
             JsonVerifier does not account for Short values
-         </action>           
+         </action>
          <action
             dev="Andres Almiray"
             type="fix"
             issue="1976920">
             Propagation of JsonConfig in JSONObject methods. Thanks to Ales Novy (provided a patch)
-         </action>         
+         </action>
          <action
             dev="Andres Almiray"
             type="fix"
