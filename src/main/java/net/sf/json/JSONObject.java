@@ -733,6 +733,14 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             }
 
             Class type = pds[i].getPropertyType();
+            try { pds[i].getReadMethod(); }
+            catch( Exception e ) {
+               // bug 2565295
+               String warning = "Property '" + key + "' of "+ beanClass+" has no read method. SKIPPED";
+               fireWarnEvent( warning, jsonConfig );
+               log.info( warning );
+               continue;
+            }
             if( pds[i].getReadMethod() != null ){
                Object value = PropertyUtils.getProperty( bean, key );
                if( jsonPropertyFilter != null && jsonPropertyFilter.apply( bean, key, value ) ){
@@ -751,7 +759,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                }
                setValue( jsonObject, key, value, type, jsonConfig );
             }else{
-               String warning = "Property '" + key + "' of "+ bean.getClass()+" has no read method. SKIPPED";
+               String warning = "Property '" + key + "' of "+ beanClass+" has no read method. SKIPPED";
                fireWarnEvent( warning, jsonConfig );
                log.info( warning );
             }

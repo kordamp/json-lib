@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2565295">
+            Problems detecting an unreadable property
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2792844">
             Log level: warn vs. info for skipped properties
          </action>
