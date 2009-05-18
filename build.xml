@@ -5,7 +5,6 @@
    <property name="maven.build.directory" value="target" />
    <property name="maven.test.reports" value="${maven.build.directory}/test-reports" />
    <property name="maven.test.output" value="target/test-classes" />
-   <property name="maven.repo.local" value="${user.home}/.m2/repository" />
    <property name="project.lib.dir" value="${basedir}/src/lib" />
    <property name="project.src.jdk3.dir" value="${basedir}/src/main/java" />
    <property name="project.src.jdk5.dir" value="${basedir}/src/main/jdk15" />
@@ -226,6 +225,40 @@
 
    <target name="jar.jdk5" depends="clean,test.jdk5" description="Binary jar (jdk5)">
       <jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk15.jar" basedir="${maven.build.output}" excludes="**/package.html" />
+   </target>
+
+   <target name="jarjar" depends="jar">
+      <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
+               classpath="${project.lib.dir}/jarjar-1.0.jar"/>
+      <property name="jarfile" value="${maven.build.directory}/${maven.project.name}-all-${maven.project.version}-jdk13.jar"/>
+      <delete file="${jarfile}"/>
+      <jarjar jarfile="${jarfile}">
+         <zipfileset src="${maven.build.directory}/${maven.project.build.finalName}-jdk13.jar"/>
+         <zipfileset src="${maven.repo.local}/commons-beanutils/commons-beanutils/1.8.0/commons-beanutils-1.8.0.jar"/>
+         <zipfileset src="${maven.repo.local}/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
+         <zipfileset src="${maven.repo.local}/commons-lang/commons-lang/2.4/commons-lang-2.4.jar"/>
+         <zipfileset src="${maven.repo.local}/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
+         <zipfileset src="${maven.repo.local}/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6.jar"/>
+         <rule pattern="org.apache.commons.**" result="_json.org.apache.commons.@1"/>
+         <rule pattern="net.sf.ezmorph.**" result="_json.net.sf.ezmorph.@1"/>
+      </jarjar>
+   </target>
+
+   <target name="jarjar.jdk5" depends="jar.jdk5">
+      <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
+               classpath="${project.lib.dir}/jarjar-1.0.jar"/>
+      <property name="jarfile" value="${maven.build.directory}/${maven.project.name}-all-${maven.project.version}-jdk15.jar"/>
+      <delete file="${jarfile}"/>
+      <jarjar jarfile="${jarfile}">
+         <zipfileset src="${maven.build.directory}/${maven.project.build.finalName}-jdk15.jar"/>
+         <zipfileset src="${maven.repo.local}/commons-beanutils/commons-beanutils/1.8.0/commons-beanutils-1.8.0.jar"/>
+         <zipfileset src="${maven.repo.local}/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
+         <zipfileset src="${maven.repo.local}/commons-lang/commons-lang/2.4/commons-lang-2.4.jar"/>
+         <zipfileset src="${maven.repo.local}/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
+         <zipfileset src="${maven.repo.local}/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6.jar"/>
+         <rule pattern="org.apache.commons.**" result="_json.org.apache.commons.@1"/>
+         <rule pattern="net.sf.ezmorph.**" result="_json.net.sf.ezmorph.@1"/>
+      </jarjar>
    </target>
 
    <target name="source.jar" depends="clean" description="Source jar (jdk1.3)">

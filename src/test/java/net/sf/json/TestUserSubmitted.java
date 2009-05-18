@@ -713,6 +713,7 @@ public class TestUserSubmitted extends TestCase {
       assertEquals( "stringy", bean2.string );
    }
    
+   /*
    public void testBug_2692698() {
       String input = "[\"{'selectedOperatorIndex':2,'leftSideValue':'report.field9','rightSideValue':'2009-3-1'}\",\"all\"]";
       JSON json = JSONArray.fromObject( input );
@@ -720,6 +721,7 @@ public class TestUserSubmitted extends TestCase {
       System.err.println(input);
       System.err.println(output);
    }
+   */
    
    public void testWithoutAnyTroubleTheyMayBeAlreadyDoneByOtherTest() {
       JsonConfig tConfig = new JsonConfig();
