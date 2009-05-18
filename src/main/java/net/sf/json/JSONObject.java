@@ -724,6 +724,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors( bean );
          PropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
          for( int i = 0; i < pds.length; i++ ){
+            boolean bypass = false;
             String key = pds[i].getName();
             if( exclusions.contains( key ) ){
                continue;
@@ -751,6 +752,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      beanClass, type, key );
                if( jsonValueProcessor != null ){
                   value = jsonValueProcessor.processObjectValue( key, value, jsonConfig );
+                  bypass = true;
                   if( !JsonVerifier.isValidJsonValue( value ) ){
                      throw new JSONException( "Value is not a valid JSON value. " + value );
                   }
@@ -758,7 +760,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                if( propertyNameProcessor != null ){
                   key = propertyNameProcessor.processPropertyName( beanClass, key );
                }
-               setValue( jsonObject, key, value, type, jsonConfig );
+               setValue( jsonObject, key, value, type, jsonConfig, bypass );
             }else{
                String warning = "Property '" + key + "' of "+ beanClass+" has no read method. SKIPPED";
                fireWarnEvent( warning, jsonConfig );
@@ -771,6 +773,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             if( !jsonConfig.isIgnorePublicFields() ) {
                Field[] fields = beanClass.getFields();
                for( int i = 0; i < fields.length; i++ ) {
+                  boolean bypass = false;
                   Field field = fields[i];
                   String key = field.getName();
                   if( exclusions.contains( key ) ) {
@@ -789,6 +792,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   JsonValueProcessor jsonValueProcessor = jsonConfig.findJsonValueProcessor( beanClass, type, key );
                   if( jsonValueProcessor != null ) {
                      value = jsonValueProcessor.processObjectValue( key, value, jsonConfig );
+                     bypass = true;
                      if( !JsonVerifier.isValidJsonValue( value ) ) {
                         throw new JSONException( "Value is not a valid JSON value. " + value );
                      }
@@ -796,7 +800,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                   if( propertyNameProcessor != null ) {
                      key = propertyNameProcessor.processPropertyName( beanClass, key );
                   }
-                  setValue( jsonObject, key, value, type, jsonConfig );
+                  setValue( jsonObject, key, value, type, jsonConfig, bypass );
                }
             }
          }
@@ -849,6 +853,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          Collection exclusions = jsonConfig.getMergedExcludes();
          PropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
          for( int i = 0; i < props.length; i++ ){
+            boolean bypass = false;
             DynaProperty dynaProperty = props[i];
             String key = dynaProperty.getName();
             if( exclusions.contains( key ) ){
@@ -862,11 +867,12 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             JsonValueProcessor jsonValueProcessor = jsonConfig.findJsonValueProcessor( type, key );
             if( jsonValueProcessor != null ){
                value = jsonValueProcessor.processObjectValue( key, value, jsonConfig );
+               bypass = true;
                if( !JsonVerifier.isValidJsonValue( value ) ){
                   throw new JSONException( "Value is not a valid JSON value. " + value );
                }
             }
-            setValue( jsonObject, key, value, type, jsonConfig );
+            setValue( jsonObject, key, value, type, jsonConfig, bypass );
          }
       }catch( JSONException jsone ){
          removeInstance( bean );
@@ -934,7 +940,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             jsonObject.accumulate( key, value, jsonConfig );
             firePropertySetEvent( key, value, true, jsonConfig );
          }else{
-            jsonObject._setInternal( key, value, jsonConfig );
+            jsonObject.setInternal( key, value, jsonConfig );
             firePropertySetEvent( key, value, false, jsonConfig );
          }
       }
@@ -1126,6 +1132,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       try{
          for( Iterator entries = map.entrySet()
                .iterator(); entries.hasNext(); ){
+            boolean bypass = false;
             Map.Entry entry = (Map.Entry) entries.next();
             Object k = entry.getKey();
             if( k == null ){
@@ -1150,11 +1157,12 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      value.getClass(), key );
                if( jsonValueProcessor != null ){
                   value = jsonValueProcessor.processObjectValue( key, value, jsonConfig );
+                  bypass = true;
                   if( !JsonVerifier.isValidJsonValue( value ) ){
                      throw new JSONException( "Value is not a valid JSON value. " + value );
                   }
                }
-               setValue( jsonObject, key, value, value.getClass(), jsonConfig );
+               setValue( jsonObject, key, value, value.getClass(), jsonConfig, bypass );
             }else{
                if( jsonObject.properties.containsKey( key ) ){
                   jsonObject.accumulate( key, JSONNull.getInstance() );
@@ -1313,9 +1321,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             : PropertySetStrategy.DEFAULT;
       propertySetStrategy.setProperty( bean, key, value, jsonConfig );
    }
-
+   
    private static void setValue( JSONObject jsonObject, String key, Object value, Class type,
-         JsonConfig jsonConfig ) {
+         JsonConfig jsonConfig, boolean bypass ) {
       boolean accumulated = false;
       if( value == null ){
          value = jsonConfig.findDefaultValueProcessor( type )
@@ -1338,10 +1346,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          }
          accumulated = true;
       }else{
-         if( String.class.isAssignableFrom( type ) ){
+         if( bypass || String.class.isAssignableFrom( type ) ){
             jsonObject.properties.put( key, value );
          }else{
-            jsonObject._setInternal( key, value, jsonConfig );
+            jsonObject.setInternal( key, value, jsonConfig );
          }
       }
 
@@ -2561,47 +2569,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       return this;
    }
 
-   private Object _processValue( Object value, JsonConfig jsonConfig ) {
-      if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
-            || value instanceof Class ){
-         return ((Class) value).getName();
-      }else if( value instanceof JSON ){
-         return JSONSerializer.toJSON( value, jsonConfig );
-      }else if( JSONUtils.isFunction( value ) ){
-         if( value instanceof String ){
-            value = JSONFunction.parse( (String) value );
-         }
-         return value;
-      }else if( value instanceof JSONString ){
-         return JSONSerializer.toJSON( (JSONString) value, jsonConfig );
-      }else if( JSONUtils.isArray( value ) ){
-         return JSONArray.fromObject( value, jsonConfig );
-      }else if( JSONUtils.isString( value ) ){
-         String str = String.valueOf( value );
-         if( JSONUtils.mayBeJSON( str ) ){
-            try{
-               return JSONSerializer.toJSON( str, jsonConfig );
-            }catch( JSONException jsone ){
-               return JSONUtils.stripQuotes( str );
-            }
-         }else{
-            if( value == null ){
-               return "";
-            }else if( jsonConfig.isJavascriptCompliant() && "undefined".equals(value)) {
-               return JSONNull.getInstance();
-            }else{
-               String tmp = JSONUtils.stripQuotes( str );
-               return JSONUtils.mayBeJSON( tmp ) ? tmp : str;
-            }
-         }
-      }else if( JSONUtils.isNumber( value ) ){
-         JSONUtils.testValidity( value );
-         return JSONUtils.transformNumber( (Number) value );
-      }else if( JSONUtils.isBoolean( value ) ){
-         return value;
-      }else{
-         return fromObject( value, jsonConfig );
+   protected Object _processValue( Object value, JsonConfig jsonConfig ) {
+      if( value instanceof JSONTokener ) {
+         return _fromJSONTokener( (JSONTokener) value, jsonConfig );
       }
+      return super._processValue( value, jsonConfig );
    }
 
    /**
@@ -2624,12 +2596,20 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       if( JSONUtils.isString( value ) && JSONUtils.mayBeJSON( String.valueOf( value ) ) ){
          this.properties.put( key, value );
       }else{
+         /*
          Object jo = _processValue( value, jsonConfig );
          if( CycleDetectionStrategy.IGNORE_PROPERTY_OBJ == jo
                || CycleDetectionStrategy.IGNORE_PROPERTY_ARR == jo ){
             // do nothing
          }else{
             this.properties.put( key, jo );
+         }
+         */
+         if( CycleDetectionStrategy.IGNORE_PROPERTY_OBJ == value
+               || CycleDetectionStrategy.IGNORE_PROPERTY_ARR == value ){
+            // do nothing
+         }else{
+            this.properties.put( key, value );
          }
       }
 

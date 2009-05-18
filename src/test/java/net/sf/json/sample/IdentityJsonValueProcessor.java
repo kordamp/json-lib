@@ -18,6 +18,7 @@ package net.sf.json.sample;
 
 import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonValueProcessor;
+import net.sf.json.util.JSONUtils;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -32,6 +33,9 @@ public class IdentityJsonValueProcessor implements JsonValueProcessor {
    }
 
    private Object process( Object value, JsonConfig jsonConfig ) {
+      if( JSONUtils.isNumber( value )) {
+         value = JSONUtils.transformNumber( (Number)value );
+      }
       return value;
    }
 }

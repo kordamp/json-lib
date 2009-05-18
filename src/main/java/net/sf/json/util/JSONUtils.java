@@ -559,7 +559,7 @@ public final class JSONUtils {
    }
 
    /**
-    * Strips any single-quotes or double-quotes from boths sides of the string.
+    * Strips any single-quotes or double-quotes from both sides of the string.
     */
    public static String stripQuotes( String input ) {
       if( input.length() < 2 ){
@@ -573,6 +573,27 @@ public final class JSONUtils {
       }
    }
 
+   /**
+    * Returns true if the input has single-quotes or double-quotes at both sides.
+    */
+   public static boolean hasQuotes( String input ) {
+      if( input == null || input.length() < 2 ){
+         return false;
+      }
+      return input.startsWith( SINGLE_QUOTE ) && input.endsWith( SINGLE_QUOTE ) ||
+         input.startsWith( DOUBLE_QUOTE ) && input.endsWith( DOUBLE_QUOTE );
+   }
+   
+   public static boolean isJsonKeyword( String input, JsonConfig jsonConfig ) {
+      if( input == null ){
+         return false;
+      }
+      return "null".equals( input ) ||
+              "true".equals( input ) ||
+              "false".equals( input ) ||
+              (jsonConfig.isJavascriptCompliant() && "undefined".equals( input ));
+   }
+   
    /**
     * Throw an exception if the object is an NaN or infinite number.
     *

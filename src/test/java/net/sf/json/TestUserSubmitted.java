@@ -55,6 +55,7 @@ import net.sf.json.sample.UnstandardBean;
 import net.sf.json.sample.UnstandardBeanInstanceStrategy;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JavaIdentifierTransformer;
+import net.sf.json.util.JsonEventListener;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -712,9 +713,166 @@ public class TestUserSubmitted extends TestCase {
       assertEquals( "stringy", bean2.string );
    }
    
+   public void testBug_2692698() {
+      String input = "[\"{'selectedOperatorIndex':2,'leftSideValue':'report.field9','rightSideValue':'2009-3-1'}\",\"all\"]";
+      JSON json = JSONArray.fromObject( input );
+      String output = json.toString();
+      System.err.println(input);
+      System.err.println(output);
+   }
+   
+   public void testWithoutAnyTroubleTheyMayBeAlreadyDoneByOtherTest() {
+      JsonConfig tConfig = new JsonConfig();
+      tConfig.enableEventTriggering();
+      tConfig.addJsonEventListener(new JsonErrorDetector());
+
+      // String
+      JSONObject jsonObject = JSONObject.fromObject( "{\"string\":\"aString\"}", tConfig );
+      assertTrue( "L'objet doit contenir une clef \"string\"", jsonObject.containsKey( "string" ) );
+      assertNotNull( "Le membre \"string\" doit être une String", jsonObject.optString( "string" ) );
+      assertEquals( "Le membre \"string\" doit être égal a \"aString\"", "aString", jsonObject.get( "string" ) );
+
+      // int
+      jsonObject = JSONObject.fromObject( "{\"integer\":10}", tConfig );
+      assertTrue( "L'objet doit contenir une clef \"integer\"", jsonObject.containsKey( "integer" ) );
+      assertEquals( "Le membre \"integer\" doit être égal a 10", 10, jsonObject.optInt( "integer" ) );
+
+      // boolean
+      jsonObject = JSONObject.fromObject( "{\"double\":2.02}", tConfig );
+      assertTrue( "L'objet doit contenir une clef \"double\"", jsonObject.containsKey( "double" ) );
+      assertEquals( "Le membre \"double\" doit être égal a 2.02", 2.02d, jsonObject.optDouble( "double" ), 0.0001 );
+
+      // double
+      jsonObject = JSONObject.fromObject( "{\"boolean\":true}", tConfig );
+      assertTrue( "L'objet doit contenir une clef \"boolean\"", jsonObject.containsKey( "boolean" ) );
+      assertEquals( "Le membre \"boolean\" doit être égal a true", true, jsonObject.optBoolean( "boolean" ) );
+
+      // String array
+      jsonObject = JSONObject.fromObject( "{\"strArray\":[\"a\",\"b\",\"c\"]}", tConfig );
+      assertTrue( "L'objet doit contenir une clef \"strArray\"", jsonObject.containsKey( "strArray" ) );
+      assertNotNull( "Le membre \"strArray\" doit être une Array", jsonObject.optJSONArray( "strArray" ) );
+      assertEquals( "L'element 0 de \"strArray\" doit être égal a \"a\"", "a", jsonObject.optJSONArray( "strArray" )
+            .optString( 0 ) );
+      assertEquals( "L'element 1 de \"strArray\" doit être égal a \"b\"", "b", jsonObject.optJSONArray( "strArray" )
+            .optString( 1 ) );
+      assertEquals( "L'element 2 de \"strArray\" doit être égal a \"c\"", "c", jsonObject.optJSONArray( "strArray" )
+            .optString( 2 ) );
+
+      // int array
+      jsonObject = JSONObject.fromObject( "{\"intArray\":[1,2,3]}", tConfig );
+      assertTrue( "L'objet doit contenir une clef \"intArray\"", jsonObject.containsKey( "intArray" ) );
+      assertNotNull( "Le membre \"intArray\" doit être une Array", jsonObject.optJSONArray( "intArray" ) );
+      assertEquals( "L'element 0 de \"intArray\" doit être égal a 1", 1, jsonObject.optJSONArray( "intArray" ).optInt(
+            0 ) );
+      assertEquals( "L'element 1 de \"intArray\" doit être égal a 2", 2, jsonObject.optJSONArray( "intArray" ).optInt(
+            1 ) );
+      assertEquals( "L'element 2 de \"intArray\" doit être égal a 3", 3, jsonObject.optJSONArray( "intArray" ).optInt(
+            2 ) );
+
+      // boolean array
+      jsonObject = JSONObject.fromObject( "{\"booleanArray\":[true, false, true]}", tConfig );
+      assertTrue( "L'objet doit contenir une clef \"booleanArray\"", jsonObject.containsKey( "booleanArray" ) );
+      assertNotNull( "Le membre \"strArray\" doit être une booleanArray", jsonObject.optJSONArray( "booleanArray" ) );
+      assertEquals( "L'element 0 de \"booleanArray\" doit être égal a true", true, jsonObject.optJSONArray(
+            "booleanArray" ).optBoolean( 0 ) );
+      assertEquals( "L'element 1 de \"booleanArray\" doit être égal a false", false, jsonObject.optJSONArray(
+            "booleanArray" ).optBoolean( 1 ) );
+      assertEquals( "L'element 2 de \"booleanArray\" doit être égal a true", true, jsonObject.optJSONArray(
+            "booleanArray" ).optBoolean( 2 ) );
+
+      // double array
+      jsonObject = JSONObject.fromObject( "{\"doubleArray\":[\"a\",\"b\",\"c\"]}", tConfig );
+      assertTrue( "L'objet doit contenir une clef \"doubleArray\"", jsonObject.containsKey( "doubleArray" ) );
+      assertNotNull( "Le membre \"doubleArray\" doit être une Array", jsonObject.optJSONArray( "doubleArray" ) );
+      assertEquals( "L'element 0 de \"doubleArray\" doit être égal a \"a\"", "a", jsonObject.optJSONArray(
+            "doubleArray" ).optString( 0 ) );
+
+      jsonObject = JSONObject.fromObject( "{\"weirdString\":\"[Hello]\"}", tConfig );
+      assertTrue( "L'objet doit contenir une clef \"weirdString\"", jsonObject.containsKey( "weirdString" ) );
+      assertNotNull( "Le membre \"weirdString\" doit être une String", jsonObject.optString( "weirdString" ) );
+      assertEquals( "Le membre \"weirdString\" doit être égal a \"[Hello]\"", "[Hello]", jsonObject.get( "weirdString" ) );
+      jsonObject = JSONObject.fromObject( "{\"weirdString\":\"{912}\"}" );
+      assertTrue( "L'objet doit contenir une clef \"weirdString\"", jsonObject.containsKey( "weirdString" ) );
+      assertNotNull( "Le membre \"weirdString\" doit être une String", jsonObject.optString( "weirdString" ) );
+      assertEquals( "Le membre \"weirdString\" doit être égal a \"{912}\"", "{912}", jsonObject.get( "weirdString" ) );
+   }
+   /*
+   public void testDifferenceBetweenStringSerialisationWithJSONObjectAndJSONArray() {
+      JsonConfig tConfig = new JsonConfig();
+      tConfig.enableEventTriggering();
+      tConfig.addJsonEventListener( new JsonErrorDetector() );
+
+      // This was Ko
+      JSONObject tJsonSource = new JSONObject();
+      tJsonSource.element( "weirdString", "[{}][:,;:.[][[]", jsonConfig );
+      assertEquals( "[{}][:,;:.[][[]", tJsonSource.get( "weirdString" ) );
+
+      String tExpected = "{\"weirdString\":\"[{}][:,;:.[][[]\"}";
+      assertEquals( tExpected, tJsonSource.toString() );
+
+      // This was Ko too
+      tJsonSource = new JSONObject();
+      JSONArray tArraySource = new JSONArray();
+      tArraySource.element( "{912}", jsonConfig );
+      tArraySource.element( "[Hello]", jsonConfig );
+      tArraySource.element( "[]{}[,;.:[[]", jsonConfig );
+      assertEquals( "[]{}[,;.:[[]", tArraySource.get( 2 ) );
+      tJsonSource.put( "weirdStringArray", tArraySource );
+
+      tExpected = "{\"weirdStringArray\":[\"{912}\",\"[Hello]\",\"[]{}[,;.:[[]\"]}";
+      assertEquals( tExpected, tJsonSource.toString() );
+   }
+   /*
+   public void testDifferenceBetweenStringParsingIntoJSONObjectAndJSONArray() {
+      JsonConfig tConfig = new JsonConfig();
+      tConfig.enableEventTriggering();
+      tConfig.addJsonEventListener( new JsonErrorDetector() );
+
+      // This part was Ok
+      JSONObject jsonObject = JSONObject.fromObject( "{\"weirdString\":\"[{}][:,;:.[][[]\"}", tConfig );
+      assertTrue( jsonObject.containsKey( "weirdString" ) );
+      assertNotNull( jsonObject.optString( "weirdString" ) );
+      assertEquals( "[{}][:,;:.[][[]", jsonObject.get( "weirdString" ) );
+
+      // This part very similar to the previous part was Ko
+      jsonObject = JSONObject.fromObject( "{\"weirdStringArray\":[\"{912}\",\"[Hello]\",\"[]{}[,;.:[[]\"]}", tConfig );
+      assertTrue( jsonObject.containsKey( "weirdStringArray" ) );
+      assertNotNull( jsonObject.optJSONArray( "weirdStringArray" ) );
+      assertEquals( "{912}", jsonObject.getJSONArray( "weirdStringArray" ).optString( 0 ) );
+      assertEquals( "[Hello]", jsonObject.getJSONArray( "weirdStringArray" ).optString( 1 ) );
+      assertEquals( "[]{}[,;.:[[]", jsonObject.getJSONArray( "weirdStringArray" ).optString( 2 ) );
+   }
+   */
    public static class RunnableImpl implements Runnable {
       public void run() {
 
+      }
+   }
+   
+   public static class JsonErrorDetector implements JsonEventListener{
+      public void onArrayEnd() {
+      }
+
+      public void onArrayStart() {
+      }
+
+      public void onElementAdded( int index, Object element ) {
+      }
+
+      public void onError( JSONException jsone ) {
+         fail("An error occurs during JsonProcessing "+ jsone.getMessage());
+      }
+
+      public void onObjectEnd() { 
+      }
+
+      public void onObjectStart() {
+      }
+
+      public void onPropertySet( String key, Object value, boolean accumulated ) { 
+      }
+
+      public void onWarning( String warning ) {
       }
    }
 

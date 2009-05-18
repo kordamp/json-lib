@@ -714,7 +714,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Boolean b = array[i] ? Boolean.TRUE : Boolean.FALSE;
-         jsonArray._addValue( b, jsonConfig );
+         jsonArray.addValue( b, jsonConfig );
          fireElementAddedEvent( i, b, jsonConfig );
       }
 
@@ -748,7 +748,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Number n = JSONUtils.transformNumber( new Byte( array[i] ) );
-         jsonArray._addValue( n, jsonConfig );
+         jsonArray.addValue( n, jsonConfig );
          fireElementAddedEvent( i, n, jsonConfig );
       }
 
@@ -782,7 +782,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Character c = new Character( array[i] );
-         jsonArray._addValue( c, jsonConfig );
+         jsonArray.addValue( c, jsonConfig );
          fireElementAddedEvent( i, c, jsonConfig );
       }
 
@@ -818,7 +818,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
          for( int i = 0; i < array.length; i++ ){
             Double d = new Double( array[i] );
             JSONUtils.testValidity( d );
-            jsonArray._addValue( d, jsonConfig );
+            jsonArray.addValue( d, jsonConfig );
             fireElementAddedEvent( i, d, jsonConfig );
          }
       }catch( JSONException jsone ){
@@ -899,7 +899,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
          for( int i = 0; i < array.length; i++ ){
             Float f = new Float( array[i] );
             JSONUtils.testValidity( f );
-            jsonArray._addValue( f, jsonConfig );
+            jsonArray.addValue( f, jsonConfig );
             fireElementAddedEvent( i, f, jsonConfig );
          }
       }catch( JSONException jsone ){
@@ -938,7 +938,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Number n = new Integer( array[i] );
-         jsonArray._addValue( n, jsonConfig );
+         jsonArray.addValue( n, jsonConfig );
          fireElementAddedEvent( i, n, jsonConfig );
       }
 
@@ -972,7 +972,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Number n = JSONUtils.transformNumber( new Long( array[i] ) );
-         jsonArray._addValue( n, jsonConfig );
+         jsonArray.addValue( n, jsonConfig );
          fireElementAddedEvent( i, n, jsonConfig );
       }
 
@@ -1049,7 +1049,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Number n = JSONUtils.transformNumber( new Short( array[i] ) );
-         jsonArray._addValue( n, jsonConfig );
+         jsonArray.addValue( n, jsonConfig );
          fireElementAddedEvent( i, n, jsonConfig );
       }
 
@@ -1620,7 +1620,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * than the length of the JSONArray, then null elements will be added as
     * necessary to pad it out.<br>
     * The string may be a valid JSON formatted string, in tha case, it will be
-    * trabsformed to a JSONArray, JSONObjetc or JSONNull.
+    * transformed to a JSONArray, JSONObject or JSONNull.
     *
     * @param index The subscript.
     * @param value A String value.
@@ -1637,7 +1637,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * than the length of the JSONArray, then null elements will be added as
     * necessary to pad it out.<br>
     * The string may be a valid JSON formatted string, in tha case, it will be
-    * trabsformed to a JSONArray, JSONObjetc or JSONNull.
+    * transformed to a JSONArray, JSONObject or JSONNull.
     *
     * @param index The subscript.
     * @param value A String value.
@@ -1756,7 +1756,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    /**
     * Append a String value. This increases the array's length by one.<br>
     * The string may be a valid JSON formatted string, in tha case, it will be
-    * trabsformed to a JSONArray, JSONObjetc or JSONNull.
+    * transformed to a JSONArray, JSONObject or JSONNull.
     *
     * @param value A String value.
     * @return this.
@@ -1768,24 +1768,32 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    /**
     * Append a String value. This increases the array's length by one.<br>
     * The string may be a valid JSON formatted string, in tha case, it will be
-    * trabsformed to a JSONArray, JSONObjetc or JSONNull.
+    * transformed to a JSONArray, JSONObject or JSONNull.
     *
     * @param value A String value.
     * @return this.
     */
    public JSONArray element( String value, JsonConfig jsonConfig ) {
-      if( value == null ){
-         this.elements.add( "" );
-      }else if( JSONUtils.mayBeJSON( value ) ){
+      if( value == null ) {
+         this.elements.add("");
+      } else if( JSONUtils.hasQuotes( value )) {
+         this.elements.add(value);
+      } else if( JSONNull.getInstance().equals( value )) {
+         this.elements.add( JSONNull.getInstance() );
+      } else if( JSONUtils.isJsonKeyword(value,jsonConfig)) {
+         if( jsonConfig.isJavascriptCompliant() && "undefined".equals( value )){
+            this.elements.add( JSONNull.getInstance() );
+         }else{
+            this.elements.add(value);
+         }
+      } else if( JSONUtils.mayBeJSON( value ) ){
          try{
             this.elements.add( JSONSerializer.toJSON( value, jsonConfig ) );
          }catch( JSONException jsone ){
-            this.elements.add( JSONUtils.stripQuotes( value ) );
+            this.elements.add( value );
          }
-      }else if( jsonConfig.isJavascriptCompliant() && "undefined".equals(value)) {
-         this.elements.add( JSONNull.getInstance() );
-      }else{
-         this.elements.add( JSONUtils.stripQuotes( value ) );
+      } else {
+         this.elements.add(value);
       }
       return this;
    }
@@ -2518,56 +2526,20 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @return this.
     */
    private JSONArray _addValue( Object value, JsonConfig jsonConfig ) {
-      this.elements.add( _processValue( value, jsonConfig ) );
+      this.elements.add(value);
       return this;
    }
 
-   private Object _processValue( Object value, JsonConfig jsonConfig ) {
-      if( (value != null && Class.class.isAssignableFrom( value.getClass() ))
-            || value instanceof Class ){
-         return ((Class) value).getName();
-      }else if( JSONUtils.isFunction( value ) ){
-         if( value instanceof String ){
-            value = JSONFunction.parse( (String) value );
-         }
-         return value;
-      }else if( value instanceof JSONString ){
-         return JSONSerializer.toJSON( (JSONString) value, jsonConfig );
-      }else if( value instanceof JSON ){
-         return JSONSerializer.toJSON( value, jsonConfig );
-      }else if( JSONUtils.isArray( value ) ){
-         return JSONArray.fromObject( value, jsonConfig );
-      }else if( value instanceof JSONTokener ){
+   protected Object _processValue( Object value, JsonConfig jsonConfig ) {
+      if( value instanceof JSONTokener ) {
          return _fromJSONTokener( (JSONTokener) value, jsonConfig );
-      }else if( JSONUtils.isString( value ) ){
-         String str = String.valueOf( value );
-         if( JSONUtils.mayBeJSON( str ) ){
-            try{
-               return JSONSerializer.toJSON( str, jsonConfig );
-            }catch( JSONException jsone ){
-               return JSONUtils.stripQuotes( str );
-            }
-         }else{
-            return str;
-         }
-      }else if( JSONUtils.isNumber( value ) ){
-         JSONUtils.testValidity( value );
-         return JSONUtils.transformNumber( (Number) value );
-      }else if( JSONUtils.isBoolean( value ) ){
-         return value;
-      }else if( value instanceof Enum ){
-         return String.valueOf( value );
+      }else if( value != null && Enum.class.isAssignableFrom( value.getClass() ) ){
+         return ((Enum) value).name();
       }else if( value instanceof Annotation || (value != null && value.getClass()
             .isAnnotation()) ){
          throw new JSONException( "Unsupported type" );
-      }else{
-         JSONObject jsonObject = JSONObject.fromObject( value, jsonConfig );
-         if( jsonObject.isNullObject() ){
-            return JSONNull.getInstance();
-         }else{
-            return jsonObject;
-         }
       }
+      return super._processValue( value, jsonConfig );
    }
 
    /**
