@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2779977">
+            Inconsistent license between the source file and project
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2513691">
             Support for reading both properties and public fields
          </action>
