@@ -24,9 +24,13 @@ import junit.framework.TestCase;
 import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.bean.MorphDynaBean;
 import net.sf.ezmorph.bean.MorphDynaClass;
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
 import net.sf.json.sample.AnnotationBean;
+import net.sf.json.sample.AnnotatedBean;
 import net.sf.json.sample.EnumBean;
 import net.sf.json.sample.JsonEnum;
+import net.sf.json.sample.JsonAnnotation;
 import net.sf.json.util.EnumMorpher;
 import net.sf.json.util.JSONUtils;
 
@@ -207,6 +211,28 @@ public class TestJSONObjectJdk15 extends TestCase
       assertEquals( bean.getJsonEnum(), JsonEnum.OBJECT );
    }
 
+   public void testFromObject_ignoreAnnotations()
+   {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.addIgnoreFieldAnnotation( JsonAnnotation.class );
+      AnnotatedBean bean = new AnnotatedBean();
+      bean.setString1("STRING_1");
+      bean.setString2("STRING_2");
+      bean.setString3("STRING_3");
+      JSONObject json = JSONObject.fromObject(bean, jsonConfig);
+      assertNotNull(json);
+      assertEquals("STRING_1", json.get("string1"));
+      assertEquals("STRING_2", json.get("string2"));
+      assertFalse(json.has( "string3" ));
+      
+      jsonConfig.setIgnoreTransientFields( true );
+      json = JSONObject.fromObject(bean, jsonConfig);
+      assertNotNull(json);
+      assertEquals("STRING_1", json.get("string1"));
+      assertFalse(json.has( "string2" ));
+      assertFalse(json.has( "string3" ));
+   }
+   
    protected void setUp() throws Exception {
       Morpher morpher = JSONUtils.getMorpherRegistry().getMorpherFor( JsonEnum.class );
       JSONUtils.getMorpherRegistry().deregisterMorpher( morpher );

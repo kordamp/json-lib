@@ -23,6 +23,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.array.ObjectArrayMorpher;
 import net.sf.ezmorph.bean.BeanMorpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
+import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
@@ -884,7 +886,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                continue;
             }
 
-            if( jsonConfig.isIgnoreTransientFields() && isTransientField( key, beanClass ) ){
+            if( jsonConfig.isIgnoreTransientFields() && isTransientField( key, beanClass, jsonConfig ) ){
                continue;
             }
 
@@ -898,6 +900,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                continue;
             }
             if( pds[i].getReadMethod() != null ){
+               /*
                if( jsonConfig.isIgnoreJPATransient() ){
                   try{
                      Class transientClass = Class.forName( "javax.persistence.Transient" );
@@ -909,6 +912,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      // ignore
                   }
                }
+               */
+               if(isTransient(pds[i].getReadMethod(), jsonConfig)) continue;
 
                Object value = PropertyUtils.getProperty( bean, key );
                if( jsonPropertyFilter != null && jsonPropertyFilter.apply( bean, key, value ) ){
@@ -946,7 +951,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      continue;
                   }
 
-                  if( jsonConfig.isIgnoreTransientFields() && isTransientField( field ) ) {
+                  if( jsonConfig.isIgnoreTransientFields() && isTransient( field, jsonConfig ) ) {
                      continue;
                   }
 
@@ -1483,17 +1488,27 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       return targetClass;
    }
 
-   private static boolean isTransientField( String name, Class beanClass ) {
+   private static boolean isTransientField( String name, Class beanClass, JsonConfig jsonConfig ) {
       try{
-         return isTransientField(beanClass.getDeclaredField( name ));
+         Field field = beanClass.getDeclaredField( name );
+         if((field.getModifiers() & Modifier.TRANSIENT) == Modifier.TRANSIENT) return true;
+         return isTransient(field, jsonConfig);
       }catch( Exception e ){
-         // swallow exception
+         log.info( "Error while inspecting field "+beanClass+"."+name+" for transient status." ,e );
       }
       return false;
    }
 
-   private static boolean isTransientField( Field field ) {
-      return (field.getModifiers() & Modifier.TRANSIENT) == Modifier.TRANSIENT;
+   private static boolean isTransient( AnnotatedElement element, JsonConfig jsonConfig ) {
+      for( Iterator annotations = jsonConfig.getIgnoreFieldAnnotations().iterator(); annotations.hasNext(); ) {
+         try {
+           String annotationClassName = (String) annotations.next();
+           if( element.getAnnotation((Class) Class.forName( annotationClassName )) != null ) return true;
+         } catch( Exception e ){
+            log.info( "Error while inspecting "+element+" for transient status." ,e );
+         }
+      }
+      return false;
    }
 
    private static Object morphPropertyValue( String key, Object value, Class type, Class targetType ) {

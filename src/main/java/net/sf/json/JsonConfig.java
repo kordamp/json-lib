@@ -18,6 +18,7 @@ package net.sf.json;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -85,7 +86,7 @@ public class JsonConfig {
    private boolean handleJettisonEmptyElement;
    private boolean handleJettisonSingleElementArray;
    private boolean ignoreDefaultExcludes;
-   private boolean ignoreJPATransient;
+   //private boolean ignoreJPATransient;
    private boolean ignoreTransientFields;
    private boolean ignorePublicFields = true;
    private boolean javascriptCompliant;
@@ -107,6 +108,7 @@ public class JsonConfig {
    private boolean skipJavaIdentifierTransformationInMapKeys;
    private boolean triggerEvents;
    private Map typeMap = new HashMap();
+   private List ignoreFieldAnnotations = new ArrayList();
 
    public JsonConfig() {
    }
@@ -225,7 +227,7 @@ public class JsonConfig {
       jsc.defaultValueProcessorMatcher = defaultValueProcessorMatcher;
       jsc.defaultValueMap.putAll( defaultValueMap );
       jsc.propertySetStrategy = propertySetStrategy;
-      jsc.ignoreJPATransient = ignoreJPATransient;
+      //jsc.ignoreJPATransient = ignoreJPATransient;
       jsc.collectionType = collectionType;
       jsc.enclosedType = enclosedType;
       jsc.jsonValueProcessorMatcher = jsonValueProcessorMatcher;
@@ -235,6 +237,7 @@ public class JsonConfig {
       jsc.jsonPropertyNameProcessorMap.putAll( jsonPropertyNameProcessorMap );
       jsc.propertyExclusionClassMatcher = propertyExclusionClassMatcher;
       jsc.exclusionMap.putAll(  exclusionMap );
+      jsc.ignoreFieldAnnotations.addAll( ignoreFieldAnnotations );
       return jsc;
    }
 
@@ -697,7 +700,7 @@ public class JsonConfig {
     * [Java -&gt; JSON]
     */
    public boolean isIgnoreJPATransient() {
-      return ignoreJPATransient;
+      return ignoreFieldAnnotations.contains("javax.persistence.Transient");
    }
 
    /**
@@ -937,7 +940,7 @@ public class JsonConfig {
       defaultValueProcessorMatcher = DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER;
       defaultValueMap.clear();
       propertySetStrategy = null/* DEFAULT_PROPERTY_SET_STRATEGY */;
-      ignoreJPATransient = false;
+      //ignoreJPATransient = false;
       collectionType = DEFAULT_COLLECTION_TYPE;
       enclosedType = null;
       jsonValueProcessorMatcher = DEFAULT_JSON_VALUE_PROCESSOR_MATCHER;
@@ -948,6 +951,7 @@ public class JsonConfig {
       beanProcessorMap.clear();
       propertyExclusionClassMatcher = DEFAULT_PROPERTY_EXCLUSION_CLASS_MATCHER;
       exclusionMap.clear();
+      ignoreFieldAnnotations.clear();
    }
 
    /**
@@ -1064,13 +1068,57 @@ public class JsonConfig {
    }
 
    /**
-    * Sets if JPA Transient annotated methods woul be skipped when building.<br>
+    * Sets if JPA Transient annotated methods would be skipped when building.<br>
     * [Java -&gt; JSON]
     */
    public void setIgnoreJPATransient( boolean ignoreJPATransient ) {
-      this.ignoreJPATransient = ignoreJPATransient;
+      addIgnoreFieldAnnotation("javax.persistence.Transient");
+   }
+   
+   /**
+    * Adds an annotation that marks a field to be skipped when building.<br>
+    * [Java -&gt; JSON]
+    */
+   public void addIgnoreFieldAnnotation( String annotationClassName ) {
+      if( annotationClassName != null && !ignoreFieldAnnotations.contains( annotationClassName )) {
+         ignoreFieldAnnotations.add(annotationClassName);
+      }
+   }
+   
+   /**
+    * Adds an annotation that marks a field to be skipped when building.<br>
+    * [Java -&gt; JSON]
+    */
+   public void removeIgnoreFieldAnnotation( String annotationClassName ) {
+      if( annotationClassName != null ) ignoreFieldAnnotations.remove(annotationClassName);
    }
 
+   /**
+    * Removes an annotation that marks a field to be skipped when building.<br>
+    * [Java -&gt; JSON]
+    */
+   public void addIgnoreFieldAnnotation( Class annotationClass ) {
+      if( annotationClass != null && !ignoreFieldAnnotations.contains( annotationClass.getName() )) {
+         ignoreFieldAnnotations.add(annotationClass.getName());
+      }
+   }
+   
+   /**
+    * Removes an annotation that marks a field to be skipped when building.<br>
+    * [Java -&gt; JSON]
+    */
+   public void removeIgnoreFieldAnnotation( Class annotationClass ) {
+      if( annotationClass != null ) ignoreFieldAnnotations.remove(annotationClass.getName());
+   }
+   
+   /**
+    * Returns a List of all annotations that mark a field to be skipped when building.<br>
+    * [Java -&gt; JSON]
+    */
+   public List getIgnoreFieldAnnotations() {
+      return Collections.unmodifiableList(ignoreFieldAnnotations);
+   }
+   
    /**
     * Sets if transient fields would be skipped when building.<br>
     * [Java -&gt; JSON]
