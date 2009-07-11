@@ -74,7 +74,7 @@ public class TestJSONObjectEvents extends TestCase {
          assertEquals( 0, jsonEventAdpater.getWarning() );
          assertEquals( 0, jsonEventAdpater.getArrayStart() );
          assertEquals( 0, jsonEventAdpater.getArrayEnd() );
-         assertEquals( 1, jsonEventAdpater.getObjectStart() );
+         assertEquals( 0, jsonEventAdpater.getObjectStart() );
          assertEquals( 0, jsonEventAdpater.getObjectEnd() );
          assertEquals( 0, jsonEventAdpater.getElementAdded() );
          assertEquals( 0, jsonEventAdpater.getPropertySet() );

@@ -648,7 +648,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     *         JSONObject.
     */
    private static JSONObject _fromBean( Object bean, JsonConfig jsonConfig ) {
-      fireObjectStartEvent( jsonConfig );
       if( !addInstance( bean ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -664,6 +663,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             throw jsone;
          }
       }
+      fireObjectStartEvent( jsonConfig );
 
       JsonBeanProcessor processor = jsonConfig.findJsonBeanProcessor( bean.getClass() );
       if( processor != null ){
@@ -800,8 +800,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    }
 
    private static JSONObject _fromDynaBean( DynaBean bean, JsonConfig jsonConfig ) {
-      fireObjectStartEvent( jsonConfig );
       if( bean == null ){
+         fireObjectStartEvent( jsonConfig );
          fireObjectEndEvent( jsonConfig );
          return new JSONObject( true );
       }
@@ -821,6 +821,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             throw jsone;
          }
       }
+      fireObjectStartEvent( jsonConfig );
 
       JSONObject jsonObject = new JSONObject();
       try{
@@ -867,8 +868,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    }
 
    private static JSONObject _fromJSONObject( JSONObject object, JsonConfig jsonConfig ) {
-      fireObjectStartEvent( jsonConfig );
       if( object == null || object.isNullObject() ){
+         fireObjectStartEvent( jsonConfig );
          fireObjectEndEvent( jsonConfig );
          return new JSONObject( true );
       }
@@ -888,6 +889,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             throw jsone;
          }
       }
+      fireObjectStartEvent( jsonConfig );
 
       JSONArray sa = object.names(jsonConfig);
       Collection exclusions = jsonConfig.getMergedExcludes();
@@ -931,7 +933,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    }
 
    private static JSONObject _fromJSONTokener( JSONTokener tokener, JsonConfig jsonConfig ) {
-      fireObjectStartEvent( jsonConfig );
 
       try{
          char c;
@@ -939,6 +940,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          Object value;
 
          if( tokener.matches( "null.*" ) ){
+            fireObjectStartEvent( jsonConfig );
             fireObjectEndEvent( jsonConfig );
             return new JSONObject( true );
          }
@@ -946,6 +948,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          if( tokener.nextClean() != '{' ){
             throw tokener.syntaxError( "A JSONObject text must begin with '{'" );
          }
+         fireObjectStartEvent( jsonConfig );
 
          Collection exclusions = jsonConfig.getMergedExcludes();
          PropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
@@ -1080,8 +1083,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    }
 
    private static JSONObject _fromMap( Map map, JsonConfig jsonConfig ) {
-      fireObjectStartEvent( jsonConfig );
       if( map == null ){
+         fireObjectStartEvent( jsonConfig );
          fireObjectEndEvent( jsonConfig );
          return new JSONObject( true );
       }
@@ -1101,6 +1104,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             throw jsone;
          }
       }
+      fireObjectStartEvent( jsonConfig );
 
       Collection exclusions = jsonConfig.getMergedExcludes();
       JSONObject jsonObject = new JSONObject();

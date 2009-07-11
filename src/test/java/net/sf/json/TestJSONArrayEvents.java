@@ -49,7 +49,7 @@ public class TestJSONArrayEvents extends TestCase {
       }catch( JSONException expected ){
          assertEquals( 1, jsonEventAdpater.getError() );
          assertEquals( 0, jsonEventAdpater.getWarning() );
-         assertEquals( 1, jsonEventAdpater.getArrayStart() );
+         assertEquals( 0, jsonEventAdpater.getArrayStart() );
          assertEquals( 0, jsonEventAdpater.getArrayEnd() );
          assertEquals( 0, jsonEventAdpater.getObjectStart() );
          assertEquals( 0, jsonEventAdpater.getObjectEnd() );

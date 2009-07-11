@@ -671,7 +671,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @param array An boolean[] array.
     */
    private static JSONArray _fromArray( boolean[] array, JsonConfig jsonConfig ) {
-      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -687,6 +686,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw jsone;
          }
       }
+      fireArrayStartEvent( jsonConfig );
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Boolean b = array[i] ? Boolean.TRUE : Boolean.FALSE;
@@ -705,7 +705,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @param array An byte[] array.
     */
    private static JSONArray _fromArray( byte[] array, JsonConfig jsonConfig ) {
-      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -721,6 +720,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw jsone;
          }
       }
+      fireArrayStartEvent( jsonConfig );
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Number n = JSONUtils.transformNumber( new Byte( array[i] ) );
@@ -739,7 +739,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @param array An char[] array.
     */
    private static JSONArray _fromArray( char[] array, JsonConfig jsonConfig ) {
-      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -755,6 +754,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw jsone;
          }
       }
+      fireArrayStartEvent( jsonConfig );
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Character c = new Character( array[i] );
@@ -773,7 +773,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @param array An double[] array.
     */
    private static JSONArray _fromArray( double[] array, JsonConfig jsonConfig ) {
-      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -789,6 +788,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw jsone;
          }
       }
+      fireArrayStartEvent( jsonConfig );
       JSONArray jsonArray = new JSONArray();
       try{
          for( int i = 0; i < array.length; i++ ){
@@ -815,8 +815,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @throws JSONException If there is a syntax error.
     */
    private static JSONArray _fromArray( Enum e, JsonConfig jsonConfig ) {
-
-      fireArrayStartEvent( jsonConfig );
       if( !addInstance( e ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -832,6 +830,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw jsone;
          }
       }
+      fireArrayStartEvent( jsonConfig );
       JSONArray jsonArray = new JSONArray();
       if( e != null ){
          jsonArray.addValue( e, jsonConfig );
@@ -854,7 +853,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @param array An float[] array.
     */
    private static JSONArray _fromArray( float[] array, JsonConfig jsonConfig ) {
-      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -870,6 +868,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw jsone;
          }
       }
+      fireArrayStartEvent( jsonConfig );
       JSONArray jsonArray = new JSONArray();
       try{
          for( int i = 0; i < array.length; i++ ){
@@ -895,7 +894,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @param array An int[] array.
     */
    private static JSONArray _fromArray( int[] array, JsonConfig jsonConfig ) {
-      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -911,6 +909,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw jsone;
          }
       }
+      fireArrayStartEvent( jsonConfig );
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Number n = new Integer( array[i] );
@@ -929,7 +928,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @param array An long[] array.
     */
    private static JSONArray _fromArray( long[] array, JsonConfig jsonConfig ) {
-      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -945,6 +943,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw jsone;
          }
       }
+      fireArrayStartEvent( jsonConfig );
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Number n = JSONUtils.transformNumber( new Long( array[i] ) );
@@ -960,8 +959,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    // ------------------------------------------------------
 
    private static JSONArray _fromArray( Object[] array, JsonConfig jsonConfig ) {
-      fireArrayStartEvent( jsonConfig );
-
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -977,6 +974,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw jsone;
          }
       }
+      fireArrayStartEvent( jsonConfig );
       JSONArray jsonArray = new JSONArray();
       try{
          for( int i = 0; i < array.length; i++ ){
@@ -1006,7 +1004,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @param array An short[] array.
     */
    private static JSONArray _fromArray( short[] array, JsonConfig jsonConfig ) {
-      fireArrayStartEvent( jsonConfig );
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -1022,6 +1019,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw jsone;
          }
       }
+      fireArrayStartEvent( jsonConfig );
       JSONArray jsonArray = new JSONArray();
       for( int i = 0; i < array.length; i++ ){
          Number n = JSONUtils.transformNumber( new Short( array[i] ) );
@@ -1035,8 +1033,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    }
 
    private static JSONArray _fromCollection( Collection collection, JsonConfig jsonConfig ) {
-      fireArrayStartEvent( jsonConfig );
-
       if( !addInstance( collection ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -1052,6 +1048,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw jsone;
          }
       }
+      fireArrayStartEvent( jsonConfig );
       JSONArray jsonArray = new JSONArray();
       try{
          int i = 0;
@@ -1077,8 +1074,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    }
 
    private static JSONArray _fromJSONArray( JSONArray array, JsonConfig jsonConfig ) {
-      fireArrayStartEvent( jsonConfig );
-
       if( !addInstance( array ) ){
          try{
             return jsonConfig.getCycleDetectionStrategy()
@@ -1094,6 +1089,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
             throw jsone;
          }
       }
+      fireArrayStartEvent( jsonConfig );
       JSONArray jsonArray = new JSONArray();
       int index = 0;
       for( Iterator elements = array.iterator(); elements.hasNext(); ){
@@ -1112,7 +1108,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    }
 
    private static JSONArray _fromJSONTokener( JSONTokener tokener, JsonConfig jsonConfig ) {
-      fireArrayStartEvent( jsonConfig );
 
       JSONArray jsonArray = new JSONArray();
       int index = 0;
@@ -1121,6 +1116,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
          if( tokener.nextClean() != '[' ){
             throw tokener.syntaxError( "A JSONArray text must start with '['" );
          }
+         fireArrayStartEvent( jsonConfig );
          if( tokener.nextClean() == ']' ){
             fireArrayEndEvent( jsonConfig );
             return jsonArray;
