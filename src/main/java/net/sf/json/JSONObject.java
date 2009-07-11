@@ -900,7 +900,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          if( k == null ){
             throw new JSONException("JSON keys cannot be null.");
          }
-         if( !(k instanceof String)) {
+         if( !(k instanceof String) && !jsonConfig.isAllowNonStringKeys()) {
             throw new ClassCastException("JSON keys must be strings.");
          }
          String key = String.valueOf( k );
@@ -1118,7 +1118,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             if( k == null ){
                throw new JSONException("JSON keys cannot be null.");
             }
-            if( !(k instanceof String)) {
+            if( !(k instanceof String) && !jsonConfig.isAllowNonStringKeys() ) {
                throw new ClassCastException("JSON keys must be strings.");
             }
             String key = String.valueOf( k );

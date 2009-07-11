@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2795511">
+            Maps with non-String keys throw ClassCastException
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2799533">
             Incorrect event firing on cycles
          </action>

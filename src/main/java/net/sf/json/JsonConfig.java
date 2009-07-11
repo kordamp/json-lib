@@ -109,6 +109,7 @@ public class JsonConfig {
    private boolean triggerEvents;
    private Map typeMap = new HashMap();
    private List ignoreFieldAnnotations = new ArrayList();
+   private boolean allowNonStringKeys = false;
 
    public JsonConfig() {
    }
@@ -238,6 +239,7 @@ public class JsonConfig {
       jsc.propertyExclusionClassMatcher = propertyExclusionClassMatcher;
       jsc.exclusionMap.putAll(  exclusionMap );
       jsc.ignoreFieldAnnotations.addAll( ignoreFieldAnnotations );
+      jsc.allowNonStringKeys = allowNonStringKeys;
       return jsc;
    }
 
@@ -657,6 +659,15 @@ public class JsonConfig {
    }
 
    /**
+    * Returns true if non-String keys are allowed on JSONObject.<br>
+    * Default value is false<br>
+    * [Java -&gt; JSON]
+    */
+   public boolean isAllowNonStringKeys() {
+      return allowNonStringKeys;
+   }
+   
+   /**
     * Returns true if event triggering is enabled during building.<br>
     * Default value is false<br>
     * [Java -&gt; JSON]
@@ -952,8 +963,17 @@ public class JsonConfig {
       propertyExclusionClassMatcher = DEFAULT_PROPERTY_EXCLUSION_CLASS_MATCHER;
       exclusionMap.clear();
       ignoreFieldAnnotations.clear();
+      allowNonStringKeys = false;
    }
 
+   /**
+    * Sets if non-String keys are allowed on JSONObject.<br>
+    * [Java -&gt; JSON]
+    */
+   public void setAllowNonStringKeys( boolean allowNonStringKeys ) {
+      this.allowNonStringKeys = allowNonStringKeys;
+   }
+   
    /**
     * Sets the current array mode for conversion.<br>
     * If the value is not MODE_LIST, MODE_OBJECT_ARRAY nor MODE_SET, then MODE_LIST will be used.<br>
@@ -1072,7 +1092,11 @@ public class JsonConfig {
     * [Java -&gt; JSON]
     */
    public void setIgnoreJPATransient( boolean ignoreJPATransient ) {
-      addIgnoreFieldAnnotation("javax.persistence.Transient");
+      if(ignoreJPATransient) {
+         addIgnoreFieldAnnotation("javax.persistence.Transient");
+      } else {
+         removeIgnoreFieldAnnotation("javax.persistence.Transient");
+      }
    }
    
    /**
