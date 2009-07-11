@@ -944,12 +944,15 @@ public class TestJSONObject extends TestCase {
    }
 
    public void testLength_nullObject() {
+      /*
       try{
          new JSONObject( true ).size();
          fail( "Expected a JSONException" );
       }catch( JSONException expected ){
          // ok
       }
+      */
+      assertEquals( 0, new JSONObject(true).size() );
    }
 
    public void testOptBoolean() {

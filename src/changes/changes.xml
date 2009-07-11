@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2807279">
+            JSONObject Map.size() implementation is incorrect. Thanks to Earl Nolan (provided testcase)
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2818666">
             Annotation filter
          </action>

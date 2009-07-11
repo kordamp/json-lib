@@ -2029,7 +2029,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
    }
 
    public boolean isEmpty() {
-      verifyIsNull();
+      // verifyIsNull();
       return this.properties.isEmpty();
    }
 
@@ -2326,7 +2326,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     * @return The number of keys in the JSONObject.
     */
    public int size() {
-      verifyIsNull();
+      // verifyIsNull();
       return this.properties.size();
    }
 
