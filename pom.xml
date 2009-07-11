@@ -87,36 +87,36 @@
       <contributor>
          <name>Matt Small</name>
          <organization>WaveMaker</organization>
-	 <roles>
+         <roles>
             <role>Contributed generics support</role>
-	 </roles>
+         </roles>
       </contributor>
       <contributor>
          <name>Dan Fabulich</name>
-	 <roles>
+         <roles>
             <role>Feedback on JDK5 and JEE features</role>
-	 </roles>
+         </roles>
       </contributor>
       <contributor>
          <name>Masato Nagai</name>
-	 <roles>
+         <roles>
             <role>Patch for XMLSerializer</role>
-	 </roles>
+         </roles>
       </contributor>
       <contributor>
          <name>Gino Miceli</name>
-	 <roles>
+         <roles>
             <role>Patch for PropertySet strategy</role>
-	 </roles>
+         </roles>
       </contributor>
       <contributor>
          <name>Mino Tonga</name>
       </contributor>
       <contributor>
          <name>Yee_Keat Phuah</name>
-	 <roles>
-	    <role>Patch for thread safety in JSONObject/JSONArray</role>
-	 </roles>
+         <roles>
+            <role>Patch for thread safety in JSONObject/JSONArray</role>
+         </roles>
       </contributor>
       <contributor>
          <name>Oliver Zyngier</name>
@@ -129,16 +129,22 @@
       </contributor>
       <contributor>
          <name>Ales Novy</name>
-	 <roles>
-	    <role>Patch for performance improvements in JSONUtils</role>
-	    <role>Patch for propagating JsonConfig to missing methods on JSONObject</role>
-	 </roles>
+         <roles>
+            <role>Patch for performance improvements in JSONUtils</role>
+            <role>Patch for propagating JsonConfig to missing methods on JSONObject</role>
+         </roles>
       </contributor>
       <contributor>
          <name>Peter Schubert</name>
-	 <roles>
+         <roles>
             <role>Performance patch for JSONUtils</role>
-	 </roles>
+         </roles>
+      </contributor>      
+      <contributor>
+         <name>Ian Wolfcat Atha</name>
+         <roles>
+            <role>Performance patch for JSONUtils</role>
+         </roles>
       </contributor>
    </contributors>
 
@@ -274,7 +280,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-	    <version>2.3</version>
+            <version>2.3</version>
             <configuration>
                <excludes>
                   <exclude>**/Abstract*.java</exclude>
@@ -358,7 +364,7 @@
             <artifactId>javancss-maven-plugin</artifactId>
             <version>2.0-beta-1</version>
          </plugin>
-	 <!--
+         <!--
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>findbugs-maven-plugin</artifactId>
@@ -374,7 +380,7 @@
                <newTag>CURRENT</newTag>
             </configuration>
          </plugin>
-	 -->
+         -->
       </plugins>
    </reporting>
 

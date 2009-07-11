@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2817570">
+            net.sf.json.util.JSONUtils.isFunction() locks. Thanks to Ian Wolfcat Atha (provided patch)
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2779977">
             Inconsistent license between the source file and project
          </action>

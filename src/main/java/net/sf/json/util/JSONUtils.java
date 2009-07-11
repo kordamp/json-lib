@@ -36,7 +36,6 @@ import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONString;
 import net.sf.json.JsonConfig;
-import net.sf.json.regexp.RegexpMatcher;
 import net.sf.json.regexp.RegexpUtils;
 
 import org.apache.commons.beanutils.DynaBean;
@@ -45,7 +44,7 @@ import org.apache.commons.beanutils.DynaBean;
  * Provides useful methods on java objects and JSON values.
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
- * @version 6
+ * @version 7
  */
 public final class JSONUtils {
    /** Constant for char " */
@@ -53,12 +52,8 @@ public final class JSONUtils {
    /** Constant for char ' */
    public static final String SINGLE_QUOTE = "'";
 
-   private static RegexpMatcher FUNCTION_BODY_MATCHER;
    private static final String FUNCTION_BODY_PATTERN = "^function[ ]?\\(.*?\\)[ \n\t]*\\{(.*?)\\}$";
-   private static RegexpMatcher FUNCTION_HEADER_MATCHER;
    private static final String FUNCTION_HEADER_PATTERN = "^function[ ]?\\(.*?\\)$";
-   private static RegexpMatcher FUNCTION_MACTHER;
-   private static RegexpMatcher FUNCTION_PARAMS_MATCHER;
    private static final String FUNCTION_PARAMS_PATTERN = "^function[ ]?\\((.*?)\\).*";
    private static final String FUNCTION_PATTERN = "^function[ ]?\\(.*?\\)[ \n\t]*\\{.*?\\}$";
    private static final String FUNCTION_PREFIX = "function";
@@ -66,11 +61,6 @@ public final class JSONUtils {
    private static final MorpherRegistry morpherRegistry = new MorpherRegistry();
 
    static{
-      FUNCTION_HEADER_MATCHER = RegexpUtils.getMatcher( FUNCTION_HEADER_PATTERN );
-      FUNCTION_PARAMS_MATCHER = RegexpUtils.getMatcher( FUNCTION_PARAMS_PATTERN );
-      FUNCTION_BODY_MATCHER = RegexpUtils.getMatcher( FUNCTION_BODY_PATTERN );
-      FUNCTION_MACTHER = RegexpUtils.getMatcher( FUNCTION_PATTERN, true );
-
       // register standard morphers
       MorphUtils.registerStandardMorphers( morpherRegistry );
    }
@@ -132,14 +122,14 @@ public final class JSONUtils {
     * Returns the body of a function literal.
     */
    public static String getFunctionBody( String function ) {
-      return FUNCTION_BODY_MATCHER.getGroupIfMatches( function, 1 );
+      return RegexpUtils.getMatcher( FUNCTION_BODY_PATTERN, true ).getGroupIfMatches( function, 1 );
    }
    
    /**
     * Returns the params of a function literal.
     */
    public static String getFunctionParams( String function ) {
-      return FUNCTION_PARAMS_MATCHER.getGroupIfMatches( function, 1 );
+      return RegexpUtils.getMatcher( FUNCTION_PARAMS_PATTERN, true ).getGroupIfMatches( function, 1 );
    }
 
    /**
@@ -286,7 +276,7 @@ public final class JSONUtils {
    public static boolean isFunction( Object obj ) {
       if( obj instanceof String ){
          String str = (String) obj;
-         return str.startsWith( FUNCTION_PREFIX ) && FUNCTION_MACTHER.matches( str );
+         return str.startsWith( FUNCTION_PREFIX ) && RegexpUtils.getMatcher( FUNCTION_PATTERN, true ).matches( str );
       }
       if( obj instanceof JSONFunction ){
          return true;
@@ -301,7 +291,7 @@ public final class JSONUtils {
    public static boolean isFunctionHeader( Object obj ) {
       if( obj instanceof String ){
          String str = (String) obj;
-         return str.startsWith( FUNCTION_PREFIX ) && FUNCTION_HEADER_MATCHER.matches( str );
+         return str.startsWith( FUNCTION_PREFIX ) && RegexpUtils.getMatcher( FUNCTION_HEADER_PATTERN, true ).matches( str );
       }
       return false;
    }
