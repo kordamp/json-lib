@@ -608,7 +608,7 @@ public final class JSONUtils {
          return "null";
       }
       if( value instanceof JSONFunction ){
-         return ((JSONFunction) value).toString();
+         return value.toString();
       }
       if( value instanceof JSONString ){
          Object o;

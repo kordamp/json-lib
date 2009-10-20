@@ -1171,7 +1171,7 @@ public class TestJSONObject extends TestCase {
    }
 
    public void testToBean_null() {
-      assertNull( JSONObject.toBean( null ) );
+      assertNull( JSONObject.toBean( (JSONObject)null ) );
    }
 
    public void testToBean_null_2() {
