@@ -52,7 +52,7 @@ public abstract class AbstractJSONTest extends TestCase {
       assertEquals( expected, json.toString( getIndentFactor(), getIndent() ) );
    }
 
-   public void testWrite() {
+   public void testWrite() throws Exception {
       StringWriter w = new StringWriter();
       String expected = (String) getWriteExpectations()[0];
       JSON json = (JSON) getWriteExpectations()[1];

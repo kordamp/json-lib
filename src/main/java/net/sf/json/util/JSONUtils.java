@@ -479,7 +479,7 @@ public final class JSONUtils {
       char c = 0;
       int i;
       int len = string.length();
-      StringBuffer sb = new StringBuffer( len + 4 );
+       StringBuilder sb = new StringBuilder(len + 4);
       String t;
 
       sb.append( '"' );
@@ -527,7 +527,41 @@ public final class JSONUtils {
       return sb.toString();
    }
 
-   /**
+    /**
+     * Minimal escape form.
+     */
+    public static String quoteCanonical(String s) {
+        if (s == null || s.length() == 0) {
+            return "\"\"";
+        }
+
+        int len = s.length();
+        StringBuilder sb = new StringBuilder(len + 4);
+
+        sb.append('"');
+        for (int i = 0; i < len; i += 1) {
+            char c = s.charAt(i);
+            switch (c) {
+            case '\\':
+            case '"':
+                sb.append('\\');
+                sb.append(c);
+                break;
+            default:
+                if (c < ' ') {
+                    String t = "000" + Integer.toHexString(c);
+                    sb.append("\\u")
+                            .append(t.substring(t.length() - 4));
+                } else {
+                    sb.append(c);
+                }
+            }
+        }
+        sb.append('"');
+        return sb.toString();
+    }
+
+    /**
     * Strips any single-quotes or double-quotes from boths sides of the string.
     */
    public static String stripQuotes( String input ) {
@@ -611,16 +645,7 @@ public final class JSONUtils {
          return value.toString();
       }
       if( value instanceof JSONString ){
-         Object o;
-         try{
-            o = ((JSONString) value).toJSONString();
-         }catch( Exception e ){
-            throw new JSONException( e );
-         }
-         if( o instanceof String ){
-            return (String) o;
-         }
-         throw new JSONException( "Bad value from toJSONString: " + o );
+          return ((JSONString) value).toJSONString();
       }
       if( value instanceof Number ){
          return numberToString( (Number) value );
@@ -630,6 +655,25 @@ public final class JSONUtils {
       }
       return quote( value.toString() );
    }
+
+    public static String valueToCanonicalString( Object value ) {
+       if( value == null || isNull( value ) ){
+          return "null";
+       }
+       if( value instanceof JSONFunction ){
+          return value.toString(); // there's really no canonical form for functions
+       }
+       if( value instanceof JSONString ){
+           return ((JSONString) value).toJSONString();
+       }
+       if( value instanceof Number ){
+          return numberToString( (Number) value ).toLowerCase();
+       }
+       if( value instanceof Boolean || value instanceof JSONObject || value instanceof JSONArray ){
+          return value.toString();
+       }
+       return quoteCanonical( value.toString() );
+    }
 
    /**
     * Make a prettyprinted JSON text of an object value.
@@ -650,7 +694,7 @@ public final class JSONUtils {
          return "null";
       }
       if( value instanceof JSONFunction ){
-         return ((JSONFunction) value).toString();
+         return value.toString();
       }
       if( value instanceof JSONString ){
          return ((JSONString) value).toJSONString();

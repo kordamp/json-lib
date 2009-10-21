@@ -55,7 +55,7 @@ public class TestJSONObjectAsMap extends TestCase {
    }
 
    public void testPut() {
-      Object key = "key";
+      String key = "key";
       Object value = "value";
       jsonObject.put( key, value );
       assertEquals( value, jsonObject.get( key ) );

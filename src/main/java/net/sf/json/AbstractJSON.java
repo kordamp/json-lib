@@ -19,8 +19,11 @@ package net.sf.json;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.io.Writer;
+import java.io.IOException;
 
 import net.sf.json.util.JsonEventListener;
+import net.sf.json.util.JSONUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-abstract class AbstractJSON {
+abstract class AbstractJSON implements JSON {
    // private static Set cycleSet = new HashSet();
 
    private static ThreadLocal cycleSet = new ThreadLocal(){
@@ -45,7 +48,7 @@ abstract class AbstractJSON {
     * Adds a reference for cycle detection check.
     *
     * @param instance the reference to add
-    * @param true if the instance has not been added previously, false
+    * @return true if the instance has not been added previously, false
     *        otherwise.
     */
    protected static boolean addInstance( Object instance ) {
@@ -210,4 +213,41 @@ abstract class AbstractJSON {
    private static Set getCycleSet() {
       return (Set) cycleSet.get();
    }
+
+    public final Writer write(Writer writer) throws IOException {
+        write(writer,NORMAL);
+        return writer;
+    }
+
+    public final Writer writeCanonical(Writer writer) throws IOException {
+        write(writer,CANONICAL);
+        return writer;
+    }
+
+    protected abstract void write(Writer w, WritingVisitor v) throws IOException;
+
+    interface WritingVisitor {
+        void on(JSON o, Writer w) throws IOException;
+        void on(Object value, Writer w) throws IOException;
+    }
+
+    private static final WritingVisitor NORMAL = new WritingVisitor() {
+        public void on(JSON o, Writer w) throws IOException {
+            o.write(w);
+        }
+
+        public void on(Object value, Writer w) throws IOException {
+            w.write(JSONUtils.valueToString(value));
+        }
+    };
+
+    private static final WritingVisitor CANONICAL = new WritingVisitor() {
+        public void on(JSON o, Writer w) throws IOException {
+            o.writeCanonical(w);
+        }
+
+        public void on(Object value, Writer w) throws IOException {
+            w.write(JSONUtils.valueToCanonicalString(value));
+        }
+    };
 }

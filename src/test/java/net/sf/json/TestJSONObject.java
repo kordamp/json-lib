@@ -17,6 +17,8 @@
 package net.sf.json;
 
 import java.io.Serializable;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -1413,4 +1415,23 @@ public class TestJSONObject extends TestCase {
          return false;
       }
    }
+
+    public void testCanonicalWrite() throws Exception {
+        JSONArray a = new JSONArray();
+        a.add(true);
+//        a.add(null);
+        a.add(1);
+        a.add(5.3);
+        JSONObject o = new JSONObject();
+        o.put("key1","1");
+        o.put("key2","2");
+        o.put("key3","3");
+        o.put("string","123\r\n\b\t\f\\\\u65E5\\u672C\\u8A9E");
+        a.add(o);
+
+        StringWriter sw = new StringWriter();
+        a.writeCanonical(sw);
+        System.out.println(sw.toString());
+        assertEquals(sw.toString(),"[true,1,5.3,{\"key1\":\"1\",\"key2\":\"2\",\"key3\":\"3\",\"string\":\"123\\u000d\\u000a\\u0008\\u0009\\u000c\\\\\\\\u65E5\\\\u672C\\\\u8A9E\"}]");
+    }
 }

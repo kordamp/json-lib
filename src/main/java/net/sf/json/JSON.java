@@ -16,6 +16,7 @@
 package net.sf.json;
 
 import java.io.Writer;
+import java.io.IOException;
 
 /**
  * Marker interface, identifies a valid JSON value.<br>
@@ -84,5 +85,10 @@ public interface JSON {
     * @return The writer.
     * @throws JSONException
     */
-   Writer write( Writer writer );
+   Writer write( Writer writer ) throws IOException;
+
+    /**
+     * Writes the canonicalized form of this JSON object.
+     */
+    Writer writeCanonical(Writer w) throws IOException;
 }
