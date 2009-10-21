@@ -7,7 +7,7 @@
    <groupId>org.kohsuke.stapler</groupId>
    <artifactId>json-lib</artifactId>
    <packaging>jar</packaging>
-   <version>2.1-rev2</version>
+   <version>2.1-rev3</version>
    <name>json-lib</name>
 
    <url>http://json-lib.sourceforge.net</url>
