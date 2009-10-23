@@ -50,12 +50,13 @@
    <target name="compile.jdk5" depends="compile" description="Compile the code (jdk5)" />
 
    <target name="compile.groovy" depends="compile" description="Compile the code (Groovy)">
-      <groovyc srcdir="${project.src.groovy.dir}" destdir="${maven.build.output}">
+      <!-- the meta class file put in json-lib.jar interferes with other version of Groovy, so don't do it -->
+      <!--groovyc srcdir="${project.src.groovy.dir}" destdir="${maven.build.output}">
          <classpath>
             <path refid="build.classpath" />
             <pathelement location="${maven.build.output}" />
          </classpath>
-      </groovyc>
+      </groovyc-->
    </target>
 
    <target name="compile-tests" depends="junit-present, compile" description="Compile the test code (jdk1.3)" if="junit.present">
@@ -151,7 +152,7 @@
 
    <target name="test.groovy" depends="junit-present, compile-tests.groovy" if="junit.present" description="Run the test cases (Groovy)">
       <mkdir dir="${maven.test.reports}" />
-      <junit printSummary="yes" haltonerror="true" haltonfailure="true" fork="true" dir=".">
+      <!--junit printSummary="yes" haltonerror="true" haltonfailure="true" fork="true" dir=".">
          <sysproperty key="basedir" value="." />
          <formatter type="xml" />
          <formatter type="plain" usefile="true" />
@@ -167,7 +168,7 @@
                <include name="net/sf/json/groovy/AllTests.class" />
             </fileset>
          </batchtest>
-      </junit>
+      </junit-->
    </target>
 
    <target name="test.jruby" depends="run.jruby,alert.jruby" description="Run the test cases (JRuby)"/>
