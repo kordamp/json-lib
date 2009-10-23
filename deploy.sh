@@ -1,5 +1,5 @@
-#!/bin/sh
-VERSION="2.1-rev3"
+#!/bin/bash
+VERSION=$(show-pom-version pom.xml)
 GROUPID="org.kohsuke.stapler"
 ARTIFACTID="json-lib"
 REPO_URL="java-net:/maven2-repository/trunk/repository/"
