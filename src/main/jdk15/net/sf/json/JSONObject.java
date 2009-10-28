@@ -2253,6 +2253,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
    protected void write( Writer writer, WritingVisitor visitor ) throws IOException {
        if( isNullObject() ){
           writer.write( JSONNull.getInstance().toString() );
+           return;
        }
 
        boolean b = false;
