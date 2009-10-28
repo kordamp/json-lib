@@ -2315,18 +2315,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
          return JSONArray.fromObject( value, jsonConfig );
       }else if( JSONUtils.isString( value ) ){
          String str = String.valueOf( value );
-         if( JSONUtils.mayBeJSON( str ) ){
-            try{
-               return JSONSerializer.toJSON( str, jsonConfig );
-            }catch( JSONException jsone ){
-               return JSONUtils.stripQuotes( str );
-            }
+         if( value == null ){
+            return "";
          }else{
-            if( value == null ){
-               return "";
-            }else{
-               return str;
-            }
+            return str;
          }
       }else if( JSONUtils.isNumber( value ) ){
          JSONUtils.testValidity( value );
