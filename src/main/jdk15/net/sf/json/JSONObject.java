@@ -666,6 +666,27 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
                log.warn( warning );
             }
          }
+
+         // public field
+          for (Field f : bean.getClass().getFields()) {
+              String key = f.getName();
+              if (exclusions.contains(key)) continue;
+              if (jsonConfig.isIgnoreTransientFields() && Modifier.isTransient(f.getModifiers()))   continue;
+
+              Class type = f.getType();
+              f.setAccessible(true); // while the field is public, the class might not be accessible
+              Object value = f.get(bean);
+              if( jsonPropertyFilter != null && jsonPropertyFilter.apply( bean, key, value ))       continue;
+
+              JsonValueProcessor jsonValueProcessor = jsonConfig.findJsonValueProcessor(beanClass, type, key );
+              if( jsonValueProcessor != null ){
+                 value = jsonValueProcessor.processObjectValue( key, value, jsonConfig );
+                 if( !JsonVerifier.isValidJsonValue( value ) ){
+                    throw new JSONException( "Value is not a valid JSON value. " + value );
+                 }
+              }
+              setValue( jsonObject, key, value, type, jsonConfig );
+          }
       }catch( JSONException jsone ){
          removeInstance( bean );
          fireErrorEvent( jsone, jsonConfig );
