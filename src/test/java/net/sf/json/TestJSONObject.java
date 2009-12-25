@@ -870,14 +870,14 @@ public class TestJSONObject extends TestCase {
    public void testOptJSONArray() {
       JSONObject json = new JSONObject();
       assertNull( json.optJSONArray( "a" ) );
-      json.element( "a", "[]" );
+      json.element( "a", new JSONArray() );
       Assertions.assertEquals( new JSONArray(), json.optJSONArray( "a" ) );
    }
 
    public void testOptJSONObject() {
       JSONObject json = new JSONObject();
       assertNull( json.optJSONObject( "a" ) );
-      json.element( "a", "{}" );
+      json.element( "a", new JSONObject() );
       Assertions.assertEquals( new JSONObject(), json.optJSONObject( "a" ) );
    }
 

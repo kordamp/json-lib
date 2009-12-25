@@ -137,6 +137,7 @@ public class TestUserSubmitted extends TestCase {
       assertTrue( object.get( "info3" ) instanceof String );
    }
 
+/* I consider this behavior of "oh I added string but it's not really a string" very evil, as there's no way to add a String that really looks like "{}"
    public void testBug_1650535_setters() {
       JSONObject object = new JSONObject();
       object.element( "obj", "{}" );
@@ -151,7 +152,7 @@ public class TestUserSubmitted extends TestCase {
       object.element( "str", "json,json" );
       assertTrue( object.get( "str" ) instanceof String );
    }
-
+*/
    public void testBug_1753528_ArrayStringLiteralToString() {
       // submited by sckimos[at]gmail[dot]com
       BeanA bean = new BeanA();
@@ -354,6 +355,7 @@ public class TestUserSubmitted extends TestCase {
       assertEquals( "0525E2PQ81DD7ZTWTK82", itemLookup.get( "ns:SubscriptionId" ) );
    }
 
+/* No morpher, please - Kohsuke
    public void testToBeanSimpleToComplexValueTransformation() {
       // Submitted by Oliver Zyngier
       JSONObject jsonObject = JSONObject.fromObject( "{'id':null}" );
@@ -375,7 +377,8 @@ public class TestUserSubmitted extends TestCase {
       assertNotNull( idBean );
       assertEquals( new IdBean.Id( 1L ), idBean.getId() );
    }
-
+*/
+    
    protected void setUp() throws Exception {
       super.setUp();
       jsonConfig = new JsonConfig();
