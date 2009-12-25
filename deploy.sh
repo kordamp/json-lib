@@ -13,8 +13,8 @@ mv target/${ARTIFACTID}-${VERSION}-jdk15-javadoc.jar build
 ant jar.jdk5
 mv target/${ARTIFACTID}-${VERSION}-jdk15.jar build
 
-#cmd=deploy:deploy-file
-cmd=install:install-file
+cmd=deploy:deploy-file
+#cmd=install:install-file
 
 mvn $cmd -DrepositoryId=${REPOSITORYID} \
     -Durl=${REPO_URL} \
