@@ -1,0 +1,10 @@
+.gradle
+target
+velocity.log
+cobertura.ser
+build.properties
+.classpath
+.project
+.settings
+build.sh
+build

@@ -105,7 +105,7 @@
       </groovyc>
    </target>
 
-   <target name="test" depends="test.jdk3,test.groovy,test.jruby" description="Run JDK13, Groovy &amp; JRuby test cases" />
+   <target name="test" depends="test.jdk3,test.groovy" description="Run JDK13 &amp; Groovy test cases" />
 
    <target name="test.jdk3" depends="junit-present, compile-tests" if="junit.present" description="Run the test cases (jdk1.3)">
       <mkdir dir="${maven.test.reports}" />
@@ -156,7 +156,6 @@
          </batchtest>
       </junit>
       <antcall target="test.groovy"/>	 
-      <antcall target="test.jruby"/>	 
    </target>
 
    <target name="test.groovy" depends="junit-present, compile-tests.groovy" if="junit.present" description="Run the test cases (Groovy)">
@@ -178,36 +177,6 @@
             </fileset>
          </batchtest>
       </junit>
-   </target>
-
-   <target name="test.jruby" depends="run.jruby,alert.jruby" description="Run the test cases (JRuby)"/>
-   <target name="check-jruby">
-      <condition property="jruby.available">
-         <isset property="jruby.home" />
-      </condition>
-   </target>
-
-   <target name="run.jruby" depends="check-jruby,compile" if="jruby.available">
-      <copy todir="${maven.build.output}">
-         <fileset dir="src/main/jruby" />
-      </copy>
-      <java classname="org.jruby.Main" fork="true" maxmemory="256M" failonerror="true">
-         <classpath>
-            <path refid="build.classpath" />
-            <path refid="test.classpath" />
-            <path refid="runtime.classpath" />
-            <pathelement location="${maven.build.output}" />
-            <pathelement location="${basedir}/src/main/jruby/" />
-            <pathelement location="${basedir}/src/test/jruby/net/sf/json/jruby/" />
-         </classpath>
-         <sysproperty key="jruby.home" value="${jruby.home}" />
-         <arg value="${basedir}/src/test/jruby/net/sf/json/jruby/testsuite.rb" />
-      </java>
-   </target>
-   <target name="alert.jruby" depends="check-jruby" unless="jruby.available">
-      <echo>================================= WARNING ================================</echo>
-      <echo> jruby.home ($JRUBY_HOME) is not configured in your local settings.</echo>
-      <echo>==========================================================================</echo>
    </target>
 
    <target name="test-junit-present">

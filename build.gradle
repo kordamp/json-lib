@@ -1,0 +1,48 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+// apply plugin: 'code-quality'
+
+sourceCompatibility = '1.3'
+targetCompatibility = '1.1'
+archivesBaseName = 'json-lib'
+group = 'net.sf.json-lib'
+version = '2.4'
+
+configurations {
+    jdk15 { extendsFrom compile }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    groovy 'org.codehaus.groovy:groovy-all:1.7.5'
+	compile 'junit:junit:3.8.2',
+	        'commons-beanutils:commons-beanutils:1.8.0',
+	        'commons-collections:commons-collections:3.2.1',
+	        'commons-lang:commons-lang:2.5',
+	compile('commons-logging:commons-logging:1.1.1') {
+		exclude(module: 'log4j')
+		exclude(module: 'logkit')
+		exclude(module: 'avalon-framework')
+		exclude(module: 'servlet-api')
+	}
+    // the following are optional
+	compile 'xom:xom:1.1',
+	        'oro:oro:2.0.8',
+	        'net.sf.ezmorph:ezmorph:1.0.6',
+	        'org.codehaus.groovy:groovy-all:1.7.5'
+	runtime 'log4j:log4j:1.2.14'
+	testCompile 'xmlunit:xmlunit:1.0',
+	            'commons-httpclient:commons-httpclient:3.1'
+}
+
+sourceSets {
+    jdk15 {
+        compileClasspath = sourceSets.main.classes + configurations.jdk15
+        java.srcDirs = ['src/main/jdk15']
+        groovy.srcDirs = []
+        classesDir = "$buildDir/classes/jdk15" as File
+    }
+}

@@ -221,7 +221,7 @@ public class TestJSONSerializer extends TestCase {
    public void testToJSON_String_invalid() {
       try{
          JSONSerializer.toJSON( "garbage" );
-         fail( "Should have throwed a JSONException" );
+         fail( "Should have thrown a JSONException" );
       }catch( JSONException expected ){
          // ok
       }
