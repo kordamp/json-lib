@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2131185">
+            Allow bean processors to use json-lib's default processor. Thanks to Scott Bronson(provided patch)
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2929940">
             Morphing elements in JSONArray.toCollection. Thanks to Arnout Engelen (provided patch)
          </action>

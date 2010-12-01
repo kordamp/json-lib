@@ -692,6 +692,13 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          return json;
       }
 
+      JSONObject jsonObject = defaultBeanProcessing(bean, jsonConfig);
+      removeInstance( bean );
+      fireObjectEndEvent( jsonConfig );
+      return jsonObject;
+   }
+
+   private static JSONObject defaultBeanProcessing(Object bean, JsonConfig jsonConfig) {
       Class beanClass = bean.getClass();
       PropertyNameProcessor propertyNameProcessor = jsonConfig.findJsonPropertyNameProcessor( beanClass );      
       Collection exclusions = jsonConfig.getMergedExcludes( beanClass );
@@ -793,9 +800,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          fireErrorEvent( jsone, jsonConfig );
          throw jsone;
       }
-
-      removeInstance( bean );
-      fireObjectEndEvent( jsonConfig );
       return jsonObject;
    }
 
