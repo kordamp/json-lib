@@ -845,6 +845,13 @@ public class TestUserSubmitted extends TestCase {
       assertEquals( "[]{}[,;.:[[]", jsonObject.getJSONArray( "weirdStringArray" ).optString( 2 ) );
    }
    */
+
+   public void testBug_2893329() {
+       String jsonStr = "{x:\"\\'hello\\'\"}";
+       JSONObject json = JSONObject.fromObject(jsonStr);
+       assertEquals("'hello'", json.getString("x"));
+   }
+
    public static class RunnableImpl implements Runnable {
       public void run() {
 

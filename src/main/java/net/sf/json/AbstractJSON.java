@@ -238,9 +238,15 @@ abstract class AbstractJSON {
       } else if( JSONUtils.isString( value ) ) {
          String str = String.valueOf( value );
          if( JSONUtils.hasQuotes( str ) ){
-            str = JSONUtils.stripQuotes( str );
-            if( JSONUtils.isFunction( str )){
-               return JSONUtils.DOUBLE_QUOTE + str + JSONUtils.DOUBLE_QUOTE;
+            String stripped = JSONUtils.stripQuotes( str );
+            if( JSONUtils.isFunction( stripped )){
+               return JSONUtils.DOUBLE_QUOTE + stripped + JSONUtils.DOUBLE_QUOTE;
+            }
+            if(stripped.startsWith("[") && stripped.endsWith("]")) {
+               return stripped;
+            }
+            if(stripped.startsWith("{") && stripped.endsWith("}")) {
+               return stripped;
             }
             return str;
          } else if( JSONUtils.isJsonKeyword( str, jsonConfig ) ) {
