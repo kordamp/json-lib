@@ -253,6 +253,7 @@ public class JsonGroovyBuilder extends GroovyObjectSupport {
       JSONObject object = new JSONObject();
       stack.push( object );
       closure.setDelegate( this );
+      closure.setResolveStrategy( Closure.DELEGATE_FIRST );
       closure.call();
       stack.pop();
       return object;

@@ -384,6 +384,21 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
        )
        JSONAssert.assertEquals( expected, actual )
     }
+    
+    /*
+     * This test makes sure that JSON Builder works properly from script.
+     * See bug #302214 for details (https://sourceforge.net/tracker/?func=detail&aid=3022114&group_id=171425&atid=857928).
+     */
+    void testUseBuilderFromScript() {
+        def scriptClass = new GroovyClassLoader(this.getClass().classLoader).parseClass('''
+            new net.sf.json.groovy.JsonGroovyBuilder().json {
+                string = 'value'
+            }
+        ''')
+        def expected = new JSONObject().element( 'string', 'value')
+        def actual = scriptClass.newInstance().run()
+        JSONAssert.assertEquals( expected, actual )
+    }
 
 	protected void setUp(){
 	   builder = new JsonGroovyBuilder()

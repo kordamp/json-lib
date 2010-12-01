@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="3022114">
+            JsonGroovyBuilder does not work from Groovy script. Thanks to Sergey Bondarenko (provided patch)
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="3123950">
             Better support for parsing numbers. Thanks to Chirag Shah (provided patch)
          </action>
