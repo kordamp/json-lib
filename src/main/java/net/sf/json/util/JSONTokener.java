@@ -21,6 +21,7 @@ import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import net.sf.json.regexp.RegexpUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 
 /**
@@ -411,18 +412,11 @@ public class JSONTokener {
                }
             }
          }
+
          try{
-            return new Integer( s );
+            return NumberUtils.createNumber(s);
          }catch( Exception e ){
-            try{
-               return new Long( s );
-            }catch( Exception f ){
-               try{
-                  return new Double( s );
-               }catch( Exception g ){
-                  return s;
-               }
-            }
+            return s;
          }
       }
 

@@ -9,6 +9,17 @@
    <body>
 
       <release
+         version="2.4"
+         date="N/A"
+         desc="In development">
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="3123950">
+            Better support for parsing numbers. Thanks to Chirag Shah (provided patch)
+         </action>
+      </release>
+      <release
          version="2.3"
          date="2009-07-11"
          desc="Service release">
