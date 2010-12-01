@@ -39,6 +39,7 @@ import net.sf.json.sample.FieldBean;
 import net.sf.json.sample.IdBean;
 import net.sf.json.sample.InterfaceBean;
 import net.sf.json.sample.JSONTestBean;
+import net.sf.json.sample.ListingBean;
 import net.sf.json.sample.MappedBean;
 import net.sf.json.sample.Media;
 import net.sf.json.sample.MediaBean;
@@ -74,6 +75,25 @@ public class TestUserSubmitted extends TestCase {
       super( name );
    }
 
+    public void testPatch_2929940() {
+        Map classMap = new HashMap();
+        classMap.put("attributes", Long.class);
+        
+        ListingBean original = new ListingBean();
+        original.addAttribute(Long.valueOf(12));
+        
+        JSONObject jsonObject = JSONObject.fromObject(JSONObject.fromObject(original).toString());
+        
+        // JSON config
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.setRootClass(ListingBean.class);
+        jsonConfig.setClassMap(classMap);
+        
+        // toBean
+        ListingBean bean = (ListingBean)JSONObject.toBean(jsonObject, jsonConfig);
+        assertTrue(bean.getAttributes().get(0) instanceof Long);
+    }
+   
    public void testBug_1635890() throws NoSuchMethodException, IllegalAccessException,
          InvocationTargetException {
       // submited by arco.vandenheuvel[at]points[dot].com

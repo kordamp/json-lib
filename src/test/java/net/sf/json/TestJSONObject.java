@@ -1627,18 +1627,6 @@ public class TestJSONObject extends TestCase {
       }
    }
    
-   public static class PrefixerPropertyNameProcessor implements PropertyNameProcessor {
-      private final String prefix;
-
-      public PrefixerPropertyNameProcessor( String prefix ) {
-         this.prefix = prefix;
-      }
-
-      public String processPropertyName( Class beanClass, String name ) {
-         return prefix + name;
-      }
-   }
-   
    public static class SwapPropertyNameProcessor implements PropertyNameProcessor {
       public String processPropertyName( Class beanClass, String name ) {
          if( name.equals("bool")){

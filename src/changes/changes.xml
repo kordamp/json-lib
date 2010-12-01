@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2929940">
+            Morphing elements in JSONArray.toCollection. Thanks to Arnout Engelen (provided patch)
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2893329">
             A string starting and ending with quotes is badly parsed. Thanks to Sascha Theves (provided patch)
          </action>

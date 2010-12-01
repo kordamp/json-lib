@@ -431,10 +431,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                   || Character.class.isAssignableFrom( type )
                   || JSONFunction.class.isAssignableFrom( type ) ){
 
-               if( !value.getClass()
-                     .isAssignableFrom( type ) ){
-                  throw new JSONException( "can't assign value " + value + " of type "
-                        + value.getClass() + " to Collection of type " + type );
+               if( objectClass != null && !objectClass.isAssignableFrom( type ) ){
+                  value = JSONUtils.getMorpherRegistry()
+                     .morph( objectClass, value );
                }
                collection.add( value );
             }else{
