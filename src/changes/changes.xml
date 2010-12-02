@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="3030517">
+            GJson.enhanceClasses() not working
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2991816">
             Permgen memory leak with ThreadLocal
          </action>
