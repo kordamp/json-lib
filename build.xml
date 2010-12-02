@@ -1,6 +1,7 @@
 <project name="json-lib" default="compile" basedir="." xmlns:artifact="urn:maven-artifact-ant">
    <property file="${user.home}/.m2/maven.properties" />
    <property file="build.properties" />
+   <property name="maven.project.build.finalName" value="json-lib-2.4" />
    <property name="maven.build.output" value="target/classes" />
    <property name="maven.build.directory" value="target" />
    <property name="maven.test.reports" value="${maven.build.directory}/test-reports" />
@@ -230,7 +231,8 @@
       </jarjar>
    </target>
 
-   <target name="source.jar" depends="clean" description="Source jar (jdk1.3)">
+   <target name="source.jar" description="Source jar (jdk1.3)">
+      <delete dir="${maven.build.directory}/source/jdk13" />
       <mkdir dir="${maven.build.directory}/source/jdk13" />
       <copy todir="${maven.build.directory}/source/jdk13">
          <fileset dir="src/main/java">
@@ -240,12 +242,18 @@
       <jar jarfile="${maven.build.directory}/${maven.project.build.finalName}-jdk13-sources.jar" basedir="${maven.build.directory}/source/jdk13" />
    </target>
 
-   <target name="source.jar.jdk5" depends="clean" description="Source jar (jdk5)">
+   <target name="source.jar.jdk5" description="Source jar (jdk5)">
+      <delete dir="${maven.build.directory}/source/jdk15" />
       <mkdir dir="${maven.build.directory}/source/jdk15" />
       <copy todir="${maven.build.directory}/source/jdk15">
          <fileset dir="src/main/java">
             <include name="**/*.java" />
          </fileset>
+      </copy>
+      <delete file="${maven.build.directory}/source/jdk15/net/sf/json/JSONObject.java" />
+      <delete file="${maven.build.directory}/source/jdk15/net/sf/json/JSONArray.java" />
+      <delete file="${maven.build.directory}/source/jdk15/net/sf/json/util/JSONUtils.java" />
+      <copy todir="${maven.build.directory}/source/jdk15">
          <fileset dir="src/main/jdk15">
             <include name="**/*.java" />
          </fileset>
@@ -281,12 +289,19 @@
    </target>
 
    <target name="javadoc.jdk5" description="Build javadocs (jdk5)" depends="setup">
+      <delete dir="${javadoc.jdk5.dir}" />
+      <delete dir="${maven.build.directory}/source/jdk15" />
       <mkdir dir="${javadoc.jdk5.dir}" />
       <mkdir dir="${maven.build.directory}/source/jdk15" />
       <copy todir="${maven.build.directory}/source/jdk15">
          <fileset dir="src/main/java">
             <include name="**/*" />
          </fileset>
+      </copy>
+      <delete file="${maven.build.directory}/source/jdk15/net/sf/json/JSONObject.java" />
+      <delete file="${maven.build.directory}/source/jdk15/net/sf/json/JSONArray.java" />
+      <delete file="${maven.build.directory}/source/jdk15/net/sf/json/util/JSONUtils.java" />
+      <copy todir="${maven.build.directory}/source/jdk15">
          <fileset dir="src/main/jdk15">
             <include name="**/*.java" />
          </fileset>

@@ -15,6 +15,18 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="3096454">
+            Binaries and source files desynchronized
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="3052887">
+            Sources jar not match json-lib-2.3-jdk15.jar
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2131185">
             Allow bean processors to use json-lib's default processor. Thanks to Scott Bronson(provided patch)
          </action>
