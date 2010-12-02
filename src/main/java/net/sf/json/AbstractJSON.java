@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import net.sf.json.util.JSONTokener;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JsonEventListener;
 
@@ -216,7 +215,11 @@ abstract class AbstractJSON {
     * Removes a reference for cycle detection check.
     */
    protected static void removeInstance( Object instance ) {
-      getCycleSet().remove( instance );
+      Set set = getCycleSet();
+      set.remove( instance );
+      if(set.size() == 0) {
+          cycleSet.remove();
+      }
    }
 
    protected Object _processValue( Object value, JsonConfig jsonConfig ) {

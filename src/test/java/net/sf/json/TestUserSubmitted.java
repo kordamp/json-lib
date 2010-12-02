@@ -840,7 +840,7 @@ public class TestUserSubmitted extends TestCase {
 
       tExpected = "{\"weirdStringArray\":[\"{912}\",\"[Hello]\",\"[]{}[,;.:[[]\"]}";
       assertEquals( tExpected, tJsonSource.toString() );
-   }
+   }*/
    /*
    public void testDifferenceBetweenStringParsingIntoJSONObjectAndJSONArray() {
       JsonConfig tConfig = new JsonConfig();
@@ -861,8 +861,8 @@ public class TestUserSubmitted extends TestCase {
       assertEquals( "[Hello]", jsonObject.getJSONArray( "weirdStringArray" ).optString( 1 ) );
       assertEquals( "[]{}[,;.:[[]", jsonObject.getJSONArray( "weirdStringArray" ).optString( 2 ) );
    }
-   */
-
+   */ 
+   
    public void testBug_2893329() {
        String jsonStr = "{x:\"\\'hello\\'\"}";
        JSONObject json = JSONObject.fromObject(jsonStr);
@@ -885,8 +885,8 @@ public class TestUserSubmitted extends TestCase {
        String test2 = "{\"a\":[{\"c\":\"{\\\"k\\\":\\\"k\\\", \\\"l\\\":\\\"l\\\"}\"}]}";
        jsonObject = JSONObject.fromObject(test2);
        assertTrue(jsonObject.getJSONArray("a").getJSONObject(0).get("c") instanceof String);
-   }*/
-
+   }
+   */
    public static class RunnableImpl implements Runnable {
       public void run() {
 

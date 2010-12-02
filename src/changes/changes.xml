@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2991816">
+            Permgen memory leak with ThreadLocal
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2692698">
             JSONSerializer.toJSON().toString() -> result != source
          </action>
