@@ -15,6 +15,18 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2692698">
+            JSONSerializer.toJSON().toString() -> result != source
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="3047519">
+            String start with "[" and end with "]" parsed error.
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="2616780">
             Source is not passed to the NewBeanInstanceStrategy
          </action>

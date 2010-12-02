@@ -732,16 +732,13 @@ public class TestUserSubmitted extends TestCase {
       assertEquals( 42, bean1.getValue());
       assertEquals( "stringy", bean2.string );
    }
-   
-   /*
+      
    public void testBug_2692698() {
       String input = "[\"{'selectedOperatorIndex':2,'leftSideValue':'report.field9','rightSideValue':'2009-3-1'}\",\"all\"]";
       JSON json = JSONArray.fromObject( input );
       String output = json.toString();
-      System.err.println(input);
-      System.err.println(output);
-   }
-   */
+      assertEquals(input, output);
+   }  
    
    public void testWithoutAnyTroubleTheyMayBeAlreadyDoneByOtherTest() {
       JsonConfig tConfig = new JsonConfig();
@@ -871,6 +868,24 @@ public class TestUserSubmitted extends TestCase {
        JSONObject json = JSONObject.fromObject(jsonStr);
        assertEquals("'hello'", json.getString("x"));
    }
+   
+   public void testBug_3047519() {
+       String jsonStr = "{data:\"[1,2,3]\"}";
+       JSONObject json = JSONObject.fromObject(jsonStr);
+       Object data = json.get("data");
+       assertTrue(data instanceof String);
+       assertEquals("[1,2,3]", data);
+   }
+   /*
+   public void testBug_3074732() {
+       String test = "{\"c\":\"{\\\"k\\\":\\\"k\\\", \\\"l\\\":\\\"l\\\"}\"}";
+       JSONObject jsonObject = JSONObject.fromObject(test);
+       assertTrue(jsonObject.get("c") instanceof String);
+
+       String test2 = "{\"a\":[{\"c\":\"{\\\"k\\\":\\\"k\\\", \\\"l\\\":\\\"l\\\"}\"}]}";
+       jsonObject = JSONObject.fromObject(test2);
+       assertTrue(jsonObject.getJSONArray("a").getJSONObject(0).get("c") instanceof String);
+   }*/
 
    public static class RunnableImpl implements Runnable {
       public void run() {
