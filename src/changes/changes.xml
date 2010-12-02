@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2616780">
+            Source is not passed to the NewBeanInstanceStrategy
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="3096454">
             Binaries and source files desynchronized
          </action>

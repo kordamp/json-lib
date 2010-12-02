@@ -763,7 +763,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                         newTargetClass = newTargetClass == null ? findTargetClass( name, classMap )
                               : newTargetClass;
                         Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
-                              .newInstance( newTargetClass, null );
+                              .newInstance( newTargetClass, (JSONObject) value );
                         if( targetClass.isArray() ){
                            setProperty( root, key, JSONArray.toArray( array, newRoot, jsonConfig ),
                                  jsonConfig );
@@ -783,7 +783,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                                  : targetClass;
                         }
                         Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
-                              .newInstance( targetClass, null );
+                              .newInstance( targetClass, (JSONObject) value );
                         setProperty( root, key, toBean( (JSONObject) value, newRoot, jsonConfig ),
                               jsonConfig );
                      }
