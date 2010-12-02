@@ -37,7 +37,7 @@ import org.springframework.web.servlet.view.AbstractView;
  */
 public class JsonView extends AbstractView {
    /** Default content type. Overridable as bean property. */
-   private static final String DEFAULT_JSON_CONTENT_TYPE = "application/json";
+   private static final String DEFAULT_JSON_CONTENT_TYPE = "application/json;charset=UTF-8";
    private boolean forceTopLevelArray = false;
    private boolean skipBindingResult = true;
    /** Json confiiguration */

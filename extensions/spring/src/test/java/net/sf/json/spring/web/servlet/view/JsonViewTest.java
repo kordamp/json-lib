@@ -130,6 +130,20 @@ public class JsonViewTest extends TestCase {
       jsTester.assertEquals( "json[0].str", "'string'" );
    }
 
+   public void testCharEncoding() throws Exception {
+      JsonView view = new JsonView();
+      view.setForceTopLevelArray( true );
+      Map model = new HashMap();
+      model.put( "unicodestring", "\u5718\u9AD4\u6236\u53E3\u9A57\u8B49\u7A0B\u5E8F" );
+
+      view.render( model, servletRequest, servletResponse );
+      jsTester.eval( toJsScript( servletResponse ) );
+
+      jsTester.assertNotNull( "json" );
+      jsTester.assertIsArray( "json" );
+      jsTester.assertEquals( "json[0].unicodestring", "'\u5718\u9AD4\u6236\u53E3\u9A57\u8B49\u7A0B\u5E8F'" );
+   }
+
    protected void setUp() throws Exception {
       servletContext = new MockServletContext();
       StaticWebApplicationContext wac = new StaticWebApplicationContext();
