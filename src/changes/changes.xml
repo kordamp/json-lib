@@ -15,6 +15,12 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="3022109">
+            JsonGroovyBuilder does not work from Groovy script
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="3030517">
             GJson.enhanceClasses() not working
          </action>
