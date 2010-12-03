@@ -21,10 +21,13 @@ import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -308,9 +311,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      setProperty( bean, key, value, jsonConfig );
                   }
                }else{
-                  Class targetClass = findTargetClass( key, classMap );
-                  targetClass = targetClass == null ? findTargetClass( name, classMap )
-                        : targetClass;
+                  Class targetClass = resolveClass(classMap, key, name, type);
                   JsonConfig jsc = jsonConfig.copy();
                   jsc.setRootClass( targetClass );
                   jsc.setClassMap( classMap );
@@ -363,9 +364,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      }else{
                         if( jsonConfig.isHandleJettisonSingleElementArray() ){
                            JSONArray array = new JSONArray().element( value, jsonConfig );
-                           Class newTargetClass = findTargetClass( key, classMap );
-                           newTargetClass = newTargetClass == null ? findTargetClass( name,
-                                 classMap ) : newTargetClass;
+                           Class newTargetClass = resolveClass(classMap, key, name, type);
                            JsonConfig jsc = jsonConfig.copy();
                            jsc.setRootClass( newTargetClass );
                            jsc.setClassMap( classMap );
@@ -425,9 +424,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                         }
                      }else{
                         if( jsonConfig.isHandleJettisonSingleElementArray() ){
-                           Class newTargetClass = findTargetClass( key, classMap );
-                           newTargetClass = newTargetClass == null ? findTargetClass( name,
-                                 classMap ) : newTargetClass;
+                           Class newTargetClass = resolveClass(classMap, key, name, type);
                            JsonConfig jsc = jsonConfig.copy();
                            jsc.setRootClass( newTargetClass );
                            jsc.setClassMap( classMap );
@@ -497,9 +494,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             if( !JSONUtils.isNull( value ) ){
                if( value instanceof JSONArray ){
                   if( pd == null || List.class.isAssignableFrom( pd.getPropertyType() ) ){
-                     Class targetClass = findTargetClass( key, classMap );
-                     targetClass = targetClass == null ? findTargetClass( name, classMap )
-                           : targetClass;
+                     Class targetClass = resolveClass(classMap, key, name, type);
                      Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
                            .newInstance( targetClass, null );
                      List list = JSONArray.toList( (JSONArray) value, newRoot, jsonConfig );
@@ -578,9 +573,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                      Class targetClass = pd.getPropertyType();
                      if( jsonConfig.isHandleJettisonSingleElementArray() ){
                         JSONArray array = new JSONArray().element( value, jsonConfig );
-                        Class newTargetClass = findTargetClass( key, classMap );
-                        newTargetClass = newTargetClass == null ? findTargetClass( name, classMap )
-                              : newTargetClass;
+                        Class newTargetClass = resolveClass(classMap, key, name, type);
                         Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
                               .newInstance( newTargetClass, (JSONObject) value );
                         if( targetClass.isArray() ){
@@ -597,9 +590,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                         }
                      }else{
                         if( targetClass == Object.class ){
-                           targetClass = findTargetClass( key, classMap );
-                           targetClass = targetClass == null ? findTargetClass( name, classMap )
-                                 : targetClass;
+                           targetClass = resolveClass(classMap, key, name, type);
+                           if(targetClass == null) {
+                               targetClass = Object.class;
+                           }
                         }
                         Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
                               .newInstance( targetClass, (JSONObject) value );
@@ -1242,6 +1236,25 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       return JSONArray.toCollection( (JSONArray) value, jsc );
    }
 
+   private static Class resolveClass(Map classMap, String key, String name, Class type) {
+       Class targetClass = findTargetClass(key, classMap);
+       if (targetClass == null) {
+           targetClass = findTargetClass(name, classMap);
+       }
+       if(targetClass == null && type != null) {
+           if(List.class.equals(type)) {
+               targetClass = ArrayList.class;
+           } else if(Map.class.equals(type)) {
+               targetClass = LinkedHashMap.class;
+           } else if(Set.class.equals(type)) {
+               targetClass = LinkedHashSet.class;
+           } else if(!type.isInterface() && !Object.class.equals(type)) {
+               targetClass = type;
+           }
+       }
+       return targetClass;
+   }
+   
    /**
     * Locates a Class associated to a specifi key.<br>
     * The key may be a regexp.

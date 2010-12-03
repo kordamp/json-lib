@@ -49,7 +49,6 @@
    <target name="compile.jdk5" depends="compile" description="Compile the code (jdk5)">
       <delete file="${maven.build.output}/net/sf/json/JSONObject.class" />
       <delete file="${maven.build.output}/net/sf/json/JSONArray.class" />
-      <delete file="${maven.build.output}/net/sf/json/util/JSONUtils.class" />
       <javac destdir="${maven.build.output}" debug="true" deprecation="true" source="1.5" target="1.5">
          <src path="${project.src.jdk5.dir}" />
          <classpath>
@@ -252,7 +251,6 @@
       </copy>
       <delete file="${maven.build.directory}/source/jdk15/net/sf/json/JSONObject.java" />
       <delete file="${maven.build.directory}/source/jdk15/net/sf/json/JSONArray.java" />
-      <delete file="${maven.build.directory}/source/jdk15/net/sf/json/util/JSONUtils.java" />
       <copy todir="${maven.build.directory}/source/jdk15">
          <fileset dir="src/main/jdk15">
             <include name="**/*.java" />
@@ -300,7 +298,6 @@
       </copy>
       <delete file="${maven.build.directory}/source/jdk15/net/sf/json/JSONObject.java" />
       <delete file="${maven.build.directory}/source/jdk15/net/sf/json/JSONArray.java" />
-      <delete file="${maven.build.directory}/source/jdk15/net/sf/json/util/JSONUtils.java" />
       <copy todir="${maven.build.directory}/source/jdk15">
          <fileset dir="src/main/jdk15">
             <include name="**/*.java" />

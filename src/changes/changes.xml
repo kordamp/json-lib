@@ -15,6 +15,18 @@
          <action
             dev="Andres Almiray"
             type="fix"
+            issue="2843623">
+            JSONObject.toBean does not process Lists
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
+            issue="2652213">
+            Groovy script JsonGroovyBuilder not working
+         </action>
+         <action
+            dev="Andres Almiray"
+            type="fix"
             issue="3022109">
             JsonGroovyBuilder does not work from Groovy script
          </action>
