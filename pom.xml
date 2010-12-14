@@ -36,11 +36,11 @@
 
    <scm>
       <connection>
-         scm:cvs:pserver:anonymous@json-lib.cvs.sourceforge.net:/cvsroot/json-lib:json-lib
+         git://github.com/aalmiray/Json-lib.git
       </connection>
-      <url>http://json-lib.cvs.sourceforge.net/json-lib</url>
+      <url>git://github.com/aalmiray/Json-lib.git</url>
       <developerConnection>
-         scm:cvs:ext:${maven.username}@json-lib.cvs.sourceforge.net:/cvsroot/json-lib:json-lib
+         git@github.com:aalmiray/Json-lib.git
       </developerConnection>
    </scm>
    <issueManagement>
@@ -247,7 +247,7 @@
    </dependencies>
 
    <prerequisites>
-      <maven>2.1.0</maven>
+      <maven>3.0.1</maven>
    </prerequisites>
 
    <build>

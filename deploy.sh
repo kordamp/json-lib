@@ -1,5 +1,5 @@
 #!/bin/sh
-VERSION="2.3"
+VERSION="2.4"
 GROUPID="net.sf.json-lib"
 ARTIFACTID="json-lib"
 REPO_URL="scp://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo/release"
