@@ -339,18 +339,45 @@ public class TestJSONAssert extends TestCase {
          assertEquals( e.getMessage(), "expected object was null" );
       }
    }
-
-   public void testAssertEquals_JSONObject_JSONObject_names() {
-      try{
-         JSONObject expected = new JSONObject().element( "str", "json" );
-         JSONObject actual = new JSONObject();
-         JSONAssert.assertEquals( expected, actual );
-      }catch( AssertionFailedError e ){
-         assertEquals(
-               e.getMessage(),
-               "names sizes differed, expected.names().length()=1 actual.names().length()=0 expected:<1> but was:<0>" );
-      }
+   
+   public void testAssertEquals_JSONObject_JSONObject_missingExpectedNamesAreGivenInErrorMessage() {
+	   try{
+	      JSONObject expected = new JSONObject().element( "foo", "fooValue" );
+	      JSONObject actual = new JSONObject();
+		   JSONAssert.assertEquals( expected, actual );
+		   fail("Expected AssertionFailedError");
+	   }catch( AssertionFailedError e ){
+		   assertEquals(
+		         "missing expected names: [foo]",
+		         e.getMessage());
+	   }
    }
+   
+   public void testAssertEquals_JSONObject_JSONObject_unexpectedNamesAreGivenInErrorMessage() {
+      try{
+         JSONObject expected = new JSONObject();
+         JSONObject actual = new JSONObject().element( "foo", "fooValue" );
+          JSONAssert.assertEquals( expected, actual );
+          fail("Expected AssertionFailedError");
+      }catch( AssertionFailedError e ){
+          assertEquals(
+                "unexpected names: [foo]",
+                e.getMessage());
+      }
+  }
+   
+  public void testAssertEquals_JSONObject_JSONObject_missingExpectedAnUnexpectedNamesAreBothGivenInErrorMessage() {
+      try{
+         JSONObject expected = new JSONObject().element( "foo", "fooValue" ).element( "baz", "bazValue" );
+         JSONObject actual = new JSONObject().element( "bar", "barValue" );
+          JSONAssert.assertEquals( expected, actual );
+          fail("Expected AssertionFailedError");
+      }catch( AssertionFailedError e ){
+          assertEquals(
+                "missing expected names: [baz, foo], unexpected names: [bar]",
+                e.getMessage());
+      }
+  }
 
    public void testAssertEquals_JSONObject_JSONObject_nullObjects() {
       try{
