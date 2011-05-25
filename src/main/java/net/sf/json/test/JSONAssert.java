@@ -17,6 +17,10 @@
 package net.sf.json.test;
 
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.apache.commons.lang.StringUtils;
 
 import junit.framework.Assert;
 import net.sf.ezmorph.Morpher;
@@ -310,11 +314,10 @@ public class JSONAssert extends Assert {
          }
       }
 
-      assertEquals( header + "names sizes differed, expected.names().length()=" + expected.names()
-            .size() + " actual.names().length()=" + actual.names()
-            .size(), expected.names()
-            .size(), actual.names()
-            .size() );
+      if( expected.names().size() != actual.names().size() ){
+         fail( header + missingAndUnexpectedNames( expected, actual ));
+      }
+      
       for( Iterator keys = expected.keys(); keys.hasNext(); ){
          String key = (String) keys.next();
          Object o1 = expected.opt( key );
@@ -375,6 +378,40 @@ public class JSONAssert extends Assert {
                }
             }
          }
+      }
+   }
+
+   private static String missingAndUnexpectedNames(JSONObject expected,
+         JSONObject actual) {
+      String missingExpectedNames = missingExpectedNames( expected, actual );
+      String unexpectedNames = unexpectedNames( expected, actual );
+      if( missingExpectedNames != null && unexpectedNames != null ){
+         return missingExpectedNames + ", " + unexpectedNames;
+      }else if( missingExpectedNames != null ){
+         return missingExpectedNames;
+      }else{
+         return unexpectedNames;
+      }
+   }
+
+   private static String missingExpectedNames(JSONObject expected,
+         JSONObject actual) {
+      SortedSet keysInExpectedButNotInActual = new TreeSet( expected.keySet() );
+      keysInExpectedButNotInActual.removeAll( actual.keySet() );
+      if ( keysInExpectedButNotInActual.isEmpty() ) {
+         return null;
+      } else {
+         return "missing expected names: [" + StringUtils.join( keysInExpectedButNotInActual, ", " ) + "]";
+      }
+   }
+
+   private static String unexpectedNames(JSONObject expected, JSONObject actual) {
+      SortedSet keysInActualButNotInExpected = new TreeSet( actual.keySet() );
+      keysInActualButNotInExpected.removeAll( expected.keySet() );
+      if ( keysInActualButNotInExpected.isEmpty() ) {
+         return null;
+      } else {
+         return "unexpected names: [" + StringUtils.join( keysInActualButNotInExpected, ", " ) + "]";
       }
    }
 
