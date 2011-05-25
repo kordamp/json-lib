@@ -1,7 +1,7 @@
 <project name="json-lib" default="compile" basedir="." xmlns:artifact="urn:maven-artifact-ant">
    <property file="${user.home}/.m2/maven.properties" />
    <property file="build.properties" />
-   <property name="maven.project.build.finalName" value="json-lib-2.4" />
+   <property name="maven.project.build.finalName" value="json-lib-2.4.1" />
    <property name="maven.build.output" value="target/classes" />
    <property name="maven.build.directory" value="target" />
    <property name="maven.test.reports" value="${maven.build.directory}/test-reports" />
@@ -205,7 +205,7 @@
          <zipfileset src="${maven.build.directory}/${maven.project.build.finalName}-jdk13.jar"/>
          <zipfileset src="${maven.repo.local}/commons-beanutils/commons-beanutils/1.8.0/commons-beanutils-1.8.0.jar"/>
          <zipfileset src="${maven.repo.local}/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
-         <zipfileset src="${maven.repo.local}/commons-lang/commons-lang/2.4/commons-lang-2.4.jar"/>
+         <zipfileset src="${maven.repo.local}/commons-lang/commons-lang/2.5/commons-lang-2.5.jar"/>
          <zipfileset src="${maven.repo.local}/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
          <zipfileset src="${maven.repo.local}/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6.jar"/>
          <rule pattern="org.apache.commons.**" result="_json.org.apache.commons.@1"/>
@@ -222,7 +222,7 @@
          <zipfileset src="${maven.build.directory}/${maven.project.build.finalName}-jdk15.jar"/>
          <zipfileset src="${maven.repo.local}/commons-beanutils/commons-beanutils/1.8.0/commons-beanutils-1.8.0.jar"/>
          <zipfileset src="${maven.repo.local}/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
-         <zipfileset src="${maven.repo.local}/commons-lang/commons-lang/2.4/commons-lang-2.4.jar"/>
+         <zipfileset src="${maven.repo.local}/commons-lang/commons-lang/2.5/commons-lang-2.5.jar"/>
          <zipfileset src="${maven.repo.local}/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
          <zipfileset src="${maven.repo.local}/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6.jar"/>
          <rule pattern="org.apache.commons.**" result="_json.org.apache.commons.@1"/>
