@@ -393,7 +393,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
       try {
          return new FieldProperty(bean.getClass().getField(key));
       } catch (NoSuchFieldException e) {
-         return new MethodProperty(PropertyUtils.getPropertyDescriptor( bean, key ));
+          PropertyDescriptor pd = PropertyUtils.getPropertyDescriptor(bean, key);
+          if (pd!=null)
+            return new MethodProperty(pd);
+          return null;
       }
    }
 
@@ -633,7 +636,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
       Collection exclusions = jsonConfig.getMergedExcludes();
       JSONObject jsonObject = new JSONObject();
       try{
-         PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors( bean );
+         PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(bean);
          PropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
          Class beanClass = bean.getClass();
          for( int i = 0; i < pds.length; i++ ){
