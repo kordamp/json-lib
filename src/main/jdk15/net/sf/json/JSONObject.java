@@ -426,6 +426,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
          }
          try{
             Property pd = getProperty(rootClass,bean,name,jsonConfig);
+            if (pd==null)   continue;   // non-mappable property
             if( !pd.isWritable() ){
                log.warn( "Property '" + pd.name() + "' has no write method. SKIPPED." );
                continue;
