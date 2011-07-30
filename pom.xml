@@ -34,15 +34,11 @@
       <url>http://json-lib.sourceforge.net</url>
    </organization>
 
-   <scm>
-      <connection>
-         scm:cvs:pserver:anonymous@json-lib.cvs.sourceforge.net:/cvsroot/json-lib:json-lib
-      </connection>
-      <url>http://json-lib.cvs.sourceforge.net/json-lib</url>
-      <developerConnection>
-         scm:cvs:ext:${maven.username}@json-lib.cvs.sourceforge.net:/cvsroot/json-lib:json-lib
-      </developerConnection>
-   </scm>
+  <scm>
+    <connection>scm:git:git://github.com/jenkinsci/json-lib.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/json-lib.git</developerConnection>
+    <url>https://github.com/jenkinsci/json-lib</url>
+  </scm>
    <issueManagement>
       <system>SourceForge</system>
       <url>https://sourceforge.net/tracker/?group_id=171425</url>
@@ -331,26 +327,16 @@
       </plugins>
    </reporting>
 
-   <distributionManagement>
-      <repository>
-         <id>sf_release</id>
-         <name>Json-lib repo @ sourceforge.net</name>
-         <url>
-            scp://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo/release
-         </url>
-      </repository>
-      <snapshotRepository>
-         <id>sf_snapshot</id>
-         <name>SourceForge Snapshot</name>
-         <url>
-            scp://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo/snapshot
-         </url>
-      </snapshotRepository>
-      <site>
-         <id>sf_website</id>
-         <url>scp://ssh.sf.net/home/groups/j/js/json-lib/htdocs</url>
-      </site>
-   </distributionManagement>
+  <distributionManagement>
+    <repository>
+      <id>maven.jenkins-ci.org</id>
+      <url>http://maven.jenkins-ci.org:8081/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>maven.jenkins-ci.org</id>
+      <url>http://maven.jenkins-ci.org:8081/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 
    <!--
    <pluginRepositories>
