@@ -15,6 +15,7 @@
  */
 package net.sf.json;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.io.Serializable;
 
@@ -85,5 +86,10 @@ public interface JSON extends Serializable {
     * @return The writer.
     * @throws JSONException
     */
-   Writer write( Writer writer );
+   Writer write( Writer writer ) throws IOException;
+
+    /**
+     * Writes the canonicalized form of this JSON object.
+     */
+    Writer writeCanonical(Writer w) throws IOException;
 }

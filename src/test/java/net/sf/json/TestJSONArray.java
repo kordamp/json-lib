@@ -16,6 +16,7 @@
 package net.sf.json;
 
 import java.io.StringWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -1442,7 +1443,7 @@ public class TestJSONArray extends TestCase {
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testWrite() {
+   public void testWrite() throws IOException {
       JSONArray jsonArray = JSONArray.fromObject( "[[],{},1,true,\"json\"]" );
       StringWriter sw = new StringWriter();
       jsonArray.write( sw );

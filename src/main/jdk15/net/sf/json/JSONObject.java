@@ -34,6 +34,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.array.ObjectArrayMorpher;
@@ -116,7 +117,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author JSON.org
  */
-public final class JSONObject extends AbstractJSON implements JSON, Map, Comparable {
+public final class JSONObject extends AbstractJSON implements JSON, Map<String,Object>, Comparable {
 
    private static final Log log = LogFactory.getLog( JSONObject.class );
 
@@ -526,9 +527,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
                               .morph( Array.newInstance( innerType, 0 )
                                     .getClass(), array );
                      }else if( !array.getClass()
-                           .equals( pd.getPropertyType() ) ){
+                           .equals(pd.getPropertyType()) ){
                         if( !pd.getPropertyType()
-                              .equals( Object.class ) ){
+                              .equals(Object.class) ){
                            Morpher morpher = JSONUtils.getMorpherRegistry()
                                  .getMorpherFor( Array.newInstance( innerType, 0 )
                                        .getClass() );
@@ -2372,7 +2373,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       return o != null ? o.toString() : defaultValue;
    }
 
-   public Object put( Object key, Object value ) {
+   public Object put( String key, Object value ) {
       if( key == null ){
          throw new IllegalArgumentException( "key is null." );
       }
@@ -2590,16 +2591,15 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     * @return The writer.
     * @throws JSONException
     */
-   public Writer write( Writer writer ) {
+   protected void write(Writer writer, WritingVisitor visitor) throws IOException {
       try{
          if( isNullObject() ){
             writer.write( JSONNull.getInstance()
-                  .toString() );
-            return writer;
+                  .toString());
          }
 
          boolean b = false;
-         Iterator keys = keys();
+         Iterator keys = visitor.keySet(this).iterator();
          writer.write( '{' );
 
          while( keys.hasNext() ){
@@ -2610,17 +2610,14 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
             writer.write( JSONUtils.quote( k.toString() ) );
             writer.write( ':' );
             Object v = this.properties.get( k );
-            if( v instanceof JSONObject ){
-               ((JSONObject) v).write( writer );
-            }else if( v instanceof JSONArray ){
-               ((JSONArray) v).write( writer );
+            if( v instanceof JSON ){
+               visitor.on( (JSON) v, writer );
             }else{
-               writer.write( JSONUtils.valueToString( v ) );
+               visitor.on( v, writer );
             }
             b = true;
          }
          writer.write( '}' );
-         return writer;
       }catch( IOException e ){
          throw new JSONException( e );
       }

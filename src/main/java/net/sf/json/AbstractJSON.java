@@ -16,10 +16,14 @@
 
 package net.sf.json;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.ref.SoftReference;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.JsonEventListener;
@@ -32,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-abstract class AbstractJSON {
+abstract class AbstractJSON implements JSON {
    private static class CycleSet extends ThreadLocal {
       protected Object initialValue() {
          return new SoftReference(new HashSet());
@@ -283,4 +287,50 @@ abstract class AbstractJSON {
    private static Set getCycleSet() {
       return cycleSet.getSet();
    }
+
+    public final Writer write(Writer writer) throws IOException {
+        write(writer,NORMAL);
+        return writer;
+    }
+
+    public final Writer writeCanonical(Writer writer) throws IOException {
+        write(writer,CANONICAL);
+        return writer;
+    }
+
+    protected abstract void write(Writer w, WritingVisitor v) throws IOException;
+
+    interface WritingVisitor {
+        Collection keySet(JSONObject o);
+        void on(JSON o, Writer w) throws IOException;
+        void on(Object value, Writer w) throws IOException;
+    }
+
+    private static final WritingVisitor NORMAL = new WritingVisitor() {
+        public Collection keySet(JSONObject o) {
+            return o.keySet();
+        }
+
+        public void on(JSON o, Writer w) throws IOException {
+            o.write(w);
+        }
+
+        public void on(Object value, Writer w) throws IOException {
+            w.write(JSONUtils.valueToString(value));
+        }
+    };
+
+    private static final WritingVisitor CANONICAL = new WritingVisitor() {
+        public Collection keySet(JSONObject o) {
+            return new TreeSet(o.keySet()); // sort them alphabetically
+        }
+
+        public void on(JSON o, Writer w) throws IOException {
+            o.writeCanonical(w);
+        }
+
+        public void on(Object value, Writer w) throws IOException {
+            w.write(JSONUtils.valueToCanonicalString(value));
+        }
+    };
 }
