@@ -95,12 +95,12 @@ public final class JSONNull implements JSON {
       return sb.toString();
    }
 
-   public Writer write( Writer writer ) {
-      try{
-         writer.write( toString() );
-         return writer;
-      }catch( IOException e ){
-         throw new JSONException( e );
-      }
+   public Writer write( Writer writer ) throws IOException {
+       writer.write( toString() );
+       return writer;
    }
+
+    public Writer writeCanonical(Writer w) throws IOException {
+        return write(w);
+    }
 }
