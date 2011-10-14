@@ -2510,40 +2510,31 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
     * @return The writer.
     * @throws JSONException
     */
-   public Writer write( Writer writer ) {
-      try{
-         if( isNullObject() ){
-            writer.write( JSONNull.getInstance()
-                  .toString() );
-            return writer;
-         }
-
-         boolean b = false;
-         Iterator keys = keys();
-         writer.write( '{' );
-
-         while( keys.hasNext() ){
-            if( b ){
-               writer.write( ',' );
-            }
-            Object k = keys.next();
-            writer.write( JSONUtils.quote( k.toString() ) );
-            writer.write( ':' );
-            Object v = this.properties.get( k );
-            if( v instanceof JSONObject ){
-               ((JSONObject) v).write( writer );
-            }else if( v instanceof JSONArray ){
-               ((JSONArray) v).write( writer );
-            }else{
-               writer.write( JSONUtils.valueToString( v ) );
-            }
-            b = true;
-         }
-         writer.write( '}' );
-         return writer;
-      }catch( IOException e ){
-         throw new JSONException( e );
+   protected void write(Writer writer, WritingVisitor visitor) throws IOException {
+      if( isNullObject() ){
+         writer.write(JSONNull.getInstance().toString());
       }
+
+      boolean b = false;
+      Iterator keys = visitor.keySet(this).iterator();
+      writer.write('{');
+
+      while( keys.hasNext() ){
+         if( b ){
+            writer.write(',');
+         }
+         Object k = keys.next();
+         writer.write(JSONUtils.quote(k.toString()));
+         writer.write(':');
+         Object v = this.properties.get(k);
+         if( v instanceof JSON ){
+            visitor.on((JSON) v, writer);
+         }else{
+            visitor.on(v, writer);
+         }
+         b = true;
+      }
+      writer.write('}');
    }
 
    private JSONObject _accumulate( String key, Object value, JsonConfig jsonConfig ) {

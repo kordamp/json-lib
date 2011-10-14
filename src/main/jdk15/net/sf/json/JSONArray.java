@@ -91,7 +91,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author JSON.org
  */
-public final class JSONArray extends AbstractJSON implements JSON, List, Comparable {
+public final class JSONArray extends AbstractJSON implements JSON, List<Object>, Comparable {
    /**
     * Creates a JSONArray.<br>
     * Inspects the object type to call the correct JSONArray factory method.
@@ -791,7 +791,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       try{
          for( int i = 0; i < array.length; i++ ){
-            Double d = new Double( array[i] );
+            Double d = array[i];
             JSONUtils.testValidity( d );
             jsonArray.addValue( d, jsonConfig );
             fireElementAddedEvent( i, d, jsonConfig );
@@ -871,7 +871,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       JSONArray jsonArray = new JSONArray();
       try{
          for( int i = 0; i < array.length; i++ ){
-            Float f = new Float( array[i] );
+            Float f = array[i];
             JSONUtils.testValidity( f );
             jsonArray.addValue( f, jsonConfig );
             fireElementAddedEvent( i, f, jsonConfig );
@@ -1199,11 +1199,11 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
 
    private static void processArrayDimensions( JSONArray jsonArray, List dims, int index ) {
       if( dims.size() <= index ){
-         dims.add( new Integer( jsonArray.size() ) );
+         dims.add(jsonArray.size());
       }else{
          int i = ((Integer) dims.get( index )).intValue();
          if( jsonArray.size() > i ){
-            dims.set( index, new Integer( jsonArray.size() ) );
+            dims.set( index, jsonArray.size());
          }
       }
       for( Iterator i = jsonArray.iterator(); i.hasNext(); ){
@@ -1219,7 +1219,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
    /**
     * The List where the JSONArray's properties are kept.
     */
-   private List elements;
+   private List<Object> elements;
 
    /**
     * A flag for XML processing.
@@ -1230,7 +1230,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * Construct an empty JSONArray.
     */
    public JSONArray() {
-      this.elements = new ArrayList();
+      this.elements = new ArrayList<Object>();
    }
 
    public void add( int index, Object value ) {
@@ -1258,9 +1258,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       if( collection == null || collection.size() == 0 ){
          return false;
       }
-      for( Iterator i = collection.iterator(); i.hasNext(); ){
-         element( i.next(), jsonConfig );
-      }
+       for (Object a : collection) {
+           element(a, jsonConfig);
+       }
       return true;
    }
 
@@ -1273,9 +1273,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
          return false;
       }
       int offset = 0;
-      for( Iterator i = collection.iterator(); i.hasNext(); ){
-         this.elements.add( index + (offset++), processValue( i.next(), jsonConfig ) );
-      }
+       for (Object a : collection) {
+           this.elements.add(index + (offset++), processValue(a, jsonConfig));
+       }
       return true;
    }
 
@@ -1382,7 +1382,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @return this.
     */
    public JSONArray element( double value ) {
-      Double d = new Double( value );
+      Double d = value;
       JSONUtils.testValidity( d );
       return element( d );
    }
@@ -1670,7 +1670,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
     * @return this.
     */
    public JSONArray element( long value ) {
-      return element( JSONUtils.transformNumber( new Long( value ) ) );
+      return element( JSONUtils.transformNumber(value) );
    }
 
    /**
@@ -2441,44 +2441,28 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       return sb.toString();
    }
 
-   /**
-    * Write the contents of the JSONArray as JSON text to a writer. For
-    * compactness, no whitespace is added.
-    * <p>
-    * Warning: This method assumes that the data structure is acyclical.
-    *
-    * @return The writer.
-    * @throws JSONException
-    */
-   public Writer write( Writer writer ) {
-      try{
-         boolean b = false;
-         int len = size();
+    protected void write(Writer writer, WritingVisitor visitor) throws IOException {
+        boolean b = false;
+        int len = size();
 
-         writer.write( '[' );
+        writer.write( '[' );
 
-         for( int i = 0; i < len; i += 1 ){
-            if( b ){
-               writer.write( ',' );
-            }
-            Object v = this.elements.get( i );
-            if( v instanceof JSONObject ){
-               ((JSONObject) v).write( writer );
-            }else if( v instanceof JSONArray ){
-               ((JSONArray) v).write( writer );
-            }else{
-               writer.write( JSONUtils.valueToString( v ) );
-            }
-            b = true;
-         }
-         writer.write( ']' );
-         return writer;
-      }catch( IOException e ){
-         throw new JSONException( e );
-      }
-   }
+        for( int i = 0; i < len; i += 1 ){
+           if( b ){
+              writer.write( ',' );
+           }
+           Object v = this.elements.get( i );
+           if( v instanceof JSON ){
+               visitor.on((JSON)v,writer);
+           }else{
+               visitor.on(v,writer);
+           }
+           b = true;
+        }
+        writer.write( ']' );
+    }
 
-   /**
+    /**
     * Adds a String without performing any conversion on it.
     */
    protected JSONArray addString( String str ) {

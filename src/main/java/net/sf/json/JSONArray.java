@@ -2281,16 +2281,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
       return sb.toString();
    }
 
-   /**
-    * Write the contents of the JSONArray as JSON text to a writer. For
-    * compactness, no whitespace is added.
-    * <p>
-    * Warning: This method assumes that the data structure is acyclical.
-    *
-    * @return The writer.
-    * @throws JSONException
-    */
-   public Writer write( Writer writer ) {
+   protected void write(Writer writer, WritingVisitor visitor) throws IOException {
       try{
          boolean b = false;
          int len = size();
@@ -2302,17 +2293,14 @@ public final class JSONArray extends AbstractJSON implements JSON, List, Compara
                writer.write( ',' );
             }
             Object v = this.elements.get( i );
-            if( v instanceof JSONObject ){
-               ((JSONObject) v).write( writer );
-            }else if( v instanceof JSONArray ){
-               ((JSONArray) v).write( writer );
+            if( v instanceof JSON ){
+               visitor.on( (JSON) v, writer );
             }else{
-               writer.write( JSONUtils.valueToString( v ) );
+               visitor.on( v, writer );
             }
             b = true;
          }
          writer.write( ']' );
-         return writer;
       }catch( IOException e ){
          throw new JSONException( e );
       }
