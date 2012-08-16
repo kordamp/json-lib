@@ -1434,4 +1434,9 @@ public class TestJSONObject extends TestCase {
         System.out.println(sw.toString());
         assertEquals(sw.toString(),"[true,1,5.3,{\"key1\":\"1\",\"key2\":\"2\",\"key3\":\"3\",\"string\":\"123\\u000d\\u000a\\u0008\\u0009\\u000c\\\\\\\\u65E5\\\\u672C\\\\u8A9E\"}]");
     }
+
+    public void testMayBeJSON() {
+        assertEquals("[foo]", JSONObject.fromObject("{x=\"[foo]\"}").getString("x"));
+    }
+
 }

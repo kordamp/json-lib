@@ -893,16 +893,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
                   continue;
                }
                if( jsonPropertyFilter == null || !jsonPropertyFilter.apply( tokener, key, v ) ){
-                  if( v instanceof String && JSONUtils.mayBeJSON( (String) v ) ){
-                     value = JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE;
-                     if( jsonObject.properties.containsKey( key ) ){
-                        jsonObject.accumulate( key, value, jsonConfig );
-                        firePropertySetEvent( key, value, true, jsonConfig );
-                     }else{
-                        jsonObject.element( key, value, jsonConfig );
-                        firePropertySetEvent( key, value, false, jsonConfig );
-                     }
-                  }else{
                      if( jsonObject.properties.containsKey( key ) ){
                         jsonObject.accumulate( key, v, jsonConfig );
                         firePropertySetEvent( key, v, true, jsonConfig );
@@ -910,7 +900,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
                         jsonObject.element( key, v, jsonConfig );
                         firePropertySetEvent( key, v, false, jsonConfig );
                      }
-                  }
                }
             }else{
                // read params if any

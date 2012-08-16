@@ -916,12 +916,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
                tokener.back();
                Object v = tokener.nextValue( jsonConfig );
                if( !JSONUtils.isFunctionHeader( v ) ){
-                  if( v instanceof String && JSONUtils.mayBeJSON( (String) v ) ){
-                     jsonArray.addValue( JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE,
-                           jsonConfig );
-                  }else{
                      jsonArray.addValue( v, jsonConfig );
-                  }
                   fireElementAddedEvent( index, jsonArray.get( index++ ), jsonConfig );
                }else{
                   // read params if any
@@ -2255,15 +2250,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
          return _fromJSONTokener( (JSONTokener) value, jsonConfig );
       }else if( JSONUtils.isString( value ) ){
          String str = String.valueOf( value );
-         if( JSONUtils.mayBeJSON( str ) ){
-            try{
-               return JSONSerializer.toJSON( str, jsonConfig );
-            }catch( JSONException jsone ){
-               return JSONUtils.stripQuotes( str );
-            }
-         }else{
             return str;
-         }
       }else if( JSONUtils.isNumber( value ) ){
          JSONUtils.testValidity( value );
          return JSONUtils.transformNumber( (Number) value );

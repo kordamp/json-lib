@@ -1421,4 +1421,9 @@ public class TestJSONArray extends TestCase {
          fail( jsone.getMessage() );
       }
    }
+
+    public void testMayBeJSON() {
+        assertEquals("[foo]", JSONArray.fromObject("[\"[foo]\"]").getString(0));
+    }
+
 }
