@@ -1643,10 +1643,10 @@ public class TestJSONObject extends TestCase {
 
     public void testCanonicalWrite() throws Exception {
         JSONArray a = new JSONArray();
-        a.add(true);
+        a.add(Boolean.valueOf(true));
 //        a.add(null);
-        a.add(1);
-        a.add(5.3);
+        a.add(Integer.valueOf(1));
+        a.add(Double.valueOf(5.3));
         JSONObject o = new JSONObject();
         o.put("key1","1");
         o.put("key2","2");
