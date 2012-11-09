@@ -112,6 +112,8 @@ public class XMLSerializer {
    private boolean typeHintsCompatibility;
    /** flag for adding JSON types hints as attributes */
    private boolean typeHintsEnabled;
+   /** flag for performing auto-expansion of arrays if */
+   private boolean isPerformAutoExpansion;
 
    /**
     * Creates a new XMLSerializer with default options.<br>
@@ -126,6 +128,7 @@ public class XMLSerializer {
     * <li><code>skipNamespaces</code>: false</li>
     * <li><code>removeNameSpacePrefixFromElement</code>: false</li>
     * <li><code>trimSpaces</code>: false</li>
+    * <li><code>isPerformAutoExpansion</code>: false</li>
     * </ul>
     */
    public XMLSerializer() {
@@ -140,6 +143,7 @@ public class XMLSerializer {
       setTrimSpaces( false );
       setExpandableProperties( EMPTY_ARRAY );
       setSkipNamespaces( false );
+      setPerformAutoExpansion( false );
    }
 
    /**
@@ -492,7 +496,14 @@ public class XMLSerializer {
    }
 
    /**
-    * Sets wether this serializer is tolerant to namespaces without URIs or not.
+    * Sets whether this serializer should perform automatic expansion of array elements or not.
+    */
+   public void setPerformAutoExpansion( boolean autoExpansion ) {
+      isPerformAutoExpansion = autoExpansion;
+   }
+
+   /**
+    * Sets whether this serializer is tolerant to namespaces without URIs or not.
     */
    public void setNamespaceLenient( boolean namespaceLenient ) {
       this.namespaceLenient = namespaceLenient;
@@ -975,7 +986,7 @@ public class XMLSerializer {
             }
          }else if( value instanceof JSONArray
                && (((JSONArray) value).isExpandElements() || ArrayUtils.contains(
-                     expandableProperties, name )) ){
+                     expandableProperties, name ) || (isPerformAutoExpansion && canAutoExpand((JSONArray)value))) ){
             JSONArray array = (JSONArray) value;
             int l = array.size();
             for( int j = 0; j < l; j++ ){
@@ -1000,6 +1011,20 @@ public class XMLSerializer {
          }
       }
       return root;
+   }
+
+   /**
+    * Only perform auto expansion if all children are objects.
+    * @param array The array to check
+    * @return True if all children are objects, false otherwise.
+    */
+   private boolean canAutoExpand( JSONArray array ) {
+      for (int i=0; i < array.size(); i++) {
+         if (!(array.get(i) instanceof JSONObject)) {
+            return false;
+         }
+      }
+      return true;
    }
 
    private Element processJSONValue( Object value, Element root, Element target,

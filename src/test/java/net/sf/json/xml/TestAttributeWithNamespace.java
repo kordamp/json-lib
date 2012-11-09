@@ -34,7 +34,7 @@ public class TestAttributeWithNamespace extends TestCase {
       super( name );
    }
 
-   public void test() throws Exception {
+   public void testShouldCreateCorrectJson() throws Exception {
 
       XMLSerializer reader = new XMLSerializer();
 
