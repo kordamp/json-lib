@@ -62,18 +62,18 @@ import org.apache.commons.logging.LogFactory;
  * JSONObject json = JSONObject.fromObject("{\"name\":\"json\",\"bool\":true,\"int\":1}");
  * String xml = new XMLSerializer().write( json );
  * <xmp><o class="object">
- <name type="string">json</name>
- <bool type="boolean">true</bool>
- <int type="number">1</int>
- </o></xmp>
+ * <name type="string">json</name>
+ * <bool type="boolean">true</bool>
+ * <int type="number">1</int>
+ * </o></xmp>
  * </pre><pre>
  * JSONArray json = JSONArray.fromObject("[1,2,3]");
  * String xml = new XMLSerializer().write( json );
  * <xmp><a class="array">
- <e type="number">1</e>
- <e type="number">2</e>
- <e type="number">3</e>
- </a></xmp>
+ * <e type="number">1</e>
+ * <e type="number">2</e>
+ * <e type="number">3</e>
+ * </a></xmp>
  * </pre>
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -318,9 +318,9 @@ public class XMLSerializer {
                String key = removeNamespacePrefix( root.getQualifiedName() );
                json = new JSONObject().element( key, json );
             }
-         }else{ 
+         }else{
             json = processObjectElement( root, defaultType );
-            if( forceTopLevelObject ) {
+            if( forceTopLevelObject ){
                String key = removeNamespacePrefix( root.getQualifiedName() );
                json = new JSONObject().element( key, json );
             }
@@ -828,12 +828,12 @@ public class XMLSerializer {
 
          int attributeCount = element.getAttributeCount();
          if( attributeCount > 0 ){
-            int attrs = element.getAttribute( addJsonPrefix( "null" )) == null ? 0 : 1;
-            attrs += element.getAttribute( addJsonPrefix( "class" )) == null ? 0: 1;
-            attrs += element.getAttribute( addJsonPrefix( "type" ))== null ? 0 : 1;
+            int attrs = element.getAttribute( addJsonPrefix( "null" ) ) == null ? 0 : 1;
+            attrs += element.getAttribute( addJsonPrefix( "class" ) ) == null ? 0 : 1;
+            attrs += element.getAttribute( addJsonPrefix( "type" ) ) == null ? 0 : 1;
             switch( attributeCount ){
                case 1:
-                  if( attrs == 0){
+                  if( attrs == 0 ){
                      return true;
                   }
                   break;
@@ -842,8 +842,8 @@ public class XMLSerializer {
                      return true;
                   }
                   break;
-               case 3: 
-                  if(  attrs < 3 ){
+               case 3:
+                  if( attrs < 3 ){
                      return true;
                   }
                   break;
@@ -851,7 +851,7 @@ public class XMLSerializer {
                   return true;
             }
          }
-         
+
          int childCount = element.getChildCount();
          if( childCount == 1 && element.getChild( 0 ) instanceof Text ){
             return isTopLevel;
@@ -959,7 +959,14 @@ public class XMLSerializer {
                }
             }
          }else if( name.startsWith( "@" ) ){
-            root.addAttribute( new Attribute( name.substring( 1 ), String.valueOf( value ) ) );
+            int colon = name.indexOf( ':' );
+            if( colon == -1 ){
+               root.addAttribute( new Attribute( name.substring( 1 ), String.valueOf( value ) ) );
+            }else{
+               String prefix = name.substring( 1, colon );
+               final String namespaceURI = root.getNamespaceURI( prefix );
+               root.addAttribute( new Attribute( name.substring( colon + 1 ), namespaceURI, String.valueOf( value ) ) );
+            }
          }else if( name.equals( "#text" ) ){
             if( value instanceof JSONArray ){
                root.appendChild( ((JSONArray) value).join( "", true ) );
@@ -1066,7 +1073,7 @@ public class XMLSerializer {
             setOrAccumulate( jsonObject, "@xmlns" + prefix, trimSpaceFromValue( uri ) );
          }
       }
-     
+
       // process attributes first
       int attrCount = element.getAttributeCount();
       for( int i = 0; i < attrCount; i++ ){
@@ -1199,9 +1206,9 @@ public class XMLSerializer {
       String clazz = getClass( element );
       String type = getType( element );
       type = (type == null) ? defaultType : type;
-  
-      
-      
+
+
+
       String key = removeNamespacePrefix( element.getQualifiedName() );
       if( hasNamespaces( element ) && !skipNamespaces ){
          setOrAccumulate( jsonObject, key, simplifyValue( jsonObject,
@@ -1297,12 +1304,14 @@ public class XMLSerializer {
       }
       return json;
    }
+
    private String trimSpaceFromValue( String value ) {
       if( isTrimSpaces() ){
          return value.trim();
       }
       return value;
    }
+
    private String writeDocument( Document doc, String encoding ) {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       try{
