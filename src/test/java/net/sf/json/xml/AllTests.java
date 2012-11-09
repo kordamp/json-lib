@@ -29,6 +29,7 @@ public class AllTests extends TestSuite {
       suite.addTest( new TestSuite( TestXMLSerializer_reads.class ) );
       suite.addTest( new TestSuite( TestXMLSerializer_writes.class ) );
       suite.addTest( new TestSuite( TestUserSubmitted.class ) );
+      suite.addTest( new TestSuite( TestAttributeWithNamespace.class ) );
 
       return suite;
    }

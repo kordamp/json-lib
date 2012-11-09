@@ -57,23 +57,23 @@ import org.apache.commons.logging.LogFactory;
  * When transforming JSONObject and JSONArray instances to XML, this class will
  * add hints for converting back to JSON.<br>
  * Examples:<br>
- *
+ * <p/>
  * <pre>
  * JSONObject json = JSONObject.fromObject("{\"name\":\"json\",\"bool\":true,\"int\":1}");
  * String xml = new XMLSerializer().write( json );
  * <xmp><o class="object">
- <name type="string">json</name>
- <bool type="boolean">true</bool>
- <int type="number">1</int>
- </o></xmp>
+ * <name type="string">json</name>
+ * <bool type="boolean">true</bool>
+ * <int type="number">1</int>
+ * </o></xmp>
  * </pre><pre>
  * JSONArray json = JSONArray.fromObject("[1,2,3]");
  * String xml = new XMLSerializer().write( json );
  * <xmp><a class="array">
- <e type="number">1</e>
- <e type="number">2</e>
- <e type="number">3</e>
- </a></xmp>
+ * <e type="number">1</e>
+ * <e type="number">2</e>
+ * <e type="number">3</e>
+ * </a></xmp>
  * </pre>
  *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -301,7 +301,7 @@ public class XMLSerializer {
     * @param xml A well-formed xml document in a String
     * @return a JSONNull, JSONObject or JSONArray
     * @throws JSONException if the conversion from XML to JSON can't be made for
-    *         I/O or format reasons.
+    *                       I/O or format reasons.
     */
    public JSON read( String xml ) {
       JSON json = null;
@@ -318,9 +318,9 @@ public class XMLSerializer {
                String key = removeNamespacePrefix( root.getQualifiedName() );
                json = new JSONObject().element( key, json );
             }
-         }else{ 
+         }else{
             json = processObjectElement( root, defaultType );
-            if( forceTopLevelObject ) {
+            if( forceTopLevelObject ){
                String key = removeNamespacePrefix( root.getQualifiedName() );
                json = new JSONObject().element( key, json );
             }
@@ -339,7 +339,7 @@ public class XMLSerializer {
     * @param file
     * @return a JSONNull, JSONObject or JSONArray
     * @throws JSONException if the conversion from XML to JSON can't be made for
-    *         I/O or format reasons.
+    *                       I/O or format reasons.
     */
    public JSON readFromFile( File file ) {
       if( file == null ){
@@ -364,12 +364,12 @@ public class XMLSerializer {
     * @param path
     * @return a JSONNull, JSONObject or JSONArray
     * @throws JSONException if the conversion from XML to JSON can't be made for
-    *         I/O or format reasons.
+    *                       I/O or format reasons.
     */
    public JSON readFromFile( String path ) {
       return readFromStream( Thread.currentThread()
-            .getContextClassLoader()
-            .getResourceAsStream( path ) );
+              .getContextClassLoader()
+              .getResourceAsStream( path ) );
    }
 
    /**
@@ -378,14 +378,14 @@ public class XMLSerializer {
     * @param stream
     * @return a JSONNull, JSONObject or JSONArray
     * @throws JSONException if the conversion from XML to JSON can't be made for
-    *         I/O or format reasons.
+    *                       I/O or format reasons.
     */
    public JSON readFromStream( InputStream stream ) {
       try{
          StringBuffer xml = new StringBuffer();
          BufferedReader in = new BufferedReader( new InputStreamReader( stream ) );
          String line = null;
-         while( (line = in.readLine()) != null ){
+         while ((line = in.readLine()) != null){
             xml.append( line );
          }
          return read( xml.toString() );
@@ -564,7 +564,7 @@ public class XMLSerializer {
     * @param json The JSON value to transform
     * @return a String representation of a well-formed xml document.
     * @throws JSONException if the conversion from JSON to XML can't be made for
-    *         I/O reasons.
+    *                       I/O reasons.
     */
    public String write( JSON json ) {
       return write( json, null );
@@ -578,11 +578,11 @@ public class XMLSerializer {
     * @param encoding The xml encoding to use
     * @return a String representation of a well-formed xml document.
     * @throws JSONException if the conversion from JSON to XML can't be made for
-    *         I/O reasons or the encoding is not supported.
+    *                       I/O reasons or the encoding is not supported.
     */
    public String write( JSON json, String encoding ) {
       if( JSONNull.getInstance()
-            .equals( json ) ){
+              .equals( json ) ){
          Element root = null;
          root = newElement( getRootName() == null ? getObjectName() : getRootName() );
          root.addAttribute( new Attribute( addJsonPrefix( "null" ), "true" ) );
@@ -591,8 +591,8 @@ public class XMLSerializer {
       }else if( json instanceof JSONArray ){
          JSONArray jsonArray = (JSONArray) json;
          Element root = processJSONArray( jsonArray,
-               newElement( getRootName() == null ? getArrayName() : getRootName() ),
-               expandableProperties );
+                 newElement( getRootName() == null ? getArrayName() : getRootName() ),
+                 expandableProperties );
          Document doc = new Document( root );
          return writeDocument( doc, encoding );
       }else{
@@ -603,8 +603,8 @@ public class XMLSerializer {
             root.addAttribute( new Attribute( addJsonPrefix( "null" ), "true" ) );
          }else{
             root = processJSONObject( jsonObject,
-                  newElement( getRootName() == null ? getObjectName() : getRootName() ),
-                  expandableProperties, true );
+                    newElement( getRootName() == null ? getObjectName() : getRootName() ),
+                    expandableProperties, true );
          }
          Document doc = new Document( root );
          return writeDocument( doc, encoding );
@@ -628,8 +628,8 @@ public class XMLSerializer {
       Map nameSpaces = (Map) namespacesPerElement.get( elementName );
       if( nameSpaces != null && !nameSpaces.isEmpty() ){
          setNamespaceLenient( true );
-         for( Iterator entries = nameSpaces.entrySet()
-               .iterator(); entries.hasNext(); ){
+         for (Iterator entries = nameSpaces.entrySet()
+                 .iterator(); entries.hasNext(); ){
             Map.Entry entry = (Map.Entry) entries.next();
             String prefix = (String) entry.getKey();
             String uri = (String) entry.getValue();
@@ -665,12 +665,12 @@ public class XMLSerializer {
       }
 
       if( childCount > elementCount ){
-         for( int i = 0; i < childCount; i++ ){
+         for (int i = 0; i < childCount; i++){
             Node node = element.getChild( i );
             if( node instanceof Text ){
                Text text = (Text) node;
                if( StringUtils.isNotBlank( StringUtils.strip( text.getValue() ) )
-                     && !skipWhitespace ){
+                       && !skipWhitespace ){
                   return false;
                }
             }
@@ -678,10 +678,10 @@ public class XMLSerializer {
       }
 
       String childName = elements.get( 0 )
-            .getQualifiedName();
-      for( int i = 1; i < elementCount; i++ ){
+              .getQualifiedName();
+      for (int i = 1; i < elementCount; i++){
          if( childName.compareTo( elements.get( i )
-               .getQualifiedName() ) != 0 ){
+                 .getQualifiedName() ) != 0 ){
             return false;
          }
       }
@@ -694,7 +694,7 @@ public class XMLSerializer {
       String clazz = null;
       if( attribute != null ){
          String clazzText = attribute.getValue()
-               .trim();
+                 .trim();
          if( JSONTypes.OBJECT.compareToIgnoreCase( clazzText ) == 0 ){
             clazz = JSONTypes.OBJECT;
          }else if( JSONTypes.ARRAY.compareToIgnoreCase( clazzText ) == 0 ){
@@ -713,7 +713,7 @@ public class XMLSerializer {
       String type = null;
       if( attribute != null ){
          String typeText = attribute.getValue()
-               .trim();
+                 .trim();
          if( JSONTypes.BOOLEAN.compareToIgnoreCase( typeText ) == 0 ){
             type = JSONTypes.BOOLEAN;
          }else if( JSONTypes.NUMBER.compareToIgnoreCase( typeText ) == 0 ){
@@ -742,7 +742,7 @@ public class XMLSerializer {
 
    private boolean hasNamespaces( Element element ) {
       int namespaces = 0;
-      for( int i = 0; i < element.getNamespaceDeclarationCount(); i++ ){
+      for (int i = 0; i < element.getNamespaceDeclarationCount(); i++){
          String prefix = element.getNamespacePrefix( i );
          String uri = element.getNamespaceURI( prefix );
          if( StringUtils.isBlank( uri ) ){
@@ -761,16 +761,16 @@ public class XMLSerializer {
       }else if( element.getAttributeCount() == 0 ){
          isArray = checkChildElements( element, isTopLevel );
       }else if( element.getAttributeCount() == 1
-            && (element.getAttribute( addJsonPrefix( "class" ) ) != null || element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
+              && (element.getAttribute( addJsonPrefix( "class" ) ) != null || element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
          isArray = checkChildElements( element, isTopLevel );
       }else if( element.getAttributeCount() == 2
-            && (element.getAttribute( addJsonPrefix( "class" ) ) != null && element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
+              && (element.getAttribute( addJsonPrefix( "class" ) ) != null && element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
          isArray = checkChildElements( element, isTopLevel );
       }
 
       if( isArray ){
          // check namespace
-         for( int j = 0; j < element.getNamespaceDeclarationCount(); j++ ){
+         for (int j = 0; j < element.getNamespaceDeclarationCount(); j++){
             String prefix = element.getNamespacePrefix( j );
             String uri = element.getNamespaceURI( prefix );
             if( !StringUtils.isBlank( uri ) ){
@@ -791,8 +791,8 @@ public class XMLSerializer {
             return true;
          }
          if( attrCount == 2 && paramsAttr != null && typeAttr != null && (typeAttr.getValue()
-               .compareToIgnoreCase( JSONTypes.STRING ) == 0 || typeAttr.getValue()
-               .compareToIgnoreCase( JSONTypes.FUNCTION ) == 0) ){
+                 .compareToIgnoreCase( JSONTypes.STRING ) == 0 || typeAttr.getValue()
+                 .compareToIgnoreCase( JSONTypes.FUNCTION ) == 0) ){
             return true;
          }
       }
@@ -806,10 +806,10 @@ public class XMLSerializer {
          }else if( element.getAttribute( addJsonPrefix( "null" ) ) != null ){
             return true;
          }else if( element.getAttributeCount() == 1
-               && (element.getAttribute( addJsonPrefix( "class" ) ) != null || element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
+                 && (element.getAttribute( addJsonPrefix( "class" ) ) != null || element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
             return true;
          }else if( element.getAttributeCount() == 2
-               && (element.getAttribute( addJsonPrefix( "class" ) ) != null && element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
+                 && (element.getAttribute( addJsonPrefix( "class" ) ) != null && element.getAttribute( addJsonPrefix( "type" ) ) != null) ){
             return true;
          }
       }
@@ -828,12 +828,12 @@ public class XMLSerializer {
 
          int attributeCount = element.getAttributeCount();
          if( attributeCount > 0 ){
-            int attrs = element.getAttribute( addJsonPrefix( "null" )) == null ? 0 : 1;
-            attrs += element.getAttribute( addJsonPrefix( "class" )) == null ? 0: 1;
-            attrs += element.getAttribute( addJsonPrefix( "type" ))== null ? 0 : 1;
-            switch( attributeCount ){
+            int attrs = element.getAttribute( addJsonPrefix( "null" ) ) == null ? 0 : 1;
+            attrs += element.getAttribute( addJsonPrefix( "class" ) ) == null ? 0 : 1;
+            attrs += element.getAttribute( addJsonPrefix( "type" ) ) == null ? 0 : 1;
+            switch (attributeCount){
                case 1:
-                  if( attrs == 0){
+                  if( attrs == 0 ){
                      return true;
                   }
                   break;
@@ -842,8 +842,8 @@ public class XMLSerializer {
                      return true;
                   }
                   break;
-               case 3: 
-                  if(  attrs < 3 ){
+               case 3:
+                  if( attrs < 3 ){
                      return true;
                   }
                   break;
@@ -851,7 +851,7 @@ public class XMLSerializer {
                   return true;
             }
          }
-         
+
          int childCount = element.getChildCount();
          if( childCount == 1 && element.getChild( 0 ) instanceof Text ){
             return isTopLevel;
@@ -873,7 +873,7 @@ public class XMLSerializer {
       JSONArray jsonArray = new JSONArray();
       // process children (including text)
       int childCount = element.getChildCount();
-      for( int i = 0; i < childCount; i++ ){
+      for (int i = 0; i < childCount; i++){
          Node child = element.getChild( i );
          if( child instanceof Text ){
             Text text = (Text) child;
@@ -901,7 +901,7 @@ public class XMLSerializer {
 
    private Element processJSONArray( JSONArray array, Element root, String[] expandableProperties ) {
       int l = array.size();
-      for( int i = 0; i < l; i++ ){
+      for (int i = 0; i < l; i++){
          Object value = array.get( i );
          Element element = processJSONValue( value, root, null, expandableProperties );
          root.appendChild( element );
@@ -910,7 +910,7 @@ public class XMLSerializer {
    }
 
    private Element processJSONObject( JSONObject jsonObject, Element root,
-         String[] expandableProperties, boolean isRoot ) {
+                                      String[] expandableProperties, boolean isRoot ) {
       if( jsonObject.isNullObject() ){
          root.addAttribute( new Attribute( addJsonPrefix( "null" ), "true" ) );
          return root;
@@ -921,8 +921,8 @@ public class XMLSerializer {
       if( isRoot ){
          if( !rootNamespace.isEmpty() ){
             setNamespaceLenient( true );
-            for( Iterator entries = rootNamespace.entrySet()
-                  .iterator(); entries.hasNext(); ){
+            for (Iterator entries = rootNamespace.entrySet()
+                    .iterator(); entries.hasNext(); ){
                Map.Entry entry = (Map.Entry) entries.next();
                String prefix = (String) entry.getKey();
                String uri = (String) entry.getValue();
@@ -938,10 +938,10 @@ public class XMLSerializer {
       addNameSpaceToElement( root );
 
       Object[] names = jsonObject.names()
-            .toArray();
+              .toArray();
       Arrays.sort( names );
       Element element = null;
-      for( int i = 0; i < names.length; i++ ){
+      for (int i = 0; i < names.length; i++){
          String name = (String) names[i];
          Object value = jsonObject.get( name );
          if( name.startsWith( "@xmlns" ) ){
@@ -959,7 +959,14 @@ public class XMLSerializer {
                }
             }
          }else if( name.startsWith( "@" ) ){
-            root.addAttribute( new Attribute( name.substring( 1 ), String.valueOf( value ) ) );
+            int colon = name.indexOf( ':' );
+            if( colon == -1 ){
+               root.addAttribute( new Attribute( name.substring( 1 ), String.valueOf( value ) ) );
+            }else{
+               String prefix = name.substring( 1, colon );
+               final String namespaceURI = root.getNamespaceURI( prefix );
+               root.addAttribute( new Attribute( name.substring( colon + 1 ), namespaceURI, String.valueOf( value ) ) );
+            }
          }else if( name.equals( "#text" ) ){
             if( value instanceof JSONArray ){
                root.appendChild( ((JSONArray) value).join( "", true ) );
@@ -967,16 +974,16 @@ public class XMLSerializer {
                root.appendChild( String.valueOf( value ) );
             }
          }else if( value instanceof JSONArray
-               && (((JSONArray) value).isExpandElements() || ArrayUtils.contains(
-                     expandableProperties, name )) ){
+                 && (((JSONArray) value).isExpandElements() || ArrayUtils.contains(
+                 expandableProperties, name )) ){
             JSONArray array = (JSONArray) value;
             int l = array.size();
-            for( int j = 0; j < l; j++ ){
+            for (int j = 0; j < l; j++){
                Object item = array.get( j );
                element = newElement( name );
                if( item instanceof JSONObject ){
                   element = processJSONValue( (JSONObject) item, root, element,
-                        expandableProperties );
+                          expandableProperties );
                }else if( item instanceof JSONArray ){
                   element = processJSONValue( (JSONArray) item, root, element, expandableProperties );
                }else{
@@ -996,7 +1003,7 @@ public class XMLSerializer {
    }
 
    private Element processJSONValue( Object value, Element root, Element target,
-         String[] expandableProperties ) {
+                                     String[] expandableProperties ) {
       if( target == null ){
          target = newElement( getElementName() );
       }
@@ -1054,7 +1061,7 @@ public class XMLSerializer {
       JSONObject jsonObject = new JSONObject();
 
       if( !skipNamespaces ){
-         for( int j = 0; j < element.getNamespaceDeclarationCount(); j++ ){
+         for (int j = 0; j < element.getNamespaceDeclarationCount(); j++){
             String prefix = element.getNamespacePrefix( j );
             String uri = element.getNamespaceURI( prefix );
             if( StringUtils.isBlank( uri ) ){
@@ -1066,25 +1073,25 @@ public class XMLSerializer {
             setOrAccumulate( jsonObject, "@xmlns" + prefix, trimSpaceFromValue( uri ) );
          }
       }
-     
+
       // process attributes first
       int attrCount = element.getAttributeCount();
-      for( int i = 0; i < attrCount; i++ ){
+      for (int i = 0; i < attrCount; i++){
          Attribute attr = element.getAttribute( i );
          String attrname = attr.getQualifiedName();
          if( isTypeHintsEnabled()
-               && (addJsonPrefix( "class" ).compareToIgnoreCase( attrname ) == 0 || addJsonPrefix(
-                     "type" ).compareToIgnoreCase( attrname ) == 0) ){
+                 && (addJsonPrefix( "class" ).compareToIgnoreCase( attrname ) == 0 || addJsonPrefix(
+                 "type" ).compareToIgnoreCase( attrname ) == 0) ){
             continue;
          }
          String attrvalue = attr.getValue();
          setOrAccumulate( jsonObject, "@" + removeNamespacePrefix( attrname ),
-               trimSpaceFromValue( attrvalue ) );
+                 trimSpaceFromValue( attrvalue ) );
       }
 
       // process children (including text)
       int childCount = element.getChildCount();
-      for( int i = 0; i < childCount; i++ ){
+      for (int i = 0; i < childCount; i++){
          Node child = element.getChild( i );
          if( child instanceof Text ){
             Text text = (Text) child;
@@ -1186,7 +1193,7 @@ public class XMLSerializer {
                   jsonArray.element( processArrayElement( element, defaultType ) );
                }else if( isObject( element, false ) ){
                   jsonArray.element( simplifyValue( null, processObjectElement( element,
-                        defaultType ) ) );
+                          defaultType ) ) );
                }else{
                   jsonArray.element( trimSpaceFromValue( element.getValue() ) );
                }
@@ -1199,13 +1206,13 @@ public class XMLSerializer {
       String clazz = getClass( element );
       String type = getType( element );
       type = (type == null) ? defaultType : type;
-  
-      
-      
+
+
+
       String key = removeNamespacePrefix( element.getQualifiedName() );
       if( hasNamespaces( element ) && !skipNamespaces ){
          setOrAccumulate( jsonObject, key, simplifyValue( jsonObject,
-               processElement( element, type ) ) );
+                 processElement( element, type ) ) );
          return;
       }else if( element.getAttributeCount() > 0 ){
          if( isFunction( element ) ){
@@ -1228,7 +1235,7 @@ public class XMLSerializer {
             classProcessed = true;
          }else if( clazz.compareToIgnoreCase( JSONTypes.OBJECT ) == 0 ){
             setOrAccumulate( jsonObject, key, simplifyValue( jsonObject, processObjectElement(
-                  element, type ) ) );
+                    element, type ) ) );
             classProcessed = true;
          }
       }
@@ -1267,7 +1274,7 @@ public class XMLSerializer {
                   setOrAccumulate( jsonObject, key, processArrayElement( element, defaultType ) );
                }else if( isObject( element, false ) ){
                   setOrAccumulate( jsonObject, key, simplifyValue( jsonObject,
-                        processObjectElement( element, defaultType ) ) );
+                          processObjectElement( element, defaultType ) ) );
                }else{
                   setOrAccumulate( jsonObject, key, trimSpaceFromValue( element.getValue() ) );
                }
@@ -1281,8 +1288,8 @@ public class XMLSerializer {
          JSONObject object = (JSONObject) json;
          if( parent != null ){
             // remove all duplicated @xmlns from child
-            for( Iterator entries = parent.entrySet()
-                  .iterator(); entries.hasNext(); ){
+            for (Iterator entries = parent.entrySet()
+                    .iterator(); entries.hasNext(); ){
                Map.Entry entry = (Map.Entry) entries.next();
                String key = (String) entry.getKey();
                Object value = entry.getValue();
@@ -1297,17 +1304,19 @@ public class XMLSerializer {
       }
       return json;
    }
+
    private String trimSpaceFromValue( String value ) {
       if( isTrimSpaces() ){
          return value.trim();
       }
       return value;
    }
+
    private String writeDocument( Document doc, String encoding ) {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       try{
          XomSerializer serializer = (encoding == null) ? new XomSerializer( baos )
-               : new XomSerializer( baos, encoding );
+                 : new XomSerializer( baos, encoding );
          serializer.write( doc );
          encoding = serializer.getEncoding();
       }catch( IOException ioe ){
