@@ -41,12 +41,12 @@ public class TestAttributeWithNamespace extends TestCase {
       JSONObject actual = (JSONObject) reader.readFromFile( "net/sf/json/xml/attribute-namespace.xml" );
 
       JSONObject expected = new JSONObject()
-              .element( "@DOMVersion", "8.0" )
-              .element( "@Self", "d" )
-              .element( "x:xmpmeta",
-                      new JSONObject()
-                              .element( "@xmlns:x", "adobe:ns:meta/" )
-                              .element( "@x:xmptk", "Adobe XMP Core 5.3-c011 66.145661, 2012/02/06-14:56:27" ) );
+            .element( "@DOMVersion", "8.0" )
+            .element( "@Self", "d" )
+            .element( "x:xmpmeta",
+                  new JSONObject()
+                        .element( "@xmlns:x", "adobe:ns:meta/" )
+                        .element( "@x:xmptk", "Adobe XMP Core 5.3-c011 66.145661, 2012/02/06-14:56:27" ) );
 
       JSONAssert.assertEquals( expected, actual );
    }
