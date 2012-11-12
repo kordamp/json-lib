@@ -16,21 +16,6 @@
 
 package net.sf.json.xml;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
-
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -46,11 +31,26 @@ import nu.xom.Elements;
 import nu.xom.Node;
 import nu.xom.Serializer;
 import nu.xom.Text;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Utility class for transforming JSON to XML an back.<br>
@@ -112,6 +112,10 @@ public class XMLSerializer {
    private boolean typeHintsCompatibility;
    /** flag for adding JSON types hints as attributes */
    private boolean typeHintsEnabled;
+   /** flag for performing auto-expansion of arrays if */
+   private boolean isPerformAutoExpansion;
+   /** flag for if text with CDATA should keep the information in the value or not */
+   private boolean isKeepCData;
 
    /**
     * Creates a new XMLSerializer with default options.<br>
@@ -126,6 +130,7 @@ public class XMLSerializer {
     * <li><code>skipNamespaces</code>: false</li>
     * <li><code>removeNameSpacePrefixFromElement</code>: false</li>
     * <li><code>trimSpaces</code>: false</li>
+    * <li><code>isPerformAutoExpansion</code>: false</li>
     * </ul>
     */
    public XMLSerializer() {
@@ -140,6 +145,8 @@ public class XMLSerializer {
       setTrimSpaces( false );
       setExpandableProperties( EMPTY_ARRAY );
       setSkipNamespaces( false );
+      setPerformAutoExpansion( false );
+      setKeepCData( false );
    }
 
    /**
@@ -492,7 +499,23 @@ public class XMLSerializer {
    }
 
    /**
-    * Sets wether this serializer is tolerant to namespaces without URIs or not.
+    * Sets whether this serializer should perform automatic expansion of array elements or not.
+    */
+   public void setPerformAutoExpansion( boolean autoExpansion ) {
+      isPerformAutoExpansion = autoExpansion;
+   }
+
+   /**
+    * Sets whether this serializer should keep the CDATA information in the value or not.
+    *
+    * @param keepCData True to keep CDATA, false to only use the text value.
+    */
+   public void setKeepCData( boolean keepCData ) {
+      isKeepCData = keepCData;
+   }
+
+   /**
+    * Sets whether this serializer is tolerant to namespaces without URIs or not.
     */
    public void setNamespaceLenient( boolean namespaceLenient ) {
       this.namespaceLenient = namespaceLenient;
@@ -937,10 +960,8 @@ public class XMLSerializer {
 
       addNameSpaceToElement( root );
 
-      Object[] names = jsonObject.names()
-            .toArray();
-      Arrays.sort( names );
-      Element element = null;
+      Object[] names = jsonObject.names().toArray();
+      List unprocessed = new ArrayList();
       for( int i = 0; i < names.length; i++ ){
          String name = (String) names[i];
          Object value = jsonObject.get( name );
@@ -958,14 +979,22 @@ public class XMLSerializer {
                   root.addNamespaceDeclaration( prefix, String.valueOf( value ) );
                }
             }
-         }else if( name.startsWith( "@" ) ){
+         }else{
+            unprocessed.add( name );
+         }
+      }
+      Element element = null;
+      for( int i = 0; i < unprocessed.size(); i++ ){
+         String name = (String) unprocessed.get( i );
+         Object value = jsonObject.get( name );
+         if( name.startsWith( "@" ) ){
             int colon = name.indexOf( ':' );
             if( colon == -1 ){
                root.addAttribute( new Attribute( name.substring( 1 ), String.valueOf( value ) ) );
             }else{
                String prefix = name.substring( 1, colon );
                final String namespaceURI = root.getNamespaceURI( prefix );
-               root.addAttribute( new Attribute( name.substring( colon + 1 ), namespaceURI, String.valueOf( value ) ) );
+               root.addAttribute( new Attribute( name.substring( 1 ), namespaceURI, String.valueOf( value ) ) );
             }
          }else if( name.equals( "#text" ) ){
             if( value instanceof JSONArray ){
@@ -975,12 +1004,13 @@ public class XMLSerializer {
             }
          }else if( value instanceof JSONArray
                && (((JSONArray) value).isExpandElements() || ArrayUtils.contains(
-                     expandableProperties, name )) ){
+               expandableProperties, name ) || (isPerformAutoExpansion && canAutoExpand( (JSONArray) value ))) ){
             JSONArray array = (JSONArray) value;
             int l = array.size();
             for( int j = 0; j < l; j++ ){
                Object item = array.get( j );
                element = newElement( name );
+               root.appendChild( element );
                if( item instanceof JSONObject ){
                   element = processJSONValue( (JSONObject) item, root, element,
                         expandableProperties );
@@ -990,16 +1020,29 @@ public class XMLSerializer {
                   element = processJSONValue( item, root, element, expandableProperties );
                }
                addNameSpaceToElement( element );
-               root.appendChild( element );
             }
          }else{
             element = newElement( name );
+            root.appendChild( element );
             element = processJSONValue( value, root, element, expandableProperties );
             addNameSpaceToElement( element );
-            root.appendChild( element );
          }
       }
       return root;
+   }
+
+   /**
+    * Only perform auto expansion if all children are objects.
+    * @param array The array to check
+    * @return True if all children are objects, false otherwise.
+    */
+   private boolean canAutoExpand( JSONArray array ) {
+      for( int i = 0; i < array.size(); i++ ){
+         if( !(array.get( i ) instanceof JSONObject) ){
+            return false;
+         }
+      }
+      return true;
    }
 
    private Element processJSONValue( Object value, Element root, Element target,
@@ -1276,11 +1319,27 @@ public class XMLSerializer {
                   setOrAccumulate( jsonObject, key, simplifyValue( jsonObject,
                         processObjectElement( element, defaultType ) ) );
                }else{
-                  setOrAccumulate( jsonObject, key, trimSpaceFromValue( element.getValue() ) );
+                  String value;
+                  if( isKeepCData && isCData( element ) ){
+                     value = "<![CDATA[" + element.getValue() + "]]>";
+                  }else{
+                     value = element.getValue();
+                  }
+                  setOrAccumulate( jsonObject, key, trimSpaceFromValue( value ) );
                }
             }
          }
       }
+   }
+
+   private boolean isCData( Element element ) {
+      if( element.getChildCount() > 0 ){
+         final Node child = element.getChild( 0 );
+         if( child.toXML().startsWith( "<![CDATA[" ) ){
+            return true;
+         }
+      }
+      return false;
    }
 
    private Object simplifyValue( JSONObject parent, Object json ) {

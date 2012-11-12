@@ -30,6 +30,10 @@ public class AllTests extends TestSuite {
       suite.addTest( new TestSuite( TestXMLSerializer_writes.class ) );
       suite.addTest( new TestSuite( TestUserSubmitted.class ) );
       suite.addTest( new TestSuite( TestAttributeWithNamespace.class ) );
+      suite.addTest( new TestSuite( TestArrayAutoExpansion.class ) );
+      suite.addTest( new TestSuite( TestXMLSerializer_writes_with_autoexpansion.class ) );
+      suite.addTest( new TestSuite( TestXmlContainingTypeAttribute.class ) );
+      suite.addTest( new TestSuite( TestXmlContainingCData.class ) );
 
       return suite;
    }
