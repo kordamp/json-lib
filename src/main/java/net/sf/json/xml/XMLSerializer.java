@@ -1460,32 +1460,4 @@ public class XMLSerializer {
          writeNamespaceDeclarations( element );
       }
    }
-
-   /**
-    * Namespace declarations should appear first
-    */
-   private class AttributeNameComparator implements Comparator {
-      public int compare( Object o1, Object o2 ) {
-         if (o1 == null || o2 == null) {
-            return -1;
-         }
-
-         if (!(o1 instanceof String) || !(o2 instanceof String)) {
-            return -1;
-         }
-
-         String name1 = ((String) o1);
-         String name2 = ((String) o2);
-
-         if (name1.startsWith( "@xmlns" )) {
-            return -1;
-         }
-
-         if (name2.startsWith( "@xmlns" )) {
-            return 1;
-         }
-
-         return name1.compareTo(name2);
-      }
-   }
 }
