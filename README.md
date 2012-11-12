@@ -80,7 +80,6 @@ serializer.setPerformAutoExpansion(true);
 JSON jsonRepresentation = serializer.readFromFile( "file.xml" );
 
 String xml = serializer.write( jsonRepresentation );
-
 System.out.writeToReadme(xml)
 ```
 
@@ -88,7 +87,7 @@ will render:
 
 ```xml
 <o DOMVersion="8.0" Self="d">
-<x:xmpmeta xmptk="Adobe XMP Core 5.3-c011 66.145661, 2012/02/06-14:56:27        " xmlns:x="adobe:ns:meta/">
+<x:xmpmeta xmptk="Adobe XMP Core 5.3-c011 66.145661, 2012/02/06-14:56:27" xmlns:x="adobe:ns:meta/">
     <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
         <rdf:Description about="" xmlns:dc="http://purl.org/dc/elements/1.1/">
             <dc:format>application/x-indesign</dc:format>
