@@ -46,9 +46,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -949,8 +950,7 @@ public class XMLSerializer {
       addNameSpaceToElement( root );
 
       Object[] names = jsonObject.names().toArray();
-      Arrays.sort( names, new AttributeNameComparator() );
-      Element element = null;
+      List unprocessed = new ArrayList();
       for( int i = 0; i < names.length; i++ ){
          String name = (String) names[i];
          Object value = jsonObject.get( name );
@@ -968,7 +968,15 @@ public class XMLSerializer {
                   root.addNamespaceDeclaration( prefix, String.valueOf( value ) );
                }
             }
-         }else if( name.startsWith( "@" ) ){
+         } else {
+            unprocessed.add(name);
+         }
+      }
+      Element element = null;
+      for( int i = 0; i < unprocessed.size(); i++ ){
+         String name = (String) unprocessed.get(i);
+         Object value = jsonObject.get( name );
+         if( name.startsWith( "@" ) ){
             int colon = name.indexOf( ':' );
             if( colon == -1 ){
                root.addAttribute( new Attribute( name.substring( 1 ), String.valueOf( value ) ) );
