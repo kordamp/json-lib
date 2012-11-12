@@ -38,7 +38,11 @@ public class TestAttributeWithNamespace extends TestCase {
 
       XMLSerializer reader = new XMLSerializer();
 
-      JSONObject actual = (JSONObject) reader.readFromFile( "net/sf/json/xml/attribute-namespace.xml" );
+      JSONObject actual = (JSONObject) reader.read( "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+            "<Document DOMVersion=\"8.0\" Self=\"d\">" +
+            "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 5.3-c011 66.145661, 2012/02/06-14:56:27\">" +
+            "</x:xmpmeta>" +
+            "</Document>" );
 
       JSONObject expected = new JSONObject()
             .element( "@DOMVersion", "8.0" )

@@ -27,18 +27,18 @@ public class TestArrayAutoExpansion extends XMLTestCase {
 
    private static final String FIXTURE = "<Document DOMVersion=\"8.0\" Self=\"d\">" +
          "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 5.3-c011 66.145661, 2012/02/06-14:56:27\">" +
-         "        <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">" +
-         "            <rdf:Description rdf:about=\"\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">" +
-         "                <dc:format>application/x-indesign</dc:format>" +
-         "            </rdf:Description>" +
-         "            <rdf:Description rdf:about=\"\" xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\">" +
-         "                <xmp:CreatorTool>Adobe InDesign CS6 (Macintosh)</xmp:CreatorTool>" +
-         "            </rdf:Description>" +
-         "            <rdf:Description rdf:about=\"\" xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\">" +
-         "                <xmpMM:InstanceID>xmp.iid:D093CC710A2068118083AFA2F0AAE3ED</xmpMM:InstanceID>" +
-         "            </rdf:Description>" +
-         "        </rdf:RDF>" +
-         "    </x:xmpmeta>" +
+         "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">" +
+         "<rdf:Description rdf:about=\"\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">" +
+         "<dc:format>application/x-indesign</dc:format>" +
+         "</rdf:Description>" +
+         "<rdf:Description rdf:about=\"\" xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\">" +
+         "<xmp:CreatorTool>Adobe InDesign CS6 (Macintosh)</xmp:CreatorTool>" +
+         "</rdf:Description>" +
+         "<rdf:Description rdf:about=\"\" xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\">" +
+         "<xmpMM:InstanceID>xmp.iid:D093CC710A2068118083AFA2F0AAE3ED</xmpMM:InstanceID>" +
+         "</rdf:Description>" +
+         "</rdf:RDF>" +
+         "</x:xmpmeta>" +
          "</Document>";
 
    public static void main( String[] args ) {
@@ -58,10 +58,8 @@ public class TestArrayAutoExpansion extends XMLTestCase {
 
       JSON jsonRepresentation = serializer.read( FIXTURE );
 
-      final String actual = serializer.write( jsonRepresentation );
+      final String writtenBack = serializer.write( jsonRepresentation );
 
-      System.out.println( "actual = " + actual );
-
-      assertXMLEqual(FIXTURE, actual);
+      assertXMLEqual(FIXTURE, writtenBack);
    }
 }

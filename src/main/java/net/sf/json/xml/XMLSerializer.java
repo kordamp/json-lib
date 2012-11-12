@@ -16,21 +16,6 @@
 
 package net.sf.json.xml;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
-
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -46,11 +31,26 @@ import nu.xom.Elements;
 import nu.xom.Node;
 import nu.xom.Serializer;
 import nu.xom.Text;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Utility class for transforming JSON to XML an back.<br>
@@ -948,9 +948,8 @@ public class XMLSerializer {
 
       addNameSpaceToElement( root );
 
-      Object[] names = jsonObject.names()
-            .toArray();
-      Arrays.sort( names );
+      Object[] names = jsonObject.names().toArray();
+      Arrays.sort( names, new AttributeNameComparator() );
       Element element = null;
       for( int i = 0; i < names.length; i++ ){
          String name = (String) names[i];
@@ -976,7 +975,7 @@ public class XMLSerializer {
             }else{
                String prefix = name.substring( 1, colon );
                final String namespaceURI = root.getNamespaceURI( prefix );
-               root.addAttribute( new Attribute( name.substring( colon + 1 ), namespaceURI, String.valueOf( value ) ) );
+               root.addAttribute( new Attribute( name.substring( 1 ), namespaceURI, String.valueOf( value ) ) );
             }
          }else if( name.equals( "#text" ) ){
             if( value instanceof JSONArray ){
@@ -992,6 +991,7 @@ public class XMLSerializer {
             for( int j = 0; j < l; j++ ){
                Object item = array.get( j );
                element = newElement( name );
+               root.appendChild( element );
                if( item instanceof JSONObject ){
                   element = processJSONValue( (JSONObject) item, root, element,
                         expandableProperties );
@@ -1001,13 +1001,12 @@ public class XMLSerializer {
                   element = processJSONValue( item, root, element, expandableProperties );
                }
                addNameSpaceToElement( element );
-               root.appendChild( element );
             }
          }else{
             element = newElement( name );
+            root.appendChild( element );
             element = processJSONValue( value, root, element, expandableProperties );
             addNameSpaceToElement( element );
-            root.appendChild( element );
          }
       }
       return root;
@@ -1451,6 +1450,34 @@ public class XMLSerializer {
          writeRaw( element.getQName() );
          writeAttributes( element );
          writeNamespaceDeclarations( element );
+      }
+   }
+
+   /**
+    * Namespace declarations should appear first
+    */
+   private class AttributeNameComparator implements Comparator {
+      public int compare( Object o1, Object o2 ) {
+         if (o1 == null || o2 == null) {
+            return -1;
+         }
+
+         if (!(o1 instanceof String) || !(o2 instanceof String)) {
+            return -1;
+         }
+
+         String name1 = ((String) o1);
+         String name2 = ((String) o2);
+
+         if (name1.startsWith( "@xmlns" )) {
+            return -1;
+         }
+
+         if (name2.startsWith( "@xmlns" )) {
+            return 1;
+         }
+
+         return name1.compareTo(name2);
       }
    }
 }
