@@ -41,6 +41,20 @@ public class TestArrayAutoExpansion extends XMLTestCase {
          "</x:xmpmeta>" +
          "</Document>";
 
+   private static final String FIXTURE_2 = "<Properties>" +
+         "<PathGeometry>" +
+         "<GeometryPathType PathOpen=\"false\">" +
+         "<PathPointArray>" +
+         "<PathPointType Anchor=\"-140.31496000000004 -29.999999448818926\" LeftDirection=\"-140.31496000000004 -29.999999448818926\" RightDirection=\"-140.31496000000004 -29.999999448818926\"/>" +
+         "<PathPointType Anchor=\"-140.31496000000004 20\" LeftDirection=\"-140.31496000000004 20\" RightDirection=\"-140.31496000000004 20\"/>" +
+         "<PathPointType Anchor=\"140.31495999999999 20\" LeftDirection=\"140.31495999999999 20\" RightDirection=\"140.31495999999999 20\"/>" +
+         "<PathPointType Anchor=\"140.31495999999999 -29.999999448818926\" LeftDirection=\"140.31495999999999 -29.999999448818926\" RightDirection=\"140.31495999999999 -29.999999448818926\"/>" +
+         "</PathPointArray>" +
+         "</GeometryPathType>" +
+         "</PathGeometry>" +
+         "</Properties>";
+
+
    public static void main( String[] args ) {
       junit.textui.TestRunner.run( TestArrayAutoExpansion.class );
    }
@@ -54,12 +68,27 @@ public class TestArrayAutoExpansion extends XMLTestCase {
       XMLSerializer serializer = new XMLSerializer();
       serializer.setTypeHintsEnabled( false );
       serializer.setPerformAutoExpansion( true );
-      serializer.setRootName("Document");
+      serializer.setRootName( "Document" );
 
       JSON jsonRepresentation = serializer.read( FIXTURE );
 
       final String writtenBack = serializer.write( jsonRepresentation );
 
-      assertXMLEqual(FIXTURE, writtenBack);
+      assertXMLEqual( FIXTURE, writtenBack );
+   }
+
+   public void test_array_is_being_correctly_constructed() throws Exception {
+      XMLSerializer serializer = new XMLSerializer();
+      serializer.setTypeHintsEnabled( false );
+      serializer.setPerformAutoExpansion( true );
+      serializer.setRootName( "Properties" );
+
+      JSON jsonRepresentation = serializer.read( FIXTURE_2 );
+
+      System.out.println( "jsonRepresentation = " + jsonRepresentation );
+
+      final String writtenBack = serializer.write( jsonRepresentation );
+
+      assertXMLEqual( FIXTURE_2, writtenBack );
    }
 }

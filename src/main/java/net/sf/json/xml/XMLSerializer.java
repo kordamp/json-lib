@@ -116,6 +116,8 @@ public class XMLSerializer {
    private boolean isPerformAutoExpansion;
    /** flag for if text with CDATA should keep the information in the value or not */
    private boolean isKeepCData;
+   /** flag for if characters lower than ' ' should be escaped in texts. */
+   private boolean isEscapeLowerChars;
 
    /**
     * Creates a new XMLSerializer with default options.<br>
@@ -147,6 +149,7 @@ public class XMLSerializer {
       setSkipNamespaces( false );
       setPerformAutoExpansion( false );
       setKeepCData( false );
+      setEscapeLowerChars( false );
    }
 
    /**
@@ -515,6 +518,14 @@ public class XMLSerializer {
    }
 
    /**
+    * Sets whether this serializer should escape characters lower than ' ' in texts.
+    * @param escape True to escape, false otherwise.
+    */
+   public void setEscapeLowerChars( boolean escape ) {
+      isEscapeLowerChars = escape;
+   }
+
+   /**
     * Sets whether this serializer is tolerant to namespaces without URIs or not.
     */
    public void setNamespaceLenient( boolean namespaceLenient ) {
@@ -679,7 +690,7 @@ public class XMLSerializer {
             return true;
          }
          if( elementCount == 1 ){
-            if( skipWhitespace || element.getChild( 0 ) instanceof Text ){
+            if( skipWhitespace && element.getChild( 0 ) instanceof Text ){
                return true;
             }else{
                return false;
@@ -709,7 +720,11 @@ public class XMLSerializer {
          }
       }
 
-      return true;
+      if( childName.equals( arrayName ) ){
+         return true;
+      }
+
+      return elementCount > 1;
    }
 
    private String getClass( Element element ) {
@@ -1333,7 +1348,7 @@ public class XMLSerializer {
    }
 
    private boolean isCData( Element element ) {
-      if( element.getChildCount() > 0 ){
+      if( element.getChildCount() == 1 ){
          final Node child = element.getChild( 0 );
          if( child.toXML().startsWith( "<![CDATA[" ) ){
             return true;
@@ -1442,8 +1457,27 @@ public class XMLSerializer {
             writeRaw( value );
             writeRaw( "]]>" );
          }else{
-            super.write( text );
+            if (isEscapeLowerChars) {
+               writeRaw(escape(value));
+            } else {
+               super.write( text );
+            }
          }
+      }
+
+      private String escape( String text ) {
+         StringBuffer buffer = new StringBuffer();
+         for (int i=0; i<text.length(); i++) {
+            final char c = text.charAt( i );
+            if ( c < ' ') {
+               buffer.append("&#x");
+               buffer.append(Integer.toHexString(c).toUpperCase());
+               buffer.append(";");
+            } else {
+               buffer.append(c);
+            }
+         }
+         return buffer.toString();
       }
 
       protected void writeEmptyElementTag( Element element ) throws IOException {
@@ -1486,5 +1520,6 @@ public class XMLSerializer {
          writeAttributes( element );
          writeNamespaceDeclarations( element );
       }
+
    }
 }
