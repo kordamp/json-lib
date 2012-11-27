@@ -41,7 +41,8 @@ public class TestArrayAutoExpansion extends XMLTestCase {
          "</x:xmpmeta>" +
          "</Document>";
 
-   private static final String FIXTURE_2 = "<Properties>" +
+   private static final String FIXTURE_2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+         "<Properties>" +
          "<PathGeometry>" +
          "<GeometryPathType PathOpen=\"false\">" +
          "<PathPointArray>" +
@@ -49,6 +50,20 @@ public class TestArrayAutoExpansion extends XMLTestCase {
          "<PathPointType Anchor=\"-140.31496000000004 20\" LeftDirection=\"-140.31496000000004 20\" RightDirection=\"-140.31496000000004 20\"/>" +
          "<PathPointType Anchor=\"140.31495999999999 20\" LeftDirection=\"140.31495999999999 20\" RightDirection=\"140.31495999999999 20\"/>" +
          "<PathPointType Anchor=\"140.31495999999999 -29.999999448818926\" LeftDirection=\"140.31495999999999 -29.999999448818926\" RightDirection=\"140.31495999999999 -29.999999448818926\"/>" +
+         "</PathPointArray>" +
+         "</GeometryPathType>" +
+         "</PathGeometry>" +
+         "</Properties>";
+
+   private static final String FIXTURE_3 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+         "<Properties>" +
+         "<PathGeometry  class=\"object\">" +
+         "<GeometryPathType PathOpen=\"false\" class=\"object\" >" +
+         "<PathPointArray class=\"array\">" +
+         "<PathPointType Anchor=\"-140.31496000000004 -29.999999448818926\" LeftDirection=\"-140.31496000000004 -29.999999448818926\" RightDirection=\"-140.31496000000004 -29.999999448818926\" class=\"object\"/>" +
+         "<PathPointType Anchor=\"-140.31496000000004 20\" LeftDirection=\"-140.31496000000004 20\" RightDirection=\"-140.31496000000004 20\" class=\"object\"/>" +
+         "<PathPointType Anchor=\"140.31495999999999 20\" LeftDirection=\"140.31495999999999 20\" RightDirection=\"140.31495999999999 20\" class=\"object\"/>" +
+         "<PathPointType Anchor=\"140.31495999999999 -29.999999448818926\" LeftDirection=\"140.31495999999999 -29.999999448818926\" RightDirection=\"140.31495999999999 -29.999999448818926\" class=\"object\"/>" +
          "</PathPointArray>" +
          "</GeometryPathType>" +
          "</PathGeometry>" +
@@ -77,18 +92,30 @@ public class TestArrayAutoExpansion extends XMLTestCase {
       assertXMLEqual( FIXTURE, writtenBack );
    }
 
-   public void test_array_is_being_correctly_constructed() throws Exception {
+   public void test_keep_array_name() throws Exception {
       XMLSerializer serializer = new XMLSerializer();
       serializer.setTypeHintsEnabled( false );
       serializer.setPerformAutoExpansion( true );
+      serializer.setKeepArrayName( true );
       serializer.setRootName( "Properties" );
 
       JSON jsonRepresentation = serializer.read( FIXTURE_2 );
-
-      System.out.println( "jsonRepresentation = " + jsonRepresentation );
-
       final String writtenBack = serializer.write( jsonRepresentation );
 
       assertXMLEqual( FIXTURE_2, writtenBack );
+   }
+
+   public void test_keep_array_name_with_type_hints_should_throw_exception() throws Exception {
+      XMLSerializer serializer = new XMLSerializer();
+      serializer.setTypeHintsEnabled( true );
+      serializer.setKeepArrayName( true );
+
+      JSON jsonRepresentation = serializer.read( FIXTURE_3 );
+      try{
+         serializer.write( jsonRepresentation );
+         fail( "Type hints are not compatible with KeepArrayName" );
+      }catch( IllegalStateException e ){
+         assertEquals( "Type Hints cannot be used together with 'keepArrayName'", e.getMessage() );
+      }
    }
 }

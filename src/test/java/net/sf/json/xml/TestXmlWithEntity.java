@@ -1,6 +1,5 @@
 package net.sf.json.xml;
 
-import junit.framework.TestCase;
 import net.sf.json.JSON;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.xml.sax.SAXException;
@@ -24,9 +23,6 @@ public class TestXmlWithEntity extends XMLTestCase {
       final JSON json = xmlSerializer.read( fixture );
 
       final String result = xmlSerializer.write( json );
-
-      System.out.println( "fixture = " + fixture );
-      System.out.println( "result  = " + result );
 
       assertXMLEqual(fixture, result);
    }
