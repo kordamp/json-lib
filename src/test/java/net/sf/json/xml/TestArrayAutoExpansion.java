@@ -42,6 +42,7 @@ public class TestArrayAutoExpansion extends XMLTestCase {
          "</Document>";
 
    private static final String FIXTURE_2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+         "<TextFrame Self=\"u11f6\" ParentStory=\"u11e4\" PreviousTextFrame=\"n\" NextTextFrame=\"n\" ContentType=\"TextType\" NewspilotId=\"0 0\" ImtoolsWritebackType=\"0\" ImtoolsMacroData=\"\" ImtoolsArticleParts=\"103416\" ImtoolsFramedata=\"{21889731;93073;89;1;1;12127681;0;0;0;1;1;Artikel;;103416}\" ImtoolsExportedSelection=\"0\" ImtoolsLayoutId=\"21889731\" ImtoolsArticleId=\"93073\" ImtoolsArticleTypeId=\"89\" ImtoolsArticlePartName=\"Artikel\" ImtoolsArticlePartNumber=\"1\" ImtoolsPartOrder=\"1\" ImtoolsOption=\"\" ImtoolsIsUnresolved=\"true\" ImtoolsContentId=\"0\" ImtoolsContentType=\"0\" ImtoolsTemplateInfoData=\"60 89\" ImtoolsTemplateName=\"Normal\" ImtoolsParagraphData=\"{headline}\" ParentInterfaceChangeCount=\"138508 2034277516 138558 1409276294\" TargetInterfaceChangeCount=\"\" LastUpdatedInterfaceChangeCount=\"\" OverriddenPageItemProps=\"\" HorizontalLayoutConstraints=\"FlexibleDimension FixedDimension FlexibleDimension\" VerticalLayoutConstraints=\"FlexibleDimension FixedDimension FlexibleDimension\" FillColor=\"Color/Paper\" GradientFillStart=\"-140.31496000000004 20\" GradientFillLength=\"280.62992\" GradientFillAngle=\"0\" GradientStrokeStart=\"-140.31496000000004 20\" GradientStrokeLength=\"280.62992\" GradientStrokeAngle=\"0\" ItemLayer=\"u126\" Locked=\"false\" LocalDisplaySetting=\"Default\" GradientFillHiliteLength=\"0\" GradientFillHiliteAngle=\"0\" GradientStrokeHiliteLength=\"0\" GradientStrokeHiliteAngle=\"0\" AppliedObjectStyle=\"ObjectStyle/$ID/[Normal Text Frame]\" Visible=\"true\" Name=\"$ID/\" ItemTransform=\"1 0 0 1 -610.8661466929134 -420.2831501574803\">" +
          "<Properties>" +
          "<PathGeometry>" +
          "<GeometryPathType PathOpen=\"false\">" +
@@ -53,7 +54,8 @@ public class TestArrayAutoExpansion extends XMLTestCase {
          "</PathPointArray>" +
          "</GeometryPathType>" +
          "</PathGeometry>" +
-         "</Properties>";
+         "</Properties>" +
+         "</TextFrame>";
 
    private static final String FIXTURE_3 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
          "<Properties>" +
@@ -97,7 +99,8 @@ public class TestArrayAutoExpansion extends XMLTestCase {
       serializer.setTypeHintsEnabled( false );
       serializer.setPerformAutoExpansion( true );
       serializer.setKeepArrayName( true );
-      serializer.setRootName( "Properties" );
+      serializer.setEscapeLowerChars( true );
+      serializer.setRootName( "TextFrame" );
 
       JSON jsonRepresentation = serializer.read( FIXTURE_2 );
       final String writtenBack = serializer.write( jsonRepresentation );
