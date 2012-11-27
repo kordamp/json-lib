@@ -35,6 +35,8 @@ public class AllTests extends TestSuite {
       suite.addTest( new TestSuite( TestXmlContainingTypeAttribute.class ) );
       suite.addTest( new TestSuite( TestXmlContainingCData.class ) );
       suite.addTest( new TestSuite( TestArrayAutoExpansion.class ) );
+      suite.addTest( new TestSuite( TestXmlWithEntity.class ) );
+      suite.addTest( new TestSuite( TestIdmlParsing.class ) );
 
       return suite;
    }
