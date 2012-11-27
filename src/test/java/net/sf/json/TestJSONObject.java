@@ -16,19 +16,6 @@
 
 package net.sf.json;
 
-import java.io.Serializable;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import junit.framework.TestCase;
 import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.bean.MorphDynaBean;
@@ -64,8 +51,19 @@ import net.sf.json.util.JavaIdentifierTransformer;
 import net.sf.json.util.PropertyExclusionClassMatcher;
 import net.sf.json.util.PropertyFilter;
 import net.sf.json.util.PropertySetStrategy;
-
 import org.apache.commons.beanutils.PropertyUtils;
+
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -1655,8 +1653,7 @@ public class TestJSONObject extends TestCase {
         a.add(o);
 
         StringWriter sw = new StringWriter();
-        a.writeCanonical(sw);
-        System.out.println(sw.toString());
+        a.writeCanonical( sw );
         assertEquals(sw.toString(),"[true,1,5.3,{\"key1\":\"1\",\"key2\":\"2\",\"key3\":\"3\",\"string\":\"123\\u000d\\u000a\\u0008\\u0009\\u000c\\\\\\\\u65E5\\\\u672C\\\\u8A9E\"}]");
     }
 }

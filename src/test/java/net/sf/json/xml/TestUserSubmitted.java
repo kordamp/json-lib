@@ -177,17 +177,52 @@ public class TestUserSubmitted extends TestCase {
 
       // rate.rateBreakdown.rate should be a single entry array.
 
+      JSONObject actual = convertXML( testXML, "rate" );
+      assertNotNull( actual );
+      Assertions.assertEquals( expected, actual );
+   }
+
+   public void testXMLWithoutArray() {
+      String testXML =
+                        "    <rate>" +
+                        "      <rateBreakdown>\n" +
+                        "        <rate>\n" +
+                        "          <date>\n" +
+                        "            <day>15</day>\n" +
+                        "            <month>1</month>\n" +
+                        "            <year>2007</year>\n" +
+                        "          </date>\n" +
+                        "          <amount>109.74</amount>\n" +
+                        "        </rate>\n" +
+                        "      </rateBreakdown>" +
+                        "      <totalAmount>219.48</totalAmount>\n" +
+                        "    </rate>";
+
+      JSON expected = JSONSerializer.toJSON("{\"rate\":{\"rateBreakdown\":{\"rate\":{\"amount\":\"109.74\",\"date\":{\"month\":\"1\",\"day\":\"15\",\"year\":\"2007\"}}},\"totalAmount\":\"219.48\"}}");
+
+      // rate.rateBreakdown.rate should be a single entry array.
+
       JSONObject actual = convertXML( testXML );
       assertNotNull( actual );
       Assertions.assertEquals( expected, actual );
    }
 
-   private JSONObject convertXML( String testXML ) {
-      XMLSerializer xmlSerializer = new XMLSerializer();
-      xmlSerializer.setSkipWhitespace( true );
-      xmlSerializer.setArrayName( "rate" );
-      xmlSerializer.setForceTopLevelObject( true );
+   private JSONObject convertXML( String testXML) {
+      JSON jsonElement = getSerializer().read( testXML );
+      return (JSONObject) jsonElement;
+   }
+
+   private JSONObject convertXML( String testXML, String arrayName ) {
+      final XMLSerializer xmlSerializer = getSerializer();
+      xmlSerializer.setArrayName( arrayName );
       JSON jsonElement = xmlSerializer.read( testXML );
       return (JSONObject) jsonElement;
+   }
+
+   private XMLSerializer getSerializer() {
+      XMLSerializer xmlSerializer = new XMLSerializer();
+      xmlSerializer.setSkipWhitespace( true );
+      xmlSerializer.setForceTopLevelObject( true );
+      return xmlSerializer;
    }
 }
