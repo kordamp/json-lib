@@ -1,6 +1,5 @@
 package net.sf.json.xml;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLTestCase;
@@ -11,8 +10,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
 
 public class TestIdmlParsing extends XMLTestCase {
 
