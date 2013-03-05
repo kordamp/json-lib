@@ -460,17 +460,11 @@ public final class JSONUtils {
     * right places. A backslash will be inserted within </, allowing JSON text
     * to be delivered in HTML. In JSON text, a string cannot contain a control
     * character or an unescaped quote or backslash.<br>
-    * <strong>CAUTION:</strong> if <code>string</code> represents a
-    * javascript function, translation of characters will not take place. This
-    * will produce a non-conformant JSON text.
     *
     * @param string A String
     * @return A String correctly formatted for insertion in a JSON text.
     */
    public static String quote( String string ) {
-      if( isFunction( string ) ){
-         return string;
-      }
       if( string == null || string.length() == 0 ){
          return "\"\"";
       }
