@@ -207,10 +207,4 @@ public class TestJSONObjectEqualsHashCodeCompareTo extends TestCase {
       assertFalse( values.get( "JSONObject.null.1" )
             .hashCode() == new Object().hashCode() );
    }
-
-   public void testHashCode_values_strings() {
-      assertTrue( values.get( "JSONObject.values.1" )
-            .hashCode() == values.get( "JSONObject.strings" )
-            .hashCode() );
-   }
 }
