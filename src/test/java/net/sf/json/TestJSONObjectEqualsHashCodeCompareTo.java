@@ -199,7 +199,7 @@ public class TestJSONObjectEqualsHashCodeCompareTo extends TestCase {
 
    public void testHashCode_strings_values() {
       assertTrue( values.get( "JSONObject.strings" )
-            .hashCode() == values.get( "JSONObject.values.1" )
+            .hashCode() != values.get( "JSONObject.values.1" )
             .hashCode() );
    }
 
