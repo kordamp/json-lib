@@ -89,6 +89,7 @@ public class JsonConfig {
    //private boolean ignoreJPATransient;
    private boolean ignoreTransientFields;
    private boolean ignorePublicFields = false;
+   private boolean ignoreUnreadableProperty = true;
    private boolean javascriptCompliant;
    private JavaIdentifierTransformer javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
    private PropertyFilter javaPropertyFilter;
@@ -240,6 +241,7 @@ public class JsonConfig {
       jsc.exclusionMap.putAll(  exclusionMap );
       jsc.ignoreFieldAnnotations.addAll( ignoreFieldAnnotations );
       jsc.allowNonStringKeys = allowNonStringKeys;
+      jsc.ignoreUnreadableProperty = ignoreUnreadableProperty;
       return jsc;
    }
 
@@ -257,6 +259,38 @@ public class JsonConfig {
     */
    public void enableEventTriggering() {
       triggerEvents = true;
+   }
+
+   /**
+    * See {@link #setIgnoreUnreadableProperty(boolean)}
+    */
+   public boolean isIgnoreUnreadableProperty() {
+      return ignoreUnreadableProperty;
+   }
+
+   /**
+    * If true, properties found in JSON that have no corresponding Java setter/field/etc
+    * will not raise an exception.
+    *
+    * <p>
+    * For example, given {"x":1, "y":2, "z":3} on the following <tt>Point</tt> class,
+    * {@link JSONObject#toBean()} would fail unless this flag is set to true, because
+    * propety "x" in JSON has no corresponding Java counerpart.
+    *
+    * <pre>
+    * class Point {
+    *    private int x,y;
+    *    public int getX() { return x; }
+    *    public int getY() { return y; }
+    *    public void setX(int v) { x=v; }
+    *    public void setY(int v) { y=v; }
+    * }
+    * </pre>
+    *
+    * [JSON -&gt; Java]
+    */
+   public void setIgnoreUnreadableProperty(boolean ignoreUnreadableProperty) {
+      this.ignoreUnreadableProperty = ignoreUnreadableProperty;
    }
 
    /**

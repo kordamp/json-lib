@@ -52,23 +52,27 @@ public abstract class PropertySetStrategy {
             if( !jsonConfig.isIgnorePublicFields() ) {
                try {
                   Field field = bean.getClass().getField( key );
-                  if( field != null ) field.set( bean, value );
+                  if( field != null ) {
+                      field.set( bean, value );
+                      return;
+                  }
                } catch( Exception e ){
-                  _setProperty( bean, key, value );
+                  // fall through
                }
-            } else {
-               _setProperty( bean, key, value );
+            }
+
+            try {
+               PropertyUtils.setSimpleProperty( bean, key, value );
+            } catch( NoSuchMethodException e ) {
+               if (jsonConfig.isIgnoreUnreadableProperty()) {
+                  // ignore missing properties
+                  return;
+               }
+               throw new JSONException( e );
+            } catch( Exception e ) {
+               throw new JSONException( e );
             }
          }
       }
-      
-      private void _setProperty( Object bean, String key, Object value ) {
-         try {
-            PropertyUtils.setSimpleProperty( bean, key, value );
-         } catch( Exception e ) {
-            throw new JSONException( e );
-         }
-      }
-      
    }
 }
