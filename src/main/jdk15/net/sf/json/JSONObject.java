@@ -34,14 +34,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.array.ObjectArrayMorpher;
 import net.sf.ezmorph.bean.BeanMorpher;
 import net.sf.ezmorph.object.IdentityObjectMorpher;
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonBeanProcessor;
 import net.sf.json.processors.JsonValueProcessor;
 import net.sf.json.processors.JsonVerifier;
@@ -261,7 +258,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
 
     private interface Property {
        boolean isWritable();
-       Class type();
+       Class getPropertyType();
        String name();
        void set(Object bean, Object value) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     }
@@ -281,7 +278,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
          return name;
       }
 
-      public Class type() {
+      public Class getPropertyType() {
          return Object.class;
       }
 
@@ -305,7 +302,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
          return pd.getName();
       }
 
-      public Class type() {
+      public Class getPropertyType() {
          return pd.getPropertyType();
       }
 
@@ -325,7 +322,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
          return true;
       }
 
-      public Class type() {
+      public Class getPropertyType() {
          return f.getType();
       }
 
@@ -403,6 +400,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
          throw new JSONException( "Root bean is an interface. " + rootClass );
       }
 
+      Class beanClass = jsonConfig.getRootClass();
       Map classMap = jsonConfig.getClassMap();
       if( classMap == null ){
          classMap = Collections.EMPTY_MAP;
@@ -463,15 +461,15 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
                   Class targetType = pd.getPropertyType();
                   if( !JSONUtils.isNull( value ) ){
                      if( value instanceof JSONArray ){
-                        if( List.class.isAssignableFrom( pd.type() ) ){
-                           pd.set( bean, key, convertPropertyValueToCollection( key, value,
-                                 jsonConfig, name, classMap, pd.type() ), jsonConfig );
-                        }else if( Set.class.isAssignableFrom( pd.type() ) ){
-                           pd.set( bean, key, convertPropertyValueToCollection( key, value,
-                                 jsonConfig, name, classMap, pd.type() ), jsonConfig );
+                        if( List.class.isAssignableFrom( pd.getPropertyType() ) ){
+                           pd.set( bean, convertPropertyValueToCollection( key, value,
+                                 jsonConfig, name, classMap, pd.getPropertyType() ) );
+                        }else if( Set.class.isAssignableFrom( pd.getPropertyType() ) ){
+                           pd.set( bean, convertPropertyValueToCollection( key, value,
+                                 jsonConfig, name, classMap, pd.getPropertyType() ) );
                         }else{
                            pd.set( bean, convertPropertyValueToArray( key, value,
-                                 targetType, jsonConfig, classMap ), jsonConfig );
+                                 targetType, jsonConfig, classMap ) );
                         }
                      }else if( String.class.isAssignableFrom( type ) || JSONUtils.isBoolean( type )
                            || JSONUtils.isNumber( type ) || JSONUtils.isString( type )
