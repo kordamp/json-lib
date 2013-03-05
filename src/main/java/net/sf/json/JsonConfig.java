@@ -88,7 +88,7 @@ public class JsonConfig {
    private boolean ignoreDefaultExcludes;
    //private boolean ignoreJPATransient;
    private boolean ignoreTransientFields;
-   private boolean ignorePublicFields = true;
+   private boolean ignorePublicFields = false;
    private boolean javascriptCompliant;
    private JavaIdentifierTransformer javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
    private PropertyFilter javaPropertyFilter;
