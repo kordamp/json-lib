@@ -611,8 +611,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
 
       JsonBeanProcessor processor = jsonConfig.findJsonBeanProcessor( bean.getClass() );
       if( processor != null ){
+         JSONObject json = null;
          try{
-            JSONObject json = processor.processBean( bean, jsonConfig );
+            json = processor.processBean( bean, jsonConfig );
             if( json == null ){
                json = (JSONObject) jsonConfig.findDefaultValueProcessor( bean.getClass() )
                      .getDefaultValue( bean.getClass() );
@@ -622,7 +623,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
             }
             removeInstance( bean );
             fireObjectEndEvent( jsonConfig );
-            return json;
          }catch( JSONException jsone ){
             removeInstance( bean );
             fireErrorEvent( jsone, jsonConfig );
@@ -633,6 +633,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
             fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
+         return json;
       }
 
       JSONObject jsonObject = defaultBeanProcessing(bean, jsonConfig);
@@ -647,7 +648,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
       Collection exclusions = jsonConfig.getMergedExcludes( beanClass );
       JSONObject jsonObject = new JSONObject();
       try{
-         PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(bean);
+         PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors( bean );
          PropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
          for( int i = 0; i < pds.length; i++ ){
             boolean bypass = false;
