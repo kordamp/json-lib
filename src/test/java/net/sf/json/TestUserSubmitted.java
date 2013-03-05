@@ -631,7 +631,7 @@ public class TestUserSubmitted extends TestCase {
    public void testQuotedFunctions() {
       JSONObject json = JSONObject.fromObject( "{'func':\"function(){blah;}\"}" );
       assertTrue( json.get( "func" ) instanceof String );
-      assertEquals( "\"function(){blah;}\"", json.get( "func" ));
+      assertEquals( "function(){blah;}", json.get( "func" ));
    }
  
    public void testJsonWithNullKeys() {
