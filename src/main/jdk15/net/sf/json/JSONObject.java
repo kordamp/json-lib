@@ -149,8 +149,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
          return new JSONObject( true );
       }else if( object instanceof Enum ){
          throw new JSONException( "'object' is an Enum. Use JSONArray instead" );
-      }else if( object instanceof Annotation || (object != null && object.getClass()
-            .isAnnotation()) ){
+      }else if(object instanceof Annotation || (object.getClass().isAnnotation())){
          throw new JSONException( "'object' is an Annotation." );
       }else if( object instanceof JSONObject ){
          return _fromJSONObject( (JSONObject) object, jsonConfig );
@@ -177,12 +176,15 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
    /**
     * Creates a JSONDynaBean from a JSONObject.
     */
+   public Object toBean() {
+      return toBean(this);
+   }
    public static Object toBean( JSONObject jsonObject ) {
       if( jsonObject == null || jsonObject.isNullObject() ){
          return null;
       }
 
-      DynaBean dynaBean = null;
+      DynaBean dynaBean;
 
       JsonConfig jsonConfig = new JsonConfig();
       Map props = JSONUtils.getProperties( jsonObject );
@@ -225,6 +227,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
       return dynaBean;
    }
 
+   public Object toBean( Class beanClass ) {
+      return toBean(this,beanClass);
+   }
+
    /**
     * Creates a bean from a JSONObject, with a specific target class.<br>
     */
@@ -253,6 +259,86 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
       return toBean( jsonObject, jsonConfig );
    }
 
+    private interface Property {
+       boolean isWritable();
+       Class type();
+       String name();
+       void set(Object bean, Object value) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+    }
+
+   private static class PropertyOnMap implements Property {
+      private final String name;
+
+      private PropertyOnMap(String name) {
+         this.name = name;
+      }
+
+      public boolean isWritable() {
+         return true;
+      }
+
+      public String name() {
+         return name;
+      }
+
+      public Class type() {
+         return Object.class;
+      }
+
+      public void set(Object bean, Object value) {
+         ((Map)bean).put(name,value);
+      }
+   }
+
+   private static class MethodProperty implements Property {
+      private final PropertyDescriptor pd;
+
+      private MethodProperty(PropertyDescriptor pd) {
+         this.pd = pd;
+      }
+
+      public boolean isWritable() {
+         return pd.getWriteMethod() != null;
+      }
+
+      public String name() {
+         return pd.getName();
+      }
+
+      public Class type() {
+         return pd.getPropertyType();
+      }
+
+      public void set(Object bean, Object value) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+         PropertyUtils.setSimpleProperty( bean, pd.getName(), value );
+      }
+   }
+
+   private static class FieldProperty implements Property {
+      private final Field f;
+
+      private FieldProperty(Field f) {
+         this.f = f;
+      }
+
+      public boolean isWritable() {
+         return true;
+      }
+
+      public Class type() {
+         return f.getType();
+      }
+
+      public String name() {
+         return f.getName();
+      }
+
+      public void set(Object bean, Object value) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+         f.set(bean,value);
+      }
+   }
+
+
    /**
     * Creates a bean from a JSONObject, with the specific configuration.
     */
@@ -262,16 +348,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
       }
 
       Class beanClass = jsonConfig.getRootClass();
-      Map classMap = jsonConfig.getClassMap();
-
       if( beanClass == null ){
          return toBean( jsonObject );
       }
-      if( classMap == null ){
-         classMap = Collections.EMPTY_MAP;
-      }
 
-      Object bean = null;
+      Object bean;
       try{
          if( beanClass.isInterface() ){
             if( !Map.class.isAssignableFrom( beanClass ) ){
@@ -287,6 +368,44 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
          throw jsone;
       }catch( Exception e ){
          throw new JSONException( e );
+      }
+
+      return toBean(jsonObject,bean,jsonConfig);
+   }
+
+   private static Property getProperty(Class beanClass, Object bean, String key, JsonConfig jsonConfig) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+      if( Map.class.isAssignableFrom( beanClass ))
+         return new PropertyOnMap(key);
+
+      key = jsonConfig.isSkipJavaIdentifierTransformationInMapKeys() ? key
+            : JSONUtils.convertToJavaIdentifier( key, jsonConfig );
+
+      try {
+         return new FieldProperty(bean.getClass().getField(key));
+      } catch (NoSuchFieldException e) {
+          PropertyDescriptor pd = PropertyUtils.getPropertyDescriptor(bean, key);
+          if (pd!=null)
+            return new MethodProperty(pd);
+          return null;
+      }
+   }
+
+   /**
+    * Creates a bean from a JSONObject, with the specific configuration.
+    */
+   public static Object toBean( JSONObject jsonObject, Object bean, JsonConfig jsonConfig ) {
+      if( jsonObject == null || jsonObject.isNullObject() || bean == null ){
+         return bean;
+      }
+
+      Class rootClass = bean.getClass();
+      if( rootClass.isInterface() ){
+         throw new JSONException( "Root bean is an interface. " + rootClass );
+      }
+
+      Map classMap = jsonConfig.getClassMap();
+      if( classMap == null ){
+         classMap = Collections.EMPTY_MAP;
       }
 
       Map props = JSONUtils.getProperties( jsonObject );
@@ -334,8 +453,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
                   }
                }
             }else{
-               PropertyDescriptor pd = PropertyUtils.getPropertyDescriptor( bean, key );
-               if( pd != null && pd.getWriteMethod() == null ){
+               Property pd = getProperty(rootClass,bean,name,jsonConfig);
+               if( !pd.isWritable() ){
                   log.info( "Property '" + key + "' of "+ bean.getClass()+" has no write method. SKIPPED." );
                   continue;
                }
@@ -344,14 +463,14 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
                   Class targetType = pd.getPropertyType();
                   if( !JSONUtils.isNull( value ) ){
                      if( value instanceof JSONArray ){
-                        if( List.class.isAssignableFrom( pd.getPropertyType() ) ){
-                           setProperty( bean, key, convertPropertyValueToCollection( key, value,
-                                 jsonConfig, name, classMap, pd.getPropertyType() ), jsonConfig );
-                        }else if( Set.class.isAssignableFrom( pd.getPropertyType() ) ){
-                           setProperty( bean, key, convertPropertyValueToCollection( key, value,
-                                 jsonConfig, name, classMap, pd.getPropertyType() ), jsonConfig );
+                        if( List.class.isAssignableFrom( pd.type() ) ){
+                           pd.set( bean, key, convertPropertyValueToCollection( key, value,
+                                 jsonConfig, name, classMap, pd.type() ), jsonConfig );
+                        }else if( Set.class.isAssignableFrom( pd.type() ) ){
+                           pd.set( bean, key, convertPropertyValueToCollection( key, value,
+                                 jsonConfig, name, classMap, pd.type() ), jsonConfig );
                         }else{
-                           setProperty( bean, key, convertPropertyValueToArray( key, value,
+                           pd.set( bean, convertPropertyValueToArray( key, value,
                                  targetType, jsonConfig, classMap ), jsonConfig );
                         }
                      }else if( String.class.isAssignableFrom( type ) || JSONUtils.isBoolean( type )
@@ -467,184 +586,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
    }
 
    /**
-    * Creates a bean from a JSONObject, with the specific configuration.
-    */
-   public static Object toBean( JSONObject jsonObject, Object root, JsonConfig jsonConfig ) {
-      if( jsonObject == null || jsonObject.isNullObject() || root == null ){
-         return root;
-      }
-
-      Class rootClass = root.getClass();
-      if( rootClass.isInterface() ){
-         throw new JSONException( "Root bean is an interface. " + rootClass );
-      }
-
-      Map classMap = jsonConfig.getClassMap();
-      if( classMap == null ){
-         classMap = Collections.EMPTY_MAP;
-      }
-
-      Map props = JSONUtils.getProperties( jsonObject );
-      PropertyFilter javaPropertyFilter = jsonConfig.getJavaPropertyFilter();
-      for( Iterator entries = jsonObject.names( jsonConfig )
-            .iterator(); entries.hasNext(); ){
-         String name = (String) entries.next();
-         Class type = (Class) props.get( name );
-         Object value = jsonObject.get( name );
-         if( javaPropertyFilter != null && javaPropertyFilter.apply( root, name, value ) ){
-            continue;
-         }
-         String key = JSONUtils.convertToJavaIdentifier( name, jsonConfig );
-         try{
-            PropertyDescriptor pd = PropertyUtils.getPropertyDescriptor( root, key );
-            if( pd != null && pd.getWriteMethod() == null ){
-               log.info( "Property '" + key + "' of "+ root.getClass()+" has no write method. SKIPPED." );
-               continue;
-            }
-
-            if( !JSONUtils.isNull( value ) ){
-               if( value instanceof JSONArray ){
-                  if( pd == null || List.class.isAssignableFrom( pd.getPropertyType() ) ){
-                     Class targetClass = resolveClass(classMap, key, name, type);
-                     Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
-                           .newInstance( targetClass, null );
-                     List list = JSONArray.toList( (JSONArray) value, newRoot, jsonConfig );
-                     setProperty( root, key, list, jsonConfig );
-                  }else{
-                     Class innerType = JSONUtils.getInnerComponentType( pd.getPropertyType() );
-                     Class targetInnerType = findTargetClass( key, classMap );
-                     if( innerType.equals( Object.class ) && targetInnerType != null
-                           && !targetInnerType.equals( Object.class ) ){
-                        innerType = targetInnerType;
-                     }
-                     Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
-                           .newInstance( innerType, null );
-                     Object array = JSONArray.toArray( (JSONArray) value, newRoot, jsonConfig );
-                     if( innerType.isPrimitive() || JSONUtils.isNumber( innerType )
-                           || Boolean.class.isAssignableFrom( innerType )
-                           || JSONUtils.isString( innerType ) ){
-                        array = JSONUtils.getMorpherRegistry()
-                              .morph( Array.newInstance( innerType, 0 )
-                                    .getClass(), array );
-                     }else if( !array.getClass()
-                           .equals(pd.getPropertyType()) ){
-                        if( !pd.getPropertyType()
-                              .equals(Object.class) ){
-                           Morpher morpher = JSONUtils.getMorpherRegistry()
-                                 .getMorpherFor( Array.newInstance( innerType, 0 )
-                                       .getClass() );
-                           if( IdentityObjectMorpher.getInstance()
-                                 .equals( morpher ) ){
-                              ObjectArrayMorpher beanMorpher = new ObjectArrayMorpher(
-                                    new BeanMorpher( innerType, JSONUtils.getMorpherRegistry() ) );
-                              JSONUtils.getMorpherRegistry()
-                                    .registerMorpher( beanMorpher );
-                           }
-                           array = JSONUtils.getMorpherRegistry()
-                                 .morph( Array.newInstance( innerType, 0 )
-                                       .getClass(), array );
-                        }
-                     }
-                     setProperty( root, key, array, jsonConfig );
-                  }
-               }else if( String.class.isAssignableFrom( type ) || JSONUtils.isBoolean( type )
-                     || JSONUtils.isNumber( type ) || JSONUtils.isString( type )
-                     || JSONFunction.class.isAssignableFrom( type ) ){
-                  if( pd != null ){
-                     if( jsonConfig.isHandleJettisonEmptyElement() && "".equals( value ) ){
-                        setProperty( root, key, null, jsonConfig );
-                     }else if( !pd.getPropertyType()
-                           .isInstance( value ) ){
-                        Morpher morpher = JSONUtils.getMorpherRegistry()
-                              .getMorpherFor( pd.getPropertyType() );
-                        if( IdentityObjectMorpher.getInstance()
-                              .equals( morpher ) ){
-                           log.warn( "Can't transform property '" + key + "' from "
-                                 + type.getName() + " into " + pd.getPropertyType()
-                                       .getName() + ". Will register a default BeanMorpher" );
-                           JSONUtils.getMorpherRegistry()
-                                 .registerMorpher(
-                                       new BeanMorpher( pd.getPropertyType(),
-                                             JSONUtils.getMorpherRegistry() ) );
-                        }
-                        setProperty( root, key, JSONUtils.getMorpherRegistry()
-                              .morph( pd.getPropertyType(), value ), jsonConfig );
-                     }else{
-                        setProperty( root, key, value, jsonConfig );
-                     }
-                  }else if( root instanceof Map ){
-                     setProperty( root, key, value, jsonConfig );
-                  }else{
-                     log.warn( "Tried to assign property " + key + ":" + type.getName()
-                           + " to bean of class " + root.getClass()
-                                 .getName() );
-                  }
-               }else{
-                  if( pd != null ){
-                     Class targetClass = pd.getPropertyType();
-                     if( jsonConfig.isHandleJettisonSingleElementArray() ){
-                        JSONArray array = new JSONArray().element( value, jsonConfig );
-                        Class newTargetClass = resolveClass(classMap, key, name, type);
-                        Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
-                              .newInstance( newTargetClass, (JSONObject) value );
-                        if( targetClass.isArray() ){
-                           setProperty( root, key, JSONArray.toArray( array, newRoot, jsonConfig ),
-                                 jsonConfig );
-                        }else if( Collection.class.isAssignableFrom( targetClass ) ){
-                           setProperty( root, key, JSONArray.toList( array, newRoot, jsonConfig ),
-                                 jsonConfig );
-                        }else if( JSONArray.class.isAssignableFrom( targetClass ) ){
-                           setProperty( root, key, array, jsonConfig );
-                        }else{
-                           setProperty( root, key,
-                                 toBean( (JSONObject) value, newRoot, jsonConfig ), jsonConfig );
-                        }
-                     }else{
-                        if( targetClass == Object.class ){
-                            targetClass = resolveClass(classMap, key, name, type);
-                            if(targetClass == null) {
-                                targetClass = Object.class;
-                            }
-                        }
-                        Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
-                              .newInstance( targetClass, (JSONObject) value );
-                        setProperty( root, key, toBean( (JSONObject) value, newRoot, jsonConfig ),
-                              jsonConfig );
-                     }
-                  }else if( root instanceof Map ){
-                     Class targetClass = findTargetClass( key, classMap );
-                     targetClass = targetClass == null ? findTargetClass( name, classMap )
-                           : targetClass;
-                     Object newRoot = jsonConfig.getNewBeanInstanceStrategy()
-                           .newInstance( targetClass, null );
-                     setProperty( root, key, toBean( (JSONObject) value, newRoot, jsonConfig ),
-                           jsonConfig );
-                  }else{
-                     log.warn( "Tried to assign property " + key + ":" + type.getName()
-                           + " to bean of class " + rootClass.getName() );
-                  }
-               }
-            }else{
-               if( type.isPrimitive() ){
-                  // assume assigned default value
-                  log.warn( "Tried to assign null value to " + key + ":" + type.getName() );
-                  setProperty( root, key, JSONUtils.getMorpherRegistry()
-                        .morph( type, null ), jsonConfig );
-               }else{
-                  setProperty( root, key, null, jsonConfig );
-               }
-            }
-         }catch( JSONException jsone ){
-            throw jsone;
-         }catch( Exception e ){
-            throw new JSONException( "Error while setting property=" + name + " type " + type, e );
-         }
-      }
-
-      return root;
-   }
-
-   /**
     * Creates a JSONObject from a POJO.<br>
     * Supports nested maps, POJOs, and arrays/collections.
     *
@@ -672,9 +613,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
 
       JsonBeanProcessor processor = jsonConfig.findJsonBeanProcessor( bean.getClass() );
       if( processor != null ){
-         JSONObject json = null;
          try{
-            json = processor.processBean( bean, jsonConfig );
+            JSONObject json = processor.processBean( bean, jsonConfig );
             if( json == null ){
                json = (JSONObject) jsonConfig.findDefaultValueProcessor( bean.getClass() )
                      .getDefaultValue( bean.getClass() );
@@ -684,6 +624,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
             }
             removeInstance( bean );
             fireObjectEndEvent( jsonConfig );
+            return json;
          }catch( JSONException jsone ){
             removeInstance( bean );
             fireErrorEvent( jsone, jsonConfig );
@@ -694,7 +635,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
             fireErrorEvent( jsone, jsonConfig );
             throw jsone;
          }
-         return json;
       }
 
       JSONObject jsonObject = defaultBeanProcessing(bean, jsonConfig);
@@ -709,7 +649,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
       Collection exclusions = jsonConfig.getMergedExcludes( beanClass );
       JSONObject jsonObject = new JSONObject();
       try{
-         PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors( bean );
+         PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(bean);
          PropertyFilter jsonPropertyFilter = jsonConfig.getJsonPropertyFilter();
          for( int i = 0; i < pds.length; i++ ){
             boolean bypass = false;
@@ -1027,9 +967,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
                   continue;
                }
                if( jsonPropertyFilter == null || !jsonPropertyFilter.apply( tokener, key, v ) ){
-                  if( quoted && v instanceof String && (JSONUtils.mayBeJSON( (String) v ) || JSONUtils.isFunction( v ))){
-                     v = JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE;
-                  }
                   if( jsonObject.properties.containsKey( key ) ){
                      jsonObject.accumulate( key, v, jsonConfig );
                      firePropertySetEvent( key, v, true, jsonConfig );
@@ -1845,11 +1782,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
       JSONObject other = (JSONObject) obj;
 
       if( isNullObject() ){
-         if( other.isNullObject() ){
-            return true;
-         }else{
-            return false;
-         }
+         return other.isNullObject();
       }else{
          if( other.isNullObject() ){
             return false;
@@ -2252,7 +2185,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
       try{
          Object o = opt( key );
          return o instanceof Number ? ((Number) o).doubleValue()
-               : new Double( (String) o ).doubleValue();
+               : Double.parseDouble((String) o);
       }catch( Exception e ){
          return defaultValue;
       }

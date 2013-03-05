@@ -1,13 +1,10 @@
-<project
-   xmlns="http://maven.apache.org/POM/4.0.0"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
    <modelVersion>4.0.0</modelVersion>
-   <groupId>net.sf.json-lib</groupId>
+   <groupId>org.kohsuke.stapler</groupId>
    <artifactId>json-lib</artifactId>
    <packaging>jar</packaging>
-   <version>2.4.1</version>
+   <version>2.4-jenkins-1-SNAPSHOT</version>
    <name>json-lib</name>
 
    <url>http://json-lib.sourceforge.net</url>
@@ -34,15 +31,12 @@
       <url>http://json-lib.sourceforge.net</url>
    </organization>
 
-   <scm>
-      <connection>
-         git://github.com/aalmiray/Json-lib.git
-      </connection>
-      <url>git://github.com/aalmiray/Json-lib.git</url>
-      <developerConnection>
-         git@github.com:aalmiray/Json-lib.git
-      </developerConnection>
-   </scm>
+  <scm>
+    <connection>scm:git:git://github.com/jenkinsci/json-lib.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/json-lib.git</developerConnection>
+    <url>https://github.com/jenkinsci/json-lib</url>
+  </scm>
+
    <issueManagement>
       <system>SourceForge</system>
       <url>https://sourceforge.net/tracker/?group_id=171425</url>
@@ -256,11 +250,41 @@
          <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
-               <source>1.3</source>
-               <target>1.1</target>
+               <source>1.5</source>
+               <target>1.5</target>
             </configuration>
          </plugin>
-         <plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>add-source</id>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>add-source</goal>
+              </goals>
+              <configuration>
+                <sources>
+                  <source>src/main/jdk15</source>
+                </sources>
+              </configuration>
+            </execution>
+            <execution>
+              <id>add-test-source</id>
+              <phase>generate-test-sources</phase>
+              <goals>
+                <goal>add-test-source</goal>
+              </goals>
+              <configuration>
+                <sources>
+                  <source>src/test/jdk15</source>
+                </sources>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-site-plugin</artifactId>
             <configuration>
@@ -273,7 +297,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.3</version>
+	          <version>2.8</version>
             <configuration>
                <excludes>
                   <exclude>**/Abstract*.java</exclude>
@@ -284,19 +308,6 @@
                   <include>**/Test*.java</include>
                </includes>
             </configuration>
-         </plugin>
-         <plugin>
-            <groupId>org.codehaus.groovy.maven</groupId>
-            <artifactId>gmaven-plugin</artifactId>
-            <version>1.0-rc-5</version>
-            <executions>
-               <execution>
-                  <goals>
-                     <goal>compile</goal>
-                     <goal>testCompile</goal>
-                  </goals>
-               </execution>
-            </executions>
          </plugin>
       </plugins>
    </build>
@@ -377,26 +388,16 @@
       </plugins>
    </reporting>
 
-   <distributionManagement>
-      <repository>
-         <id>sf_release</id>
-         <name>Json-lib repo @ sourceforge.net</name>
-         <url>
-            scp://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo/release
-         </url>
-      </repository>
-      <snapshotRepository>
-         <id>sf_snapshot</id>
-         <name>SourceForge Snapshot</name>
-         <url>
-            scp://ssh.sf.net/home/groups/j/js/json-lib/htdocs/m2/repo/snapshot
-         </url>
-      </snapshotRepository>
-      <site>
-         <id>sf_website</id>
-         <url>scp://ssh.sf.net/home/groups/j/js/json-lib/htdocs</url>
-      </site>
-   </distributionManagement>
+  <distributionManagement>
+    <repository>
+      <id>maven.jenkins-ci.org</id>
+      <url>http://maven.jenkins-ci.org:8081/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>maven.jenkins-ci.org</id>
+      <url>http://maven.jenkins-ci.org:8081/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 
    <!--
    <pluginRepositories>

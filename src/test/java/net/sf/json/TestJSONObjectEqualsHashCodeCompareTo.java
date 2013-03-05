@@ -48,7 +48,7 @@ public class TestJSONObjectEqualsHashCodeCompareTo extends TestCase {
             .element( "boolean", "true" )
             .element( "string", "string" )
             .element( "func", "function(){ return this; }" )
-            .element( "array", "[1,2,3]" );
+            .element( "array", JSONArray.fromObject("[1,2,3]") );
       values.put( "JSONObject.strings", strings );
       values1 = new JSONObject().element( "int", Integer.valueOf( "1" ) )
             .element( "long", Long.valueOf( "1" ) )

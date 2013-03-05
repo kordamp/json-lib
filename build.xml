@@ -40,36 +40,28 @@
 
    <target name="compile" description="Compile the code (jdk1.3)">
       <mkdir dir="${maven.build.output}" />
-      <javac destdir="${maven.build.output}" excludes="**/package.html" debug="true" deprecation="true" source="1.3" target="1.1">
+      <javac destdir="${maven.build.output}" excludes="**/package.html" debug="true" deprecation="true" source="1.5" target="1.5">
          <src path="${project.src.jdk3.dir}" />
+         <src path="${project.src.jdk5.dir}" />
          <classpath refid="build.classpath" />
       </javac>
    </target>
 
-   <target name="compile.jdk5" depends="compile" description="Compile the code (jdk5)">
-      <delete file="${maven.build.output}/net/sf/json/JSONObject.class" />
-      <delete file="${maven.build.output}/net/sf/json/JSONArray.class" />
-      <javac destdir="${maven.build.output}" debug="true" deprecation="true" source="1.5" target="1.5">
-         <src path="${project.src.jdk5.dir}" />
-         <classpath>
-            <path refid="build.classpath" />
-            <pathelement location="${maven.build.output}" />
-         </classpath>
-      </javac>
-   </target>
+   <target name="compile.jdk5" depends="compile" description="Compile the code (jdk5)" />
 
    <target name="compile.groovy" depends="compile" description="Compile the code (Groovy)">
-      <groovyc srcdir="${project.src.groovy.dir}" destdir="${maven.build.output}">
+      <!-- the meta class file put in json-lib.jar interferes with other version of Groovy, so don't do it -->
+      <!--groovyc srcdir="${project.src.groovy.dir}" destdir="${maven.build.output}">
          <classpath>
             <path refid="build.classpath" />
             <pathelement location="${maven.build.output}" />
          </classpath>
-      </groovyc>
+      </groovyc-->
    </target>
 
    <target name="compile-tests" depends="junit-present, compile" description="Compile the test code (jdk1.3)" if="junit.present">
       <mkdir dir="${maven.test.output}" />
-      <javac destdir="${maven.test.output}" debug="true" deprecation="true" optimize="false" source="1.3" target="1.1">
+      <javac destdir="${maven.test.output}" debug="true" deprecation="true" optimize="false" source="1.5" target="1.5">
          <src path="${project.test.jdk3.dir}" />
          <classpath>
             <path refid="build.classpath" />
@@ -160,7 +152,7 @@
 
    <target name="test.groovy" depends="junit-present, compile-tests.groovy" if="junit.present" description="Run the test cases (Groovy)">
       <mkdir dir="${maven.test.reports}" />
-      <junit printSummary="yes" haltonerror="true" haltonfailure="true" fork="true" dir=".">
+      <!--junit printSummary="yes" haltonerror="true" haltonfailure="true" fork="true" dir=".">
          <sysproperty key="basedir" value="." />
          <formatter type="xml" />
          <formatter type="plain" usefile="true" />
@@ -176,7 +168,7 @@
                <include name="net/sf/json/groovy/AllTests.class" />
             </fileset>
          </batchtest>
-      </junit>
+      </junit-->
    </target>
 
    <target name="test-junit-present">
