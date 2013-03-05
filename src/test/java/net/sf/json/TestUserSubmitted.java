@@ -698,7 +698,7 @@ public class TestUserSubmitted extends TestCase {
       object.element( "key1", "null", jsonConfig );
       object.element( "key2", "undefined", jsonConfig );
       assertNotNull(object);
-      Assertions.assertEquals( JSONNull.getInstance(), object.get("key2") );
+      Assertions.assertEquals( "undefined", object.get("key2") );
    }
    
    public void testJSONObject_fromObject_FieldBean() {
@@ -718,17 +718,19 @@ public class TestUserSubmitted extends TestCase {
    }
    
    public void testJSONObject_toBean_FieldBean() {
+      JsonConfig jsonConfig = new JsonConfig();
+      jsonConfig.setRootClass( FieldBean.class );
+
       JSONObject jsonObject = new JSONObject();
+      jsonConfig.setIgnorePublicFields( true );
       jsonObject.element( "value", 42 );
       jsonObject.element( "string", "stringy" );
-      FieldBean bean1 = (FieldBean) JSONObject.toBean( jsonObject, FieldBean.class );
+      FieldBean bean1 = (FieldBean) JSONObject.toBean( jsonObject, jsonConfig );
       assertNotNull( bean1 );
       assertEquals( 42, bean1.getValue());
       assertNull( bean1.string );
 
-      JsonConfig jsonConfig = new JsonConfig();
       jsonConfig.setIgnorePublicFields( false );
-      jsonConfig.setRootClass( FieldBean.class );
       FieldBean bean2 = (FieldBean) JSONObject.toBean( jsonObject, jsonConfig );
       assertNotNull( bean2 );
       assertEquals( 42, bean1.getValue());
