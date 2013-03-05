@@ -402,5 +402,6 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
 
 	protected void setUp(){
 	   builder = new JsonGroovyBuilder()
+       builder.jsonConfig.setIgnorePublicFields(true)
 	}
 }

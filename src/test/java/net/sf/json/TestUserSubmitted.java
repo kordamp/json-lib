@@ -703,14 +703,17 @@ public class TestUserSubmitted extends TestCase {
    
    public void testJSONObject_fromObject_FieldBean() {
       JsonConfig jsonConfig = new JsonConfig();
-      jsonConfig.setIgnorePublicFields( false );
       FieldBean bean = new FieldBean();
       bean.setValue( 42 );
       bean.string = "stringy";
-      JSONObject jsonObject = JSONObject.fromObject( bean );
+
+      jsonConfig.setIgnorePublicFields( true );
+      JSONObject jsonObject = JSONObject.fromObject( bean, jsonConfig );
       assertNotNull( jsonObject );
       assertEquals( 42, jsonObject.getInt( "value" ));
       assertFalse( jsonObject.has( "string" ));
+
+      jsonConfig.setIgnorePublicFields( false );
       jsonObject = JSONObject.fromObject( bean, jsonConfig );
       assertNotNull( jsonObject );
       assertEquals( 42, jsonObject.getInt( "value" ));
