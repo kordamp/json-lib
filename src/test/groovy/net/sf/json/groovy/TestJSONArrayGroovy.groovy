@@ -16,37 +16,36 @@
 
 package net.sf.json.groovy
 
-import net.sf.json.*
-import net.sf.json.test.JSONAssert
+import net.sf.json.JSONArray
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 class TestJSONArrayGroovy extends GroovyTestCase {
     protected void setUp() throws Exception {
-       GJson.enhanceClasses()
+        GJson.enhanceClasses()
     }
 
-    public void testEqualsOperator(){
-       def json = new JSONArray().element(1)
-       assertTrue json == json
+    public void testEqualsOperator() {
+        def json = new JSONArray().element(1)
+        assertTrue json == json
     }
 
-    public void testLessThanOperator(){
-       def json1 = new JSONArray().element(1)
-       def json2 = new JSONArray().element(1).element(2)
-       assertTrue json1 < json2
+    public void testLessThanOperator() {
+        def json1 = new JSONArray().element(1)
+        def json2 = new JSONArray().element(1).element(2)
+        assertTrue json1 < json2
     }
 
-    public void testGreaterThanOperator(){
-       def json1 = new JSONArray().element(1)
-       def json2 = new JSONArray().element(1).element(2)
-       assertTrue json2 > json1
+    public void testGreaterThanOperator() {
+        def json1 = new JSONArray().element(1)
+        def json2 = new JSONArray().element(1).element(2)
+        assertTrue json2 > json1
     }
 
-    public void testSpaceshipOperator(){
-       def json1 = new JSONArray().element(1)
-       def json2 = new JSONArray().element(1).element(2)
-       assertTrue 0 != (json1 <=> json2)
+    public void testSpaceshipOperator() {
+        def json1 = new JSONArray().element(1)
+        def json2 = new JSONArray().element(1).element(2)
+        assertTrue 0 != (json1 <=> json2)
     }
 }

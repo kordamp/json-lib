@@ -26,79 +26,81 @@ import java.io.Writer;
  * @author JSON.org
  */
 public final class JSONNull implements JSON {
-   /** singleton instance */
-   private static JSONNull instance;
+    /**
+     * singleton instance
+     */
+    private static JSONNull instance;
 
-   static{
-      instance = new JSONNull();
-   }
+    static {
+        instance = new JSONNull();
+    }
 
-   /**
-    * Returns the singleton instance of JSONNull
-    */
-   public static JSONNull getInstance() {
-      return instance;
-   }
+    /**
+     * Returns the singleton instance of JSONNull
+     */
+    public static JSONNull getInstance() {
+        return instance;
+    }
 
-   private JSONNull() {
+    private JSONNull() {
 
-   }
+    }
 
-   /**
-    * A Null object is equal to the null value and to itself.
-    *
-    * @param object An object to test for nullness.
-    * @return true if the object parameter is the JSONObject.NULL object or
-    *         null.
-    */
-   public boolean equals( Object object ) {
-      return object == null || object == this || object == instance
+    /**
+     * A Null object is equal to the null value and to itself.
+     *
+     * @param object An object to test for nullness.
+     * @return true if the object parameter is the JSONObject.NULL object or
+     *         null.
+     */
+    public boolean equals(Object object) {
+        return object == null || object == this || object == instance
             || (object instanceof JSONObject && ((JSONObject) object).isNullObject())
-            || "null".equals( object );
-   }
+            || "null".equals(object);
+    }
 
-   public int hashCode() {
-      return 37 + "null".hashCode();
-   }
+    public int hashCode() {
+        return 37 + "null".hashCode();
+    }
 
-   public boolean isArray() {
-      return false;
-   }
+    public boolean isArray() {
+        return false;
+    }
 
-   public boolean isEmpty() {
-      throw new JSONException( "Object is null" );
-   }
+    public boolean isEmpty() {
+        throw new JSONException("Object is null");
+    }
 
-   public int size() {
-      throw new JSONException( "Object is null" );
-   }
+    public int size() {
+        throw new JSONException("Object is null");
+    }
 
-   /**
-    * Get the "null" string value.
-    *
-    * @return The string "null".
-    */
-   public String toString() {
-      return "null";
-   }
+    /**
+     * Get the "null" string value.
+     *
+     * @return The string "null".
+     */
+    public String toString() {
+        return "null";
+    }
 
-   public String toString( int indentFactor ) {
-      return toString();
-   }
+    public String toString(int indentFactor) {
+        return toString();
+    }
 
-   public String toString( int indentFactor, int indent ) {
-      StringBuffer sb = new StringBuffer();
-      for( int i = 0; i < indent; i += 1 ){
-         sb.append( ' ' );
-      }
-      sb.append( toString() );
-      return sb.toString();
-   }
+    public String toString(int indentFactor, int indent) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < indent; i += 1) {
+            sb.append(' ');
+        }
+        sb.append(toString());
+        return sb.toString();
+    }
 
-   public Writer write( Writer writer ) throws IOException {
-       writer.write( toString() );
-       return writer;
-   }
+    public Writer write(Writer writer) throws IOException {
+        writer.write(toString());
+        return writer;
+    }
 
     public Writer writeCanonical(Writer w) throws IOException {
         return write(w);

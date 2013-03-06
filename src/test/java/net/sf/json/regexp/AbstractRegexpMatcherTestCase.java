@@ -22,21 +22,21 @@ import junit.framework.TestCase;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class AbstractRegexpMatcherTestCase extends TestCase {
-   public AbstractRegexpMatcherTestCase( String name ) {
-      super( name );
-   }
+    public AbstractRegexpMatcherTestCase(String name) {
+        super(name);
+    }
 
-   public void testGetGroupIfMatches() {
-      RegexpMatcher regexpMatcher = getRegexpMatcher( "[a-z]*([0-9]+)[a-z]*" );
-      assertEquals( "123", regexpMatcher.getGroupIfMatches( "abc123edf", 1 ) );
-      assertEquals( "", regexpMatcher.getGroupIfMatches( "abcedf", 1 ) );
-   }
+    public void testGetGroupIfMatches() {
+        RegexpMatcher regexpMatcher = getRegexpMatcher("[a-z]*([0-9]+)[a-z]*");
+        assertEquals("123", regexpMatcher.getGroupIfMatches("abc123edf", 1));
+        assertEquals("", regexpMatcher.getGroupIfMatches("abcedf", 1));
+    }
 
-   public void testMatches() {
-      assertTrue( getRegexpMatcher( ".*" ).matches( "everything" ) );
-      assertTrue( getRegexpMatcher( "^json$" ).matches( "json" ) );
-      assertFalse( getRegexpMatcher( "^json$" ).matches( "json " ) );
-   }
+    public void testMatches() {
+        assertTrue(getRegexpMatcher(".*").matches("everything"));
+        assertTrue(getRegexpMatcher("^json$").matches("json"));
+        assertFalse(getRegexpMatcher("^json$").matches("json "));
+    }
 
-   protected abstract RegexpMatcher getRegexpMatcher( String pattern );
+    protected abstract RegexpMatcher getRegexpMatcher(String pattern);
 }

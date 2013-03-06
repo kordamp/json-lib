@@ -17,33 +17,32 @@
 package net.sf.json;
 
 import net.sf.json.sample.PrimitiveBean;
-
 import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONObjectStaticBuilders_PrimitiveBean extends
-      AbstractJSONObjectStaticBuildersTestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestJSONObjectStaticBuilders_PrimitiveBean.class );
-   }
+    AbstractJSONObjectStaticBuildersTestCase {
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_PrimitiveBean.class);
+    }
 
-   public TestJSONObjectStaticBuilders_PrimitiveBean( String name ) {
-      super( name );
-   }
+    public TestJSONObjectStaticBuilders_PrimitiveBean(String name) {
+        super(name);
+    }
 
-   protected Object getSource() {
-      PrimitiveBean bean = new PrimitiveBean();
-      String[] props = getProperties();
-      try{
-         for( int i = 0; i < props.length; i++ ){
-            PropertyUtils.setProperty( bean, props[i],
-                  PropertyConstants.getPropertyValue( props[i] ) );
-         }
-      }catch( Exception e ){
-         throw new RuntimeException( e );
-      }
-      return bean;
-   }
+    protected Object getSource() {
+        PrimitiveBean bean = new PrimitiveBean();
+        String[] props = getProperties();
+        try {
+            for (int i = 0; i < props.length; i++) {
+                PropertyUtils.setProperty(bean, props[i],
+                    PropertyConstants.getPropertyValue(props[i]));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return bean;
+    }
 }

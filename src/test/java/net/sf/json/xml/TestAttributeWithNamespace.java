@@ -26,32 +26,32 @@ import net.sf.json.test.JSONAssert;
  */
 public class TestAttributeWithNamespace extends TestCase {
 
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestAttributeWithNamespace.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestAttributeWithNamespace.class);
+    }
 
-   public TestAttributeWithNamespace( String name ) {
-      super( name );
-   }
+    public TestAttributeWithNamespace(String name) {
+        super(name);
+    }
 
-   public void testShouldCreateCorrectJson() throws Exception {
+    public void testShouldCreateCorrectJson() throws Exception {
 
-      XMLSerializer reader = new XMLSerializer();
+        XMLSerializer reader = new XMLSerializer();
 
-      JSONObject actual = (JSONObject) reader.read( "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+        JSONObject actual = (JSONObject) reader.read("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
             "<Document DOMVersion=\"8.0\" Self=\"d\">" +
             "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 5.3-c011 66.145661, 2012/02/06-14:56:27\">" +
             "</x:xmpmeta>" +
-            "</Document>" );
+            "</Document>");
 
-      JSONObject expected = new JSONObject()
-            .element( "@DOMVersion", "8.0" )
-            .element( "@Self", "d" )
-            .element( "x:xmpmeta",
-                  new JSONObject()
-                        .element( "@xmlns:x", "adobe:ns:meta/" )
-                        .element( "@x:xmptk", "Adobe XMP Core 5.3-c011 66.145661, 2012/02/06-14:56:27" ) );
+        JSONObject expected = new JSONObject()
+            .element("@DOMVersion", "8.0")
+            .element("@Self", "d")
+            .element("x:xmpmeta",
+                new JSONObject()
+                    .element("@xmlns:x", "adobe:ns:meta/")
+                    .element("@x:xmptk", "Adobe XMP Core 5.3-c011 66.145661, 2012/02/06-14:56:27"));
 
-      JSONAssert.assertEquals( expected, actual );
-   }
+        JSONAssert.assertEquals(expected, actual);
+    }
 }

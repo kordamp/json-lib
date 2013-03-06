@@ -16,13 +16,13 @@
 
 package net.sf.json.processors;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import net.sf.json.JSON;
 import net.sf.json.JSONFunction;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONString;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * Verifies if a value is a valid JSON value.
@@ -31,21 +31,21 @@ import net.sf.json.JSONString;
  */
 public final class JsonVerifier {
 
-   /**
-    * Verifies if value is a valid JSON value.
-    *
-    * @param value the value to verify
-    */
-   public static boolean isValidJsonValue( Object value ) {
-      if( JSONNull.getInstance()
-            .equals( value ) || value instanceof JSON || value instanceof Boolean
+    /**
+     * Verifies if value is a valid JSON value.
+     *
+     * @param value the value to verify
+     */
+    public static boolean isValidJsonValue(Object value) {
+        if (JSONNull.getInstance()
+            .equals(value) || value instanceof JSON || value instanceof Boolean
             || value instanceof Byte || value instanceof Short
             || value instanceof Integer || value instanceof Long || value instanceof Double
             || value instanceof BigInteger || value instanceof BigDecimal
             || value instanceof JSONFunction || value instanceof JSONString
-            || value instanceof String ){
-         return true;
-      }
-      return false;
-   }
+            || value instanceof String) {
+            return true;
+        }
+        return false;
+    }
 }

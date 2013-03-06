@@ -16,50 +16,50 @@
 
 package net.sf.json.sample;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class SetBean {
-   private Set attributes = new HashSet();
+    private Set attributes = new HashSet();
 
-   public void addAttribute( Object value ) {
-      this.attributes.add( value );
-   }
+    public void addAttribute(Object value) {
+        this.attributes.add(value);
+    }
 
-   public boolean equals( Object obj ) {
-      if( obj == this ){
-         return true;
-      }
-      if( obj == null ){
-         return false;
-      }
-      if( !SetBean.class.isAssignableFrom( obj.getClass() ) ){
-         return false;
-      }
-      return EqualsBuilder.reflectionEquals( this, obj );
-   }
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!SetBean.class.isAssignableFrom(obj.getClass())) {
+            return false;
+        }
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
 
-   public Set getAttributes() {
-      return attributes;
-   }
+    public Set getAttributes() {
+        return attributes;
+    }
 
-   public int hashCode() {
-      return HashCodeBuilder.reflectionHashCode( this );
-   }
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
 
-   public void setAttributes( Set attributes ) {
-      this.attributes = attributes;
-   }
+    public void setAttributes(Set attributes) {
+        this.attributes = attributes;
+    }
 
-   public String toString() {
-      return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
-   }
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

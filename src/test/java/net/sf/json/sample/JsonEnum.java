@@ -16,13 +16,9 @@
 
 package net.sf.json.sample;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface JsonAnnotation {
-   String value() default "";
+public enum JsonEnum {
+    ARRAY, OBJECT
 }

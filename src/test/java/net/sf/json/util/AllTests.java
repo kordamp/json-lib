@@ -22,17 +22,17 @@ import junit.framework.TestSuite;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class AllTests extends TestSuite {
-   public static TestSuite suite() throws Exception {
-      TestSuite suite = new TestSuite();
-      suite.setName( "util" );
+    public static TestSuite suite() throws Exception {
+        TestSuite suite = new TestSuite();
+        suite.setName("util");
 
-      suite.addTest( new TestSuite( TestJavaIdentifierTransformer.class ) );
-      suite.addTest( new TestSuite( TestJSONUtils.class ) );
-      suite.addTest( new TestSuite( TestJSONTokener.class ) );
-      suite.addTest( new TestSuite( TestJSONBuilder.class ) );
-      suite.addTest( new TestSuite( TestJSONStringer.class ) );
-      suite.addTest( new TestSuite( TestWebUtils.class ) );
+        suite.addTest(new TestSuite(TestJavaIdentifierTransformer.class));
+        suite.addTest(new TestSuite(TestJSONUtils.class));
+        suite.addTest(new TestSuite(TestJSONTokener.class));
+        suite.addTest(new TestSuite(TestJSONBuilder.class));
+        suite.addTest(new TestSuite(TestJSONStringer.class));
+        suite.addTest(new TestSuite(TestWebUtils.class));
 
-      return suite;
-   }
+        return suite;
+    }
 }

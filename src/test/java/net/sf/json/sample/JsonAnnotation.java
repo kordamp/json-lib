@@ -16,44 +16,13 @@
 
 package net.sf.json.sample;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class AnnotatedBean
-{
-   private String string1;
-   @JsonAnnotation
-   private String string2;
-   private String string3;
-
-   public String getString1()
-   {
-      return string1;
-   }
-
-   public void setString1( String string )
-   {
-      this.string1 = string;
-   }
-   
-   public String getString2()
-   {
-      return string2;
-   }
-
-   public void setString2( String string )
-   {
-      this.string2 = string;
-   }
-   
-   @JsonAnnotation
-   public String getString3()
-   {
-      return string3;
-   }
-
-   public void setString3( String string )
-   {
-      this.string3 = string;
-   }
+@Retention(RetentionPolicy.RUNTIME)
+public @interface JsonAnnotation {
+    String value() default "";
 }

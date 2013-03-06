@@ -9,19 +9,19 @@ import java.io.IOException;
 
 public class TestXmlContainingTypeAttribute extends XMLTestCase {
 
-   public void testXmlWithTypeAttribute() throws IOException, SAXException, ParserConfigurationException {
-      final String xml = "<data type=\"someType\"><nested type=\"some_other_type\">value</nested></data>";
+    public void testXmlWithTypeAttribute() throws IOException, SAXException, ParserConfigurationException {
+        final String xml = "<data type=\"someType\"><nested type=\"some_other_type\">value</nested></data>";
 
-      final XMLSerializer tested = new XMLSerializer();
-      tested.setTypeHintsEnabled( false );
-      tested.setTypeHintsCompatibility( false );
-      tested.setRootName("data");
+        final XMLSerializer tested = new XMLSerializer();
+        tested.setTypeHintsEnabled(false);
+        tested.setTypeHintsCompatibility(false);
+        tested.setRootName("data");
 
-      final JSON jsonRepresentation = tested.read( xml );
+        final JSON jsonRepresentation = tested.read(xml);
 
-      final String result = tested.write( jsonRepresentation );
+        final String result = tested.write(jsonRepresentation);
 
-      assertXMLEqual( xml, result );
+        assertXMLEqual(xml, result);
 
-   }
+    }
 }

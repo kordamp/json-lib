@@ -27,30 +27,34 @@ package net.sf.json.util;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class WebHijackPreventionStrategy {
-   /** Wraps the string with /* *\/ */
-   public static final WebHijackPreventionStrategy COMMENTS = new CommentWebHijackPreventionStrategy();
-   /** Prepends "while(1);" */
-   public static final WebHijackPreventionStrategy INFINITE_LOOP = new InfiniteLoopWebHijackPreventionStrategy();
+    /**
+     * Wraps the string with /* *\/
+     */
+    public static final WebHijackPreventionStrategy COMMENTS = new CommentWebHijackPreventionStrategy();
+    /**
+     * Prepends "while(1);"
+     */
+    public static final WebHijackPreventionStrategy INFINITE_LOOP = new InfiniteLoopWebHijackPreventionStrategy();
 
-   /**
-    * Transforms the input with the desired strategy.<br>
-    *
-    * @param str a json string
-    * @return String - the transformed json string
-    */
-   public abstract String protect( String str );
+    /**
+     * Transforms the input with the desired strategy.<br>
+     *
+     * @param str a json string
+     * @return String - the transformed json string
+     */
+    public abstract String protect(String str);
 
-   private static final class CommentWebHijackPreventionStrategy extends
-         WebHijackPreventionStrategy {
-      public String protect( String str ) {
-         return "/*" + str + "*/";
-      }
-   }
+    private static final class CommentWebHijackPreventionStrategy extends
+        WebHijackPreventionStrategy {
+        public String protect(String str) {
+            return "/*" + str + "*/";
+        }
+    }
 
-   private static final class InfiniteLoopWebHijackPreventionStrategy extends
-         WebHijackPreventionStrategy {
-      public String protect( String str ) {
-         return "while(1);" + str;
-      }
-   }
+    private static final class InfiniteLoopWebHijackPreventionStrategy extends
+        WebHijackPreventionStrategy {
+        public String protect(String str) {
+            return "while(1);" + str;
+        }
+    }
 }

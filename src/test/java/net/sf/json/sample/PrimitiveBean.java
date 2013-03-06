@@ -16,173 +16,172 @@
 
 package net.sf.json.sample;
 
-import java.util.List;
-import java.util.Map;
-
 import net.sf.json.JSONFunction;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class PrimitiveBean {
-   private Object[] oarray;
-   private int[] parray;
-   private ObjectBean pbean;
-   private boolean pboolean;
-   private byte pbyte;
-   private char pchar;
-   private Class pclass;
-   private double pdouble;
-   private String pexcluded;
-   private float pfloat;
-   private JSONFunction pfunction;
-   private int pint;
-   private List plist;
-   private long plong;
-   private Map pmap;
-   private short pshort;
-   private String pstring;
+    private Object[] oarray;
+    private int[] parray;
+    private ObjectBean pbean;
+    private boolean pboolean;
+    private byte pbyte;
+    private char pchar;
+    private Class pclass;
+    private double pdouble;
+    private String pexcluded;
+    private float pfloat;
+    private JSONFunction pfunction;
+    private int pint;
+    private List plist;
+    private long plong;
+    private Map pmap;
+    private short pshort;
+    private String pstring;
 
-   public Object[] getOarray() {
-      return oarray;
-   }
+    public Object[] getOarray() {
+        return oarray;
+    }
 
-   public int[] getParray() {
-      return parray;
-   }
+    public int[] getParray() {
+        return parray;
+    }
 
-   public ObjectBean getPbean() {
-      return pbean;
-   }
+    public ObjectBean getPbean() {
+        return pbean;
+    }
 
-   public byte getPbyte() {
-      return pbyte;
-   }
+    public byte getPbyte() {
+        return pbyte;
+    }
 
-   public char getPchar() {
-      return pchar;
-   }
+    public char getPchar() {
+        return pchar;
+    }
 
-   public Class getPclass() {
-      return pclass;
-   }
+    public Class getPclass() {
+        return pclass;
+    }
 
-   public double getPdouble() {
-      return pdouble;
-   }
+    public double getPdouble() {
+        return pdouble;
+    }
 
-   public String getPexcluded() {
-      return pexcluded;
-   }
+    public String getPexcluded() {
+        return pexcluded;
+    }
 
-   public float getPfloat() {
-      return pfloat;
-   }
+    public float getPfloat() {
+        return pfloat;
+    }
 
-   public JSONFunction getPfunction() {
-      return pfunction;
-   }
+    public JSONFunction getPfunction() {
+        return pfunction;
+    }
 
-   public int getPint() {
-      return pint;
-   }
+    public int getPint() {
+        return pint;
+    }
 
-   public List getPlist() {
-      return plist;
-   }
+    public List getPlist() {
+        return plist;
+    }
 
-   public long getPlong() {
-      return plong;
-   }
+    public long getPlong() {
+        return plong;
+    }
 
-   public Map getPmap() {
-      return pmap;
-   }
+    public Map getPmap() {
+        return pmap;
+    }
 
-   public short getPshort() {
-      return pshort;
-   }
+    public short getPshort() {
+        return pshort;
+    }
 
-   public String getPstring() {
-      return pstring;
-   }
+    public String getPstring() {
+        return pstring;
+    }
 
-   public boolean isPboolean() {
-      return pboolean;
-   }
+    public boolean isPboolean() {
+        return pboolean;
+    }
 
-   public void setOarray( Object[] oarray ) {
-      this.oarray = oarray;
-   }
+    public void setOarray(Object[] oarray) {
+        this.oarray = oarray;
+    }
 
-   public void setParray( int[] parray ) {
-      this.parray = parray;
-   }
+    public void setParray(int[] parray) {
+        this.parray = parray;
+    }
 
-   public void setPbean( ObjectBean pbean ) {
-      this.pbean = pbean;
-   }
+    public void setPbean(ObjectBean pbean) {
+        this.pbean = pbean;
+    }
 
-   public void setPboolean( boolean pboolean ) {
-      this.pboolean = pboolean;
-   }
+    public void setPboolean(boolean pboolean) {
+        this.pboolean = pboolean;
+    }
 
-   public void setPbyte( byte pbyte ) {
-      this.pbyte = pbyte;
-   }
+    public void setPbyte(byte pbyte) {
+        this.pbyte = pbyte;
+    }
 
-   public void setPchar( char pchar ) {
-      this.pchar = pchar;
-   }
+    public void setPchar(char pchar) {
+        this.pchar = pchar;
+    }
 
-   public void setPclass( Class pclass ) {
-      this.pclass = pclass;
-   }
+    public void setPclass(Class pclass) {
+        this.pclass = pclass;
+    }
 
-   public void setPdouble( double pdouble ) {
-      this.pdouble = pdouble;
-   }
+    public void setPdouble(double pdouble) {
+        this.pdouble = pdouble;
+    }
 
-   public void setPexcluded( String pexcluded ) {
-      this.pexcluded = pexcluded;
-   }
+    public void setPexcluded(String pexcluded) {
+        this.pexcluded = pexcluded;
+    }
 
-   public void setPfloat( float pfloat ) {
-      this.pfloat = pfloat;
-   }
+    public void setPfloat(float pfloat) {
+        this.pfloat = pfloat;
+    }
 
-   public void setPfunction( JSONFunction pfunction ) {
-      this.pfunction = pfunction;
-   }
+    public void setPfunction(JSONFunction pfunction) {
+        this.pfunction = pfunction;
+    }
 
-   public void setPint( int pint ) {
-      this.pint = pint;
-   }
+    public void setPint(int pint) {
+        this.pint = pint;
+    }
 
-   public void setPlist( List plist ) {
-      this.plist = plist;
-   }
+    public void setPlist(List plist) {
+        this.plist = plist;
+    }
 
-   public void setPlong( long plong ) {
-      this.plong = plong;
-   }
+    public void setPlong(long plong) {
+        this.plong = plong;
+    }
 
-   public void setPmap( Map pmap ) {
-      this.pmap = pmap;
-   }
+    public void setPmap(Map pmap) {
+        this.pmap = pmap;
+    }
 
-   public void setPshort( short pshort ) {
-      this.pshort = pshort;
-   }
+    public void setPshort(short pshort) {
+        this.pshort = pshort;
+    }
 
-   public void setPstring( String pstring ) {
-      this.pstring = pstring;
-   }
+    public void setPstring(String pstring) {
+        this.pstring = pstring;
+    }
 
-   public String toString() {
-      return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
-   }
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

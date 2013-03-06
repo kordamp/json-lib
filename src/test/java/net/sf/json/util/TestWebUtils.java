@@ -24,88 +24,88 @@ import net.sf.json.JSONObject;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestWebUtils extends TestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestWebUtils.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestWebUtils.class);
+    }
 
-   public TestWebUtils( String name ) {
-      super( name );
-   }
+    public TestWebUtils(String name) {
+        super(name);
+    }
 
-   public void testProtect_comments() {
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "with:quotes", "json" );
-      WebUtils.setWebHijackPreventionStrategy( WebHijackPreventionStrategy.COMMENTS );
-      String str = WebUtils.protect( jsonObject );
-      assertEquals( 0, str.compareTo( "/*{\"with:quotes\":\"json\"}*/" ) );
-   }
+    public void testProtect_comments() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.element("with:quotes", "json");
+        WebUtils.setWebHijackPreventionStrategy(WebHijackPreventionStrategy.COMMENTS);
+        String str = WebUtils.protect(jsonObject);
+        assertEquals(0, str.compareTo("/*{\"with:quotes\":\"json\"}*/"));
+    }
 
-   public void testProtect_comments_and_shrink() {
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "noquotes", "json" );
-      WebUtils.setWebHijackPreventionStrategy( WebHijackPreventionStrategy.COMMENTS );
-      String str = WebUtils.protect( jsonObject, true );
-      assertEquals( 0, str.compareTo( "/*{noquotes:\"json\"}*/" ) );
-   }
+    public void testProtect_comments_and_shrink() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.element("noquotes", "json");
+        WebUtils.setWebHijackPreventionStrategy(WebHijackPreventionStrategy.COMMENTS);
+        String str = WebUtils.protect(jsonObject, true);
+        assertEquals(0, str.compareTo("/*{noquotes:\"json\"}*/"));
+    }
 
-   public void testProtect_inifiniteLoop() {
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "with:quotes", "json" );
-      WebUtils.setWebHijackPreventionStrategy( WebHijackPreventionStrategy.INFINITE_LOOP );
-      String str = WebUtils.protect( jsonObject );
-      assertEquals( 0, str.compareTo( "while(1);{\"with:quotes\":\"json\"}" ) );
-   }
+    public void testProtect_inifiniteLoop() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.element("with:quotes", "json");
+        WebUtils.setWebHijackPreventionStrategy(WebHijackPreventionStrategy.INFINITE_LOOP);
+        String str = WebUtils.protect(jsonObject);
+        assertEquals(0, str.compareTo("while(1);{\"with:quotes\":\"json\"}"));
+    }
 
-   public void testProtect_inifiniteLoop_and_shrink() {
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "noquotes", "json" );
-      WebUtils.setWebHijackPreventionStrategy( WebHijackPreventionStrategy.INFINITE_LOOP );
-      String str = WebUtils.protect( jsonObject, true );
-      assertEquals( 0, str.compareTo( "while(1);{noquotes:\"json\"}" ) );
-   }
+    public void testProtect_inifiniteLoop_and_shrink() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.element("noquotes", "json");
+        WebUtils.setWebHijackPreventionStrategy(WebHijackPreventionStrategy.INFINITE_LOOP);
+        String str = WebUtils.protect(jsonObject, true);
+        assertEquals(0, str.compareTo("while(1);{noquotes:\"json\"}"));
+    }
 
-   public void testToString_array_noquotes() {
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "noquotes", "json" );
-      JSONArray jsonArray = new JSONArray().element( jsonObject );
-      String str = WebUtils.toString( jsonArray );
-      assertEquals( 0, str.compareTo( "[{noquotes:\"json\"}]" ) );
-   }
+    public void testToString_array_noquotes() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.element("noquotes", "json");
+        JSONArray jsonArray = new JSONArray().element(jsonObject);
+        String str = WebUtils.toString(jsonArray);
+        assertEquals(0, str.compareTo("[{noquotes:\"json\"}]"));
+    }
 
-   public void testToString_array_withquotes1() {
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "with quotes", "json" );
-      JSONArray jsonArray = new JSONArray().element( jsonObject );
-      String str = WebUtils.toString( jsonArray );
-      assertEquals( 0, str.compareTo( "[{\"with quotes\":\"json\"}]" ) );
-   }
+    public void testToString_array_withquotes1() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.element("with quotes", "json");
+        JSONArray jsonArray = new JSONArray().element(jsonObject);
+        String str = WebUtils.toString(jsonArray);
+        assertEquals(0, str.compareTo("[{\"with quotes\":\"json\"}]"));
+    }
 
-   public void testToString_array_withquotes2() {
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "with:quotes", "json" );
-      JSONArray jsonArray = new JSONArray().element( jsonObject );
-      String str = WebUtils.toString( jsonArray );
-      assertEquals( 0, str.compareTo( "[{\"with:quotes\":\"json\"}]" ) );
-   }
+    public void testToString_array_withquotes2() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.element("with:quotes", "json");
+        JSONArray jsonArray = new JSONArray().element(jsonObject);
+        String str = WebUtils.toString(jsonArray);
+        assertEquals(0, str.compareTo("[{\"with:quotes\":\"json\"}]"));
+    }
 
-   public void testToString_object_noquotes() {
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "noquotes", "json" );
-      String str = WebUtils.toString( jsonObject );
-      assertEquals( 0, str.compareTo( "{noquotes:\"json\"}" ) );
-   }
+    public void testToString_object_noquotes() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.element("noquotes", "json");
+        String str = WebUtils.toString(jsonObject);
+        assertEquals(0, str.compareTo("{noquotes:\"json\"}"));
+    }
 
-   public void testToString_object_withquotes1() {
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "with quotes", "json" );
-      String str = WebUtils.toString( jsonObject );
-      assertEquals( 0, str.compareTo( "{\"with quotes\":\"json\"}" ) );
-   }
+    public void testToString_object_withquotes1() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.element("with quotes", "json");
+        String str = WebUtils.toString(jsonObject);
+        assertEquals(0, str.compareTo("{\"with quotes\":\"json\"}"));
+    }
 
-   public void testToString_object_withquotes2() {
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.element( "with:quotes", "json" );
-      String str = WebUtils.toString( jsonObject );
-      assertEquals( 0, str.compareTo( "{\"with:quotes\":\"json\"}" ) );
-   }
+    public void testToString_object_withquotes2() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.element("with:quotes", "json");
+        String str = WebUtils.toString(jsonObject);
+        assertEquals(0, str.compareTo("{\"with:quotes\":\"json\"}"));
+    }
 }

@@ -23,26 +23,26 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class BeanC {
-   private BeanA beanA = new BeanA();
-   private BeanB beanB = new BeanB();
+    private BeanA beanA = new BeanA();
+    private BeanB beanB = new BeanB();
 
-   public BeanA getBeanA() {
-      return beanA;
-   }
+    public BeanA getBeanA() {
+        return beanA;
+    }
 
-   public BeanB getBeanB() {
-      return beanB;
-   }
+    public BeanB getBeanB() {
+        return beanB;
+    }
 
-   public void setBeanA( BeanA beanA ) {
-      this.beanA = beanA;
-   }
+    public void setBeanA(BeanA beanA) {
+        this.beanA = beanA;
+    }
 
-   public void setBeanB( BeanB beanB ) {
-      this.beanB = beanB;
-   }
+    public void setBeanB(BeanB beanB) {
+        this.beanB = beanB;
+    }
 
-   public String toString() {
-      return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
-   }
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

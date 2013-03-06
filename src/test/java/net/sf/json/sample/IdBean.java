@@ -22,69 +22,69 @@ import net.sf.ezmorph.object.AbstractObjectMorpher;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class IdBean {
-   private Id id;
+    private Id id;
 
-   public Id getId() {
-      return id;
-   }
+    public Id getId() {
+        return id;
+    }
 
-   public void setId( Id id ) {
-      this.id = id;
-   }
+    public void setId(Id id) {
+        this.id = id;
+    }
 
-   public static class Id {
-      private long value;
+    public static class Id {
+        private long value;
 
-      public Id() {
-         value = 0;
-      }
+        public Id() {
+            value = 0;
+        }
 
-      public Id( long value ) {
-         super();
-         this.value = value;
-      }
+        public Id(long value) {
+            super();
+            this.value = value;
+        }
 
-      public boolean equals( Object obj ) {
-         if( obj == this ){
-            return true;
-         }
-         if( obj == null ){
-            return false;
-         }
-         if( !(obj instanceof Id) ){
-            return false;
-         }
-         Id other = (Id) obj;
-         return value == other.value;
-      }
-
-      public long getValue() {
-         return value;
-      }
-
-      public int hashCode() {
-         return getClass().hashCode() + (int) value;
-      }
-
-      public void setValue( long value ) {
-         this.value = value;
-      }
-   }
-
-   public static class IdMorpher extends AbstractObjectMorpher {
-      public Object morph( Object value ) {
-         if( value != null ){
-            if( value instanceof Number ){
-               return new IdBean.Id( ((Number) value).longValue() );
-            }else if( value instanceof String ){
-               return new IdBean.Id( new Long( (String) value ).longValue() );
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
             }
-         }
-         return null;
-      }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof Id)) {
+                return false;
+            }
+            Id other = (Id) obj;
+            return value == other.value;
+        }
 
-      public Class morphsTo() {
-         return IdBean.Id.class;
-      }
-   }
+        public long getValue() {
+            return value;
+        }
+
+        public int hashCode() {
+            return getClass().hashCode() + (int) value;
+        }
+
+        public void setValue(long value) {
+            this.value = value;
+        }
+    }
+
+    public static class IdMorpher extends AbstractObjectMorpher {
+        public Object morph(Object value) {
+            if (value != null) {
+                if (value instanceof Number) {
+                    return new IdBean.Id(((Number) value).longValue());
+                } else if (value instanceof String) {
+                    return new IdBean.Id(new Long((String) value).longValue());
+                }
+            }
+            return null;
+        }
+
+        public Class morphsTo() {
+            return IdBean.Id.class;
+        }
+    }
 }

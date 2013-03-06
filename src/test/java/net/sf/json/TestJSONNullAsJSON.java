@@ -20,39 +20,39 @@ package net.sf.json;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONNullAsJSON extends AbstractJSONTest {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestJSONNullAsJSON.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONNullAsJSON.class);
+    }
 
-   public TestJSONNullAsJSON( String name ) {
-      super( name );
-   }
+    public TestJSONNullAsJSON(String name) {
+        super(name);
+    }
 
-   protected int getIndent() {
-      return 2;
-   }
+    protected int getIndent() {
+        return 2;
+    }
 
-   protected int getIndentFactor() {
-      return 2;
-   }
+    protected int getIndentFactor() {
+        return 2;
+    }
 
-   protected Object[] getIsArrayExpectations() {
-      return new Object[] { Boolean.FALSE, JSONNull.getInstance() };
-   }
+    protected Object[] getIsArrayExpectations() {
+        return new Object[]{Boolean.FALSE, JSONNull.getInstance()};
+    }
 
-   protected Object[] getToStringExpectations1() {
-      return new Object[] { "null", JSONNull.getInstance() };
-   }
+    protected Object[] getToStringExpectations1() {
+        return new Object[]{"null", JSONNull.getInstance()};
+    }
 
-   protected Object[] getToStringExpectations2() {
-      return new Object[] { "null", JSONNull.getInstance() };
-   }
+    protected Object[] getToStringExpectations2() {
+        return new Object[]{"null", JSONNull.getInstance()};
+    }
 
-   protected Object[] getToStringExpectations3() {
-      return new Object[] { "  null", JSONNull.getInstance() };
-   }
+    protected Object[] getToStringExpectations3() {
+        return new Object[]{"  null", JSONNull.getInstance()};
+    }
 
-   protected Object[] getWriteExpectations() {
-      return new Object[] { "null", JSONNull.getInstance() };
-   }
+    protected Object[] getWriteExpectations() {
+        return new Object[]{"null", JSONNull.getInstance()};
+    }
 }

@@ -22,18 +22,18 @@ import junit.framework.TestSuite;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JSONTestSuite extends TestSuite {
-   public static TestSuite suite() throws Exception {
-      TestSuite suite = new TestSuite();
-      suite.setName( "json-lib" );
+    public static TestSuite suite() throws Exception {
+        TestSuite suite = new TestSuite();
+        suite.setName("json-lib");
 
-      suite.addTest( net.sf.json.AllTests.suite() );
-      suite.addTest( net.sf.json.regexp.AllTests.suite() );
-      suite.addTest( net.sf.json.filters.AllTests.suite() );
-      suite.addTest( net.sf.json.processors.AllTests.suite() );
-      suite.addTest( net.sf.json.util.AllTests.suite() );
-      suite.addTest( net.sf.json.xml.AllTests.suite() );
-      suite.addTest( net.sf.json.test.AllTests.suite() );
+        suite.addTest(net.sf.json.AllTests.suite());
+        suite.addTest(net.sf.json.regexp.AllTests.suite());
+        suite.addTest(net.sf.json.filters.AllTests.suite());
+        suite.addTest(net.sf.json.processors.AllTests.suite());
+        suite.addTest(net.sf.json.util.AllTests.suite());
+        suite.addTest(net.sf.json.xml.AllTests.suite());
+        suite.addTest(net.sf.json.test.AllTests.suite());
 
-      return suite;
-   }
+        return suite;
+    }
 }

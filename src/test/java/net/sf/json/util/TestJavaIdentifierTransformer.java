@@ -22,45 +22,45 @@ import junit.framework.TestCase;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJavaIdentifierTransformer extends TestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestJavaIdentifierTransformer.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJavaIdentifierTransformer.class);
+    }
 
-   public TestJavaIdentifierTransformer( String testName ) {
-      super( testName );
-   }
+    public TestJavaIdentifierTransformer(String testName) {
+        super(testName);
+    }
 
-   public void testCamelCase() {
-      JavaIdentifierTransformer jit = JavaIdentifierTransformer.CAMEL_CASE;
-      assertEquals( "camelCase", jit.transformToJavaIdentifier( "camel case" ) );
-      assertEquals( "camelCase", jit.transformToJavaIdentifier( "@camel case" ) );
-      assertEquals( "$camelCase", jit.transformToJavaIdentifier( "$camel case" ) );
-      assertEquals( "camelCase", jit.transformToJavaIdentifier( "camel@case" ) );
-      assertEquals( "camelCase", jit.transformToJavaIdentifier( "camel @case" ) );
-      assertEquals( "camelCase", jit.transformToJavaIdentifier( "camel@@case" ) );
-      assertEquals( "camelCase", jit.transformToJavaIdentifier( "camel@ @case" ) );
-   }
+    public void testCamelCase() {
+        JavaIdentifierTransformer jit = JavaIdentifierTransformer.CAMEL_CASE;
+        assertEquals("camelCase", jit.transformToJavaIdentifier("camel case"));
+        assertEquals("camelCase", jit.transformToJavaIdentifier("@camel case"));
+        assertEquals("$camelCase", jit.transformToJavaIdentifier("$camel case"));
+        assertEquals("camelCase", jit.transformToJavaIdentifier("camel@case"));
+        assertEquals("camelCase", jit.transformToJavaIdentifier("camel @case"));
+        assertEquals("camelCase", jit.transformToJavaIdentifier("camel@@case"));
+        assertEquals("camelCase", jit.transformToJavaIdentifier("camel@ @case"));
+    }
 
-   public void testUnderscore() {
-      JavaIdentifierTransformer jit = JavaIdentifierTransformer.UNDERSCORE;
-      assertEquals( "under_score", jit.transformToJavaIdentifier( "under score" ) );
-      assertEquals( "under_score", jit.transformToJavaIdentifier( "@under score" ) );
-      assertEquals( "$under_score", jit.transformToJavaIdentifier( "$under score" ) );
-      assertEquals( "under_score", jit.transformToJavaIdentifier( "under@score" ) );
-      assertEquals( "under_score", jit.transformToJavaIdentifier( "under score" ) );
-      assertEquals( "under_score", jit.transformToJavaIdentifier( "under@@score" ) );
-      assertEquals( "under_score", jit.transformToJavaIdentifier( "under@ @score" ) );
-      assertEquals( "under_score", jit.transformToJavaIdentifier( "under score " ) );
-   }
+    public void testUnderscore() {
+        JavaIdentifierTransformer jit = JavaIdentifierTransformer.UNDERSCORE;
+        assertEquals("under_score", jit.transformToJavaIdentifier("under score"));
+        assertEquals("under_score", jit.transformToJavaIdentifier("@under score"));
+        assertEquals("$under_score", jit.transformToJavaIdentifier("$under score"));
+        assertEquals("under_score", jit.transformToJavaIdentifier("under@score"));
+        assertEquals("under_score", jit.transformToJavaIdentifier("under score"));
+        assertEquals("under_score", jit.transformToJavaIdentifier("under@@score"));
+        assertEquals("under_score", jit.transformToJavaIdentifier("under@ @score"));
+        assertEquals("under_score", jit.transformToJavaIdentifier("under score "));
+    }
 
-   public void testWhitespace() {
-      JavaIdentifierTransformer jit = JavaIdentifierTransformer.WHITESPACE;
-      assertEquals( "whitespace", jit.transformToJavaIdentifier( "white space" ) );
-      assertEquals( "whitespace", jit.transformToJavaIdentifier( "@white space" ) );
-      assertEquals( "$whitespace", jit.transformToJavaIdentifier( "$white space" ) );
-      assertEquals( "whitespace", jit.transformToJavaIdentifier( "white@space" ) );
-      assertEquals( "whitespace", jit.transformToJavaIdentifier( "white@@space" ) );
-      assertEquals( "whitespace", jit.transformToJavaIdentifier( "white@ @space" ) );
-      assertEquals( "whitespace", jit.transformToJavaIdentifier( "white space " ) );
-   }
+    public void testWhitespace() {
+        JavaIdentifierTransformer jit = JavaIdentifierTransformer.WHITESPACE;
+        assertEquals("whitespace", jit.transformToJavaIdentifier("white space"));
+        assertEquals("whitespace", jit.transformToJavaIdentifier("@white space"));
+        assertEquals("$whitespace", jit.transformToJavaIdentifier("$white space"));
+        assertEquals("whitespace", jit.transformToJavaIdentifier("white@space"));
+        assertEquals("whitespace", jit.transformToJavaIdentifier("white@@space"));
+        assertEquals("whitespace", jit.transformToJavaIdentifier("white@ @space"));
+        assertEquals("whitespace", jit.transformToJavaIdentifier("white space "));
+    }
 }

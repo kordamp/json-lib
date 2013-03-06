@@ -22,53 +22,53 @@ import junit.framework.TestCase;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class AbstractJSONObjectStaticBuildersTestCase extends TestCase {
-   public AbstractJSONObjectStaticBuildersTestCase( String testName ) {
-      super( testName );
-   }
+    public AbstractJSONObjectStaticBuildersTestCase(String testName) {
+        super(testName);
+    }
 
-   public void testFromObject() {
-      JSONObject json = JSONObject.fromObject( getSource() );
-      assertJSONObject( json, getProperties() );
-      assertTrue( !json.has( "class" ) );
-   }
+    public void testFromObject() {
+        JSONObject json = JSONObject.fromObject(getSource());
+        assertJSONObject(json, getProperties());
+        assertTrue(!json.has("class"));
+    }
 
-   public void testFromObject_excludes() {
-      JsonConfig jsonConfig = new JsonConfig();
-      jsonConfig.setExcludes( getExclusions() );
-      JSONObject json = JSONObject.fromObject( getSource(), jsonConfig );
-      assertJSONObject( json, getProperties() );
-      String[] excluded = getExclusions();
-      for( int i = 0; i < excluded.length; i++ ){
-         assertTrue( !json.has( excluded[i] ) );
-      }
-      assertTrue( !json.has( "class" ) );
-      assertTrue( !json.has( "pexcluded" ) );
-   }
+    public void testFromObject_excludes() {
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.setExcludes(getExclusions());
+        JSONObject json = JSONObject.fromObject(getSource(), jsonConfig);
+        assertJSONObject(json, getProperties());
+        String[] excluded = getExclusions();
+        for (int i = 0; i < excluded.length; i++) {
+            assertTrue(!json.has(excluded[i]));
+        }
+        assertTrue(!json.has("class"));
+        assertTrue(!json.has("pexcluded"));
+    }
 
-   public void testFromObject_excludes_ignoreDefaults() {
-      JsonConfig jsonConfig = new JsonConfig();
-      jsonConfig.setExcludes( getExclusions() );
-      jsonConfig.setIgnoreDefaultExcludes( true );
-      JSONObject json = JSONObject.fromObject( getSource(), jsonConfig );
-      assertJSONObject( json, getProperties() );
-      assertTrue( json.has( "class" ) );
-      assertTrue( !json.has( "pexcluded" ) );
-   }
+    public void testFromObject_excludes_ignoreDefaults() {
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.setExcludes(getExclusions());
+        jsonConfig.setIgnoreDefaultExcludes(true);
+        JSONObject json = JSONObject.fromObject(getSource(), jsonConfig);
+        assertJSONObject(json, getProperties());
+        assertTrue(json.has("class"));
+        assertTrue(!json.has("pexcluded"));
+    }
 
-   protected String[] getExclusions() {
-      return new String[] { "pexcluded" };
-   }
+    protected String[] getExclusions() {
+        return new String[]{"pexcluded"};
+    }
 
-   protected String[] getProperties() {
-      return PropertyConstants.getProperties();
-   }
+    protected String[] getProperties() {
+        return PropertyConstants.getProperties();
+    }
 
-   protected abstract Object getSource();
+    protected abstract Object getSource();
 
-   private void assertJSONObject( JSONObject json, String[] properties ) {
-      assertNotNull( json );
-      for( int i = 0; i < properties.length; i++ ){
-         assertTrue( json.has( properties[i] ) );
-      }
-   }
+    private void assertJSONObject(JSONObject json, String[] properties) {
+        assertNotNull(json);
+        for (int i = 0; i < properties.length; i++) {
+            assertTrue(json.has(properties[i]));
+        }
+    }
 }

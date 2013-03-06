@@ -20,31 +20,31 @@ package net.sf.json.sample;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class JavaIdentifierBean {
-   private String camelCase;
-   private String under_score;
-   private String whitespace;
+    private String camelCase;
+    private String under_score;
+    private String whitespace;
 
-   public String getCamelCase() {
-      return camelCase;
-   }
+    public String getCamelCase() {
+        return camelCase;
+    }
 
-   public String getUnder_score() {
-      return under_score;
-   }
+    public String getUnder_score() {
+        return under_score;
+    }
 
-   public String getWhitespace() {
-      return whitespace;
-   }
+    public String getWhitespace() {
+        return whitespace;
+    }
 
-   public void setCamelCase( String camelCase ) {
-      this.camelCase = camelCase;
-   }
+    public void setCamelCase(String camelCase) {
+        this.camelCase = camelCase;
+    }
 
-   public void setUnder_score( String under_score ) {
-      this.under_score = under_score;
-   }
+    public void setUnder_score(String under_score) {
+        this.under_score = under_score;
+    }
 
-   public void setWhitespace( String whitespace ) {
-      this.whitespace = whitespace;
-   }
+    public void setWhitespace(String whitespace) {
+        this.whitespace = whitespace;
+    }
 }

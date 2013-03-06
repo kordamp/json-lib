@@ -23,17 +23,17 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class Player {
-   private MediaList mediaList;
+    private MediaList mediaList;
 
-   public MediaList getMediaList() {
-      return mediaList;
-   }
+    public MediaList getMediaList() {
+        return mediaList;
+    }
 
-   public void setMediaList( MediaList mediaList ) {
-      this.mediaList = mediaList;
-   }
+    public void setMediaList(MediaList mediaList) {
+        this.mediaList = mediaList;
+    }
 
-   public String toString() {
-      return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
-   }
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

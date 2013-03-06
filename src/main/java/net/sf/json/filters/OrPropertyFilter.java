@@ -22,19 +22,19 @@ import net.sf.json.util.PropertyFilter;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class OrPropertyFilter implements PropertyFilter {
-   private PropertyFilter filter1;
-   private PropertyFilter filter2;
+    private PropertyFilter filter1;
+    private PropertyFilter filter2;
 
-   public OrPropertyFilter( PropertyFilter filter1, PropertyFilter filter2 ) {
-      this.filter1 = filter1;
-      this.filter2 = filter2;
-   }
+    public OrPropertyFilter(PropertyFilter filter1, PropertyFilter filter2) {
+        this.filter1 = filter1;
+        this.filter2 = filter2;
+    }
 
-   public boolean apply( Object source, String name, Object value ) {
-      if( (filter1 != null && filter1.apply( source, name, value ))
-            || (filter2 != null && filter2.apply( source, name, value )) ){
-         return true;
-      }
-      return false;
-   }
+    public boolean apply(Object source, String name, Object value) {
+        if ((filter1 != null && filter1.apply(source, name, value))
+            || (filter2 != null && filter2.apply(source, name, value))) {
+            return true;
+        }
+        return false;
+    }
 }

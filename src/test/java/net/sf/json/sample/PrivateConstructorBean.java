@@ -23,20 +23,20 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class PrivateConstructorBean {
-   private int value;
+    private int value;
 
-   private PrivateConstructorBean() {
-   }
+    private PrivateConstructorBean() {
+    }
 
-   public int getValue() {
-      return value;
-   }
+    public int getValue() {
+        return value;
+    }
 
-   public void setValue( int value ) {
-      this.value = value;
-   }
+    public void setValue(int value) {
+        this.value = value;
+    }
 
-   public String toString() {
-      return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
-   }
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

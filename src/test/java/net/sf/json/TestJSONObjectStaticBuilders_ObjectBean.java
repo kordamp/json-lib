@@ -17,33 +17,32 @@
 package net.sf.json;
 
 import net.sf.json.sample.ObjectBean;
-
 import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONObjectStaticBuilders_ObjectBean extends
-      AbstractJSONObjectStaticBuildersTestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestJSONObjectStaticBuilders_ObjectBean.class );
-   }
+    AbstractJSONObjectStaticBuildersTestCase {
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_ObjectBean.class);
+    }
 
-   public TestJSONObjectStaticBuilders_ObjectBean( String name ) {
-      super( name );
-   }
+    public TestJSONObjectStaticBuilders_ObjectBean(String name) {
+        super(name);
+    }
 
-   protected Object getSource() {
-      ObjectBean bean = new ObjectBean();
-      String[] props = getProperties();
-      try{
-         for( int i = 0; i < props.length; i++ ){
-            PropertyUtils.setProperty( bean, props[i],
-                  PropertyConstants.getPropertyValue( props[i] ) );
-         }
-      }catch( Exception e ){
-         throw new RuntimeException( e );
-      }
-      return bean;
-   }
+    protected Object getSource() {
+        ObjectBean bean = new ObjectBean();
+        String[] props = getProperties();
+        try {
+            for (int i = 0; i < props.length; i++) {
+                PropertyUtils.setProperty(bean, props[i],
+                    PropertyConstants.getPropertyValue(props[i]));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return bean;
+    }
 }

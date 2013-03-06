@@ -22,24 +22,24 @@ import junit.framework.TestCase;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestCompositePropertyFilter extends TestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestCompositePropertyFilter.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestCompositePropertyFilter.class);
+    }
 
-   private CompositePropertyFilter filter;
+    private CompositePropertyFilter filter;
 
-   public TestCompositePropertyFilter( String testName ) {
-      super( testName );
-   }
+    public TestCompositePropertyFilter(String testName) {
+        super(testName);
+    }
 
-   public void testApply_addFilter() {
-      filter.addPropertyFilter( new FalsePropertyFilter() );
-      assertFalse( filter.apply( null, null, null ) );
-      filter.addPropertyFilter( new TruePropertyFilter() );
-      assertTrue( filter.apply( null, null, null ) );
-   }
+    public void testApply_addFilter() {
+        filter.addPropertyFilter(new FalsePropertyFilter());
+        assertFalse(filter.apply(null, null, null));
+        filter.addPropertyFilter(new TruePropertyFilter());
+        assertTrue(filter.apply(null, null, null));
+    }
 
-   protected void setUp() throws Exception {
-      filter = new CompositePropertyFilter();
-   }
+    protected void setUp() throws Exception {
+        filter = new CompositePropertyFilter();
+    }
 }

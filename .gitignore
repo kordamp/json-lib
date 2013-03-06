@@ -8,3 +8,8 @@ build.properties
 .settings
 build.sh
 build
+*.iml
+*.ipr
+*.iws
+.idea
+out

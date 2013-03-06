@@ -16,50 +16,50 @@
 
 package net.sf.json;
 
+import net.sf.ezmorph.bean.MorphDynaBean;
+import net.sf.ezmorph.bean.MorphDynaClass;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.ezmorph.bean.MorphDynaBean;
-import net.sf.ezmorph.bean.MorphDynaClass;
-
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONArrayStaticBuilders_Collection_DynaBean extends
-      AbstractJSONArrayStaticBuildersTestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestJSONArrayStaticBuilders_Collection_DynaBean.class );
-   }
+    AbstractJSONArrayStaticBuildersTestCase {
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayStaticBuilders_Collection_DynaBean.class);
+    }
 
-   public TestJSONArrayStaticBuilders_Collection_DynaBean( String name ) {
-      super( name );
-   }
+    public TestJSONArrayStaticBuilders_Collection_DynaBean(String name) {
+        super(name);
+    }
 
-   protected Object getSource() {
-      Map map = new HashMap();
-      String[] props = getProperties();
-      for( int i = 0; i < props.length; i++ ){
-         map.put( props[i], PropertyConstants.getPropertyClass( props[i] ) );
-      }
-      map.put( "class", Class.class );
-      map.put( "pexcluded", String.class );
-      MorphDynaClass dynaClass = new MorphDynaClass( map );
-      MorphDynaBean dynaBean = null;
-      try{
-         dynaBean = (MorphDynaBean) dynaClass.newInstance();
-         for( int i = 0; i < props.length; i++ ){
-            dynaBean.set( props[i], PropertyConstants.getPropertyValue( props[i] ) );
-         }
-         dynaBean.set( "class", Object.class );
-         dynaBean.set( "pexcluded", "" );
-      }catch( Exception e ){
-         throw new RuntimeException( e );
-      }
+    protected Object getSource() {
+        Map map = new HashMap();
+        String[] props = getProperties();
+        for (int i = 0; i < props.length; i++) {
+            map.put(props[i], PropertyConstants.getPropertyClass(props[i]));
+        }
+        map.put("class", Class.class);
+        map.put("pexcluded", String.class);
+        MorphDynaClass dynaClass = new MorphDynaClass(map);
+        MorphDynaBean dynaBean = null;
+        try {
+            dynaBean = (MorphDynaBean) dynaClass.newInstance();
+            for (int i = 0; i < props.length; i++) {
+                dynaBean.set(props[i], PropertyConstants.getPropertyValue(props[i]));
+            }
+            dynaBean.set("class", Object.class);
+            dynaBean.set("pexcluded", "");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-      List list = new ArrayList();
-      list.add( dynaBean );
-      return list;
-   }
+        List list = new ArrayList();
+        list.add(dynaBean);
+        return list;
+    }
 }

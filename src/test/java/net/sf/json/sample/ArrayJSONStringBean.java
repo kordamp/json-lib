@@ -17,26 +17,25 @@
 package net.sf.json.sample;
 
 import net.sf.json.JSONString;
-
 import org.apache.commons.lang.ArrayUtils;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class ArrayJSONStringBean implements JSONString {
-   private String value;
+    private String value;
 
-   public String getValue() {
-      return value;
-   }
+    public String getValue() {
+        return value;
+    }
 
-   public void setValue( String value ) {
-      this.value = value;
-   }
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-   public String toJSONString() {
-      return ArrayUtils.toString( value.split( "," ) )
-            .replace( '{', '[' )
-            .replace( '}', ']' );
-   }
+    public String toJSONString() {
+        return ArrayUtils.toString(value.split(","))
+            .replace('{', '[')
+            .replace('}', ']');
+    }
 }

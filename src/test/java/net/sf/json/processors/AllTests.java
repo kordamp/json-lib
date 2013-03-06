@@ -22,14 +22,14 @@ import junit.framework.TestSuite;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class AllTests extends TestSuite {
-   public static TestSuite suite() throws Exception {
-      TestSuite suite = new TestSuite();
-      suite.setName( "processors" );
+    public static TestSuite suite() throws Exception {
+        TestSuite suite = new TestSuite();
+        suite.setName("processors");
 
-      suite.addTest( new TestSuite( TestJsDateJsonBeanProcessor.class ) );
-      suite.addTest( new TestSuite( TestJsDateJsonValueProcessor.class ) );
-      suite.addTest( new TestSuite( TestJsonBeanProcessorMatcher.class ) );
+        suite.addTest(new TestSuite(TestJsDateJsonBeanProcessor.class));
+        suite.addTest(new TestSuite(TestJsDateJsonValueProcessor.class));
+        suite.addTest(new TestSuite(TestJsonBeanProcessorMatcher.class));
 
-      return suite;
-   }
+        return suite;
+    }
 }

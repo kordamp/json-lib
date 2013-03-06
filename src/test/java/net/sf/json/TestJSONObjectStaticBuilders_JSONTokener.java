@@ -22,17 +22,17 @@ import net.sf.json.util.JSONTokener;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONObjectStaticBuilders_JSONTokener extends
-      AbstractJSONObjectStaticBuildersTestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestJSONObjectStaticBuilders_JSONTokener.class );
-   }
+    AbstractJSONObjectStaticBuildersTestCase {
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_JSONTokener.class);
+    }
 
-   public TestJSONObjectStaticBuilders_JSONTokener( String name ) {
-      super( name );
-   }
+    public TestJSONObjectStaticBuilders_JSONTokener(String name) {
+        super(name);
+    }
 
-   protected Object getSource() {
-      return new JSONTokener(
-            "{\"parray\":[1,2],\"plong\":9223372036854775807,\"pchar\":\"J\",\"pboolean\":true,\"pfloat\":3.4028234663852886E38,\"pbean\":{\"parray\":null,\"plong\":null,\"pchar\":null,\"pboolean\":null,\"pfloat\":null,\"pbean\":null,\"pshort\":null,\"pdouble\":null,\"pclass\":null,\"pstring\":null,\"pint\":null,\"plist\":null,\"pfunction\":null,\"pmap\":null,\"pbyte\":null},\"pshort\":32767,\"pdouble\":1.7976931348623157E308,\"pclass\":\"java.lang.Object\",\"pstring\":\"json\",\"pint\":2147483647,\"plist\":[\"a\",\"b\"],\"pfunction\":function(){ this; },\"pmap\":null,\"pbyte\":127,\"class\":\"java.lang.Object\",\"pexcluded\":\"\"}" );
-   }
+    protected Object getSource() {
+        return new JSONTokener(
+            "{\"parray\":[1,2],\"plong\":9223372036854775807,\"pchar\":\"J\",\"pboolean\":true,\"pfloat\":3.4028234663852886E38,\"pbean\":{\"parray\":null,\"plong\":null,\"pchar\":null,\"pboolean\":null,\"pfloat\":null,\"pbean\":null,\"pshort\":null,\"pdouble\":null,\"pclass\":null,\"pstring\":null,\"pint\":null,\"plist\":null,\"pfunction\":null,\"pmap\":null,\"pbyte\":null},\"pshort\":32767,\"pdouble\":1.7976931348623157E308,\"pclass\":\"java.lang.Object\",\"pstring\":\"json\",\"pint\":2147483647,\"plist\":[\"a\",\"b\"],\"pfunction\":function(){ this; },\"pmap\":null,\"pbyte\":127,\"class\":\"java.lang.Object\",\"pexcluded\":\"\"}");
+    }
 }

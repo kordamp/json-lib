@@ -20,13 +20,13 @@ package net.sf.json.sample;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class InterfaceBean {
-   private Runnable runnable;
+    private Runnable runnable;
 
-   public Runnable getRunnable() {
-      return runnable;
-   }
+    public Runnable getRunnable() {
+        return runnable;
+    }
 
-   public void setRunnable( Runnable runnable ) {
-      this.runnable = runnable;
-   }
+    public void setRunnable(Runnable runnable) {
+        this.runnable = runnable;
+    }
 }

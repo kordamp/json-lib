@@ -20,12 +20,12 @@ package net.sf.json.xml;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public interface JSONTypes {
-   String ARRAY = "array";
-   String BOOLEAN = "boolean";
-   String FLOAT = "float";
-   String FUNCTION = "function";
-   String INTEGER = "integer";
-   String NUMBER = "number";
-   String OBJECT = "object";
-   String STRING = "string";
+    String ARRAY = "array";
+    String BOOLEAN = "boolean";
+    String FLOAT = "float";
+    String FUNCTION = "function";
+    String INTEGER = "integer";
+    String NUMBER = "number";
+    String OBJECT = "object";
+    String STRING = "string";
 }

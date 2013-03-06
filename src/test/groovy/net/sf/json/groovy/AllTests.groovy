@@ -22,16 +22,16 @@ import junit.framework.TestSuite
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 class AllTests extends GroovyTestCase {
-   public static TestSuite suite() throws Exception {
-      TestSuite suite = new TestSuite()
-      suite.setName( "groovy" )
+    public static TestSuite suite() throws Exception {
+        TestSuite suite = new TestSuite()
+        suite.setName("groovy")
 
-      suite.addTest( new TestSuite( TestJsonGroovyBuilder ) )
-      suite.addTest( new TestSuite( TestJSONObjectGroovy ) )
-      suite.addTest( new TestSuite( TestJSONArrayGroovy ) )
-      suite.addTest( new TestSuite( TestMetaClasses ) )
-      suite.addTest( new TestSuite( TestJsonSlurper ) )
+        suite.addTest(new TestSuite(TestJsonGroovyBuilder))
+        suite.addTest(new TestSuite(TestJSONObjectGroovy))
+        suite.addTest(new TestSuite(TestJSONArrayGroovy))
+        suite.addTest(new TestSuite(TestMetaClasses))
+        suite.addTest(new TestSuite(TestJsonSlurper))
 
-      return suite
-   }
+        return suite
+    }
 }

@@ -14,21 +14,40 @@
  * limitations under the License.
  */
 
-package net.sf.json.regexp;
+package net.sf.json.sample;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
-public class TestPerl5RegexpMatcher extends AbstractRegexpMatcherTestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestPerl5RegexpMatcher.class );
-   }
+public class EnumBean {
+    private JsonEnum jsonEnum;
+    private String string;
+    private Set<JsonEnum> enums = new HashSet<JsonEnum>();
 
-   public TestPerl5RegexpMatcher( String name ) {
-      super( name );
-   }
+    public JsonEnum getJsonEnum() {
+        return jsonEnum;
+    }
 
-   protected RegexpMatcher getRegexpMatcher( String pattern ) {
-      return new Perl5RegexpMatcher( pattern );
-   }
+    public String getString() {
+        return string;
+    }
+
+    public Set<JsonEnum> getEnums() {
+        return enums;
+    }
+
+    public void setJsonEnum(JsonEnum jsonEnum) {
+        this.jsonEnum = jsonEnum;
+    }
+
+    public void setString(String string) {
+        this.string = string;
+    }
+
+    public void setEnums(Set<JsonEnum> enums) {
+        this.enums = enums;
+    }
 }

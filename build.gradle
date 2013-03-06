@@ -1,48 +1,48 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
-// apply plugin: 'code-quality'
-
-sourceCompatibility = '1.3'
-targetCompatibility = '1.1'
-archivesBaseName = 'json-lib'
-group = 'net.sf.json-lib'
-version = '2.4.1'
-
-configurations {
-    jdk15 { extendsFrom compile }
-}
+apply plugin: 'idea'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    groovy 'org.codehaus.groovy:groovy-all:1.8.10'
-	compile 'junit:junit:3.8.2',
-	        'commons-beanutils:commons-beanutils:1.8.0',
-	        'commons-collections:commons-collections:3.2.1',
-	        'commons-lang:commons-lang:2.5',
-	compile('commons-logging:commons-logging:1.1.1') {
-		exclude(module: 'log4j')
-		exclude(module: 'logkit')
-		exclude(module: 'avalon-framework')
-		exclude(module: 'servlet-api')
-	}
-    // the following are optional
-	compile 'xom:xom:1.1',
-	        'oro:oro:2.0.8',
-	        'net.sf.ezmorph:ezmorph:1.0.6',
-	        'org.codehaus.groovy:groovy-all:1.8.10'
-	runtime 'log4j:log4j:1.2.14'
-	testCompile 'xmlunit:xmlunit:1.0',
-	            'commons-httpclient:commons-httpclient:3.1'
-}
+    def compileExcludingCommonsLogging = { String dependency ->
+        compile(dependency)  {
+            exclude group: 'commons-logging', module: 'commons-logging'
+        }
+    }
 
-sourceSets {
-    jdk15 {
-        compileClasspath = sourceSets.main.classes + configurations.jdk15
-        java.srcDirs = ['src/main/jdk15']
-        groovy.srcDirs = []
-        classesDir = "$buildDir/classes/jdk15" as File
+    def testCompileExcludingCommonsLogging = { String dependency ->
+        testCompile(dependency)  {
+            exclude group: 'commons-logging', module: 'commons-logging'
+        }
+    }
+
+    groovy "org.codehaus.groovy:groovy-all:$groovyVersion"
+    compile('junit:junit:4.10')
+    compileExcludingCommonsLogging('commons-beanutils:commons-beanutils:1.8.0')
+    compileExcludingCommonsLogging('commons-collections:commons-collections:3.2.1')
+    compileExcludingCommonsLogging('commons-lang:commons-lang:2.6')
+    compile("org.slf4j:slf4j-api:$slf4jVersion")
+    compile("org.slf4j:jcl-over-slf4j:$slf4jVersion")  {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+
+    // the following should be marked as optional
+    compileExcludingCommonsLogging('xom:xom:1.1')
+    compileExcludingCommonsLogging('net.sf.ezmorph:ezmorph:1.0.6')
+    compileExcludingCommonsLogging("org.codehaus.groovy:groovy-all:$groovyVersion")
+
+    testCompileExcludingCommonsLogging('xmlunit:xmlunit:1.0')
+    testCompileExcludingCommonsLogging('commons-httpclient:commons-httpclient:3.1')
+    testCompile("log4j:log4j:$log4jVersion") {
+        exclude group: 'ant',         module: 'ant-nodeps'
+        exclude group: 'ant',         module: 'ant-junit'
+        exclude group: 'ant-contrib', module: 'ant-contrib'
+    }
+    testCompile("org.slf4j:slf4j-log4j12:$slf4jVersion") {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+        exclude group: 'log4j',     module: 'log4j'
     }
 }

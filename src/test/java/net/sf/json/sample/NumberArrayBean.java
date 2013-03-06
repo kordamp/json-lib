@@ -23,62 +23,62 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class NumberArrayBean {
-   private byte[] bytes;
-   private double[] doubles;
-   private float[] floats;
-   private int[] ints;
-   private long[] longs;
-   private short[] shorts;
+    private byte[] bytes;
+    private double[] doubles;
+    private float[] floats;
+    private int[] ints;
+    private long[] longs;
+    private short[] shorts;
 
-   public byte[] getBytes() {
-      return bytes;
-   }
+    public byte[] getBytes() {
+        return bytes;
+    }
 
-   public double[] getDoubles() {
-      return doubles;
-   }
+    public double[] getDoubles() {
+        return doubles;
+    }
 
-   public float[] getFloats() {
-      return floats;
-   }
+    public float[] getFloats() {
+        return floats;
+    }
 
-   public int[] getInts() {
-      return ints;
-   }
+    public int[] getInts() {
+        return ints;
+    }
 
-   public long[] getLongs() {
-      return longs;
-   }
+    public long[] getLongs() {
+        return longs;
+    }
 
-   public short[] getShorts() {
-      return shorts;
-   }
+    public short[] getShorts() {
+        return shorts;
+    }
 
-   public void setBytes( byte[] bytes ) {
-      this.bytes = bytes;
-   }
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
+    }
 
-   public void setDoubles( double[] doubles ) {
-      this.doubles = doubles;
-   }
+    public void setDoubles(double[] doubles) {
+        this.doubles = doubles;
+    }
 
-   public void setFloats( float[] floats ) {
-      this.floats = floats;
-   }
+    public void setFloats(float[] floats) {
+        this.floats = floats;
+    }
 
-   public void setInts( int[] ints ) {
-      this.ints = ints;
-   }
+    public void setInts(int[] ints) {
+        this.ints = ints;
+    }
 
-   public void setLongs( long[] longs ) {
-      this.longs = longs;
-   }
+    public void setLongs(long[] longs) {
+        this.longs = longs;
+    }
 
-   public void setShorts( short[] shorts ) {
-      this.shorts = shorts;
-   }
+    public void setShorts(short[] shorts) {
+        this.shorts = shorts;
+    }
 
-   public String toString() {
-      return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
-   }
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

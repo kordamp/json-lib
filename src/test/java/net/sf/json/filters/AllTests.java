@@ -22,16 +22,16 @@ import junit.framework.TestSuite;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class AllTests extends TestSuite {
-   public static TestSuite suite() throws Exception {
-      TestSuite suite = new TestSuite();
-      suite.setName( "filters" );
+    public static TestSuite suite() throws Exception {
+        TestSuite suite = new TestSuite();
+        suite.setName("filters");
 
-      suite.addTest( new TestSuite( TestAndPropertyFilter.class ) );
-      suite.addTest( new TestSuite( TestCompositePropertyFilter.class ) );
-      suite.addTest( new TestSuite( TestNotPropertyFilter.class ) );
-      suite.addTest( new TestSuite( TestOrPropertyFilter.class ) );
-      suite.addTest( new TestSuite( TestMappingPropertyFilter.class ) );
+        suite.addTest(new TestSuite(TestAndPropertyFilter.class));
+        suite.addTest(new TestSuite(TestCompositePropertyFilter.class));
+        suite.addTest(new TestSuite(TestNotPropertyFilter.class));
+        suite.addTest(new TestSuite(TestOrPropertyFilter.class));
+        suite.addTest(new TestSuite(TestMappingPropertyFilter.class));
 
-      return suite;
-   }
+        return suite;
+    }
 }

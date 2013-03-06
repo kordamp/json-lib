@@ -18,49 +18,25 @@ package net.sf.json.regexp;
 
 /**
  * Convenience utility for working withRegexpMatcher.<br>
- * 
+ *
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class RegexpUtils {
-   private static String javaVersion = "1.3.1";
-   static{
-      javaVersion = System.getProperty( "java.version" );
-   }
+    /**
+     * Returns a RegexpMatcher that works in a specific environment.<br>
+     */
+    public static RegexpMatcher getMatcher(String pattern) {
+        return new JdkRegexpMatcher(pattern);
+    }
 
-   /**
-    * Returns a RegexpMatcher that works in a specific environment.<br>
-    * When in a JVM 1.3.1 it will return a Perl5RegexpMatcher, if the JVM is
-    * younger (1.4+) it will return a JdkRegexpMatcher.
-    */
-   public static RegexpMatcher getMatcher( String pattern ) {
-      if( isJDK13() ){
-         return new Perl5RegexpMatcher( pattern );
-      }else{
-         return new JdkRegexpMatcher( pattern );
-      }
-   }
+    /**
+     * Returns a RegexpMatcher that works in a specific environment.<br>
+     */
+    public static RegexpMatcher getMatcher(String pattern, boolean multiline) {
+        return new JdkRegexpMatcher(pattern, multiline);
+    }
 
-   /**
-    * Returns a RegexpMatcher that works in a specific environment.<br>
-    * When in a JVM 1.3.1 it will return a Perl5RegexpMatcher, if the JVM is
-    * younger (1.4+) it will return a JdkRegexpMatcher.
-    */
-   public static RegexpMatcher getMatcher( String pattern, boolean multiline ) {
-      if( isJDK13() ){
-         return new Perl5RegexpMatcher( pattern, true );
-      }else{
-         return new JdkRegexpMatcher( pattern, true );
-      }
-   }
-   
-   /**
-    * Queries the environment for the supported JDK version.
-    */
-   public static boolean isJDK13() {
-      return javaVersion.indexOf( "1.3" ) != -1;
-   }
+    private RegexpUtils() {
 
-   private RegexpUtils() {
-
-   }
+    }
 }

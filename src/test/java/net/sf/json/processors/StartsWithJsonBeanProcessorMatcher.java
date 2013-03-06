@@ -23,24 +23,24 @@ import java.util.Set;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class StartsWithJsonBeanProcessorMatcher extends JsonBeanProcessorMatcher {
-   private String pattern;
+    private String pattern;
 
-   public StartsWithJsonBeanProcessorMatcher( String pattern ) {
-      this.pattern = pattern;
-   }
+    public StartsWithJsonBeanProcessorMatcher(String pattern) {
+        this.pattern = pattern;
+    }
 
-   public Object getMatch( Class target, Set set ) {
-      if( target != null && set != null && target.getName()
-            .startsWith( pattern ) ){
-         for( Iterator i = set.iterator(); i.hasNext(); ){
-            Class c = (Class) i.next();
-            if( c.getName()
-                  .startsWith( pattern ) ){
-               return c;
+    public Object getMatch(Class target, Set set) {
+        if (target != null && set != null && target.getName()
+            .startsWith(pattern)) {
+            for (Iterator i = set.iterator(); i.hasNext(); ) {
+                Class c = (Class) i.next();
+                if (c.getName()
+                    .startsWith(pattern)) {
+                    return c;
+                }
             }
-         }
-      }
+        }
 
-      return null;
-   }
+        return null;
+    }
 }
