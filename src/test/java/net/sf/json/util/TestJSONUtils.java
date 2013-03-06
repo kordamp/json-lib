@@ -21,7 +21,6 @@ import java.util.Collections;
 import junit.framework.TestCase;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
-import net.sf.json.JSONFunction;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
@@ -107,11 +106,6 @@ public class TestJSONUtils extends TestCase {
 
    public void testQuote_escapeChars() {
       assertEquals( "\"\\b\\t\\n\\r\\f\"", JSONUtils.quote( "\b\t\n\r\f" ) );
-   }
-
-   public void testQuote_jsonFunction() {
-      JSONFunction jsonFunction = new JSONFunction( "a" );
-      assertEquals( "function(){ a }", JSONUtils.quote( jsonFunction.toString() ) );
    }
 
    public void testQuote_nullString() {
