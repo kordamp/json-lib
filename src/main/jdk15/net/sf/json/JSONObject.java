@@ -725,6 +725,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
                      continue;
                   }
 
+                  if (Modifier.isStatic(field.getModifiers())) {
+                     continue;
+                  }
+
                   if( jsonConfig.isIgnoreTransientFields() && isTransient( field, jsonConfig ) ) {
                      continue;
                   }
