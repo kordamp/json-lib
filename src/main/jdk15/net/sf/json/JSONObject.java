@@ -729,7 +729,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
                      continue;
                   }
 
-                  if( jsonConfig.isIgnoreTransientFields() && isTransient( field, jsonConfig ) ) {
+                  if( jsonConfig.isIgnoreTransientFields() && isTransientField(field, jsonConfig) ) {
                      continue;
                   }
 
@@ -1285,14 +1285,22 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String,O
 
    private static boolean isTransientField( String name, Class beanClass, JsonConfig jsonConfig ) {
       try{
-         Field field = beanClass.getDeclaredField( name );
-         if((field.getModifiers() & Modifier.TRANSIENT) == Modifier.TRANSIENT) return true;
-         return isTransient(field, jsonConfig);
+          return isTransientField(beanClass.getDeclaredField(name), jsonConfig);
       }catch( Exception e ){
          log.info( "Error while inspecting field "+beanClass+"."+name+" for transient status." ,e );
       }
       return false;
    }
+
+    private static boolean isTransientField( Field field, JsonConfig jsonConfig ) {
+       try{
+          if((field.getModifiers() & Modifier.TRANSIENT) == Modifier.TRANSIENT) return true;
+          return isTransient(field, jsonConfig);
+       }catch( Exception e ){
+          log.info( "Error while inspecting field "+field+" for transient status." ,e );
+       }
+       return false;
+    }
 
    private static boolean isTransient( AnnotatedElement element, JsonConfig jsonConfig ) {
       for( Iterator annotations = jsonConfig.getIgnoreFieldAnnotations().iterator(); annotations.hasNext(); ) {
