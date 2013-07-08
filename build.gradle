@@ -20,7 +20,7 @@ dependencies {
     }
 
     groovy "org.codehaus.groovy:groovy-all:$groovyVersion"
-    compile('junit:junit:4.10')
+    compile('junit:junit:4.11')
     compileExcludingCommonsLogging('commons-beanutils:commons-beanutils:1.8.0')
     compileExcludingCommonsLogging('commons-collections:commons-collections:3.2.1')
     compileExcludingCommonsLogging('commons-lang:commons-lang:2.6')
