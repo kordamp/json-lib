@@ -16,60 +16,60 @@
 
 package net.sf.json.filters;
 
+import net.sf.json.util.PropertyFilter;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import net.sf.json.util.PropertyFilter;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class MappingPropertyFilter implements PropertyFilter {
-   private Map filters = new HashMap();
+    private Map filters = new HashMap();
 
-   public MappingPropertyFilter() {
-      this( null );
-   }
+    public MappingPropertyFilter() {
+        this(null);
+    }
 
-   public MappingPropertyFilter( Map filters ) {
-      if( filters != null ){
-         for( Iterator i = filters.entrySet()
-               .iterator(); i.hasNext(); ){
+    public MappingPropertyFilter(Map filters) {
+        if (filters != null) {
+            for (Iterator i = filters.entrySet()
+                .iterator(); i.hasNext(); ) {
+                Map.Entry entry = (Map.Entry) i.next();
+                Object key = entry.getKey();
+                Object filter = entry.getValue();
+                if (filter instanceof PropertyFilter) {
+                    this.filters.put(key, filter);
+                }
+            }
+        }
+    }
+
+    public void addPropertyFilter(Object target, PropertyFilter filter) {
+        if (filter != null) {
+            filters.put(target, filter);
+        }
+    }
+
+    public boolean apply(Object source, String name, Object value) {
+        for (Iterator i = filters.entrySet()
+            .iterator(); i.hasNext(); ) {
             Map.Entry entry = (Map.Entry) i.next();
             Object key = entry.getKey();
-            Object filter = entry.getValue();
-            if( filter instanceof PropertyFilter ){
-               this.filters.put( key, filter );
+            if (keyMatches(key, source, name, value)) {
+                PropertyFilter filter = (PropertyFilter) entry.getValue();
+                return filter.apply(source, name, value);
             }
-         }
-      }
-   }
+        }
+        return false;
+    }
 
-   public void addPropertyFilter( Object target, PropertyFilter filter ) {
-      if( filter != null ){
-         filters.put( target, filter );
-      }
-   }
+    public void removePropertyFilter(Object target) {
+        if (target != null) {
+            filters.remove(target);
+        }
+    }
 
-   public boolean apply( Object source, String name, Object value ) {
-      for( Iterator i = filters.entrySet()
-            .iterator(); i.hasNext(); ){
-         Map.Entry entry = (Map.Entry) i.next();
-         Object key = entry.getKey();
-         if( keyMatches( key, source, name, value ) ){
-            PropertyFilter filter = (PropertyFilter) entry.getValue();
-            return filter.apply( source, name, value );
-         }
-      }
-      return false;
-   }
-
-   public void removePropertyFilter( Object target ) {
-      if( target != null ){
-         filters.remove( target );
-      }
-   }
-
-   protected abstract boolean keyMatches( Object key, Object source, String name, Object value );
+    protected abstract boolean keyMatches(Object key, Object source, String name, Object value);
 }

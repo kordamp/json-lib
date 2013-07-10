@@ -20,15 +20,15 @@ package net.sf.json.regexp;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestPerl5RegexpMatcher extends AbstractRegexpMatcherTestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestPerl5RegexpMatcher.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestPerl5RegexpMatcher.class);
+    }
 
-   public TestPerl5RegexpMatcher( String name ) {
-      super( name );
-   }
+    public TestPerl5RegexpMatcher(String name) {
+        super(name);
+    }
 
-   protected RegexpMatcher getRegexpMatcher( String pattern ) {
-      return new Perl5RegexpMatcher( pattern );
-   }
+    protected RegexpMatcher getRegexpMatcher(String pattern) {
+        return new Perl5RegexpMatcher(pattern);
+    }
 }

@@ -25,34 +25,34 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class ValueBean {
-   private int value;
+    private int value;
 
-   public boolean equals( Object obj ) {
-      if( obj == this ){
-         return true;
-      }
-      if( obj == null ){
-         return false;
-      }
-      if( !ValueBean.class.isAssignableFrom( obj.getClass() ) ){
-         return false;
-      }
-      return EqualsBuilder.reflectionEquals( this, obj );
-   }
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!ValueBean.class.isAssignableFrom(obj.getClass())) {
+            return false;
+        }
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
 
-   public int getValue() {
-      return value;
-   }
+    public int getValue() {
+        return value;
+    }
 
-   public int hashCode() {
-      return HashCodeBuilder.reflectionHashCode( this );
-   }
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
 
-   public void setValue( int value ) {
-      this.value = value;
-   }
+    public void setValue(int value) {
+        this.value = value;
+    }
 
-   public String toString() {
-      return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
-   }
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

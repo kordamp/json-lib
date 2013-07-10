@@ -22,41 +22,41 @@ import junit.framework.TestSuite;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class AllTests extends TestSuite {
-   public static TestSuite suite() throws Exception {
-      TestSuite suite = new TestSuite();
-      suite.setName( "core" );
+    public static TestSuite suite() throws Exception {
+        TestSuite suite = new TestSuite();
+        suite.setName("core");
 
-      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_ObjectBean.class ) );
-      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_PrimitiveBean.class ) );
-      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_DynaBean.class ) );
-      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_JSONObject.class ) );
-      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_JSONString.class ) );
-      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_JSONTokener.class ) );
-      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_Map.class ) );
-      suite.addTest( new TestSuite( TestJSONObjectStaticBuilders_String.class ) );
+        suite.addTest(new TestSuite(TestJSONObjectStaticBuilders_ObjectBean.class));
+        suite.addTest(new TestSuite(TestJSONObjectStaticBuilders_PrimitiveBean.class));
+        suite.addTest(new TestSuite(TestJSONObjectStaticBuilders_DynaBean.class));
+        suite.addTest(new TestSuite(TestJSONObjectStaticBuilders_JSONObject.class));
+        suite.addTest(new TestSuite(TestJSONObjectStaticBuilders_JSONString.class));
+        suite.addTest(new TestSuite(TestJSONObjectStaticBuilders_JSONTokener.class));
+        suite.addTest(new TestSuite(TestJSONObjectStaticBuilders_Map.class));
+        suite.addTest(new TestSuite(TestJSONObjectStaticBuilders_String.class));
 
-      suite.addTest( new TestSuite( TestJSONArrayStaticBuilders_Array_DynaBean.class ) );
-      suite.addTest( new TestSuite( TestJSONArrayStaticBuilders_Collection_DynaBean.class ) );
-      suite.addTest( new TestSuite( TestJSONArrayStaticBuilders_JSONString.class ) );
-      suite.addTest( new TestSuite( TestJSONArrayStaticBuilders_String.class ) );
+        suite.addTest(new TestSuite(TestJSONArrayStaticBuilders_Array_DynaBean.class));
+        suite.addTest(new TestSuite(TestJSONArrayStaticBuilders_Collection_DynaBean.class));
+        suite.addTest(new TestSuite(TestJSONArrayStaticBuilders_JSONString.class));
+        suite.addTest(new TestSuite(TestJSONArrayStaticBuilders_String.class));
 
-      suite.addTest( new TestSuite( TestJSONFunction.class ) );
-      suite.addTest( new TestSuite( TestJSONArray.class ) );
-      suite.addTest( new TestSuite( TestJSONObject.class ) );
-      suite.addTest( new TestSuite( TestJSONSerializer.class ) );
-      suite.addTest( new TestSuite( TestJSONArrayAsJSON.class ) );
-      suite.addTest( new TestSuite( TestJSONNullAsJSON.class ) );
-      suite.addTest( new TestSuite( TestJSONObjectWithProcessors.class ) );
-      suite.addTest( new TestSuite( TestJSONObjectEqualsHashCodeCompareTo.class ) );
-      suite.addTest( new TestSuite( TestJSONArrayEqualsHashCodeCompareTo.class ) );
-      suite.addTest( new TestSuite( TestJSONObjectEvents.class ) );
-      suite.addTest( new TestSuite( TestJSONArrayEvents.class ) );
-      suite.addTest( new TestSuite( TestJSONObjectAsMap.class ) );
-      suite.addTest( new TestSuite( TestJSONArrayAsList.class ) );
+        suite.addTest(new TestSuite(TestJSONFunction.class));
+        suite.addTest(new TestSuite(TestJSONArray.class));
+        suite.addTest(new TestSuite(TestJSONObject.class));
+        suite.addTest(new TestSuite(TestJSONSerializer.class));
+        suite.addTest(new TestSuite(TestJSONArrayAsJSON.class));
+        suite.addTest(new TestSuite(TestJSONNullAsJSON.class));
+        suite.addTest(new TestSuite(TestJSONObjectWithProcessors.class));
+        suite.addTest(new TestSuite(TestJSONObjectEqualsHashCodeCompareTo.class));
+        suite.addTest(new TestSuite(TestJSONArrayEqualsHashCodeCompareTo.class));
+        suite.addTest(new TestSuite(TestJSONObjectEvents.class));
+        suite.addTest(new TestSuite(TestJSONArrayEvents.class));
+        suite.addTest(new TestSuite(TestJSONObjectAsMap.class));
+        suite.addTest(new TestSuite(TestJSONArrayAsList.class));
 
-      suite.addTest( new TestSuite( TestUserSubmitted.class ) );
-      suite.addTest( new TestSuite( TestJSONArrayCollections.class ) );
+        suite.addTest(new TestSuite(TestUserSubmitted.class));
+        suite.addTest(new TestSuite(TestJSONArrayCollections.class));
 
-      return suite;
-   }
+        return suite;
+    }
 }

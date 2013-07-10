@@ -23,17 +23,17 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class ArrayBean {
-   private BeanA[] beans;
+    private BeanA[] beans;
 
-   public BeanA[] getBeans() {
-      return beans;
-   }
+    public BeanA[] getBeans() {
+        return beans;
+    }
 
-   public void setBeans( BeanA[] beans ) {
-      this.beans = beans;
-   }
+    public void setBeans(BeanA[] beans) {
+        this.beans = beans;
+    }
 
-   public String toString() {
-      return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
-   }
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

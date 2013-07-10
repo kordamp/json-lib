@@ -22,7 +22,7 @@ import net.sf.json.util.PropertyFilter;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TruePropertyFilter implements PropertyFilter {
-   public boolean apply( Object source, String name, Object value ) {
-      return true;
-   }
+    public boolean apply(Object source, String name, Object value) {
+        return true;
+    }
 }

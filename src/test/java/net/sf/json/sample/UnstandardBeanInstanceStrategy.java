@@ -16,18 +16,18 @@
 
 package net.sf.json.sample;
 
-import java.lang.reflect.InvocationTargetException;
-
 import net.sf.json.JSONObject;
 import net.sf.json.util.NewBeanInstanceStrategy;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class UnstandardBeanInstanceStrategy extends NewBeanInstanceStrategy {
-   public Object newInstance( Class target, JSONObject source ) throws InstantiationException,
-         IllegalAccessException, SecurityException, NoSuchMethodException,
-         InvocationTargetException {
-      return new UnstandardBean( source.getInt( "id" ) );
-   }
+    public Object newInstance(Class target, JSONObject source) throws InstantiationException,
+        IllegalAccessException, SecurityException, NoSuchMethodException,
+        InvocationTargetException {
+        return new UnstandardBean(source.getInt("id"));
+    }
 }

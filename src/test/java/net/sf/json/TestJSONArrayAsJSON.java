@@ -20,42 +20,42 @@ package net.sf.json;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONArrayAsJSON extends AbstractJSONTest {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestJSONArrayAsJSON.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayAsJSON.class);
+    }
 
-   public TestJSONArrayAsJSON( String name ) {
-      super( name );
-   }
+    public TestJSONArrayAsJSON(String name) {
+        super(name);
+    }
 
-   protected int getIndent() {
-      return 2;
-   }
+    protected int getIndent() {
+        return 2;
+    }
 
-   protected int getIndentFactor() {
-      return 2;
-   }
+    protected int getIndentFactor() {
+        return 2;
+    }
 
-   protected Object[] getIsArrayExpectations() {
-      return new Object[] { Boolean.TRUE, new JSONArray() };
-   }
+    protected Object[] getIsArrayExpectations() {
+        return new Object[]{Boolean.TRUE, new JSONArray()};
+    }
 
-   protected Object[] getToStringExpectations1() {
-      return new Object[] { "[1,true,\"json\"]", JSONArray.fromObject( "[1,true,'json']" ) };
-   }
+    protected Object[] getToStringExpectations1() {
+        return new Object[]{"[1,true,\"json\"]", JSONArray.fromObject("[1,true,'json']")};
+    }
 
-   protected Object[] getToStringExpectations2() {
-      return new Object[] { "[\n" + "  1,\n" + "  true,\n" + "  \"json\"\n" + "]",
-            JSONArray.fromObject( "[1,true,'json']" ) };
-   }
+    protected Object[] getToStringExpectations2() {
+        return new Object[]{"[\n" + "  1,\n" + "  true,\n" + "  \"json\"\n" + "]",
+            JSONArray.fromObject("[1,true,'json']")};
+    }
 
-   protected Object[] getToStringExpectations3() {
-      return new Object[] { "  [\n" + "    1,\n" + "    true,\n" + "    \"json\"\n" + "  ]",
-            JSONArray.fromObject( "[1,true,'json']" ) };
+    protected Object[] getToStringExpectations3() {
+        return new Object[]{"  [\n" + "    1,\n" + "    true,\n" + "    \"json\"\n" + "  ]",
+            JSONArray.fromObject("[1,true,'json']")};
 
-   }
+    }
 
-   protected Object[] getWriteExpectations() {
-      return new Object[] { "[1,true,\"json\"]", JSONArray.fromObject( "[1,true,'json']" ) };
-   }
+    protected Object[] getWriteExpectations() {
+        return new Object[]{"[1,true,\"json\"]", JSONArray.fromObject("[1,true,'json']")};
+    }
 }

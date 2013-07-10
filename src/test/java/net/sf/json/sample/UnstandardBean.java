@@ -25,61 +25,61 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class UnstandardBean {
-   private boolean bool = true;
-   private int id;
-   private int integer = 42;
-   private String string = "json";
+    private boolean bool = true;
+    private int id;
+    private int integer = 42;
+    private String string = "json";
 
-   public UnstandardBean( int id ) {
-      this.id = id;
-   }
+    public UnstandardBean(int id) {
+        this.id = id;
+    }
 
-   public boolean equals( Object obj ) {
-      if( obj == this ){
-         return true;
-      }
-      if( obj == null ){
-         return false;
-      }
-      if( !UnstandardBean.class.isAssignableFrom( obj.getClass() ) ){
-         return false;
-      }
-      return EqualsBuilder.reflectionEquals( this, obj );
-   }
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!UnstandardBean.class.isAssignableFrom(obj.getClass())) {
+            return false;
+        }
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
 
-   public int getId() {
-      return id;
-   }
+    public int getId() {
+        return id;
+    }
 
-   public int getInteger() {
-      return integer;
-   }
+    public int getInteger() {
+        return integer;
+    }
 
-   public String getString() {
-      return string;
-   }
+    public String getString() {
+        return string;
+    }
 
-   public int hashCode() {
-      return HashCodeBuilder.reflectionHashCode( this );
-   }
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
 
-   public boolean isBool() {
-      return bool;
-   }
+    public boolean isBool() {
+        return bool;
+    }
 
-   public void setBool( boolean bool ) {
-      this.bool = bool;
-   }
+    public void setBool(boolean bool) {
+        this.bool = bool;
+    }
 
-   public void setInteger( int integer ) {
-      this.integer = integer;
-   }
+    public void setInteger(int integer) {
+        this.integer = integer;
+    }
 
-   public void setString( String string ) {
-      this.string = string;
-   }
+    public void setString(String string) {
+        this.string = string;
+    }
 
-   public String toString() {
-      return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
-   }
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

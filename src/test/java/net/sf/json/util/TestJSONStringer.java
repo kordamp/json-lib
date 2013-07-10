@@ -24,72 +24,72 @@ import net.sf.json.JSONObject;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONStringer extends TestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestJSONStringer.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONStringer.class);
+    }
 
-   public TestJSONStringer( String testName ) {
-      super( testName );
-   }
+    public TestJSONStringer(String testName) {
+        super(testName);
+    }
 
-   public void testCreateArray() {
-      JSONBuilder b = new JSONStringer().array()
-            .value( true )
-            .value( 1.1d )
-            .value( 2L )
-            .value( "text" )
+    public void testCreateArray() {
+        JSONBuilder b = new JSONStringer().array()
+            .value(true)
+            .value(1.1d)
+            .value(2L)
+            .value("text")
             .endArray();
-      assertEquals( "[true,1.1,2,\"text\"]", b.toString() );
-   }
+        assertEquals("[true,1.1,2,\"text\"]", b.toString());
+    }
 
-   public void testCreateEmptyArray() {
-      JSONBuilder b = new JSONStringer().array()
+    public void testCreateEmptyArray() {
+        JSONBuilder b = new JSONStringer().array()
             .endArray();
-      assertEquals( "[]", b.toString() );
-   }
+        assertEquals("[]", b.toString());
+    }
 
-   public void testCreateEmptyArrayWithNullObjects() {
-      JSONBuilder b = new JSONStringer().array()
-            .value( null )
-            .value( null )
+    public void testCreateEmptyArrayWithNullObjects() {
+        JSONBuilder b = new JSONStringer().array()
+            .value(null)
+            .value(null)
             .endArray();
-      assertEquals( "[null,null]", b.toString() );
-   }
+        assertEquals("[null,null]", b.toString());
+    }
 
-   public void testCreateEmptyObject() {
-      JSONBuilder b = new JSONStringer().object()
+    public void testCreateEmptyObject() {
+        JSONBuilder b = new JSONStringer().object()
             .endObject();
-      assertEquals( "{}", b.toString() );
-   }
+        assertEquals("{}", b.toString());
+    }
 
-   public void testCreateFunctionArray() {
-      JSONBuilder b = new JSONStringer().array()
-            .value( new JSONFunction( "var a = 1;" ) )
-            .value( new JSONFunction( "var b = 2;" ) )
+    public void testCreateFunctionArray() {
+        JSONBuilder b = new JSONStringer().array()
+            .value(new JSONFunction("var a = 1;"))
+            .value(new JSONFunction("var b = 2;"))
             .endArray();
-      assertEquals( "[function(){ var a = 1; },function(){ var b = 2; }]", b.toString() );
-   }
+        assertEquals("[function(){ var a = 1; },function(){ var b = 2; }]", b.toString());
+    }
 
-   public void testCreateSimpleObject() {
-      JSONBuilder b = new JSONStringer().object()
-            .key( "bool" )
-            .value( true )
-            .key( "numDouble" )
-            .value( 1.1d )
-            .key( "numInt" )
-            .value( 2 )
-            .key( "text" )
-            .value( "text" )
-            .key( "func" )
-            .value( new JSONFunction( "var a = 1;" ) )
+    public void testCreateSimpleObject() {
+        JSONBuilder b = new JSONStringer().object()
+            .key("bool")
+            .value(true)
+            .key("numDouble")
+            .value(1.1d)
+            .key("numInt")
+            .value(2)
+            .key("text")
+            .value("text")
+            .key("func")
+            .value(new JSONFunction("var a = 1;"))
             .endObject();
-      JSONObject jsonObj = JSONObject.fromObject( b.toString() );
-      assertEquals( Boolean.TRUE, jsonObj.get( "bool" ) );
-      assertEquals( new Double( 1.1d ), jsonObj.get( "numDouble" ) );
-      assertEquals( new Long( 2 ).longValue(), ((Number) jsonObj.get( "numInt" )).longValue() );
-      assertEquals( "text", jsonObj.get( "text" ) );
-      assertTrue( JSONUtils.isFunction( jsonObj.get( "func" ) ) );
-      assertEquals( "function(){ var a = 1; }", jsonObj.get( "func" )
-            .toString() );
-   }
+        JSONObject jsonObj = JSONObject.fromObject(b.toString());
+        assertEquals(Boolean.TRUE, jsonObj.get("bool"));
+        assertEquals(new Double(1.1d), jsonObj.get("numDouble"));
+        assertEquals(new Long(2).longValue(), ((Number) jsonObj.get("numInt")).longValue());
+        assertEquals("text", jsonObj.get("text"));
+        assertTrue(JSONUtils.isFunction(jsonObj.get("func")));
+        assertEquals("function(){ var a = 1; }", jsonObj.get("func")
+            .toString());
+    }
 }

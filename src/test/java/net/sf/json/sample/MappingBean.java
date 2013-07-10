@@ -23,17 +23,17 @@ import java.util.Map;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class MappingBean {
-   private Map attributes = new HashMap();
+    private Map attributes = new HashMap();
 
-   public void addAttribute( Object key, Object value ) {
-      this.attributes.put( key, value );
-   }
+    public void addAttribute(Object key, Object value) {
+        this.attributes.put(key, value);
+    }
 
-   public Map getAttributes() {
-      return attributes;
-   }
+    public Map getAttributes() {
+        return attributes;
+    }
 
-   public void setAttributes( Map attributes ) {
-      this.attributes = attributes;
-   }
+    public void setAttributes(Map attributes) {
+        this.attributes = attributes;
+    }
 }

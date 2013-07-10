@@ -15,29 +15,20 @@
  */
 package net.sf.json;
 
-import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-
 import junit.framework.TestCase;
-import net.sf.json.sample.GenericsBean;
-import net.sf.json.sample.GenericsBean.GenericsInternalBean;
-
-import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  * @author Matt Small <msmall@wavemaker.com>
  */
 public class TestJSONArrayCollection extends TestCase {
 
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestJSONArrayCollection.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayCollection.class);
+    }
 
-   public TestJSONArrayCollection( String testName ) {
-      super( testName );
-   }
+    public TestJSONArrayCollection(String testName) {
+        super(testName);
+    }
 
    /*
    public void testErrorInList() throws Exception {
@@ -181,6 +172,7 @@ public class TestJSONArrayCollection extends TestCase {
       assertTrue( c.contains( 12 ) );
    }
    */
-   
-   public void testNOOP() {}
+
+    public void testNOOP() {
+    }
 }

@@ -23,130 +23,130 @@ import java.math.BigInteger;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class NumberBean {
-   private BigDecimal pbigdec;
-   private BigInteger pbigint;
-   private byte pbyte;
-   private double pdouble;
-   private float pfloat;
-   private int pint;
-   private long plong;
-   private short pshort;
-   private Byte pwbyte;
-   private Double pwdouble;
-   private Float pwfloat;
-   private Integer pwint;
-   private Long pwlong;
-   private Short pwshort;
+    private BigDecimal pbigdec;
+    private BigInteger pbigint;
+    private byte pbyte;
+    private double pdouble;
+    private float pfloat;
+    private int pint;
+    private long plong;
+    private short pshort;
+    private Byte pwbyte;
+    private Double pwdouble;
+    private Float pwfloat;
+    private Integer pwint;
+    private Long pwlong;
+    private Short pwshort;
 
-   public BigDecimal getPbigdec() {
-      return pbigdec;
-   }
+    public BigDecimal getPbigdec() {
+        return pbigdec;
+    }
 
-   public BigInteger getPbigint() {
-      return pbigint;
-   }
+    public BigInteger getPbigint() {
+        return pbigint;
+    }
 
-   public byte getPbyte() {
-      return pbyte;
-   }
+    public byte getPbyte() {
+        return pbyte;
+    }
 
-   public double getPdouble() {
-      return pdouble;
-   }
+    public double getPdouble() {
+        return pdouble;
+    }
 
-   public float getPfloat() {
-      return pfloat;
-   }
+    public float getPfloat() {
+        return pfloat;
+    }
 
-   public int getPint() {
-      return pint;
-   }
+    public int getPint() {
+        return pint;
+    }
 
-   public long getPlong() {
-      return plong;
-   }
+    public long getPlong() {
+        return plong;
+    }
 
-   public short getPshort() {
-      return pshort;
-   }
+    public short getPshort() {
+        return pshort;
+    }
 
-   public Byte getPwbyte() {
-      return pwbyte;
-   }
+    public Byte getPwbyte() {
+        return pwbyte;
+    }
 
-   public Double getPwdouble() {
-      return pwdouble;
-   }
+    public Double getPwdouble() {
+        return pwdouble;
+    }
 
-   public Float getPwfloat() {
-      return pwfloat;
-   }
+    public Float getPwfloat() {
+        return pwfloat;
+    }
 
-   public Integer getPwint() {
-      return pwint;
-   }
+    public Integer getPwint() {
+        return pwint;
+    }
 
-   public Long getPwlong() {
-      return pwlong;
-   }
+    public Long getPwlong() {
+        return pwlong;
+    }
 
-   public Short getPwshort() {
-      return pwshort;
-   }
+    public Short getPwshort() {
+        return pwshort;
+    }
 
-   public void setPbigdec( BigDecimal pbigdec ) {
-      this.pbigdec = pbigdec;
-   }
+    public void setPbigdec(BigDecimal pbigdec) {
+        this.pbigdec = pbigdec;
+    }
 
-   public void setPbigint( BigInteger pbigint ) {
-      this.pbigint = pbigint;
-   }
+    public void setPbigint(BigInteger pbigint) {
+        this.pbigint = pbigint;
+    }
 
-   public void setPbyte( byte pbyte ) {
-      this.pbyte = pbyte;
-   }
+    public void setPbyte(byte pbyte) {
+        this.pbyte = pbyte;
+    }
 
-   public void setPdouble( double pdouble ) {
-      this.pdouble = pdouble;
-   }
+    public void setPdouble(double pdouble) {
+        this.pdouble = pdouble;
+    }
 
-   public void setPfloat( float pfloat ) {
-      this.pfloat = pfloat;
-   }
+    public void setPfloat(float pfloat) {
+        this.pfloat = pfloat;
+    }
 
-   public void setPint( int pint ) {
-      this.pint = pint;
-   }
+    public void setPint(int pint) {
+        this.pint = pint;
+    }
 
-   public void setPlong( long plong ) {
-      this.plong = plong;
-   }
+    public void setPlong(long plong) {
+        this.plong = plong;
+    }
 
-   public void setPshort( short pshort ) {
-      this.pshort = pshort;
-   }
+    public void setPshort(short pshort) {
+        this.pshort = pshort;
+    }
 
-   public void setPwbyte( Byte pwbyte ) {
-      this.pwbyte = pwbyte;
-   }
+    public void setPwbyte(Byte pwbyte) {
+        this.pwbyte = pwbyte;
+    }
 
-   public void setPwdouble( Double pwdouble ) {
-      this.pwdouble = pwdouble;
-   }
+    public void setPwdouble(Double pwdouble) {
+        this.pwdouble = pwdouble;
+    }
 
-   public void setPwfloat( Float pwfloat ) {
-      this.pwfloat = pwfloat;
-   }
+    public void setPwfloat(Float pwfloat) {
+        this.pwfloat = pwfloat;
+    }
 
-   public void setPwint( Integer pwint ) {
-      this.pwint = pwint;
-   }
+    public void setPwint(Integer pwint) {
+        this.pwint = pwint;
+    }
 
-   public void setPwlong( Long pwlong ) {
-      this.pwlong = pwlong;
-   }
+    public void setPwlong(Long pwlong) {
+        this.pwlong = pwlong;
+    }
 
-   public void setPwshort( Short pwshort ) {
-      this.pwshort = pwshort;
-   }
+    public void setPwshort(Short pwshort) {
+        this.pwshort = pwshort;
+    }
 }

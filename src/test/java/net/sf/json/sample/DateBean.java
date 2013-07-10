@@ -22,13 +22,13 @@ import java.util.Date;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class DateBean extends ValueBean {
-   private Date date;
+    private Date date;
 
-   public Date getDate() {
-      return date;
-   }
+    public Date getDate() {
+        return date;
+    }
 
-   public void setDate( Date date ) {
-      this.date = date;
-   }
+    public void setDate(Date date) {
+        this.date = date;
+    }
 }

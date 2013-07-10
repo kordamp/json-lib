@@ -16,10 +16,10 @@
 
 package net.sf.json.util;
 
+import net.sf.json.JSONObject;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-
-import net.sf.json.JSONObject;
 
 /**
  * Base class for creating Bean instances.<br>
@@ -30,45 +30,48 @@ import net.sf.json.JSONObject;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class NewBeanInstanceStrategy {
-   /** Calls Class.newInstance() */
-   public static final NewBeanInstanceStrategy DEFAULT = new DefaultNewBeanInstanceStrategy();
+    /**
+     * Calls Class.newInstance()
+     */
+    public static final NewBeanInstanceStrategy DEFAULT = new DefaultNewBeanInstanceStrategy();
 
-   /**
-    * Creates a new instance.
-    *
-    * @param target the source class
-    * @param source additional properties that may be needed to create the
-    *        instance
-    */
-   public abstract Object newInstance( Class target, JSONObject source )
-         throws InstantiationException, IllegalAccessException, SecurityException,
-         NoSuchMethodException, InvocationTargetException;
+    /**
+     * Creates a new instance.
+     *
+     * @param target the source class
+     * @param source additional properties that may be needed to create the
+     *               instance
+     */
+    public abstract Object newInstance(Class target, JSONObject source)
+        throws InstantiationException, IllegalAccessException, SecurityException,
+        NoSuchMethodException, InvocationTargetException;
 
-   private static final class DefaultNewBeanInstanceStrategy extends NewBeanInstanceStrategy {
-      private static final Object[] EMPTY_ARGS = new Object[0];
-      private static final Class[] EMPTY_PARAM_TYPES = new Class[0];
+    private static final class DefaultNewBeanInstanceStrategy extends NewBeanInstanceStrategy {
+        private static final Object[] EMPTY_ARGS = new Object[0];
+        private static final Class[] EMPTY_PARAM_TYPES = new Class[0];
 
-      public Object newInstance( Class target, JSONObject source ) throws InstantiationException,
+        public Object newInstance(Class target, JSONObject source) throws InstantiationException,
             IllegalAccessException, SecurityException, NoSuchMethodException,
             InvocationTargetException {
-         if( target != null ){
-            Constructor c = target.getDeclaredConstructor( EMPTY_PARAM_TYPES );
-            c.setAccessible( true );
-            try {
-               return c.newInstance( EMPTY_ARGS );
-            } catch ( InstantiationException e ) {
-               // getCause() was added on jdk 1.4
-               String cause = "";
-               try { cause = e.getCause() != null ? "\n"+e.getCause().getMessage() : ""; }
-               catch( Throwable t ) { /* ignore */ }
-               throw new InstantiationException(
-                     "Instantiation of \"" +  target + "\" failed. " +
-                     "It's probably because class is an interface, " +
-                     "abstract class, array class, primitive type or void." +
-                     cause );
+            if (target != null) {
+                Constructor c = target.getDeclaredConstructor(EMPTY_PARAM_TYPES);
+                c.setAccessible(true);
+                try {
+                    return c.newInstance(EMPTY_ARGS);
+                } catch (InstantiationException e) {
+                    // getCause() was added on jdk 1.4
+                    String cause = "";
+                    try {
+                        cause = e.getCause() != null ? "\n" + e.getCause().getMessage() : "";
+                    } catch (Throwable t) { /* ignore */ }
+                    throw new InstantiationException(
+                        "Instantiation of \"" + target + "\" failed. " +
+                            "It's probably because class is an interface, " +
+                            "abstract class, array class, primitive type or void." +
+                            cause);
+                }
             }
-         }
-         return null;
-      }
-   }
+            return null;
+        }
+    }
 }

@@ -16,76 +16,76 @@
 
 package net.sf.json;
 
+import junit.framework.TestCase;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import junit.framework.TestCase;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONObjectAsMap extends TestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestJSONObjectAsMap.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectAsMap.class);
+    }
 
-   private JSONObject jsonObject;
+    private JSONObject jsonObject;
 
-   public TestJSONObjectAsMap( String name ) {
-      super( name );
-   }
+    public TestJSONObjectAsMap(String name) {
+        super(name);
+    }
 
-   public void testClear() {
-      assertEquals( 6, jsonObject.size() );
-      jsonObject.clear();
-      assertEquals( 0, jsonObject.size() );
-   }
+    public void testClear() {
+        assertEquals(6, jsonObject.size());
+        jsonObject.clear();
+        assertEquals(0, jsonObject.size());
+    }
 
-   public void testContainsKey() {
-      assertTrue( jsonObject.containsKey( "func" ) );
-      assertFalse( jsonObject.containsKey( "bogus" ) );
-   }
+    public void testContainsKey() {
+        assertTrue(jsonObject.containsKey("func"));
+        assertFalse(jsonObject.containsKey("bogus"));
+    }
 
-   public void testContainsValue() {
-      assertTrue( jsonObject.containsValue( "string" ) );
-   }
+    public void testContainsValue() {
+        assertTrue(jsonObject.containsValue("string"));
+    }
 
-   public void testIsEmpty() {
-      assertFalse( jsonObject.isEmpty() );
-   }
+    public void testIsEmpty() {
+        assertFalse(jsonObject.isEmpty());
+    }
 
-   public void testPut() {
-      String key = "key";
-      Object value = "value";
-      jsonObject.put( key, value );
-      assertEquals( value, jsonObject.get( key ) );
-   }
+    public void testPut() {
+        String key = "key";
+        Object value = "value";
+        jsonObject.put(key, value);
+        assertEquals(value, jsonObject.get(key));
+    }
 
-   public void testPutAll() {
-      JSONObject json = new JSONObject();
-      Map map = new HashMap();
-      map.put( "key", "value" );
-      json.putAll( map );
-      assertEquals( 1, json.size() );
-      assertEquals( "value", json.get( "key" ) );
-      map.put( "key", "value2" );
-      json.putAll( map );
-      assertEquals( 1, json.size() );
-      assertEquals( "value2", json.get( "key" ) );
-   }
+    public void testPutAll() {
+        JSONObject json = new JSONObject();
+        Map map = new HashMap();
+        map.put("key", "value");
+        json.putAll(map);
+        assertEquals(1, json.size());
+        assertEquals("value", json.get("key"));
+        map.put("key", "value2");
+        json.putAll(map);
+        assertEquals(1, json.size());
+        assertEquals("value2", json.get("key"));
+    }
 
-   public void testRemove() {
-      assertTrue( jsonObject.has( "func" ) );
-      jsonObject.remove( "func" );
-      assertFalse( jsonObject.has( "func" ) );
-   }
+    public void testRemove() {
+        assertTrue(jsonObject.has("func"));
+        jsonObject.remove("func");
+        assertFalse(jsonObject.has("func"));
+    }
 
-   protected void setUp() throws Exception {
-      jsonObject = new JSONObject().element( "int", "1" )
-            .element( "long", "1" )
-            .element( "boolean", "true" )
-            .element( "string", "string" )
-            .element( "func", "function(){ return this; }" )
-            .element( "array", "[1,2,3]" );
-   }
+    protected void setUp() throws Exception {
+        jsonObject = new JSONObject().element("int", "1")
+            .element("long", "1")
+            .element("boolean", "true")
+            .element("string", "string")
+            .element("func", "function(){ return this; }")
+            .element("array", "[1,2,3]");
+    }
 }

@@ -15,27 +15,22 @@
  */
 package net.sf.json;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import junit.framework.TestCase;
-import net.sf.json.sample.GenericsBean;
-import net.sf.json.sample.GenericsBean.GenericsInternalBean;
+
+import java.util.List;
 
 /**
  * @author Matt Small <msmall@wavemaker.com>
  */
 public class TestGenerics extends TestCase {
 
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestGenerics.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestGenerics.class);
+    }
 
-   public TestGenerics( String testName ) {
-      super( testName );
-   }
+    public TestGenerics(String testName) {
+        super(testName);
+    }
 
    /*
    public void testBasicList() throws Exception {
@@ -134,17 +129,18 @@ public class TestGenerics extends TestCase {
    }
    */
 
-   public void testNOOP() {}
+    public void testNOOP() {
+    }
 
-   public static class OnlyListBean {
-      private List<String> stringList;
+    public static class OnlyListBean {
+        private List<String> stringList;
 
-      public List<String> getStringList() {
-         return stringList;
-      }
+        public List<String> getStringList() {
+            return stringList;
+        }
 
-      public void setStringList( List<String> stringList ) {
-         this.stringList = stringList;
-      }
-   }
+        public void setStringList(List<String> stringList) {
+            this.stringList = stringList;
+        }
+    }
 }

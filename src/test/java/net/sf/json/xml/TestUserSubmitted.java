@@ -27,61 +27,61 @@ import net.sf.json.test.JSONAssert;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestUserSubmitted extends TestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestUserSubmitted.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestUserSubmitted.class);
+    }
 
-   public TestUserSubmitted( String name ) {
-      super( name );
-   }
+    public TestUserSubmitted(String name) {
+        super(name);
+    }
 
-   public void testReadFromXMLToJSON_1735732() throws Exception {
-      // bug 1735732
+    public void testReadFromXMLToJSON_1735732() throws Exception {
+        // bug 1735732
 
-      XMLSerializer xmlSerializer = new XMLSerializer();
+        XMLSerializer xmlSerializer = new XMLSerializer();
 
-      JSONObject actual = (JSONObject) xmlSerializer.readFromFile( "net/sf/json/xml/1735732.xml" );
-      JSONObject expected = new JSONObject().element( "@xmlns:ns2",
-            "http://schemas.foo.com/HelloWorld" )
-            .element( "item", new JSONObject().element( "age", "2 5" )
-                  .element( "name", "emp1" ) )
-            .accumulate( "item", new JSONObject().element( "age", "2" )
-                  .element( "name", "emp2" ) );
-      JSONAssert.assertEquals( expected, actual );
-   }
+        JSONObject actual = (JSONObject) xmlSerializer.readFromFile("net/sf/json/xml/1735732.xml");
+        JSONObject expected = new JSONObject().element("@xmlns:ns2",
+            "http://schemas.foo.com/HelloWorld")
+            .element("item", new JSONObject().element("age", "2 5")
+                .element("name", "emp1"))
+            .accumulate("item", new JSONObject().element("age", "2")
+                .element("name", "emp2"));
+        JSONAssert.assertEquals(expected, actual);
+    }
 
-   public void testReadFromXMLToJSON_1739066() throws Exception {
-      // bug 1739066
+    public void testReadFromXMLToJSON_1739066() throws Exception {
+        // bug 1739066
 
-      XMLSerializer xmlSerializer = new XMLSerializer();
-      xmlSerializer.setTrimSpaces( true );
+        XMLSerializer xmlSerializer = new XMLSerializer();
+        xmlSerializer.setTrimSpaces(true);
 
-      JSONObject actual = (JSONObject) xmlSerializer.readFromFile( "net/sf/json/xml/1739066.xml" );
-      JSONObject expected = new JSONObject().element( "Address", "http://localhost:0/te stToString" )
-            .element( "@xmlns", "http://www.w3.org/2005/08/addressing" )
+        JSONObject actual = (JSONObject) xmlSerializer.readFromFile("net/sf/json/xml/1739066.xml");
+        JSONObject expected = new JSONObject().element("Address", "http://localhost:0/te stToString")
+            .element("@xmlns", "http://www.w3.org/2005/08/addressing")
             .element(
-                  "Metadata",
-                  new JSONObject().element( "@xmlns:wsa-wsdl",
-                        "http://www.w3.org/2006/01/wsdl-instance" )
-                        .element( "@wsa-wsdl:wsdlLocation", "file:///b.wsdl" )
-                        .element(
-                              "ns3:InterfaceName",
-                              new JSONObject().element( "@xmlns:tns", "http://com.iona.cxf/GreetMe" )
-                                    .element( "@xmlns:ns3",
-                                          "http://www.w3.org/2005/02/addressing/wsdl" )
-                                    .element( "#text", "tns:GreetMePortType" ) )
-                        .element(
-                              "ns3:ServiceName",
-                              new JSONObject().element( "@EndpointName", "GreetMePort" )
-                                    .element( "@xmlns:tns", "http://com.iona.cxf/GreetMe" )
-                                    .element( "@xmlns:ns3",
-                                          "http://www.w3.org/2005/02/addressing/wsdl" )
-                                    .element( "#text", "tns:GreetMeService" ) ) );
-      JSONAssert.assertEquals( expected, actual );
-   }
+                "Metadata",
+                new JSONObject().element("@xmlns:wsa-wsdl",
+                    "http://www.w3.org/2006/01/wsdl-instance")
+                    .element("@wsa-wsdl:wsdlLocation", "file:///b.wsdl")
+                    .element(
+                        "ns3:InterfaceName",
+                        new JSONObject().element("@xmlns:tns", "http://com.iona.cxf/GreetMe")
+                            .element("@xmlns:ns3",
+                                "http://www.w3.org/2005/02/addressing/wsdl")
+                            .element("#text", "tns:GreetMePortType"))
+                    .element(
+                        "ns3:ServiceName",
+                        new JSONObject().element("@EndpointName", "GreetMePort")
+                            .element("@xmlns:tns", "http://com.iona.cxf/GreetMe")
+                            .element("@xmlns:ns3",
+                                "http://www.w3.org/2005/02/addressing/wsdl")
+                            .element("#text", "tns:GreetMeService")));
+        JSONAssert.assertEquals(expected, actual);
+    }
 
-   public void testIgnoreWhitespaceWhileReading() {
-      String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    public void testIgnoreWhitespaceWhileReading() {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
             + "<ARCXML version=\"1.1\">\n"
             + "<RESPONSE>\n"
             + "<FEATURES>\n"
@@ -110,11 +110,11 @@ public class TestUserSubmitted extends TestCase {
             + "<ENVELOPE minx=\"-178.216552734375\" miny=\"18.9254779815674\" maxx=\"179.775939941406\" maxy=\"71.3514404296875\"/>\n"
             + "</FEATURES>\n" + "</RESPONSE>\n" + "</ARCXML>\n";
 
-      XMLSerializer xmlSerializer = new XMLSerializer();
-      xmlSerializer.setSkipWhitespace( true );
-      JSON json1 = xmlSerializer.read( xml );
+        XMLSerializer xmlSerializer = new XMLSerializer();
+        xmlSerializer.setSkipWhitespace(true);
+        JSON json1 = xmlSerializer.read(xml);
 
-      xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+        xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
             + "<ARCXML version=\"1.1\">"
             + "<RESPONSE>"
             + "<FEATURES>"
@@ -142,52 +142,52 @@ public class TestUserSubmitted extends TestCase {
             + "<FEATURECOUNT count=\"1\" hasmore=\"false\" />"
             + "<ENVELOPE minx=\"-178.216552734375\" miny=\"18.9254779815674\" maxx=\"179.775939941406\" maxy=\"71.3514404296875\"/>"
             + "</FEATURES>" + "</RESPONSE>" + "</ARCXML>";
-      JSON json2 = xmlSerializer.read( xml );
-      Assertions.assertEquals( json2, json1 );
-   }
+        JSON json2 = xmlSerializer.read(xml);
+        Assertions.assertEquals(json2, json1);
+    }
 
-   public void testXMLRoundtrip() {
-      String json = "{\"entries\": [ { \"credits\": \"p1\", \"id\": 1, \"status\": true, \"text\": \"1\" }, { \"credits\": \"p2\", \"id\": 2, \"status\": true, \"text\": \"2\" } ]}";
-      JSONObject json1 = JSONObject.fromObject( json );
-      XMLSerializer xmlSerializer = new XMLSerializer();
-      String xml =  xmlSerializer.write(json1);
-      JSONObject json2 = (JSONObject) xmlSerializer.read( xml );
-      JSONAssert.assertEquals( json1, json2 );
-      assertTrue(json1.getJSONArray( "entries" ).getJSONObject( 0 ).get( "id" ) instanceof Integer );
-      assertTrue(json2.getJSONArray( "entries" ).getJSONObject( 0 ).get( "id" ) instanceof Integer );
-   }
-   
-   public void testXMLWithArraySingleElement() {
-      String testXML =
-                        "    <rate>" +
-                        "      <rateBreakdown>\n" +
-                        "        <rate>\n" +
-                        "          <date>\n" +
-                        "            <day>15</day>\n" +
-                        "            <month>1</month>\n" +
-                        "            <year>2007</year>\n" +
-                        "          </date>\n" +
-                        "          <amount>109.74</amount>\n" +
-                        "        </rate>\n" +
-                        "      </rateBreakdown>" +
-                        "      <totalAmount>219.48</totalAmount>\n" +
-                        "    </rate>";
+    public void testXMLRoundtrip() {
+        String json = "{\"entries\": [ { \"credits\": \"p1\", \"id\": 1, \"status\": true, \"text\": \"1\" }, { \"credits\": \"p2\", \"id\": 2, \"status\": true, \"text\": \"2\" } ]}";
+        JSONObject json1 = JSONObject.fromObject(json);
+        XMLSerializer xmlSerializer = new XMLSerializer();
+        String xml = xmlSerializer.write(json1);
+        JSONObject json2 = (JSONObject) xmlSerializer.read(xml);
+        JSONAssert.assertEquals(json1, json2);
+        assertTrue(json1.getJSONArray("entries").getJSONObject(0).get("id") instanceof Integer);
+        assertTrue(json2.getJSONArray("entries").getJSONObject(0).get("id") instanceof Integer);
+    }
 
-      JSON expected = JSONSerializer.toJSON("{\"rate\":{\"rateBreakdown\":[{\"amount\":\"109.74\",\"date\":{\"month\":\"1\",\"day\":\"15\",\"year\":\"2007\"}}],\"totalAmount\":\"219.48\"}}");
+    public void testXMLWithArraySingleElement() {
+        String testXML =
+            "    <rate>" +
+                "      <rateBreakdown>\n" +
+                "        <rate>\n" +
+                "          <date>\n" +
+                "            <day>15</day>\n" +
+                "            <month>1</month>\n" +
+                "            <year>2007</year>\n" +
+                "          </date>\n" +
+                "          <amount>109.74</amount>\n" +
+                "        </rate>\n" +
+                "      </rateBreakdown>" +
+                "      <totalAmount>219.48</totalAmount>\n" +
+                "    </rate>";
 
-      // rate.rateBreakdown.rate should be a single entry array.
+        JSON expected = JSONSerializer.toJSON("{\"rate\":{\"rateBreakdown\":[{\"amount\":\"109.74\",\"date\":{\"month\":\"1\",\"day\":\"15\",\"year\":\"2007\"}}],\"totalAmount\":\"219.48\"}}");
 
-      JSONObject actual = convertXML( testXML );
-      assertNotNull( actual );
-      Assertions.assertEquals( expected, actual );
-   }
+        // rate.rateBreakdown.rate should be a single entry array.
 
-   private JSONObject convertXML( String testXML ) {
-      XMLSerializer xmlSerializer = new XMLSerializer();
-      xmlSerializer.setSkipWhitespace( true );
-      xmlSerializer.setArrayName( "rate" );
-      xmlSerializer.setForceTopLevelObject( true );
-      JSON jsonElement = xmlSerializer.read( testXML );
-      return (JSONObject) jsonElement;
-   }
+        JSONObject actual = convertXML(testXML);
+        assertNotNull(actual);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    private JSONObject convertXML(String testXML) {
+        XMLSerializer xmlSerializer = new XMLSerializer();
+        xmlSerializer.setSkipWhitespace(true);
+        xmlSerializer.setArrayName("rate");
+        xmlSerializer.setForceTopLevelObject(true);
+        JSON jsonElement = xmlSerializer.read(testXML);
+        return (JSONObject) jsonElement;
+    }
 }

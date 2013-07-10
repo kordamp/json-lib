@@ -22,19 +22,21 @@ import junit.framework.TestCase;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestNotPropertyFilter extends TestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestNotPropertyFilter.class );
-   }
-   public TestNotPropertyFilter( String testName ) {
-      super( testName );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestNotPropertyFilter.class);
+    }
 
-   public void testApply_true() {
-      NotPropertyFilter filter = new NotPropertyFilter(new TruePropertyFilter());
-      assertFalse( filter.apply( null, null, null ) );
-   }
-   public void testApply_false() {
-      NotPropertyFilter filter = new NotPropertyFilter(new FalsePropertyFilter());
-      assertTrue( filter.apply( null, null, null ) );
-   }
+    public TestNotPropertyFilter(String testName) {
+        super(testName);
+    }
+
+    public void testApply_true() {
+        NotPropertyFilter filter = new NotPropertyFilter(new TruePropertyFilter());
+        assertFalse(filter.apply(null, null, null));
+    }
+
+    public void testApply_false() {
+        NotPropertyFilter filter = new NotPropertyFilter(new FalsePropertyFilter());
+        assertTrue(filter.apply(null, null, null));
+    }
 }

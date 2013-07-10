@@ -26,21 +26,21 @@ import net.sf.json.JsonConfig;
  */
 public class JsDateJsonValueProcessor implements JsonValueProcessor {
 
-   private JsonBeanProcessor processor;
+    private JsonBeanProcessor processor;
 
-   public JsDateJsonValueProcessor() {
-      processor = new JsDateJsonBeanProcessor();
-   }
+    public JsDateJsonValueProcessor() {
+        processor = new JsDateJsonBeanProcessor();
+    }
 
-   public Object processArrayValue( Object value, JsonConfig jsonConfig ) {
-      return process( value, jsonConfig );
-   }
+    public Object processArrayValue(Object value, JsonConfig jsonConfig) {
+        return process(value, jsonConfig);
+    }
 
-   public Object processObjectValue( String key, Object value, JsonConfig jsonConfig ) {
-      return process( value, jsonConfig );
-   }
+    public Object processObjectValue(String key, Object value, JsonConfig jsonConfig) {
+        return process(value, jsonConfig);
+    }
 
-   private Object process( Object value, JsonConfig jsonConfig ) {
-      return processor.processBean( value, jsonConfig );
-   }
+    private Object process(Object value, JsonConfig jsonConfig) {
+        return processor.processBean(value, jsonConfig);
+    }
 }

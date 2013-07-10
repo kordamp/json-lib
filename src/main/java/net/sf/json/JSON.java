@@ -16,8 +16,8 @@
 package net.sf.json;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.io.Serializable;
+import java.io.Writer;
 
 /**
  * Marker interface, identifies a valid JSON value.<br>
@@ -27,66 +27,66 @@ import java.io.Serializable;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public interface JSON extends Serializable {
-   /**
-    * Returns true if this object is a JSONArray, false otherwise.
-    */
-   boolean isArray();
+    /**
+     * Returns true if this object is a JSONArray, false otherwise.
+     */
+    boolean isArray();
 
-   /**
-    * Returns true if this object has no elements or keys.
-    *
-    * @throws JSONException if called on a 'null' object
-    */
-   boolean isEmpty();
+    /**
+     * Returns true if this object has no elements or keys.
+     *
+     * @throws JSONException if called on a 'null' object
+     */
+    boolean isEmpty();
 
-   /**
-    * Returns the number of properties in an object or the size of the array.
-    *
-    * @return the size of an json object or array
-    * @throws JSONException if called on a 'null' object
-    */
-   int size();
+    /**
+     * Returns the number of properties in an object or the size of the array.
+     *
+     * @return the size of an json object or array
+     * @throws JSONException if called on a 'null' object
+     */
+    int size();
 
-   /**
-    * Make a prettyprinted JSON text.
-    * <p>
-    * Warning: This method assumes that the data structure is acyclical.
-    *
-    * @param indentFactor The number of spaces to add to each level of
-    *        indentation.
-    * @return a printable, displayable, portable, transmittable representation
-    *         of the object, beginning with <code>{</code>&nbsp;<small>(left
-    *         brace)</small> and ending with <code>}</code>&nbsp;<small>(right
-    *         brace)</small>.
-    * @throws JSONException If the object contains an invalid number.
-    */
-   String toString( int indentFactor );
+    /**
+     * Make a prettyprinted JSON text.
+     * <p/>
+     * Warning: This method assumes that the data structure is acyclical.
+     *
+     * @param indentFactor The number of spaces to add to each level of
+     *                     indentation.
+     * @return a printable, displayable, portable, transmittable representation
+     *         of the object, beginning with <code>{</code>&nbsp;<small>(left
+     *         brace)</small> and ending with <code>}</code>&nbsp;<small>(right
+     *         brace)</small>.
+     * @throws JSONException If the object contains an invalid number.
+     */
+    String toString(int indentFactor);
 
-   /**
-    * Make a prettyprinted JSON text.
-    * <p>
-    * Warning: This method assumes that the data structure is acyclical.
-    *
-    * @param indentFactor The number of spaces to add to each level of
-    *        indentation.
-    * @param indent The indentation of the top level.
-    * @return a printable, displayable, transmittable representation of the
-    *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
-    *         and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
-    * @throws JSONException If the object contains an invalid number.
-    */
-   String toString( int indentFactor, int indent );
+    /**
+     * Make a prettyprinted JSON text.
+     * <p/>
+     * Warning: This method assumes that the data structure is acyclical.
+     *
+     * @param indentFactor The number of spaces to add to each level of
+     *                     indentation.
+     * @param indent       The indentation of the top level.
+     * @return a printable, displayable, transmittable representation of the
+     *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
+     *         and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
+     * @throws JSONException If the object contains an invalid number.
+     */
+    String toString(int indentFactor, int indent);
 
-   /**
-    * Write the contents as JSON text to a writer. For compactness, no
-    * whitespace is added.
-    * <p>
-    * Warning: This method assumes that the data structure is acyclical.
-    *
-    * @return The writer.
-    * @throws JSONException
-    */
-   Writer write( Writer writer ) throws IOException;
+    /**
+     * Write the contents as JSON text to a writer. For compactness, no
+     * whitespace is added.
+     * <p/>
+     * Warning: This method assumes that the data structure is acyclical.
+     *
+     * @return The writer.
+     * @throws JSONException
+     */
+    Writer write(Writer writer) throws IOException;
 
     /**
      * Writes the canonicalized form of this JSON object.

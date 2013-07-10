@@ -23,17 +23,17 @@ import java.util.List;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class ListingBean {
-   private List attributes = new ArrayList();
+    private List attributes = new ArrayList();
 
-   public void addAttribute( Object value ) {
-      this.attributes.add( value );
-   }
+    public void addAttribute(Object value) {
+        this.attributes.add(value);
+    }
 
-   public List getAttributes() {
-      return attributes;
-   }
+    public List getAttributes() {
+        return attributes;
+    }
 
-   public void setAttributes( List attributes ) {
-      this.attributes = attributes;
-   }
+    public void setAttributes(List attributes) {
+        this.attributes = attributes;
+    }
 }

@@ -20,21 +20,21 @@ package net.sf.json;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestJSONArrayStaticBuilders_JSONString extends AbstractJSONArrayStaticBuildersTestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestJSONArrayStaticBuilders_JSONString.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayStaticBuilders_JSONString.class);
+    }
 
-   public TestJSONArrayStaticBuilders_JSONString( String name ) {
-      super( name );
-   }
+    public TestJSONArrayStaticBuilders_JSONString(String name) {
+        super(name);
+    }
 
-   protected Object getSource() {
-      return new JsonBean();
-   }
+    protected Object getSource() {
+        return new JsonBean();
+    }
 
-   public static class JsonBean implements JSONString {
-      public String toJSONString() {
-         return "[{\"parray\":[1,2],\"plong\":9223372036854775807,\"pchar\":\"J\",\"pboolean\":true,\"pfloat\":3.4028234663852886E38,\"pbean\":{\"parray\":null,\"plong\":null,\"pchar\":null,\"pboolean\":null,\"pfloat\":null,\"pbean\":null,\"pshort\":null,\"pdouble\":null,\"pclass\":null,\"pstring\":null,\"pint\":null,\"plist\":null,\"pfunction\":null,\"pmap\":null,\"pbyte\":null},\"pshort\":32767,\"pdouble\":1.7976931348623157E308,\"pclass\":\"java.lang.Object\",\"pstring\":\"json\",\"pint\":2147483647,\"plist\":[\"a\",\"b\"],\"pfunction\":function(){ this; },\"pmap\":null,\"pbyte\":127,\"class\":\"java.lang.Object\",\"pexcluded\":\"\"}]";
-      }
-   }
+    public static class JsonBean implements JSONString {
+        public String toJSONString() {
+            return "[{\"parray\":[1,2],\"plong\":9223372036854775807,\"pchar\":\"J\",\"pboolean\":true,\"pfloat\":3.4028234663852886E38,\"pbean\":{\"parray\":null,\"plong\":null,\"pchar\":null,\"pboolean\":null,\"pfloat\":null,\"pbean\":null,\"pshort\":null,\"pdouble\":null,\"pclass\":null,\"pstring\":null,\"pint\":null,\"plist\":null,\"pfunction\":null,\"pmap\":null,\"pbyte\":null},\"pshort\":32767,\"pdouble\":1.7976931348623157E308,\"pclass\":\"java.lang.Object\",\"pstring\":\"json\",\"pint\":2147483647,\"plist\":[\"a\",\"b\"],\"pfunction\":function(){ this; },\"pmap\":null,\"pbyte\":127,\"class\":\"java.lang.Object\",\"pexcluded\":\"\"}]";
+        }
+    }
 }

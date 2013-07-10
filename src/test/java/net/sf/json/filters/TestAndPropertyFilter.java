@@ -23,35 +23,35 @@ import net.sf.json.util.PropertyFilter;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestAndPropertyFilter extends TestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestAndPropertyFilter.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestAndPropertyFilter.class);
+    }
 
-   public TestAndPropertyFilter( String testName ) {
-      super( testName );
-   }
+    public TestAndPropertyFilter(String testName) {
+        super(testName);
+    }
 
-   public void testApply_false_false() {
-      PropertyFilter filter = new AndPropertyFilter( new FalsePropertyFilter(),
-            new FalsePropertyFilter() );
-      assertFalse( filter.apply( null, null, null ) );
-   }
+    public void testApply_false_false() {
+        PropertyFilter filter = new AndPropertyFilter(new FalsePropertyFilter(),
+            new FalsePropertyFilter());
+        assertFalse(filter.apply(null, null, null));
+    }
 
-   public void testApply_false_true() {
-      PropertyFilter filter = new AndPropertyFilter( new FalsePropertyFilter(),
-            new TruePropertyFilter() );
-      assertFalse( filter.apply( null, null, null ) );
-   }
+    public void testApply_false_true() {
+        PropertyFilter filter = new AndPropertyFilter(new FalsePropertyFilter(),
+            new TruePropertyFilter());
+        assertFalse(filter.apply(null, null, null));
+    }
 
-   public void testApply_true_false() {
-      PropertyFilter filter = new AndPropertyFilter( new TruePropertyFilter(),
-            new FalsePropertyFilter() );
-      assertFalse( filter.apply( null, null, null ) );
-   }
+    public void testApply_true_false() {
+        PropertyFilter filter = new AndPropertyFilter(new TruePropertyFilter(),
+            new FalsePropertyFilter());
+        assertFalse(filter.apply(null, null, null));
+    }
 
-   public void testApply_true_true() {
-      PropertyFilter filter = new AndPropertyFilter( new TruePropertyFilter(),
-            new TruePropertyFilter() );
-      assertTrue( filter.apply( null, null, null ) );
-   }
+    public void testApply_true_true() {
+        PropertyFilter filter = new AndPropertyFilter(new TruePropertyFilter(),
+            new TruePropertyFilter());
+        assertTrue(filter.apply(null, null, null));
+    }
 }

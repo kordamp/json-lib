@@ -16,26 +16,26 @@
 
 package net.sf.json.sample;
 
-import java.util.ArrayList;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+
+import java.util.ArrayList;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class PlayerList {
-   private ArrayList player;
+    private ArrayList player;
 
-   public ArrayList getPlayer() {
-      return player;
-   }
+    public ArrayList getPlayer() {
+        return player;
+    }
 
-   public void setPlayer( ArrayList player ) {
-      this.player = player;
-   }
+    public void setPlayer(ArrayList player) {
+        this.player = player;
+    }
 
-   public String toString() {
-      return ToStringBuilder.reflectionToString( this, ToStringStyle.MULTI_LINE_STYLE );
-   }
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

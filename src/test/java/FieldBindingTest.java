@@ -15,9 +15,9 @@ public class FieldBindingTest extends TestCase {
         f.x = 5;
         f.y = "test";
         JSONObject o = JSONObject.fromObject(f);
-        assertEquals(o.getInt("x"),5);
-        assertEquals(o.getString("y"),"test");
-        assertEquals(o.size(),2);
+        assertEquals(o.getInt("x"), 5);
+        assertEquals(o.getString("y"), "test");
+        assertEquals(o.size(), 2);
     }
 
     private final class Bar {
@@ -30,8 +30,8 @@ public class FieldBindingTest extends TestCase {
         f.x = 5;
         f.y = "test";
         JSONObject o = JSONObject.fromObject(f);
-        assertEquals(o.getInt("x"),5);
-        assertEquals(o.getString("y"),"test");
-        assertEquals(o.size(),2);
+        assertEquals(o.getInt("x"), 5);
+        assertEquals(o.getString("y"), "test");
+        assertEquals(o.size(), 2);
     }
 }

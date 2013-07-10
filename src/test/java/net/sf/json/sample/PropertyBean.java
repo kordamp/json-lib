@@ -20,18 +20,18 @@ package net.sf.json.sample;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class PropertyBean {
-   private String propertyWithNoReadMethod;
-   private final String propertyWithNoWriteMethod = "json";
+    private String propertyWithNoReadMethod;
+    private final String propertyWithNoWriteMethod = "json";
 
-   public String getPropertyWithNoWriteMethod() {
-      return propertyWithNoWriteMethod;
-   }
+    public String getPropertyWithNoWriteMethod() {
+        return propertyWithNoWriteMethod;
+    }
 
-   public void setPropertyWithNoReadMethod( String propertyWithNoReadMethod ) {
-      this.propertyWithNoReadMethod = propertyWithNoReadMethod;
-   }
+    public void setPropertyWithNoReadMethod(String propertyWithNoReadMethod) {
+        this.propertyWithNoReadMethod = propertyWithNoReadMethod;
+    }
 
-   public String valueOfPropertyWithNoReadMethod() {
-      return propertyWithNoReadMethod;
-   }
+    public String valueOfPropertyWithNoReadMethod() {
+        return propertyWithNoReadMethod;
+    }
 }

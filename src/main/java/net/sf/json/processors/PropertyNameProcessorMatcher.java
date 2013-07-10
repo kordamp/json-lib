@@ -27,24 +27,26 @@ import java.util.Set;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class PropertyNameProcessorMatcher {
-   /** Matches the target with equals() */
-   public static final PropertyNameProcessorMatcher DEFAULT = new DefaultPropertyNameProcessorMatcher();
+    /**
+     * Matches the target with equals()
+     */
+    public static final PropertyNameProcessorMatcher DEFAULT = new DefaultPropertyNameProcessorMatcher();
 
-   /**
-    * Returns the matching class calculated with the target class and the
-    * provided set.
-    *
-    * @param target the target class to match
-    * @param set a set of possible matches
-    */
-   public abstract Object getMatch( Class target, Set set );
+    /**
+     * Returns the matching class calculated with the target class and the
+     * provided set.
+     *
+     * @param target the target class to match
+     * @param set    a set of possible matches
+     */
+    public abstract Object getMatch(Class target, Set set);
 
-   private static final class DefaultPropertyNameProcessorMatcher extends PropertyNameProcessorMatcher {
-      public Object getMatch( Class target, Set set ) {
-         if( target != null && set != null && set.contains( target ) ){
-            return target;
-         }
-         return null;
-      }
-   }
+    private static final class DefaultPropertyNameProcessorMatcher extends PropertyNameProcessorMatcher {
+        public Object getMatch(Class target, Set set) {
+            if (target != null && set != null && set.contains(target)) {
+                return target;
+            }
+            return null;
+        }
+    }
 }

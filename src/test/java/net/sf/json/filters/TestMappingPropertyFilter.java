@@ -22,27 +22,27 @@ import junit.framework.TestCase;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestMappingPropertyFilter extends TestCase {
-   public static void main( String[] args ) {
-      junit.textui.TestRunner.run( TestMappingPropertyFilter.class );
-   }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestMappingPropertyFilter.class);
+    }
 
-   public TestMappingPropertyFilter( String testName ) {
-      super( testName );
-   }
+    public TestMappingPropertyFilter(String testName) {
+        super(testName);
+    }
 
-   public void testApply() {
-      MappingPropertyFilter filter = new SampleMappingPropertyFilter();
-      filter.addPropertyFilter( String.class, new TruePropertyFilter() );
-      filter.addPropertyFilter( Long.class, new TruePropertyFilter() );
+    public void testApply() {
+        MappingPropertyFilter filter = new SampleMappingPropertyFilter();
+        filter.addPropertyFilter(String.class, new TruePropertyFilter());
+        filter.addPropertyFilter(Long.class, new TruePropertyFilter());
 
-      assertFalse( filter.apply( "String", null, null ) );
-      assertTrue( filter.apply( new Long( 1L ), null, null ) );
-   }
+        assertFalse(filter.apply("String", null, null));
+        assertTrue(filter.apply(new Long(1L), null, null));
+    }
 
-   public static class SampleMappingPropertyFilter extends MappingPropertyFilter {
-      protected boolean keyMatches( Object key, Object source, String name, Object value ) {
-         return ((Class) key).isAssignableFrom( source.getClass() ) && source instanceof Number;
-      }
+    public static class SampleMappingPropertyFilter extends MappingPropertyFilter {
+        protected boolean keyMatches(Object key, Object source, String name, Object value) {
+            return ((Class) key).isAssignableFrom(source.getClass()) && source instanceof Number;
+        }
 
-   }
+    }
 }

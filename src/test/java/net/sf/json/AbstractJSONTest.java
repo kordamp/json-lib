@@ -16,62 +16,62 @@
 
 package net.sf.json;
 
-import java.io.StringWriter;
-
 import junit.framework.TestCase;
+
+import java.io.StringWriter;
 
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public abstract class AbstractJSONTest extends TestCase {
-   public AbstractJSONTest( String name ) {
-      super( name );
-   }
+    public AbstractJSONTest(String name) {
+        super(name);
+    }
 
-   public void testIsArray() {
-      boolean isArray = ((Boolean) getIsArrayExpectations()[0]).booleanValue();
-      JSON json = (JSON) getIsArrayExpectations()[1];
-      assertEquals( isArray, json.isArray() );
-   }
+    public void testIsArray() {
+        boolean isArray = ((Boolean) getIsArrayExpectations()[0]).booleanValue();
+        JSON json = (JSON) getIsArrayExpectations()[1];
+        assertEquals(isArray, json.isArray());
+    }
 
-   public void testToString() {
-      String expected = (String) getToStringExpectations1()[0];
-      JSON json = (JSON) getToStringExpectations1()[1];
-      assertEquals( expected, json.toString() );
-   }
+    public void testToString() {
+        String expected = (String) getToStringExpectations1()[0];
+        JSON json = (JSON) getToStringExpectations1()[1];
+        assertEquals(expected, json.toString());
+    }
 
-   public void testToString_indentFactor() {
-      String expected = (String) getToStringExpectations2()[0];
-      JSON json = (JSON) getToStringExpectations2()[1];
-      assertEquals( expected, json.toString( getIndentFactor() ) );
-   }
+    public void testToString_indentFactor() {
+        String expected = (String) getToStringExpectations2()[0];
+        JSON json = (JSON) getToStringExpectations2()[1];
+        assertEquals(expected, json.toString(getIndentFactor()));
+    }
 
-   public void testToString_indentFactor_indent() {
-      String expected = (String) getToStringExpectations3()[0];
-      JSON json = (JSON) getToStringExpectations3()[1];
-      assertEquals( expected, json.toString( getIndentFactor(), getIndent() ) );
-   }
+    public void testToString_indentFactor_indent() {
+        String expected = (String) getToStringExpectations3()[0];
+        JSON json = (JSON) getToStringExpectations3()[1];
+        assertEquals(expected, json.toString(getIndentFactor(), getIndent()));
+    }
 
-   public void testWrite() throws Exception {
-      StringWriter w = new StringWriter();
-      String expected = (String) getWriteExpectations()[0];
-      JSON json = (JSON) getWriteExpectations()[1];
-      json.write( w );
-      assertEquals( expected, w.getBuffer()
-            .toString() );
-   }
+    public void testWrite() throws Exception {
+        StringWriter w = new StringWriter();
+        String expected = (String) getWriteExpectations()[0];
+        JSON json = (JSON) getWriteExpectations()[1];
+        json.write(w);
+        assertEquals(expected, w.getBuffer()
+            .toString());
+    }
 
-   protected abstract int getIndent();
+    protected abstract int getIndent();
 
-   protected abstract int getIndentFactor();
+    protected abstract int getIndentFactor();
 
-   protected abstract Object[] getIsArrayExpectations();
+    protected abstract Object[] getIsArrayExpectations();
 
-   protected abstract Object[] getToStringExpectations1();
+    protected abstract Object[] getToStringExpectations1();
 
-   protected abstract Object[] getToStringExpectations2();
+    protected abstract Object[] getToStringExpectations2();
 
-   protected abstract Object[] getToStringExpectations3();
+    protected abstract Object[] getToStringExpectations3();
 
-   protected abstract Object[] getWriteExpectations();
+    protected abstract Object[] getWriteExpectations();
 }

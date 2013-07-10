@@ -16,9 +16,8 @@
 
 package net.sf.json.groovy
 
-import net.sf.json.*
+import net.sf.json.JSON
 import net.sf.json.test.JSONAssert
-
 import org.apache.commons.httpclient.HttpClient
 import org.apache.commons.httpclient.methods.GetMethod
 
@@ -26,63 +25,63 @@ import org.apache.commons.httpclient.methods.GetMethod
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 class TestJsonSlurper extends GroovyTestCase {
-    
+
     private JSONObject expected
-    
+
     protected void setUp() throws Exception {
-       GJson.enhanceClasses()
-       expected = new JSONObject().element( 'books', [] )
-       expected.books << [name:'Groovy in Action', author: 'Dierk Koenig']
-       expected.books << [name:'The Definitive Guide to Grails', author: 'Graeme Rocher']
-       expected.books << [name:'Groov Recipes, greasing the wheels of Java', author: 'Scott Davis']
+        GJson.enhanceClasses()
+        expected = new JSONObject().element('books', [])
+        expected.books << [name: 'Groovy in Action', author: 'Dierk Koenig']
+        expected.books << [name: 'The Definitive Guide to Grails', author: 'Graeme Rocher']
+        expected.books << [name: 'Groov Recipes, greasing the wheels of Java', author: 'Scott Davis']
     }
 
     void testParseFile() {
-       File file = new File(new File(".").absolutePath,"src/test/resources/net/sf/json/groovy/sample.json")
-       JSON actual = new JsonSlurper().parse( file )
-       JSONAssert.assertEquals( expected, actual )
+        File file = new File(new File(".").absolutePath, "src/test/resources/net/sf/json/groovy/sample.json")
+        JSON actual = new JsonSlurper().parse(file)
+        JSONAssert.assertEquals(expected, actual)
     }
-    
+
     void testParseURL() {
-       File file = new File(new File(".").absolutePath,"src/test/resources/net/sf/json/groovy/sample.json")
-       JSON actual = new JsonSlurper().parse( file.toURL() )
-       JSONAssert.assertEquals( expected, actual )
+        File file = new File(new File(".").absolutePath, "src/test/resources/net/sf/json/groovy/sample.json")
+        JSON actual = new JsonSlurper().parse(file.toURL())
+        JSONAssert.assertEquals(expected, actual)
     }
-    
-    void testParseInputStream(){
-       File file = new File(new File(".").absolutePath,"src/test/resources/net/sf/json/groovy/sample.json")
-       FileInputStream stream = new FileInputStream(file)
-       JSON actual = new JsonSlurper().parse( stream )
-       JSONAssert.assertEquals( expected, actual )
+
+    void testParseInputStream() {
+        File file = new File(new File(".").absolutePath, "src/test/resources/net/sf/json/groovy/sample.json")
+        FileInputStream stream = new FileInputStream(file)
+        JSON actual = new JsonSlurper().parse(stream)
+        JSONAssert.assertEquals(expected, actual)
     }
-    
+
     void testParseUri() {
-       File file = new File(new File(".").absolutePath,"src/test/resources/net/sf/json/groovy/sample.json")
-       JSON actual = new JsonSlurper().parse( "file://"+file.absolutePath )
-       JSONAssert.assertEquals( expected, actual )
+        File file = new File(new File(".").absolutePath, "src/test/resources/net/sf/json/groovy/sample.json")
+        JSON actual = new JsonSlurper().parse("file://" + file.absolutePath)
+        JSONAssert.assertEquals(expected, actual)
     }
-    
+
     void testParseReader() {
-       File file = new File(new File(".").absolutePath,"src/test/resources/net/sf/json/groovy/sample.json")
-       JSON actual = new JsonSlurper().parse( new FileReader(file) )
-       JSONAssert.assertEquals( expected, actual )
+        File file = new File(new File(".").absolutePath, "src/test/resources/net/sf/json/groovy/sample.json")
+        JSON actual = new JsonSlurper().parse(new FileReader(file))
+        JSONAssert.assertEquals(expected, actual)
     }
-    
+
     void testParsetext() {
-       File file = new File(new File(".").absolutePath,"src/test/resources/net/sf/json/groovy/sample.json")
-       JSON actual = new JsonSlurper().parseText( file.text )
-       JSONAssert.assertEquals( expected, actual )
+        File file = new File(new File(".").absolutePath, "src/test/resources/net/sf/json/groovy/sample.json")
+        JSON actual = new JsonSlurper().parseText(file.text)
+        JSONAssert.assertEquals(expected, actual)
     }
-    
+
     void testParseReader_liveUrl() {
-       HttpClient http = new HttpClient()
-       GetMethod get = new GetMethod("http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=Calvin%20and%20Hobbes")
-       int resultCode = http.executeMethod(get)
-       if( resultCode != 200 ) {
-          fail("Http GET http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=Calvin%20and%20Hobbes returned with code $resultCode")
-       }
-       Reader reader = new InputStreamReader( get.responseStream, "utf-8" )
-       JSON actual = new JsonSlurper().parse( reader )
-       assertTrue( actual.has("responseData") )
+        HttpClient http = new HttpClient()
+        GetMethod get = new GetMethod("http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=Calvin%20and%20Hobbes")
+        int resultCode = http.executeMethod(get)
+        if (resultCode != 200) {
+            fail("Http GET http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=Calvin%20and%20Hobbes returned with code $resultCode")
+        }
+        Reader reader = new InputStreamReader(get.responseStream, "utf-8")
+        JSON actual = new JsonSlurper().parse(reader)
+        assertTrue(actual.has("responseData"))
     }
 }

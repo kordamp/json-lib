@@ -20,13 +20,13 @@ package net.sf.json.sample;
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
 public class BeanFoo {
-   private String[][] items;
+    private String[][] items;
 
-   public String[][] getItems() {
-      return items;
-   }
+    public String[][] getItems() {
+        return items;
+    }
 
-   public void setItems( String[][] items ) {
-      this.items = items;
-   }
+    public void setItems(String[][] items) {
+        this.items = items;
+    }
 }
