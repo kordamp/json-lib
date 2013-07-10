@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @author Andres Almiray
  */
 public class TestJSONObjectEqualsHashCodeCompareTo extends TestCase {
     private static JSONObject strings;
@@ -48,7 +48,7 @@ public class TestJSONObjectEqualsHashCodeCompareTo extends TestCase {
             .element("boolean", "true")
             .element("string", "string")
             .element("func", "function(){ return this; }")
-            .element("array", "[1,2,3]");
+            .element("array", JSONArray.fromObject("[1,2,3]"));
         values.put("JSONObject.strings", strings);
         values1 = new JSONObject().element("int", Integer.valueOf("1"))
             .element("long", Long.valueOf("1"))
@@ -199,7 +199,7 @@ public class TestJSONObjectEqualsHashCodeCompareTo extends TestCase {
 
     public void testHashCode_strings_values() {
         assertTrue(values.get("JSONObject.strings")
-            .hashCode() == values.get("JSONObject.values.1")
+            .hashCode() != values.get("JSONObject.values.1")
             .hashCode());
     }
 
@@ -210,7 +210,7 @@ public class TestJSONObjectEqualsHashCodeCompareTo extends TestCase {
 
     public void testHashCode_values_strings() {
         assertTrue(values.get("JSONObject.values.1")
-            .hashCode() == values.get("JSONObject.strings")
+            .hashCode() != values.get("JSONObject.strings")
             .hashCode());
     }
 }

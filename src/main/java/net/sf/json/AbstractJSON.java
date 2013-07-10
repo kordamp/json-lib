@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import java.util.*;
 /**
  * Base class for JSONObject and JSONArray.
  *
- * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @author Andres Almiray
  */
 abstract class AbstractJSON implements JSON {
     private static class CycleSet extends ThreadLocal {
@@ -226,10 +226,7 @@ abstract class AbstractJSON implements JSON {
             return JSONNull.getInstance();
         } else if (Class.class.isAssignableFrom(value.getClass()) || value instanceof Class) {
             return ((Class) value).getName();
-        } else if (JSONUtils.isFunction(value)) {
-            if (value instanceof String) {
-                value = JSONFunction.parse((String) value);
-            }
+        } else if (value instanceof JSONFunction) {
             return value;
         } else if (value instanceof JSONString) {
             return JSONSerializer.toJSON((JSONString) value, jsonConfig);
@@ -238,32 +235,7 @@ abstract class AbstractJSON implements JSON {
         } else if (JSONUtils.isArray(value)) {
             return JSONArray.fromObject(value, jsonConfig);
         } else if (JSONUtils.isString(value)) {
-            String str = String.valueOf(value);
-            if (JSONUtils.hasQuotes(str)) {
-                String stripped = JSONUtils.stripQuotes(str);
-                if (JSONUtils.isFunction(stripped)) {
-                    return JSONUtils.DOUBLE_QUOTE + stripped + JSONUtils.DOUBLE_QUOTE;
-                }
-                if (stripped.startsWith("[") && stripped.endsWith("]")) {
-                    return stripped;
-                }
-                if (stripped.startsWith("{") && stripped.endsWith("}")) {
-                    return stripped;
-                }
-                return str;
-            } else if (JSONUtils.isJsonKeyword(str, jsonConfig)) {
-                if (jsonConfig.isJavascriptCompliant() && "undefined".equals(str)) {
-                    return JSONNull.getInstance();
-                }
-                return str;
-            } else if (JSONUtils.mayBeJSON(str)) {
-                try {
-                    return JSONSerializer.toJSON(str, jsonConfig);
-                } catch (JSONException jsone) {
-                    return str;
-                }
-            }
-            return str;
+            return value.toString();
         } else if (JSONUtils.isNumber(value)) {
             JSONUtils.testValidity(value);
             return JSONUtils.transformNumber((Number) value);

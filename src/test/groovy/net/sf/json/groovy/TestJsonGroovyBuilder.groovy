@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import net.sf.json.JSONObject
 import net.sf.json.test.JSONAssert
 
 /**
- * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @author Andres Almiray
  */
 public class TestJsonGroovyBuilder extends GroovyTestCase {
     JsonGroovyBuilder builder
@@ -323,10 +323,10 @@ public class TestJsonGroovyBuilder extends GroovyTestCase {
 
     void testBuildObject_GString_with_JSON() {
         def actual = builder.json {
-            json = """{
-             'object': {'key':'value'},
-             'array': [1,2,3]
-          }"""
+            json = [
+                object: [key:'value'],
+                array: [1,2,3]
+            ]
         }
         def expected = new JSONObject()
             .element("json", new JSONObject()

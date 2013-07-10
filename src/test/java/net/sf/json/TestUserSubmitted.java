@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
- * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @author Andres Almiray
  */
 public class TestUserSubmitted extends TestCase {
     public static void main(String[] args) {
@@ -140,20 +140,21 @@ public class TestUserSubmitted extends TestCase {
         assertTrue(object.get("info3") instanceof String);
     }
 
-    public void testBug_1650535_setters() {
-        JSONObject object = new JSONObject();
-        object.element("obj", "{}");
-        object.element("notobj", "{string}");
-        object.element("array", "[]");
-        object.element("notarray", "[string]");
-        assertTrue(object.get("obj") instanceof JSONObject);
-        assertTrue(object.get("array") instanceof JSONArray);
-        assertTrue(object.get("notobj") instanceof String);
-        assertTrue(object.get("notarray") instanceof String);
-        object.element("str", "json,json");
-        assertTrue(object.get("str") instanceof String);
-    }
-
+    /* I consider this behavior of "oh I added string but it's not really a string" very evil, as there's no way to add a String that really looks like "{}"
+       public void testBug_1650535_setters() {
+          JSONObject object = new JSONObject();
+          object.element( "obj", "{}" );
+          object.element( "notobj", "{string}" );
+          object.element( "array", "[]" );
+          object.element( "notarray", "[string]" );
+          assertTrue( object.get( "obj" ) instanceof JSONObject );
+          assertTrue( object.get( "array" ) instanceof JSONArray );
+          assertTrue( object.get( "notobj" ) instanceof String );
+          assertTrue( object.get( "notarray" ) instanceof String );
+          object.element( "str", "json,json" );
+          assertTrue( object.get( "str" ) instanceof String );
+       }
+    */
     public void testBug_1753528_ArrayStringLiteralToString() {
         // submited bysckimos[at]gmail[dot]com
         BeanA bean = new BeanA();
@@ -596,7 +597,7 @@ public class TestUserSubmitted extends TestCase {
     public void testQuotedFunctions() {
         JSONObject json = JSONObject.fromObject("{'func':\"function(){blah;}\"}");
         assertTrue(json.get("func") instanceof String);
-        assertEquals("\"function(){blah;}\"", json.get("func"));
+        assertEquals("function(){blah;}", json.get("func"));
     }
 
     public void testJsonWithNullKeys() {
@@ -663,19 +664,22 @@ public class TestUserSubmitted extends TestCase {
         object.element("key1", "null", jsonConfig);
         object.element("key2", "undefined", jsonConfig);
         assertNotNull(object);
-        Assertions.assertEquals(JSONNull.getInstance(), object.get("key2"));
+        Assertions.assertEquals("undefined", object.get("key2"));
     }
 
     public void testJSONObject_fromObject_FieldBean() {
         JsonConfig jsonConfig = new JsonConfig();
-        jsonConfig.setIgnorePublicFields(false);
         FieldBean bean = new FieldBean();
         bean.setValue(42);
         bean.string = "stringy";
-        JSONObject jsonObject = JSONObject.fromObject(bean);
+
+        jsonConfig.setIgnorePublicFields(true);
+        JSONObject jsonObject = JSONObject.fromObject(bean, jsonConfig);
         assertNotNull(jsonObject);
         assertEquals(42, jsonObject.getInt("value"));
         assertFalse(jsonObject.has("string"));
+
+        jsonConfig.setIgnorePublicFields(false);
         jsonObject = JSONObject.fromObject(bean, jsonConfig);
         assertNotNull(jsonObject);
         assertEquals(42, jsonObject.getInt("value"));
@@ -683,17 +687,18 @@ public class TestUserSubmitted extends TestCase {
     }
 
     public void testJSONObject_toBean_FieldBean() {
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.setRootClass(FieldBean.class);
+
         JSONObject jsonObject = new JSONObject();
         jsonObject.element("value", 42);
         jsonObject.element("string", "stringy");
-        FieldBean bean1 = (FieldBean) JSONObject.toBean(jsonObject, FieldBean.class);
+        FieldBean bean1 = (FieldBean) JSONObject.toBean(jsonObject, jsonConfig);
         assertNotNull(bean1);
         assertEquals(42, bean1.getValue());
         assertNull(bean1.string);
 
-        JsonConfig jsonConfig = new JsonConfig();
         jsonConfig.setIgnorePublicFields(false);
-        jsonConfig.setRootClass(FieldBean.class);
         FieldBean bean2 = (FieldBean) JSONObject.toBean(jsonObject, jsonConfig);
         assertNotNull(bean2);
         assertEquals(42, bean1.getValue());

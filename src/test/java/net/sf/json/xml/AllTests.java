@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package net.sf.json.xml;
 import junit.framework.TestSuite;
 
 /**
- * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @author Andres Almiray
  */
 public class AllTests extends TestSuite {
     public static TestSuite suite() throws Exception {
@@ -37,6 +37,7 @@ public class AllTests extends TestSuite {
         suite.addTest(new TestSuite(TestArrayAutoExpansion.class));
         suite.addTest(new TestSuite(TestXmlWithEntity.class));
         suite.addTest(new TestSuite(TestIdmlParsing.class));
+        suite.addTest(new TestSuite(TestElementShouldNotBeArray.class));
 
         return suite;
     }

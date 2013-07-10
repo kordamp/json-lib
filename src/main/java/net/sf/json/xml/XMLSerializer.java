@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,12 @@ import java.util.*;
  * </a></xmp>
  * </pre>
  *
- * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @author Andres Almiray
  */
 public class XMLSerializer {
     private static final String[] EMPTY_ARRAY = new String[0];
     private static final String JSON_PREFIX = "json_";
     private static final Log log = LogFactory.getLog(XMLSerializer.class);
-
     /**
      * the name for an JSONArray Element
      */
@@ -131,6 +130,10 @@ public class XMLSerializer {
      * flag for if array name should be kept in JSON data
      */
     private boolean keepArrayName;
+    /**
+     * flag for sorting object properties by name
+     */
+    private boolean sortPropertyNames;
 
     /**
      * Creates a new XMLSerializer with default options.<br>
@@ -145,7 +148,12 @@ public class XMLSerializer {
      * <li><code>skipNamespaces</code>: false</li>
      * <li><code>removeNameSpacePrefixFromElement</code>: false</li>
      * <li><code>trimSpaces</code>: false</li>
-     * <li><code>isPerformAutoExpansion</code>: false</li>
+     * <li><code>expandableProperties</code>: []</li>
+     * <li><code>skipWhitespace</code>: false</li>
+     * <li><code>performAutoExpansion</code>: false</li>
+     * <li><code>keepCData</code>: false</li>
+     * <li><code>escapeLowerChars</code>: false</li>
+     * <li><code>keepArrayName</code>: false</li>
      * </ul>
      */
     public XMLSerializer() {
@@ -159,11 +167,26 @@ public class XMLSerializer {
         setRemoveNamespacePrefixFromElements(false);
         setTrimSpaces(false);
         setExpandableProperties(EMPTY_ARRAY);
-        setSkipNamespaces(false);
+        setSkipWhitespace(false);
         setPerformAutoExpansion(false);
         setKeepCData(false);
         setEscapeLowerChars(false);
         setKeepArrayName(false);
+        setSortPropertyNames(false); // TODO jenkinsci/json-lib requires this to be set to true
+    }
+
+    /**
+     * Returns whether this serializer will sort object properties by name or not.
+     */
+    public boolean isSortPropertyNames() {
+        return sortPropertyNames;
+    }
+
+    /**
+     * Returns whether this serializer will sort object properties by name or not.
+     */
+    public void setSortPropertyNames(boolean sortPropertyNames) {
+        this.sortPropertyNames = sortPropertyNames;
     }
 
     /**
@@ -235,10 +258,26 @@ public class XMLSerializer {
     }
 
     /**
+     * Sets the name used for JSONArray.<br>
+     * Default is 'a'.
+     */
+    public void setArrayName(String arrayName) {
+        this.arrayName = StringUtils.isBlank(arrayName) ? "a" : arrayName;
+    }
+
+    /**
      * Returns the name used for JSONArray elements.
      */
     public String getElementName() {
         return elementName;
+    }
+
+    /**
+     * Sets the name used for JSONArray elements.<br>
+     * Default is 'e'.
+     */
+    public void setElementName(String elementName) {
+        this.elementName = StringUtils.isBlank(elementName) ? "e" : elementName;
     }
 
     /**
@@ -249,10 +288,25 @@ public class XMLSerializer {
     }
 
     /**
+     * Sets the list of properties to be expanded from child to parent.
+     */
+    public void setExpandableProperties(String[] expandableProperties) {
+        this.expandableProperties = expandableProperties == null ? EMPTY_ARRAY : expandableProperties;
+    }
+
+    /**
      * Returns the name used for JSONArray.
      */
     public String getObjectName() {
         return objectName;
+    }
+
+    /**
+     * Sets the name used for JSONObject.<br>
+     * Default is 'o'.
+     */
+    public void setObjectName(String objectName) {
+        this.objectName = StringUtils.isBlank(objectName) ? "o" : objectName;
     }
 
     /**
@@ -262,12 +316,23 @@ public class XMLSerializer {
         return rootName;
     }
 
+    /**
+     * Sets the name used for the root element.
+     */
+    public void setRootName(String rootName) {
+        this.rootName = StringUtils.isBlank(rootName) ? null : rootName;
+    }
+
     public boolean isForceTopLevelObject() {
         return forceTopLevelObject;
     }
 
+    public void setForceTopLevelObject(boolean forceTopLevelObject) {
+        this.forceTopLevelObject = forceTopLevelObject;
+    }
+
     /**
-     * Returns wether this serializer is tolerant to namespaces without URIs or
+     * Returns whether this serializer is tolerant to namespaces without URIs or
      * not.
      */
     public boolean isNamespaceLenient() {
@@ -275,7 +340,14 @@ public class XMLSerializer {
     }
 
     /**
-     * Returns wether this serializer will remove namespace prefix from elements
+     * Sets whether this serializer is tolerant to namespaces without URIs or not.
+     */
+    public void setNamespaceLenient(boolean namespaceLenient) {
+        this.namespaceLenient = namespaceLenient;
+    }
+
+    /**
+     * Returns whether this serializer will remove namespace prefix from elements
      * or not.
      */
     public boolean isRemoveNamespacePrefixFromElements() {
@@ -283,7 +355,15 @@ public class XMLSerializer {
     }
 
     /**
-     * Returns wether this serializer will skip adding namespace declarations to
+     * Sets if this serializer will remove namespace prefix from elements when
+     * reading.
+     */
+    public void setRemoveNamespacePrefixFromElements(boolean removeNamespacePrefixFromElements) {
+        this.removeNamespacePrefixFromElements = removeNamespacePrefixFromElements;
+    }
+
+    /**
+     * Returns whether this serializer will skip adding namespace declarations to
      * elements or not.
      */
     public boolean isSkipNamespaces() {
@@ -291,18 +371,41 @@ public class XMLSerializer {
     }
 
     /**
-     * Returns wether this serializer will skip whitespace or not.
+     * Sets if this serializer will skip adding namespace declarations to
+     * elements when reading.
+     */
+    public void setSkipNamespaces(boolean skipNamespaces) {
+        this.skipNamespaces = skipNamespaces;
+    }
+
+    /**
+     * Returns whether this serializer will skip whitespace or not.
      */
     public boolean isSkipWhitespace() {
         return skipWhitespace;
     }
 
     /**
-     * Returns wether this serializer will trim leading and trealing whitespace
+     * Sets if this serializer will skip whitespace when reading.
+     */
+    public void setSkipWhitespace(boolean skipWhitespace) {
+        this.skipWhitespace = skipWhitespace;
+    }
+
+    /**
+     * Returns whether this serializer will trim leading and trealing whitespace
      * from values or not.
      */
     public boolean isTrimSpaces() {
         return trimSpaces;
+    }
+
+    /**
+     * Sets if this serializer will trim leading and trealing whitespace from
+     * values when reading.
+     */
+    public void setTrimSpaces(boolean trimSpaces) {
+        this.trimSpaces = trimSpaces;
     }
 
     /**
@@ -313,10 +416,24 @@ public class XMLSerializer {
     }
 
     /**
+     * Sets whether types hints will have a 'json_' prefix or not.
+     */
+    public void setTypeHintsCompatibility(boolean typeHintsCompatibility) {
+        this.typeHintsCompatibility = typeHintsCompatibility;
+    }
+
+    /**
      * Returns true if JSON types will be included as attributes.
      */
     public boolean isTypeHintsEnabled() {
         return typeHintsEnabled;
+    }
+
+    /**
+     * Sets whether JSON types will be included as attributes.
+     */
+    public void setTypeHintsEnabled(boolean typeHintsEnabled) {
+        this.typeHintsEnabled = typeHintsEnabled;
     }
 
     /**
@@ -448,33 +565,6 @@ public class XMLSerializer {
     }
 
     /**
-     * Sets the name used for JSONArray.<br>
-     * Default is 'a'.
-     */
-    public void setArrayName(String arrayName) {
-        this.arrayName = StringUtils.isBlank(arrayName) ? "a" : arrayName;
-    }
-
-    /**
-     * Sets the name used for JSONArray elements.<br>
-     * Default is 'e'.
-     */
-    public void setElementName(String elementName) {
-        this.elementName = StringUtils.isBlank(elementName) ? "e" : elementName;
-    }
-
-    /**
-     * Sets the list of properties to be expanded from child to parent.
-     */
-    public void setExpandableProperties(String[] expandableProperties) {
-        this.expandableProperties = expandableProperties == null ? EMPTY_ARRAY : expandableProperties;
-    }
-
-    public void setForceTopLevelObject(boolean forceTopLevelObject) {
-        this.forceTopLevelObject = forceTopLevelObject;
-    }
-
-    /**
      * Sets the namespace declaration to the root element.<br>
      * Any previous values are discarded.
      *
@@ -547,73 +637,6 @@ public class XMLSerializer {
      */
     public void setKeepArrayName(boolean keepName) {
         keepArrayName = keepName;
-    }
-
-    /**
-     * Sets whether this serializer is tolerant to namespaces without URIs or not.
-     */
-    public void setNamespaceLenient(boolean namespaceLenient) {
-        this.namespaceLenient = namespaceLenient;
-    }
-
-    /**
-     * Sets the name used for JSONObject.<br>
-     * Default is 'o'.
-     */
-    public void setObjectName(String objectName) {
-        this.objectName = StringUtils.isBlank(objectName) ? "o" : objectName;
-    }
-
-    /**
-     * Sets if this serializer will remove namespace prefix from elements when
-     * reading.
-     */
-    public void setRemoveNamespacePrefixFromElements(boolean removeNamespacePrefixFromElements) {
-        this.removeNamespacePrefixFromElements = removeNamespacePrefixFromElements;
-    }
-
-    /**
-     * Sets the name used for the root element.
-     */
-    public void setRootName(String rootName) {
-        this.rootName = StringUtils.isBlank(rootName) ? null : rootName;
-    }
-
-    /**
-     * Sets if this serializer will skip adding namespace declarations to
-     * elements when reading.
-     */
-    public void setSkipNamespaces(boolean skipNamespaces) {
-        this.skipNamespaces = skipNamespaces;
-    }
-
-    /**
-     * Sets if this serializer will skip whitespace when reading.
-     */
-    public void setSkipWhitespace(boolean skipWhitespace) {
-        this.skipWhitespace = skipWhitespace;
-    }
-
-    /**
-     * Sets if this serializer will trim leading and trealing whitespace from
-     * values when reading.
-     */
-    public void setTrimSpaces(boolean trimSpaces) {
-        this.trimSpaces = trimSpaces;
-    }
-
-    /**
-     * Sets wether types hints will have a 'json_' prefix or not.
-     */
-    public void setTypeHintsCompatibility(boolean typeHintsCompatibility) {
-        this.typeHintsCompatibility = typeHintsCompatibility;
-    }
-
-    /**
-     * Sets wether JSON types will be included as attributes.
-     */
-    public void setTypeHintsEnabled(boolean typeHintsEnabled) {
-        this.typeHintsEnabled = typeHintsEnabled;
     }
 
     /**
@@ -717,6 +740,7 @@ public class XMLSerializer {
                 return true;
             }
             if (elementCount == 1) {
+                // TODO jenkisci/json-lib changed && to ||
                 if (skipWhitespace && element.getChild(0) instanceof Text) {
                     return true;
                 } else {
@@ -1021,6 +1045,7 @@ public class XMLSerializer {
 
         Object[] names = jsonObject.names().toArray();
         List unprocessed = new ArrayList();
+        if (isSortPropertyNames()) Arrays.sort(names);
         for (int i = 0; i < names.length; i++) {
             String name = (String) names[i];
             Object value = jsonObject.get(name);
@@ -1451,6 +1476,13 @@ public class XMLSerializer {
     }
 
     private static class CustomElement extends Element {
+        private String prefix;
+
+        public CustomElement(String name) {
+            super(CustomElement.getName(name));
+            prefix = CustomElement.getPrefix(name);
+        }
+
         private static String getName(String name) {
             int colon = name.indexOf(':');
             if (colon != -1) {
@@ -1465,13 +1497,6 @@ public class XMLSerializer {
                 return name.substring(0, colon);
             }
             return "";
-        }
-
-        private String prefix;
-
-        public CustomElement(String name) {
-            super(CustomElement.getName(name));
-            prefix = CustomElement.getPrefix(name);
         }
 
         public final String getQName() {
@@ -1564,6 +1589,5 @@ public class XMLSerializer {
             writeAttributes(element);
             writeNamespaceDeclarations(element);
         }
-
     }
 }

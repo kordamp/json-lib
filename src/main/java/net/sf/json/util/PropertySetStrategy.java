@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.Map;
  * Specify with JsonConfig.setJsonPropertySetter().
  *
  * @author Gino Miceli <ginomiceli@users.sourceforge.net>
- * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @author Andres Almiray
  */
 public abstract class PropertySetStrategy {
     public static final PropertySetStrategy DEFAULT = new DefaultPropertySetStrategy();
@@ -53,21 +53,26 @@ public abstract class PropertySetStrategy {
                         Field field = bean.getClass().getField(key);
                         if (field != null) field.set(bean, value);
                     } catch (Exception e) {
-                        _setProperty(bean, key, value);
+                        _setProperty(bean, key, value, jsonConfig);
                     }
                 } else {
-                    _setProperty(bean, key, value);
+                    _setProperty(bean, key, value, jsonConfig);
                 }
             }
         }
 
-        private void _setProperty(Object bean, String key, Object value) {
+        private void _setProperty(Object bean, String key, Object value, JsonConfig jsonConfig) {
             try {
                 PropertyUtils.setSimpleProperty(bean, key, value);
+            } catch (NoSuchMethodException e) {
+                if (jsonConfig.isIgnoreUnreadableProperty()) {
+                    // ignore missing properties
+                    return;
+                }
+                throw new JSONException(e);
             } catch (Exception e) {
                 throw new JSONException(e);
             }
         }
-
     }
 }

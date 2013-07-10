@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.XMLTestCase;
 
 /**
- * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @author Andres Almiray
  */
 public class TestXMLSerializer_writes extends XMLTestCase {
     public static void main(String[] args) {
@@ -237,7 +237,7 @@ public class TestXMLSerializer_writes extends XMLTestCase {
     }
 
     public void testWriteObject_withText_2() throws Exception {
-        JSONObject jsonObject = new JSONObject().element("#text", "['json','json']")
+        JSONObject jsonObject = new JSONObject().element("#text", JSONArray.fromObject("['json','json']"))
             .element("string", "json");
         String expected = "<o>jsonjson<string type=\"string\">json</string></o>";
         String xml = xmlSerializer.write(jsonObject);

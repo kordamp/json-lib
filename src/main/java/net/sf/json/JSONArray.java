@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1120,12 +1120,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
                     tokener.back();
                     Object v = tokener.nextValue(jsonConfig);
                     if (!JSONUtils.isFunctionHeader(v)) {
-                        if (v instanceof String && JSONUtils.mayBeJSON((String) v)) {
-                            jsonArray.addValue(JSONUtils.DOUBLE_QUOTE + v + JSONUtils.DOUBLE_QUOTE,
-                                jsonConfig);
-                        } else {
-                            jsonArray.addValue(v, jsonConfig);
-                        }
+                        jsonArray.addValue(v, jsonConfig);
                         fireElementAddedEvent(index, jsonArray.get(index++), jsonConfig);
                     } else {
                         // read params if any

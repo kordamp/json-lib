@@ -32,7 +32,6 @@ public class TestIdmlParsing extends XMLTestCase {
         final Diff diff = compareXML(stripWhiteSpace(fixture), stripWhiteSpace(result));
 
         assertTrue("Found difference: " + diff.toString(), diff.identical());
-
     }
 
     private String stripWhiteSpace(String xmlFromFile) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import net.sf.json.JSONObject;
  * <li>LENIENT - will return an empty array or null object if a cycle is found.</li>
  * </ul>
  *
- * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @author Andres Almiray
  */
 public abstract class CycleDetectionStrategy {
     public static final JSONArray IGNORE_PROPERTY_ARR = new JSONArray();

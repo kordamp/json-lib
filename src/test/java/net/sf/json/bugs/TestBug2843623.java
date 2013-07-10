@@ -33,6 +33,5 @@ public class TestBug2843623 extends TestCase {
         public void setMyList(List<String> strings) {
             this.myList.addAll(strings);
         }
-
     }
 }

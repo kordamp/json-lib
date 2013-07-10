@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * Utility class that helps configuring the serialization process.
  *
- * @author Andres Almiray <aalmiray@users.sourceforge.net>
+ * @author Andres Almiray
  */
 public class JsonConfig {
     public static final DefaultValueProcessorMatcher DEFAULT_DEFAULT_VALUE_PROCESSOR_MATCHER = DefaultValueProcessorMatcher.DEFAULT;
@@ -69,7 +69,8 @@ public class JsonConfig {
     private boolean ignoreDefaultExcludes;
     //private boolean ignoreJPATransient;
     private boolean ignoreTransientFields;
-    private boolean ignorePublicFields = true;
+    private boolean ignorePublicFields = true;  // TODO jenkisci/json-lib changed this to false
+    private boolean ignoreUnreadableProperty = true;
     private boolean javascriptCompliant;
     private JavaIdentifierTransformer javaIdentifierTransformer = DEFAULT_JAVA_IDENTIFIER_TRANSFORMER;
     private PropertyFilter javaPropertyFilter;
@@ -223,6 +224,7 @@ public class JsonConfig {
         jsc.exclusionMap.putAll(exclusionMap);
         jsc.ignoreFieldAnnotations.addAll(ignoreFieldAnnotations);
         jsc.allowNonStringKeys = allowNonStringKeys;
+        jsc.ignoreUnreadableProperty = ignoreUnreadableProperty;
         return jsc;
     }
 
@@ -240,6 +242,38 @@ public class JsonConfig {
      */
     public void enableEventTriggering() {
         triggerEvents = true;
+    }
+
+    /**
+     * See {@link #setIgnoreUnreadableProperty(boolean)}
+     */
+    public boolean isIgnoreUnreadableProperty() {
+        return ignoreUnreadableProperty;
+    }
+
+    /**
+     * If true, properties found in JSON that have no corresponding Java setter/field/etc
+     * will not raise an exception.
+     * <p/>
+     * <p/>
+     * For example, given {"x":1, "y":2, "z":3} on the following <tt>Point</tt> class,
+     * {@link JSONObject#toBean()} would fail unless this flag is set to true, because
+     * propety "x" in JSON has no corresponding Java counerpart.
+     * <p/>
+     * <pre>
+     * class Point {
+     *    private int x,y;
+     *    public int getX() { return x; }
+     *    public int getY() { return y; }
+     *    public void setX(int v) { x=v; }
+     *    public void setY(int v) { y=v; }
+     * }
+     * </pre>
+     * <p/>
+     * [JSON -&gt; Java]
+     */
+    public void setIgnoreUnreadableProperty(boolean ignoreUnreadableProperty) {
+        this.ignoreUnreadableProperty = ignoreUnreadableProperty;
     }
 
     /**
@@ -265,7 +299,7 @@ public class JsonConfig {
      * Returns null if none is registered.<br>
      * [JSON -&gt; Java]
      *
-     * @param propertyType a class used for searching a PropertyNameProcessor.
+     * @param beanClass a class used for searching a PropertyNameProcessor.
      */
     public PropertyNameProcessor findJavaPropertyNameProcessor(Class beanClass) {
         if (!javaPropertyNameProcessorMap.isEmpty()) {
@@ -296,7 +330,7 @@ public class JsonConfig {
      * Returns null if none is registered.<br>
      * [Java -&gt; JSON]
      *
-     * @param propertyType a class used for searching a PropertyNameProcessor.
+     * @param beanClass a class used for searching a PropertyNameProcessor.
      */
     public PropertyNameProcessor findJsonPropertyNameProcessor(Class beanClass) {
         if (!jsonPropertyNameProcessorMap.isEmpty()) {
@@ -399,7 +433,7 @@ public class JsonConfig {
      * Returns null if none is registered. <br>
      * [JSON -&gt; Java]
      *
-     * @param propertyType a class used for searching a PropertyNameProcessor.
+     * @param beanClass a class used for searching a PropertyNameProcessor.
      * @deprecated use findJavaPropertyNameProcessor() instead
      */
     public PropertyNameProcessor findPropertyNameProcessor(Class beanClass) {
@@ -1095,8 +1129,7 @@ public class JsonConfig {
      * [Java -&gt; JSON]
      */
     public void removeIgnoreFieldAnnotation(String annotationClassName) {
-        if (annotationClassName != null)
-            ignoreFieldAnnotations.remove(annotationClassName);
+        if (annotationClassName != null) ignoreFieldAnnotations.remove(annotationClassName);
     }
 
     /**
@@ -1114,8 +1147,7 @@ public class JsonConfig {
      * [Java -&gt; JSON]
      */
     public void removeIgnoreFieldAnnotation(Class annotationClass) {
-        if (annotationClass != null)
-            ignoreFieldAnnotations.remove(annotationClass.getName());
+        if (annotationClass != null) ignoreFieldAnnotations.remove(annotationClass.getName());
     }
 
     /**
