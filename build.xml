@@ -1,7 +1,7 @@
 <project name="json-lib" default="compile" basedir="." xmlns:artifact="urn:maven-artifact-ant">
    <property file="${user.home}/.m2/maven.properties" />
    <property file="build.properties" />
-   <property name="maven.project.build.finalName" value="json-lib-2.4.1" />
+   <property name="maven.project.build.finalName" value="json-lib-2.4.2" />
    <property name="maven.build.output" value="target/classes" />
    <property name="maven.build.directory" value="target" />
    <property name="maven.test.reports" value="${maven.build.directory}/test-reports" />

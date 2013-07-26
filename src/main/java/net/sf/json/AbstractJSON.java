@@ -43,7 +43,12 @@ abstract class AbstractJSON implements JSON {
       }
 
       public Set getSet() {
-         Set set = (Set) ((SoftReference)get()).get();
+         SoftReference ref = (SoftReference) get();
+         if( ref == null ) {
+             ref = new SoftReference(new HashSet());
+             set(ref);
+         }
+         Set set = (Set) ref.get();
          if( set == null ) {
              set = new HashSet();
              set(new SoftReference(set));
@@ -222,7 +227,7 @@ abstract class AbstractJSON implements JSON {
       Set set = getCycleSet();
       set.remove( instance );
       if(set.size() == 0) {
-          cycleSet.remove();
+          cycleSet.set( null );
       }
    }
 
