@@ -45,7 +45,17 @@ public class TestXMLSerializer_reads extends TestCase {
       Assertions.assertEquals( expected, actual );
    }
 
-   public void testNullObjectArray_noTypeHintsCompatibility() {
+    public void testSelfClosingTagsWithKeepArrayNames() {
+        String xml = "<root><a><b /></a></root>";
+        xmlSerializer.setKeepArrayName(true);
+        JSON actual = xmlSerializer.read( xml );
+        xmlSerializer.setKeepArrayName(false);
+        JSON expected = JSONObject.fromObject( "{\"a\": { \"b\": [] } }" );
+        Assertions.assertEquals( expected, actual );
+    }
+
+
+    public void testNullObjectArray_noTypeHintsCompatibility() {
       String xml = "<a><e json_class=\"object\" json_null=\"true\"/><e json_class=\"object\" json_null=\"true\"/></a>";
       xmlSerializer.setTypeHintsCompatibility( false );
       JSON actual = xmlSerializer.read( xml );

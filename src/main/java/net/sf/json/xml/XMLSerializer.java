@@ -29,7 +29,6 @@ import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
 import nu.xom.Node;
-import nu.xom.ProcessingInstruction;
 import nu.xom.Serializer;
 import nu.xom.Text;
 import org.apache.commons.lang.ArrayUtils;
@@ -988,6 +987,12 @@ public class XMLSerializer {
          }
          if( isSameElementNameInArray ){
             JSONObject result = new JSONObject();
+            // in the case of a self-closing tag, arrayName will be null
+            // and this will throw an error if we return the empty array
+            // then it will be added correctly to the result
+            if (arrayName == null) {
+                return jsonArray;
+            }
             result.put( arrayName, jsonArray );
             return result;
          }
