@@ -34,6 +34,15 @@ public class TestXMLSerializer_reads extends TestCase {
         super(testName);
     }
 
+    public void testSelfClosingTagsWithKeepArrayNames() {
+        String xml = "<root><a><b /></a></root>";
+        xmlSerializer.setKeepArrayName(true);
+        JSON actual = xmlSerializer.read( xml );
+        xmlSerializer.setKeepArrayName(false);
+        JSON expected = JSONObject.fromObject( "{\"a\": { \"b\": [] } }" );
+        Assertions.assertEquals( expected, actual );
+    }
+
     public void testNullObjectArray() {
         String xml = "<a><e class=\"object\" null=\"true\"/><e class=\"object\" null=\"true\"/></a>";
         JSON actual = xmlSerializer.read(xml);

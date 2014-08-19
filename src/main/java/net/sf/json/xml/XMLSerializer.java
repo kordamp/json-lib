@@ -984,11 +984,17 @@ public class XMLSerializer {
                     isSameElementNameInArray = false;
                 }
             }
-            if (isSameElementNameInArray) {
-                JSONObject result = new JSONObject();
-                result.put(arrayName, jsonArray);
-                return result;
+         if( isSameElementNameInArray ){
+            JSONObject result = new JSONObject();
+            // in the case of a self-closing tag, arrayName will be null
+            // and this will throw an error if we return the empty array
+            // then it will be added correctly to the result
+            if (arrayName == null) {
+                return jsonArray;
             }
+            result.put( arrayName, jsonArray );
+            return result;
+         }
         }
         return jsonArray;
     }
