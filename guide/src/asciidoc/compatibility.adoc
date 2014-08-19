@@ -1,0 +1,10 @@
+
+[[_compatibility]]
+= Compatibility
+
+The following lists summarizes the differences between Json-lib 3.x and 2.x
+
+ * All classes have moved from package `net.sf.json-lib` to `org.kordamp.json-lib`.
+ * JDK5 is the new binary base line.
+ * Java Generics have been added to method signatures.
+

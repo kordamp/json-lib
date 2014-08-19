@@ -1,6 +1,0 @@
-syntax: glob
-target
-build
-*.iml
-*.ipr
-*.iws

@@ -36,13 +36,13 @@
          <td>null</td><td>&lt;=&gt;</td><td>null</td>
       </tr>
       <tr>
-         <td>function</td><td>&lt;=&gt;</td><td>net.sf.json.JSONFunction</td>
+         <td>function</td><td>&lt;=&gt;</td><td>org.kordamp.json.JSONFunction</td>
       </tr>
       <tr>
-         <td>array</td><td>&lt;=&gt;</td><td>net.sf.json.JSONArray (object, string, number, boolean, function)</td>
+         <td>array</td><td>&lt;=&gt;</td><td>org.kordamp.json.JSONArray (object, string, number, boolean, function)</td>
       </tr>
       <tr>
-         <td>object</td><td>&lt;=&gt;</td><td>net.sf.json.JSONObject</td>
+         <td>object</td><td>&lt;=&gt;</td><td>org.kordamp.json.JSONObject</td>
       </tr>
    </tbody>
    </table>

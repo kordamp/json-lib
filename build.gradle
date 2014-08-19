@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 the original author or authors.
+ * Copyright 2006-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,34 @@
  * limitations under the License.
  */
 
-apply plugin: 'groovy'
-apply plugin: 'idea'
+buildscript {
+    repositories {
+        jcenter()
+        mavenLocal()
+    }
 
-repositories {
-    jcenter()
+    dependencies {
+        classpath 'net.saliman:gradle-cobertura-plugin:2.2.4'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.0'
+        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
+        classpath 'org.ajoberstar:gradle-git:0.9.0'
+        classpath 'org.kordamp.gradle:stats-gradle-plugin:0.1.1'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.5-beta-6'
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.7.3'
+    }
 }
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'com.github.kt3k.coveralls'
+apply plugin: 'build-dashboard'
+apply plugin: 'org.kordamp.gradle.stats'
+apply plugin: 'com.github.ben-manes.versions'
+apply from: 'gradle/publishing.gradle'
+apply from: 'gradle/code-coverage.gradle'
+apply from: 'gradle/code-quality.gradle'
+apply from: 'gradle/guide.gradle'
 
 dependencies {
     def compileExcludingCommonsLogging = { String dependency ->
@@ -34,9 +56,8 @@ dependencies {
         }
     }
 
-    compile "org.codehaus.groovy:groovy-all:$groovyVersion"
     compile('junit:junit:4.11')
-    compileExcludingCommonsLogging('commons-beanutils:commons-beanutils:1.8.0')
+    compileExcludingCommonsLogging('commons-beanutils:commons-beanutils:1.9.2')
     compileExcludingCommonsLogging('commons-collections:commons-collections:3.2.1')
     compileExcludingCommonsLogging('commons-lang:commons-lang:2.6')
     compile("org.slf4j:slf4j-api:$slf4jVersion")
@@ -45,20 +66,34 @@ dependencies {
     }
 
     // the following should be marked as optional
-    compileExcludingCommonsLogging('xom:xom:1.1')
-    compileExcludingCommonsLogging('net.sf.ezmorph:ezmorph:1.0.6')
-    compileExcludingCommonsLogging("org.codehaus.groovy:groovy-all:$groovyVersion")
+    compileExcludingCommonsLogging('xom:xom:1.2.5')
+    compileExcludingCommonsLogging('org.kordamp.ezmorph:ezmorph:2.0.0')
 
-    testCompileExcludingCommonsLogging('xmlunit:xmlunit:1.0')
-    testCompileExcludingCommonsLogging('commons-httpclient:commons-httpclient:3.1')
-    testCompile("log4j:log4j:$log4jVersion") {
-        exclude group: 'ant',         module: 'ant-nodeps'
-        exclude group: 'ant',         module: 'ant-junit'
-        exclude group: 'ant-contrib', module: 'ant-contrib'
-    }
-    testCompile("org.slf4j:slf4j-log4j12:$slf4jVersion") {
-        exclude group: 'org.slf4j', module: 'slf4j-api'
-        exclude group: 'log4j',     module: 'log4j'
-    }
+    testCompileExcludingCommonsLogging('xmlunit:xmlunit:1.5')
+    testCompile("org.slf4j:slf4j-api:$slf4jVersion")
 }
 
+task sourceJar(type: Jar) {
+    group 'Build'
+    description 'An archive of the source code'
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+jar.finalizedBy sourceJar
+
+artifacts {
+    sourceJar
+}
+
+gradle.taskGraph.whenReady {
+    def createIfNotExists = { File dir ->
+        if (!dir.exists()) {
+            dir.mkdirs()
+        }
+    }
+    sourceSets.main.java.srcDirs.each(createIfNotExists)
+    sourceSets.test.java.srcDirs.each(createIfNotExists)
+    sourceSets.main.resources.srcDirs.each(createIfNotExists)
+    sourceSets.test.resources.srcDirs.each(createIfNotExists)
+}
