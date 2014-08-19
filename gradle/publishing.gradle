@@ -52,21 +52,90 @@ def pomConfig = {
             name 'The Apache Software License, Version 2.0'
             url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
             distribution 'repo'
+            comments('This product includes software developed by Douglas Crockford (http://www.crockford.com)')
         }
     }
     scm {
         url project.project_scm
     }
     developers {
-        [
-            aalmiray : 'Andres Almiray'
-        ].each { devId, devName ->
-            developer {
-                id devId
-                name devName
-                roles {
-                    role 'Developer'
-                }
+        developer {
+            id('aalmiray')
+            name('Andres Almiray')
+            email('aalmiray@yahoo.com')
+            roles {
+                role('Developer')
+            }
+        }
+        developer {
+            name('Douglas Crockford')
+            email('json@json.org')
+            roles {
+                role('Original source code developer')
+            }
+        }
+    }
+    contributors {
+        contributor {
+            name('Matt Small')
+            organization('WaveMaker')
+            roles {
+                role('Contributed generics support')
+            }
+        }
+        contributor {
+            name('Dan Fabulich')
+            roles {
+                role('Feedback on JDK5 and JEE features')
+            }
+        }
+        contributor {
+            name('Masato Nagai')
+            roles {
+                role('Patch for XMLSerializer')
+            }
+        }
+        contributor {
+            name('Gino Miceli')
+            roles {
+                role('Patch for PropertySet strategy')
+            }
+        }
+        contributor {
+            name('Mino Tonga')
+        }
+        contributor {
+            name('Yee_Keat Phuah')
+            roles {
+                role('Patch for thread safety in JSONObject/JSONArray')
+            }
+        }
+        contributor {
+            name('Oliver Zyngier')
+        }
+        contributor {
+            name('Marcelo Liberato')
+        }
+        contributor {
+            name('Mathias Herberst')
+        }
+        contributor {
+            name('Ales Novy')
+            roles {
+                role('Patch for performance improvements in JSONUtils')
+                role('Patch for propagating JsonConfig to missing methods on JSONObject')
+            }
+        }
+        contributor {
+            name('Peter Schubert')
+            roles {
+                role('Performance patch for JSONUtils')
+            }
+        }
+        contributor {
+            name('Ian Wolfcat Atha')
+            roles {
+                role('Performance patch for JSONUtils')
             }
         }
     }
@@ -79,6 +148,13 @@ publishing {
             artifact sourceJar
 
             pom.withXml {
+                // all dependencies should use the default scope (compile) but
+                // Gradle insists in using runtime as default
+                asNode().dependencies.dependency.each { dep ->
+                    if (dep.scope.text() == 'runtime') {
+                        dep.remove(dep.scope)
+                    }
+                }
                 asNode().children().last() + pomConfig
             }
         }
