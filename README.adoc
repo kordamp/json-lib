@@ -1,17 +1,16 @@
 = Json-lib
 :version: 3.0.0.SNAPSHOT
 :linkattrs:
-:project-name: json-lib
 
-image:http://img.shields.io/travis/aalmiray/{project-name}/development.svg["Build Status", link="https://travis-ci.org/aalmiray/{project-name}"]
-image:http://img.shields.io/coveralls/aalmiray/{project-name}/development.svg["Coverage Status", link="https://coveralls.io/r/aalmiray/{project-name}"]
+image:http://img.shields.io/travis/aalmiray/Json-lib/development.svg["Build Status", link="https://travis-ci.org/aalmiray/Json-lib"]
+image:http://img.shields.io/coveralls/aalmiray/Json-lib/development.svg["Coverage Status", link="https://coveralls.io/r/aalmiray/Json-lib"]
 image:http://img.shields.io/:semver-{version}-blue.svg["Semantic Versioning", link="http://semver.org"]
 image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
-image:http://img.shields.io/badge/download-latest-bb00bb.svg[link="https://bintray.com/aalmiray/kordamp/{project-name}/_latestVersion"]
+image:http://img.shields.io/badge/download-latest-bb00bb.svg[link="https://bintray.com/aalmiray/kordamp/json-lib/_latestVersion"]
 
 ---
 
 JSON-lib is a java library for transforming beans, maps, collections, java arrays and XML to JSON and back again to beans and DynaBeans.
 
-Refer to the link:http://aalmiray.github.io/{project-name}/[project guide, window="_blank"] for
+Refer to the link:http://aalmiray.github.io/json-lib/[project guide, window="_blank"] for
 further information on configuration and usage.
