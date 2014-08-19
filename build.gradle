@@ -15,11 +15,10 @@
  */
 
 apply plugin: 'groovy'
-apply plugin: 'maven'
 apply plugin: 'idea'
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -35,7 +34,7 @@ dependencies {
         }
     }
 
-    groovy "org.codehaus.groovy:groovy-all:$groovyVersion"
+    compile "org.codehaus.groovy:groovy-all:$groovyVersion"
     compile('junit:junit:4.11')
     compileExcludingCommonsLogging('commons-beanutils:commons-beanutils:1.8.0')
     compileExcludingCommonsLogging('commons-collections:commons-collections:3.2.1')
@@ -63,7 +62,3 @@ dependencies {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.6'
-    jarFile = 'gradle/wrapper/gradle-wrapper.jar'
-}
