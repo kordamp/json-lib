@@ -37,6 +37,7 @@ public class AllTests extends TestSuite {
         suite.addTest(new TestSuite(TestXmlWithEntity.class));
         suite.addTest(new TestSuite(TestIdmlParsing.class));
         suite.addTest(new TestSuite(TestElementShouldNotBeArray.class));
+        suite.addTest(new TestSuite(TestForcedArrayElementFlag.class));
 
         return suite;
     }
