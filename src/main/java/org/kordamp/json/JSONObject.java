@@ -15,6 +15,11 @@
  */
 package org.kordamp.json;
 
+import org.apache.commons.beanutils.DynaBean;
+import org.apache.commons.beanutils.DynaProperty;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.lang.StringUtils;
 import org.kordamp.ezmorph.Morpher;
 import org.kordamp.ezmorph.array.ObjectArrayMorpher;
 import org.kordamp.ezmorph.bean.BeanMorpher;
@@ -24,21 +29,34 @@ import org.kordamp.json.processors.JsonValueProcessor;
 import org.kordamp.json.processors.JsonVerifier;
 import org.kordamp.json.processors.PropertyNameProcessor;
 import org.kordamp.json.regexp.RegexpUtils;
-import org.kordamp.json.util.*;
-import org.apache.commons.beanutils.DynaBean;
-import org.apache.commons.beanutils.DynaProperty;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections.map.ListOrderedMap;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.kordamp.json.util.CycleDetectionStrategy;
+import org.kordamp.json.util.EnumMorpher;
+import org.kordamp.json.util.JSONTokener;
+import org.kordamp.json.util.JSONUtils;
+import org.kordamp.json.util.PropertyFilter;
+import org.kordamp.json.util.PropertySetStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A JSONObject is an unordered collection of name/value pairs. Its external
@@ -96,8 +114,7 @@ import java.util.*;
  * @author JSON.org
  */
 public final class JSONObject extends AbstractJSON implements JSON, Map<String, Object>, Comparable {
-
-    private static final Log log = LogFactory.getLog(JSONObject.class);
+    private static final Logger log = LoggerFactory.getLogger(JSONObject.class);
 
     /**
      * Creates a JSONObject.<br>
@@ -2090,7 +2107,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * JSONObject.
      *
      * @return A JSONArray containing the key strings, or null if the JSONObject
-     *         is empty.
+     * is empty.
      */
     public JSONArray names() {
         verifyIsNull();
@@ -2107,7 +2124,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * JSONObject.
      *
      * @return A JSONArray containing the key strings, or null if the JSONObject
-     *         is empty.
+     * is empty.
      */
     public JSONArray names(JsonConfig jsonConfig) {
         verifyIsNull();
@@ -2350,7 +2367,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key The name to be removed.
      * @return The value that was associated with the name, or null if there was
-     *         no value.
+     * no value.
      */
     public Object remove(String key) {
         verifyIsNull();
@@ -2396,9 +2413,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * Warning: This method assumes that the data structure is acyclical.
      *
      * @return a printable, displayable, portable, transmittable representation
-     *         of the object, beginning with <code>{</code>&nbsp;<small>(left
-     *         brace)</small> and ending with <code>}</code>&nbsp;<small>(right
-     *         brace)</small>.
+     * of the object, beginning with <code>{</code>&nbsp;<small>(left
+     * brace)</small> and ending with <code>}</code>&nbsp;<small>(right
+     * brace)</small>.
      */
     public String toString() {
         if (isNullObject()) {
@@ -2433,9 +2450,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * @param indentFactor The number of spaces to add to each level of
      *                     indentation.
      * @return a printable, displayable, portable, transmittable representation
-     *         of the object, beginning with <code>{</code>&nbsp;<small>(left
-     *         brace)</small> and ending with <code>}</code>&nbsp;<small>(right
-     *         brace)</small>.
+     * of the object, beginning with <code>{</code>&nbsp;<small>(left
+     * brace)</small> and ending with <code>}</code>&nbsp;<small>(right
+     * brace)</small>.
      * @throws JSONException If the object contains an invalid number.
      */
     public String toString(int indentFactor) {
@@ -2458,8 +2475,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *                     indentation.
      * @param indent       The indentation of the top level.
      * @return a printable, displayable, transmittable representation of the
-     *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
-     *         and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
+     * object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
+     * and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
      * @throws JSONException If the object contains an invalid number.
      */
     public String toString(int indentFactor, int indent) {
