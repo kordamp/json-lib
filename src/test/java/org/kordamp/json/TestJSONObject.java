@@ -17,6 +17,7 @@ package org.kordamp.json;
 
 import junit.framework.TestCase;
 import org.apache.commons.beanutils.DynaBean;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.kordamp.ezmorph.MorphUtils;
 import org.kordamp.ezmorph.bean.MorphDynaBean;
 import org.kordamp.ezmorph.bean.MorphDynaClass;
@@ -25,14 +26,26 @@ import org.kordamp.json.processors.DefaultValueProcessor;
 import org.kordamp.json.processors.DefaultValueProcessorMatcher;
 import org.kordamp.json.processors.PropertyNameProcessor;
 import org.kordamp.json.sample.*;
-import org.kordamp.json.util.*;
-import org.apache.commons.beanutils.PropertyUtils;
+import org.kordamp.json.test.JSONAssert;
+import org.kordamp.json.util.CycleDetectionStrategy;
+import org.kordamp.json.util.JSONTokener;
+import org.kordamp.json.util.JSONUtils;
+import org.kordamp.json.util.JavaIdentifierTransformer;
+import org.kordamp.json.util.PropertyExclusionClassMatcher;
+import org.kordamp.json.util.PropertyFilter;
+import org.kordamp.json.util.PropertySetStrategy;
 
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Andres Almiray
@@ -1008,7 +1021,7 @@ public class TestJSONObject extends TestCase {
         assertEquals(jsonObject.get("integer"), new Integer(bean.getInteger()));
         assertEquals(jsonObject.get("string"), bean.getString());
         Assertions.assertEquals(bean.getIntarray(),
-                JSONArray.toArray(jsonObject.getJSONArray("intarray")));
+            JSONArray.toArray(jsonObject.getJSONArray("intarray")));
     }
 
     // This already works without preserving floating point
@@ -1523,6 +1536,27 @@ public class TestJSONObject extends TestCase {
         assertEquals("json", jsonArray.getString(0));
         assertEquals(1, jsonArray.getInt(1));
         assertTrue(jsonArray.getBoolean(2));
+    }
+
+    public void testNumbers() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("double", 1.0d);
+        jsonObject.put("float", 1.0f);
+        jsonObject.put("integer", 1);
+
+        assertEquals(1.0d, (Double) jsonObject.get("double"), 0d);
+        assertEquals(1.0f, (Double) jsonObject.get("float"), 0d);
+        assertEquals(Integer.valueOf(1), jsonObject.get("integer"));
+
+        // perform a full roundtrip
+        String expected = "{\"double\":1.0,\"float\":1.0,\"integer\":1}";
+        JSONAssert.assertEquals(expected, jsonObject);
+
+        JSONObject json = JSONObject.fromObject(expected);
+        JSONAssert.assertEquals(jsonObject, json);
+        assertEquals(1.0d, (Double) json.get("double"), 0d);
+        assertEquals(1.0f, (Double) json.get("float"), 0d);
+        assertEquals(Integer.valueOf(1), json.get("integer"));
     }
 
     protected void setUp() throws Exception {

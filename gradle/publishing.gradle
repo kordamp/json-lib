@@ -138,6 +138,9 @@ def pomConfig = {
                 role('Performance patch for JSONUtils')
             }
         }
+        contributor {
+            name('Mischa Koelliker')
+        }
     }
 }
 

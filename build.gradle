@@ -70,7 +70,7 @@ dependencies {
     compileExcludingCommonsLogging('org.kordamp.ezmorph:ezmorph:2.0.0')
 
     testCompileExcludingCommonsLogging('xmlunit:xmlunit:1.5')
-    testCompile("org.slf4j:slf4j-api:$slf4jVersion")
+    testCompile("org.slf4j:slf4j-simple:$slf4jVersion")
 }
 
 task sourceJar(type: Jar) {
