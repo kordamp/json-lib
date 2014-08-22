@@ -76,7 +76,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onArrayEnd();
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -93,7 +93,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onArrayStart();
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -113,7 +113,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onElementAdded(index, element);
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -132,7 +132,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onError(jsone);
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -149,7 +149,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onObjectEnd();
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -166,7 +166,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onObjectStart();
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -188,7 +188,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onPropertySet(key, value, accumulated);
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -207,7 +207,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onWarning(warning);
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
