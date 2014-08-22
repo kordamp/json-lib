@@ -42,7 +42,7 @@ public class TestJSONUtils extends TestCase {
     }
 
     public void testDoubleToString_trailingZeros() {
-        assertEquals("200", JSONUtils.doubleToString(200.00000));
+        assertEquals("200.0", JSONUtils.doubleToString(200.00000));
     }
 
     public void testGetFunctionParams() {
@@ -99,6 +99,14 @@ public class TestJSONUtils extends TestCase {
         }
     }
 
+    public void testNumberToString_double() {
+        assertEquals("1.0", JSONUtils.numberToString(1.0d));
+    }
+
+    public void testNumberToString_float() {
+        assertEquals("1.0", JSONUtils.numberToString(1.0f));
+    }
+
     public void testQuote_emptyString() {
         assertEquals("\"\"", JSONUtils.quote(""));
     }
@@ -135,7 +143,7 @@ public class TestJSONUtils extends TestCase {
         assertEquals("", actual);
     }
 
-    public void testValidity_inifiniteDouble() {
+    public void testValidity_infiniteDouble() {
         try {
             JSONUtils.testValidity(new Double(Double.POSITIVE_INFINITY));
             fail("Should have thrown a JSONException");
@@ -144,7 +152,7 @@ public class TestJSONUtils extends TestCase {
         }
     }
 
-    public void testValidity_inifiniteFloat() {
+    public void testValidity_infiniteFloat() {
         try {
             JSONUtils.testValidity(new Float(Float.POSITIVE_INFINITY));
             fail("Should have thrown a JSONException");

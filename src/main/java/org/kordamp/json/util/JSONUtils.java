@@ -95,7 +95,7 @@ public final class JSONUtils {
             return "null";
         }
 
-        // Shave off trailing zeros and decimal point, if possible.
+        // Shave off trailing zeros, if possible, but preserve a single zero after decimal point
 
         String s = Double.toString(d);
         if (s.indexOf('.') > 0 && s.indexOf('e') < 0 && s.indexOf('E') < 0) {
@@ -103,7 +103,7 @@ public final class JSONUtils {
                 s = s.substring(0, s.length() - 1);
             }
             if (s.endsWith(".")) {
-                s = s.substring(0, s.length() - 1);
+                s = s + '0';
             }
         }
         return s;
@@ -433,7 +433,7 @@ public final class JSONUtils {
         }
         testValidity(n);
 
-        // Shave off trailing zeros and decimal point, if possible.
+        // Shave off trailing zeros, if possible, but preserve a single zero after decimal point
 
         String s = n.toString();
         if (s.indexOf('.') > 0 && s.indexOf('e') < 0 && s.indexOf('E') < 0) {
@@ -441,7 +441,7 @@ public final class JSONUtils {
                 s = s.substring(0, s.length() - 1);
             }
             if (s.endsWith(".")) {
-                s = s.substring(0, s.length() - 1);
+                s = s + '0';
             }
         }
         return s;

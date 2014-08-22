@@ -16,6 +16,7 @@
 package org.kordamp.json;
 
 import junit.framework.TestCase;
+import org.apache.commons.beanutils.DynaBean;
 import org.kordamp.ezmorph.MorphUtils;
 import org.kordamp.ezmorph.bean.MorphDynaBean;
 import org.kordamp.ezmorph.bean.MorphDynaClass;
@@ -1007,7 +1008,16 @@ public class TestJSONObject extends TestCase {
         assertEquals(jsonObject.get("integer"), new Integer(bean.getInteger()));
         assertEquals(jsonObject.get("string"), bean.getString());
         Assertions.assertEquals(bean.getIntarray(),
-            JSONArray.toArray(jsonObject.getJSONArray("intarray")));
+                JSONArray.toArray(jsonObject.getJSONArray("intarray")));
+    }
+
+    // This already works without preserving floating point
+    public void testToDynaBean_convertDouble() {
+        String json = "{double:1.0}";
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        Object bean = JSONObject.toBean(jsonObject);
+        assertEquals(1.0d, ((DynaBean) bean).get("double"));
+        assertEquals(Double.class, ((DynaBean) bean).get("double").getClass());
     }
 
     public void testToBean_ClassBean() {
