@@ -133,6 +133,10 @@ public class XMLSerializer {
      * flag for sorting object properties by name
      */
     private boolean sortPropertyNames;
+    /**
+     * list of element names that forces it's childs to be in Array
+     */
+    private Collection<String> forcedArrayElements;
 
     /**
      * Creates a new XMLSerializer with default options.<br>
@@ -765,8 +769,16 @@ public class XMLSerializer {
             .getQualifiedName();
         for (int i = 1; i < elementCount; i++) {
             if (childName.compareTo(elements.get(i)
-                .getQualifiedName()) != 0) {
+                    .getQualifiedName()) != 0 && forcedArrayElements == null) {
                 return false;
+            } else if (childName.compareTo(elements.get(i)
+                    .getQualifiedName()) != 0 && forcedArrayElements.contains(element.getQualifiedName())) {
+                if(log.isWarnEnabled()) {
+                log.warn("Child elements [" + childName + "," + elements.get(i)
+                        .getQualifiedName() + "] of " +
+                        "forced array element [" + element.getQualifiedName() + "] " +
+                        "are not from the same type");
+                }
             }
         }
 
@@ -846,13 +858,17 @@ public class XMLSerializer {
         String clazz = getClass(element);
         if (clazz != null && clazz.equals(JSONTypes.ARRAY)) {
             isArray = true;
+        } else if (forcedArrayElements != null) {
+            if (forcedArrayElements.contains(element.getQualifiedName())) {
+                isArray = true;
+            }
         } else if (element.getAttributeCount() == 0) {
             isArray = checkChildElements(element, isTopLevel);
         } else if (element.getAttributeCount() == 1
-            && (element.getAttribute(addJsonPrefix("class")) != null || element.getAttribute(addJsonPrefix("type")) != null)) {
+                && (element.getAttribute(addJsonPrefix("class")) != null || element.getAttribute(addJsonPrefix("type")) != null)) {
             isArray = checkChildElements(element, isTopLevel);
         } else if (element.getAttributeCount() == 2
-            && (element.getAttribute(addJsonPrefix("class")) != null && element.getAttribute(addJsonPrefix("type")) != null)) {
+                && (element.getAttribute(addJsonPrefix("class")) != null && element.getAttribute(addJsonPrefix("type")) != null)) {
             isArray = checkChildElements(element, isTopLevel);
         }
 
@@ -979,8 +995,12 @@ public class XMLSerializer {
                 final String arrayElement = element.getChildElements().get(i).getQualifiedName();
                 if (arrayName == null) {
                     arrayName = arrayElement;
-                } else if (!arrayName.equals(arrayElement)) {
+                } else if (!arrayName.equals(arrayElement) && forcedArrayElements == null) {
                     isSameElementNameInArray = false;
+                } else if (!arrayName.equals(arrayElement) && forcedArrayElements.contains(element.getQualifiedName())) {
+                    log.warn("Child elements [" + arrayName + "," + arrayElement + "] of " +
+                            "forced array element [" + element.getQualifiedName() + "] " +
+                            "are not from the same type");
                 }
             }
          if( isSameElementNameInArray ){
@@ -1478,6 +1498,10 @@ public class XMLSerializer {
             throw new JSONException(uee);
         }
         return str;
+    }
+
+    public void setForcedArrayParents(Collection<String> arrayElements) {
+        forcedArrayElements = arrayElements;
     }
 
     private static class CustomElement extends Element {
