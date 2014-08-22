@@ -141,6 +141,9 @@ def pomConfig = {
         contributor {
             name('Mischa Koelliker')
         }
+        contributor {
+            name('Michel Racic')
+        }
     }
 }
 
