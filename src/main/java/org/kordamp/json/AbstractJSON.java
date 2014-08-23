@@ -17,13 +17,17 @@ package org.kordamp.json;
 
 import org.kordamp.json.util.JSONUtils;
 import org.kordamp.json.util.JsonEventListener;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.ref.SoftReference;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Base class for JSONObject and JSONArray.
@@ -48,14 +52,14 @@ abstract class AbstractJSON implements JSON {
 
     private static CycleSet cycleSet = new CycleSet();
 
-    private static final Log log = LogFactory.getLog(AbstractJSON.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractJSON.class);
 
     /**
      * Adds a reference for cycle detection check.
      *
      * @param instance the reference to add
      * @return true if the instance has not been added previously, false
-     *         otherwise.
+     * otherwise.
      */
     protected static boolean addInstance(Object instance) {
         return getCycleSet().add(instance);
@@ -72,7 +76,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onArrayEnd();
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -89,7 +93,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onArrayStart();
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -109,7 +113,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onElementAdded(index, element);
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -128,7 +132,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onError(jsone);
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -145,7 +149,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onObjectEnd();
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -162,7 +166,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onObjectStart();
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -184,7 +188,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onPropertySet(key, value, accumulated);
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }
@@ -203,7 +207,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onWarning(warning);
                 } catch (RuntimeException e) {
-                    log.warn(e);
+                    log.warn(e.getMessage(), e);
                 }
             }
         }

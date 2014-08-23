@@ -15,16 +15,44 @@
  */
 package org.kordamp.json.xml;
 
-import org.kordamp.json.*;
-import org.kordamp.json.util.JSONUtils;
-import nu.xom.*;
+import nu.xom.Attribute;
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.Elements;
+import nu.xom.Node;
+import nu.xom.Serializer;
+import nu.xom.Text;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONFunction;
+import org.kordamp.json.JSONNull;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.util.JSONUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Utility class for transforming JSON to XML an back.<br>
@@ -55,7 +83,7 @@ import java.util.*;
 public class XMLSerializer {
     private static final String[] EMPTY_ARRAY = new String[0];
     private static final String JSON_PREFIX = "json_";
-    private static final Log log = LogFactory.getLog(XMLSerializer.class);
+    private static final Logger log = LoggerFactory.getLogger(XMLSerializer.class);
     /**
      * the name for an JSONArray Element
      */
@@ -134,9 +162,9 @@ public class XMLSerializer {
      */
     private boolean sortPropertyNames;
     /**
-     * list of element names that forces it's childs to be in Array
+     * set of element names that forces its children elements to be in an Array
      */
-    private Collection<String> forcedArrayElements;
+    private Collection<String> forcedArrayElements = new LinkedHashSet<String>();
 
     /**
      * Creates a new XMLSerializer with default options.<br>
@@ -157,6 +185,7 @@ public class XMLSerializer {
      * <li><code>keepCData</code>: false</li>
      * <li><code>escapeLowerChars</code>: false</li>
      * <li><code>keepArrayName</code>: false</li>
+     * <li><code>forcedArrayElements</code>: []</li>
      * </ul>
      */
     public XMLSerializer() {
@@ -437,6 +466,23 @@ public class XMLSerializer {
      */
     public void setTypeHintsEnabled(boolean typeHintsEnabled) {
         this.typeHintsEnabled = typeHintsEnabled;
+    }
+
+    /**
+     * Returns the set of XML elements that force their children to be treated as array elements.
+     */
+    public Collection<String> getForcedArrayElements() {
+        return forcedArrayElements;
+    }
+
+    /**
+     * Defines the set of XML elements that force their children to be treated as array elements.
+     */
+    public void setForcedArrayElements(Collection<String> forcedArrayElements) {
+        this.forcedArrayElements.clear();
+        if (forcedArrayElements != null) {
+            this.forcedArrayElements.addAll(forcedArrayElements);
+        }
     }
 
     /**
@@ -744,11 +790,7 @@ public class XMLSerializer {
             }
             if (elementCount == 1) {
                 // TODO jenkisci/json-lib changed && to ||
-                if (skipWhitespace && element.getChild(0) instanceof Text) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return skipWhitespace && element.getChild(0) instanceof Text;
             }
         }
 
@@ -769,24 +811,18 @@ public class XMLSerializer {
             .getQualifiedName();
         for (int i = 1; i < elementCount; i++) {
             if (childName.compareTo(elements.get(i)
-                    .getQualifiedName()) != 0 && forcedArrayElements == null) {
+                .getQualifiedName()) != 0 && forcedArrayElements.isEmpty()) {
                 return false;
             } else if (childName.compareTo(elements.get(i)
-                    .getQualifiedName()) != 0 && forcedArrayElements.contains(element.getQualifiedName())) {
-                if(log.isWarnEnabled()) {
-                log.warn("Child elements [" + childName + "," + elements.get(i)
-                        .getQualifiedName() + "] of " +
-                        "forced array element [" + element.getQualifiedName() + "] " +
-                        "are not from the same type");
-                }
+                .getQualifiedName()) != 0 && forcedArrayElements.contains(element.getQualifiedName())) {
+                log.warn("Child elements [{},{}] of forced array element [{}] are not from the same type",
+                    childName,
+                    elements.get(i).getQualifiedName(),
+                    element.getQualifiedName());
             }
         }
 
-        if (childName.equals(arrayName)) {
-            return true;
-        }
-
-        return elementCount > 1;
+        return childName.equals(arrayName) || elementCount > 1;
     }
 
     private String getClass(Element element) {
@@ -833,7 +869,7 @@ public class XMLSerializer {
             }
         } else {
             if (defaultType != null) {
-                log.info("Using default type " + defaultType);
+                log.info("Using default type {}", defaultType);
                 type = defaultType;
             }
         }
@@ -858,17 +894,15 @@ public class XMLSerializer {
         String clazz = getClass(element);
         if (clazz != null && clazz.equals(JSONTypes.ARRAY)) {
             isArray = true;
-        } else if (forcedArrayElements != null) {
-            if (forcedArrayElements.contains(element.getQualifiedName())) {
-                isArray = true;
-            }
+        } else if (forcedArrayElements.contains(element.getQualifiedName())) {
+            isArray = true;
         } else if (element.getAttributeCount() == 0) {
             isArray = checkChildElements(element, isTopLevel);
         } else if (element.getAttributeCount() == 1
-                && (element.getAttribute(addJsonPrefix("class")) != null || element.getAttribute(addJsonPrefix("type")) != null)) {
+            && (element.getAttribute(addJsonPrefix("class")) != null || element.getAttribute(addJsonPrefix("type")) != null)) {
             isArray = checkChildElements(element, isTopLevel);
         } else if (element.getAttributeCount() == 2
-                && (element.getAttribute(addJsonPrefix("class")) != null && element.getAttribute(addJsonPrefix("type")) != null)) {
+            && (element.getAttribute(addJsonPrefix("class")) != null && element.getAttribute(addJsonPrefix("type")) != null)) {
             isArray = checkChildElements(element, isTopLevel);
         }
 
@@ -995,12 +1029,13 @@ public class XMLSerializer {
                 final String arrayElement = element.getChildElements().get(i).getQualifiedName();
                 if (arrayName == null) {
                     arrayName = arrayElement;
-                } else if (!arrayName.equals(arrayElement) && forcedArrayElements == null) {
+                } else if (!arrayName.equals(arrayElement) && forcedArrayElements.isEmpty()) {
                     isSameElementNameInArray = false;
                 } else if (!arrayName.equals(arrayElement) && forcedArrayElements.contains(element.getQualifiedName())) {
-                    log.warn("Child elements [" + arrayName + "," + arrayElement + "] of " +
-                            "forced array element [" + element.getQualifiedName() + "] " +
-                            "are not from the same type");
+                    log.warn("Child elements [{},{}] of forced array element [{}] are not from the same type",
+                        arrayName,
+                        arrayElement,
+                        element.getQualifiedName());
                 }
             }
             if (isSameElementNameInArray) {
@@ -1357,7 +1392,8 @@ public class XMLSerializer {
                     jsonArray.element(new JSONFunction(params, text));
                 } else {
                     if (isArray(element, false)) {
-                        jsonArray.element(processArrayElement(element, defaultType));
+                        JSON value = processArrayElement(element, defaultType);
+                        jsonArray.element(value);
                     } else if (isObject(element, false)) {
                         jsonArray.element(simplifyValue(null, processObjectElement(element,
                             defaultType)));
@@ -1512,10 +1548,6 @@ public class XMLSerializer {
             throw new JSONException(uee);
         }
         return str;
-    }
-
-    public void setForcedArrayParents(Collection<String> arrayElements) {
-        forcedArrayElements = arrayElements;
     }
 
     private static class CustomElement extends Element {
