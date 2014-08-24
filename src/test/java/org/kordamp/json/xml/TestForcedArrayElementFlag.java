@@ -15,8 +15,13 @@
  */
 package org.kordamp.json.xml;
 
+import com.google.common.collect.ImmutableList;
 import junit.framework.TestCase;
 import org.kordamp.json.JSONObject;
+import uk.org.lidalia.slf4jext.Level;
+import uk.org.lidalia.slf4jtest.LoggingEvent;
+import uk.org.lidalia.slf4jtest.TestLogger;
+import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 import static java.util.Arrays.asList;
 
@@ -28,6 +33,9 @@ public class TestForcedArrayElementFlag extends TestCase {
     static {
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace");
     }
+
+    // Test logger which we can use to check if warnings get logged correctly
+    TestLogger logger = TestLoggerFactory.getTestLogger(XMLSerializer.class);
 
     /**
      * Should get an array without the list in this case.
@@ -47,13 +55,15 @@ public class TestForcedArrayElementFlag extends TestCase {
             "</Document>\n");
 
         String expectedJsonString = "{@DOMVersion:\"8.0\", @Self:\"d\", TinDocumentDataObject:{" +
-            "Properties:[\"/////wAAAAAAAAAA\",\"/////wBBBBBBBBBB\"]}}";
+                        "Properties:[\"/////wAAAAAAAAAA\",\"/////wBBBBBBBBBB\"]}}";
         final JSONObject expected = JSONObject.fromObject(expectedJsonString);
 
         assertEquals(expected, actual);
     }
 
     public void test_different_elements_should_be_forced_array_with_log_warning() {
+        TestLoggerFactory.clear();
+        logger.setEnabledLevels(Level.WARN);
         final XMLSerializer xmlSerializer = new XMLSerializer();
         xmlSerializer.setKeepCData(true);
         xmlSerializer.setForcedArrayElements(asList("Properties"));
@@ -73,7 +83,13 @@ public class TestForcedArrayElementFlag extends TestCase {
         assertEquals(expected, actual);
 
         // Check if warning appears in log
-        //TODO Check log, find how to do it?
+        String expectedWarningMessage = "Child elements [GaijiRefMaps,ForcedArrayElement] of forced array element [Properties] are not from the same type";
+        boolean expectedWarningFound = false;
+        ImmutableList<LoggingEvent> loggingEvents = logger.getLoggingEvents();
+        for (LoggingEvent le : loggingEvents)
+            if (le.getLevel() == Level.WARN)
+                expectedWarningFound = le.getMessage().equals(expectedWarningMessage);
+        assertTrue("Expected warning message has been found to notify the caller that child the elements are not from the same type", expectedWarningFound);
     }
 
     public void test_single_element_should_be_forced_array() {

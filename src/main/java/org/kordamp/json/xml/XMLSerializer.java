@@ -1049,6 +1049,20 @@ public class XMLSerializer {
                 result.put(arrayName, jsonArray);
                 return result;
             }
+        } else if ((forcedArrayElements != null)?forcedArrayElements.contains(element.getQualifiedName()):false) {
+            // array not named, check if forced array and give warning if elements not same type
+            String arrayName = null;
+            for (int i = 0; i < element.getChildElements().size(); i++) {
+                final String arrayElement = element.getChildElements().get(i).getQualifiedName();
+                if (arrayName == null) {
+                    arrayName = arrayElement;
+                } else if (!arrayName.equals(arrayElement)) {
+                    log.warn("Child elements [" + arrayName + "," + arrayElement + "] of " +
+                            "forced array element [" + element.getQualifiedName() + "] " +
+                            "are not from the same type");
+                }
+            }
+
         }
         return jsonArray;
     }
