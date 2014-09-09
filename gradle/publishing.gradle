@@ -1,0 +1,189 @@
+/*
+ * Copyright 2006-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import java.text.SimpleDateFormat
+
+Date buildTimeAndDate = new Date()
+ext {
+    buildDate = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
+    buildTime = new SimpleDateFormat('HH:mm:ss.SSSZ').format(buildTimeAndDate)
+}
+
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+jar {
+    manifest {
+        attributes(
+            'Built-By': System.properties['user.name'],
+            'Created-By': System.properties['java.version'] + " (" + System.properties['java.vendor'] + " " + System.properties['java.vm.version'] + ")",
+            'Build-Date': project.buildDate,
+            'Build-Time': project.buildTime,
+            'Specification-Title': project.name,
+            'Specification-Version': project.version,
+            'Specification-Vendor': project.project_vendor,
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Implementation-Vendor': project.project_vendor
+        )
+    }
+}
+
+def pomConfig = {
+    name project.name
+    description project.project_description
+    url project.project_url
+    inceptionYear '2006'
+    licenses {
+        license([:]) {
+            name 'The Apache Software License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            distribution 'repo'
+            comments('This product includes software developed by Douglas Crockford (http://www.crockford.com)')
+        }
+    }
+    scm {
+        url project.project_scm
+    }
+    developers {
+        developer {
+            id('aalmiray')
+            name('Andres Almiray')
+            email('aalmiray@yahoo.com')
+            roles {
+                role('Developer')
+            }
+        }
+        developer {
+            name('Douglas Crockford')
+            email('json@json.org')
+            roles {
+                role('Original source code developer')
+            }
+        }
+    }
+    contributors {
+        contributor {
+            name('Matt Small')
+            organization('WaveMaker')
+            roles {
+                role('Contributed generics support')
+            }
+        }
+        contributor {
+            name('Dan Fabulich')
+            roles {
+                role('Feedback on JDK5 and JEE features')
+            }
+        }
+        contributor {
+            name('Masato Nagai')
+            roles {
+                role('Patch for XMLSerializer')
+            }
+        }
+        contributor {
+            name('Gino Miceli')
+            roles {
+                role('Patch for PropertySet strategy')
+            }
+        }
+        contributor {
+            name('Mino Tonga')
+        }
+        contributor {
+            name('Yee_Keat Phuah')
+            roles {
+                role('Patch for thread safety in JSONObject/JSONArray')
+            }
+        }
+        contributor {
+            name('Oliver Zyngier')
+        }
+        contributor {
+            name('Marcelo Liberato')
+        }
+        contributor {
+            name('Mathias Herberst')
+        }
+        contributor {
+            name('Ales Novy')
+            roles {
+                role('Patch for performance improvements in JSONUtils')
+                role('Patch for propagating JsonConfig to missing methods on JSONObject')
+            }
+        }
+        contributor {
+            name('Peter Schubert')
+            roles {
+                role('Performance patch for JSONUtils')
+            }
+        }
+        contributor {
+            name('Ian Wolfcat Atha')
+            roles {
+                role('Performance patch for JSONUtils')
+            }
+        }
+        contributor {
+            name('Mischa Koelliker')
+        }
+        contributor {
+            name('Michel Racic')
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenCustom(MavenPublication) {
+            from components.java
+            artifact sourceJar
+
+            pom.withXml {
+                // all dependencies should use the default scope (compile) but
+                // Gradle insists in using runtime as default
+                asNode().dependencies.dependency.each { dep ->
+                    if (dep.scope.text() == 'runtime') {
+                        dep.remove(dep.scope)
+                    }
+                }
+                asNode().children().last() + pomConfig
+            }
+        }
+    }
+}
+
+if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
+if (!project.hasProperty('bintrayApiKey')) ext.bintrayApiKey = ''
+
+bintray {
+    user = project.bintrayUsername
+    key = project.bintrayApiKey
+    publications = ['mavenCustom']
+    pkg {
+        repo = 'kordamp'
+        userOrg = 'aalmiray'
+        name = project.name
+        desc = project.project_description
+        licenses = ['Apache-2.0']
+        labels = ['json']
+        websiteUrl = project.project_url
+        issueTrackerUrl = project.project_issues
+        vcsUrl = project.project_scm
+        publicDownloadNumbers = true
+    }
+}

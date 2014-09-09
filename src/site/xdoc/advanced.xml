@@ -71,7 +71,7 @@
          return false;
       }
    });
-   BeanA actual = (BeanA) JSONObject.toBean( json, jsonConfig );</textarea><p>Please review the <code>net.sf.json.filters</code> package to find out more about default filters and composite filters.</p>
+   BeanA actual = (BeanA) JSONObject.toBean( json, jsonConfig );</textarea><p>Please review the <code>org.kordamp.json.filters</code> package to find out more about default filters and composite filters.</p>
          </subsection>
 
          <subsection name="Selecting the proper JsonBeanProcessor">

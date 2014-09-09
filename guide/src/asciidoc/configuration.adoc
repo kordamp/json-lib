@@ -1,0 +1,26 @@
+
+[[_configuration]]
+= Build Configuration
+
+== Gradle
+
+[source,groovy,options="nowrap"]
+[subs="attributes"]
+----
+dependencies {
+    compile '{project-group}:{project-name}:{project-version}'
+}
+----
+
+== Maven
+
+[source,xml,options="nowrap"]
+[subs="attributes,verbatim"]
+----
+<dependency>
+    <groupId>{project-group}</groupId>
+    <artifactId>{project-name}</artifactId>
+    <version>{project-version}</version>
+</dependency>
+----
+
