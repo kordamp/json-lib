@@ -15,26 +15,6 @@
  */
 package org.kordamp.json.xml;
 
-import nu.xom.Attribute;
-import nu.xom.Builder;
-import nu.xom.Document;
-import nu.xom.Element;
-import nu.xom.Elements;
-import nu.xom.Node;
-import nu.xom.Serializer;
-import nu.xom.Text;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.kordamp.json.JSON;
-import org.kordamp.json.JSONArray;
-import org.kordamp.json.JSONException;
-import org.kordamp.json.JSONFunction;
-import org.kordamp.json.JSONNull;
-import org.kordamp.json.JSONObject;
-import org.kordamp.json.util.JSONUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -53,6 +33,27 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONFunction;
+import org.kordamp.json.JSONNull;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.util.JSONUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import nu.xom.Attribute;
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.Elements;
+import nu.xom.Node;
+import nu.xom.Serializer;
+import nu.xom.Text;
 
 /**
  * Utility class for transforming JSON to XML an back.<br>
@@ -1299,6 +1300,17 @@ public class XMLSerializer {
                 Text text = (Text) child;
                 if (StringUtils.isNotBlank(StringUtils.strip(text.getValue()))) {
                     setOrAccumulate(jsonObject, "#text", trimSpaceFromValue(text.getValue()));
+                }
+                else if (i == 0 && childCount == 1) {
+                    /**
+                     * If the only child is whitespace text then we don't want
+                     * to ignore it. Whitespace text can be valid json content.
+                     * However if there are other siblings that aren't whitespace
+                     * text then this child is just spacing between XML elements
+                     * can can be ignored.
+                     */
+                    setOrAccumulate(jsonObject, "#text", text.getValue());                    
+                    
                 }
             } else if (child instanceof Element) {
                 setValue(jsonObject, (Element) child, defaultType);
