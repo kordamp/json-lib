@@ -1742,17 +1742,13 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
             } else {
                 this.elements.add(value);
             }
-        } else if (JSONUtils.mayBeJSON(value)) {
-            try {
-                this.elements.add(JSONSerializer.toJSON(value, jsonConfig));
-            } catch (JSONException jsone) {
-                this.elements.add(value);
-            }
-        } else {
+        }else { 
             this.elements.add(value);
         }
-        return this;
+    
+        return this;    
     }
+
 
     public boolean equals(Object obj) {
         if (obj == this) {
