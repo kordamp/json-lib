@@ -93,6 +93,7 @@ public class JsonConfig {
     private Map typeMap = new HashMap();
     private List ignoreFieldAnnotations = new ArrayList();
     private boolean allowNonStringKeys = false;
+    private boolean parseJsonLiterals = true;
 
     public JsonConfig() {
     }
@@ -175,6 +176,14 @@ public class JsonConfig {
         clearJavaPropertyNameProcessors();
     }
 
+    public boolean isParseJsonLiterals() {
+        return parseJsonLiterals;
+    }
+
+    public void setParseJsonLiterals(boolean parseJsonLiterals) {
+        this.parseJsonLiterals = parseJsonLiterals;
+    }
+
     public JsonConfig copy() {
         JsonConfig jsc = new JsonConfig();
         jsc.beanKeyMap.putAll(beanKeyMap);
@@ -224,6 +233,7 @@ public class JsonConfig {
         jsc.ignoreFieldAnnotations.addAll(ignoreFieldAnnotations);
         jsc.allowNonStringKeys = allowNonStringKeys;
         jsc.ignoreUnreadableProperty = ignoreUnreadableProperty;
+        jsc.parseJsonLiterals = parseJsonLiterals;
         return jsc;
     }
 
@@ -978,6 +988,7 @@ public class JsonConfig {
         exclusionMap.clear();
         ignoreFieldAnnotations.clear();
         allowNonStringKeys = false;
+        parseJsonLiterals = true;
     }
 
     /**

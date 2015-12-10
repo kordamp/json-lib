@@ -1608,7 +1608,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
         if (index < size()) {
             if (value == null) {
                 this.elements.set(index, "");
-            } else if (JSONUtils.mayBeJSON(value)) {
+            } else if (jsonConfig.isParseJsonLiterals() && JSONUtils.mayBeJSON(value)) {
                 try {
                     this.elements.set(index, JSONSerializer.toJSON(value, jsonConfig));
                 } catch (JSONException jsone) {
@@ -1742,7 +1742,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
             } else {
                 this.elements.add(value);
             }
-        } else if (JSONUtils.mayBeJSON(value)) {
+        } else if (jsonConfig.isParseJsonLiterals() && JSONUtils.mayBeJSON(value)) {
             try {
                 this.elements.add(JSONSerializer.toJSON(value, jsonConfig));
             } catch (JSONException jsone) {

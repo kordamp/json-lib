@@ -31,6 +31,7 @@ import org.kordamp.json.JSONException;
 import org.kordamp.json.JSONFunction;
 import org.kordamp.json.JSONNull;
 import org.kordamp.json.JSONObject;
+import org.kordamp.json.JsonConfig;
 import org.kordamp.json.util.JSONUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,6 +166,10 @@ public class XMLSerializer {
      * set of element names that forces its children elements to be in an Array
      */
     private Collection<String> forcedArrayElements = new LinkedHashSet<String>();
+    /**
+     * should JSON literals be parsed or not
+     */
+    private boolean parseJsonLiterals = true;
 
     /**
      * Creates a new XMLSerializer with default options.<br>
@@ -186,6 +191,7 @@ public class XMLSerializer {
      * <li><code>escapeLowerChars</code>: false</li>
      * <li><code>keepArrayName</code>: false</li>
      * <li><code>forcedArrayElements</code>: []</li>
+     * <li><code>parseJsonLiterals</code>: true</li>
      * </ul>
      */
     public XMLSerializer() {
@@ -205,6 +211,20 @@ public class XMLSerializer {
         setEscapeLowerChars(false);
         setKeepArrayName(false);
         setSortPropertyNames(false); // TODO jenkinsci/json-lib requires this to be set to true
+    }
+
+    /**
+     * Sets whether JSON literals are parsed as JSON or not.
+     */
+    public void setParseJsonLiterals(boolean parseJsonLiterals) {
+        this.parseJsonLiterals = parseJsonLiterals;
+    }
+
+    /**
+     * Returns whether JSON literals are parsed as JSON or not.
+     */
+    public boolean isParseJsonLiterals() {
+        return parseJsonLiterals;
     }
 
     /**
@@ -1391,14 +1411,16 @@ public class XMLSerializer {
                     params = StringUtils.split(paramsAttribute.getValue(), ",");
                     jsonArray.element(new JSONFunction(params, text));
                 } else {
+                    JsonConfig config = new JsonConfig();
+                    config.setParseJsonLiterals(parseJsonLiterals);
                     if (isArray(element, false)) {
                         JSON value = processArrayElement(element, defaultType);
-                        jsonArray.element(value);
+                        jsonArray.element(value, config);
                     } else if (isObject(element, false)) {
                         jsonArray.element(simplifyValue(null, processObjectElement(element,
-                            defaultType)));
+                            defaultType)), config);
                     } else {
-                        jsonArray.element(trimSpaceFromValue(element.getValue()));
+                        jsonArray.element(trimSpaceFromValue(element.getValue()), config);
                     }
                 }
             }
