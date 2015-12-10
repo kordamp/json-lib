@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * This product includes software developed by Douglas Crockford
+ * (http://www.crockford.com) and released under the Apache Software
+ * License version 2.0 in 2006.
  */
 package org.kordamp.json.sample;
 
