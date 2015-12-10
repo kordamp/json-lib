@@ -1559,6 +1559,14 @@ public class TestJSONObject extends TestCase {
         assertEquals(Integer.valueOf(1), json.get("integer"));
     }
 
+    public void testBug5StringEscaping() {
+        JSONObject json = new JSONObject();
+        json.put("key1", "[...]");
+        json.put("key2", "[title]");
+
+        assertEquals("{\"key1\":\"[...]\",\"key2\":\"[title]\"}", json.toString());
+    }
+
     protected void setUp() throws Exception {
         jsonConfig = new JsonConfig();
     }
