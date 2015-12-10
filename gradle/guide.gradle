@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-apply plugin: 'org.asciidoctor.gradle.asciidoctor'
-apply plugin: 'github-pages'
+apply plugin: 'org.asciidoctor.convert'
+apply plugin: 'org.ajoberstar.github-pages'
 
 javadoc {
     excludes = ['**/*.html', 'META-INF/**']
@@ -42,27 +42,30 @@ task jarApi(type: Jar, dependsOn: javadoc) {
 asciidoctor {
     baseDir   = project.file('guide/src/asciidoc')
     sourceDir = project.file('guide/src/asciidoc')
-    options = [
-        attributes: [
-            toc                     : 'left',
-            doctype                 : 'book',
-            icons                   : 'font',
-            encoding                : 'utf-8',
-            sectlink                : true,
-            sectanchors             : true,
-            numbered                : true,
-            linkattrs               : true,
-            imagesdir               : 'images',
-            linkcss                 : true,
-            'source-highlighter'    : 'coderay',
-            'coderay-linenums-mode' : 'inline',
-            'project-author'        : 'Andres Almiray',
-            'project-url'           : project.project_url,
-            'project-vcs'           : project.project_scm,
-            'project-issue-tracker' : project.project_issues,
-        ]
+
+    attributes = [
+        toc                     : 'left',
+        doctype                 : 'book',
+        icons                   : 'font',
+        encoding                : 'utf-8',
+        sectlink                : true,
+        sectanchors             : true,
+        numbered                : true,
+        linkattrs               : true,
+        imagesdir               : 'images',
+        linkcss                 : true,
+        'source-highlighter'    : 'coderay',
+        'coderay-linenums-mode' : 'inline',
+        'project-author'        : 'Andres Almiray',
+        'project-url'           : project.project_url,
+        'project-vcs'           : project.project_scm,
+        'project-issue-tracker' : project.project_issues,
     ]
-    sourceDocumentNames = files('guide/src/asciidoc/index.adoc')
+
+    sources {
+        include 'index.adoc'
+    }
+
 }
 
 task guide(type: Copy, dependsOn: [javadoc, asciidoctor]) {

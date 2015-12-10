@@ -1,4 +1,4 @@
-= EZMorph
+= Json-lib
 :author: {project-author}
 :revnumber: {project-version}
 :toclevels: 10
