@@ -1368,10 +1368,10 @@ public class XMLSerializer {
                 params = StringUtils.split(paramsAttribute.getValue(), ",");
                 jsonArray.element(new JSONFunction(params, text));
                 return;
-            } else {
+            }/* else {
                 jsonArray.element(simplifyValue(null, processElement(element, type)));
                 return;
-            }
+            }*/
         }
 
         boolean classProcessed = false;
