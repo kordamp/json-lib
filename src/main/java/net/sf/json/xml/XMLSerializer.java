@@ -828,6 +828,7 @@ public class XMLSerializer {
             type = defaultType;
          }
       }
+      
       return type;
    }
 
@@ -1271,10 +1272,10 @@ public class XMLSerializer {
             params = StringUtils.split( paramsAttribute.getValue(), "," );
             jsonArray.element( new JSONFunction( params, text ) );
             return;
-         }else{
+         }/*else{
             jsonArray.element( simplifyValue( null, processElement( element, type ) ) );
             return;
-         }
+         }*/
       }
 
       boolean classProcessed = false;
@@ -1335,7 +1336,6 @@ public class XMLSerializer {
       String clazz = getClass( element );
       String type = getType( element );
       type = (type == null) ? defaultType : type;
-
 
       String key = removeNamespacePrefix( element.getQualifiedName() );
       if( hasNamespaces( element ) && !skipNamespaces ){
