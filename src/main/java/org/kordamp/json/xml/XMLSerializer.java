@@ -522,6 +522,7 @@ public class XMLSerializer {
         try {
             Document doc = new Builder().build(new StringReader(xml));
             Element root = doc.getRootElement();
+            log.info("[ " + root.getLocalName() + " " + isNullObject(root) + " " + isArray(root, true));
             if (isNullObject(root)) {
                 return JSONNull.getInstance();
             }
@@ -830,7 +831,7 @@ public class XMLSerializer {
                 }
             }
         }
-
+        
         String childName = elements.get(0)
             .getQualifiedName();
         for (int i = 1; i < elementCount; i++) {
@@ -929,7 +930,7 @@ public class XMLSerializer {
             && (element.getAttribute(addJsonPrefix("class")) != null && element.getAttribute(addJsonPrefix("type")) != null)) {
             isArray = checkChildElements(element, isTopLevel);
         }
-
+        
         if (isArray) {
             // check namespace
             for (int j = 0; j < element.getNamespaceDeclarationCount(); j++) {
@@ -941,6 +942,11 @@ public class XMLSerializer {
             }
         }
 
+        if(!isArray && isTopLevel && !isForceTopLevelObject() 
+            && element.getQualifiedName().equalsIgnoreCase(getArrayName())){
+            isArray = true;
+        }
+        
         return isArray;
     }
 
@@ -974,6 +980,12 @@ public class XMLSerializer {
                 && (element.getAttribute(addJsonPrefix("class")) != null && element.getAttribute(addJsonPrefix("type")) != null)) {
                 return true;
             }
+//            String clazz = getClass(element);
+//            if(element.getAttribute(addJsonPrefix("class")) != null && 
+//                    (clazz.equalsIgnoreCase(JSONTypes.OBJECT) || 
+//                        clazz.equalsIgnoreCase(JSONTypes.ARRAY))){
+//                return false;
+//            }
         }
         if (skipWhitespace && element.getChildCount() == 1 && element.getChild(0) instanceof Text) {
             return true;
