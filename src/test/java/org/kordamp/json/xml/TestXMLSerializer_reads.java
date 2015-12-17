@@ -309,14 +309,28 @@ public class TestXMLSerializer_reads extends TestCase {
         JSONObject expected = JSONObject.fromObject("{name:\"json\",nested:{id:1}}");
         Assertions.assertEquals(expected, actual);
     }
+    
+    public void testReadNestedArray(){
+        String xml = "<a> <e class=\"array\"> <e type=\"string\">values</e> <e type=\"number\">1</e> </e> </a>";
+        JSON actual = (JSONArray) xmlSerializer.read(xml);
+        JSON expected = JSONArray.fromObject("[[\"values\", 1]]");
+        Assertions.assertEquals(expected, actual);
+    }
 
+    public void testReadSingleElementArray(){
+        String xml = "<a> <e type=\"string\">val</e> </a>";
+        JSON actual = xmlSerializer.read(xml);
+        JSON expected = JSONArray.fromObject("[\"val\"]");
+        Assertions.assertEquals(expected, actual);
+    }
+    
     public void testReadNumberArray_withDefaultType() {
         String xml = "<a type=\"number\"><e>1.1</e><e>2.2</e><e>3</e></a>";
         JSON actual = xmlSerializer.read(xml);
         JSON expected = JSONArray.fromObject("[1.1,2.2,3]");
         Assertions.assertEquals(expected, actual);
     }
-
+ 
     public void testReadNumberArray_withoutDefaultType() {
         String xml = "<a><e type=\"number\">1.1</e><e type=\"number\">2.2</e><e type=\"number\">3</e></a>";
         JSON actual = xmlSerializer.read(xml);
