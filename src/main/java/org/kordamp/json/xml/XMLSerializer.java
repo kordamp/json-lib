@@ -980,12 +980,6 @@ public class XMLSerializer {
                 && (element.getAttribute(addJsonPrefix("class")) != null && element.getAttribute(addJsonPrefix("type")) != null)) {
                 return true;
             }
-//            String clazz = getClass(element);
-//            if(element.getAttribute(addJsonPrefix("class")) != null && 
-//                    (clazz.equalsIgnoreCase(JSONTypes.OBJECT) || 
-//                        clazz.equalsIgnoreCase(JSONTypes.ARRAY))){
-//                return false;
-//            }
         }
         if (skipWhitespace && element.getChildCount() == 1 && element.getChild(0) instanceof Text) {
             return true;
