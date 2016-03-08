@@ -20,7 +20,7 @@ dependencies {
     groovy 'org.codehaus.groovy:groovy-all:1.8.10'
 	compile 'junit:junit:3.8.2',
 	        'commons-beanutils:commons-beanutils:1.8.0',
-	        'commons-collections:commons-collections:3.2.1',
+	        'commons-collections:commons-collections:3.2.2',
 	        'commons-lang:commons-lang:2.5',
 	compile('commons-logging:commons-logging:1.1.1') {
 		exclude(module: 'log4j')
