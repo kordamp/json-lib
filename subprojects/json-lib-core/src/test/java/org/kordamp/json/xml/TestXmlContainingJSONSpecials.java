@@ -21,7 +21,6 @@ package org.kordamp.json.xml;
 
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.kordamp.json.JSON;
-import org.kordamp.json.JSONArray;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;

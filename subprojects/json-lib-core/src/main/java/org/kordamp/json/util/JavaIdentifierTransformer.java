@@ -19,8 +19,8 @@
  */
 package org.kordamp.json.util;
 
-import org.kordamp.json.JSONException;
 import org.apache.commons.lang.StringUtils;
+import org.kordamp.json.JSONException;
 
 /**
  * Transforms a string into a valid Java identifier.<br>

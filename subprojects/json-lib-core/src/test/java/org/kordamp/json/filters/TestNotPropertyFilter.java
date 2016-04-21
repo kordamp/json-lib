@@ -25,12 +25,12 @@ import junit.framework.TestCase;
  * @author Andres Almiray
  */
 public class TestNotPropertyFilter extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestNotPropertyFilter.class);
-    }
-
     public TestNotPropertyFilter(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestNotPropertyFilter.class);
     }
 
     public void testApply_true() {

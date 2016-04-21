@@ -30,14 +30,14 @@ import java.util.Date;
  * @author Andres Almiray
  */
 public class TestJsDateJsonValueProcessor extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJsDateJsonValueProcessor.class);
-    }
-
     private JsDateJsonValueProcessor processor;
 
     public TestJsDateJsonValueProcessor(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJsDateJsonValueProcessor.class);
     }
 
     public void testProcessBean() {

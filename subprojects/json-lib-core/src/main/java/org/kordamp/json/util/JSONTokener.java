@@ -19,9 +19,13 @@
  */
 package org.kordamp.json.util;
 
-import org.kordamp.json.*;
-import org.kordamp.json.regexp.RegexpUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONNull;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.JsonConfig;
+import org.kordamp.json.regexp.RegexpUtils;
 
 
 /**
@@ -34,30 +38,9 @@ import org.apache.commons.lang.math.NumberUtils;
  */
 public class JSONTokener {
     /**
-     * Get the hex value of a character (base16).
-     *
-     * @param c A character between '0' and '9' or between 'A' and 'F' or between
-     *          'a' and 'f'.
-     * @return An int between 0 and 15, or -1 if c was not a hex digit.
-     */
-    public static int dehexchar(char c) {
-        if (c >= '0' && c <= '9') {
-            return c - '0';
-        }
-        if (c >= 'A' && c <= 'F') {
-            return c - ('A' - 10);
-        }
-        if (c >= 'a' && c <= 'f') {
-            return c - ('a' - 10);
-        }
-        return -1;
-    }
-
-    /**
      * The index of the next character.
      */
     private int myIndex;
-
     /**
      * The source string being tokenized.
      */
@@ -86,6 +69,27 @@ public class JSONTokener {
             }
         }
         this.mySource = s;
+    }
+
+    /**
+     * Get the hex value of a character (base16).
+     *
+     * @param c A character between '0' and '9' or between 'A' and 'F' or between
+     *          'a' and 'f'.
+     *
+     * @return An int between 0 and 15, or -1 if c was not a hex digit.
+     */
+    public static int dehexchar(char c) {
+        if (c >= '0' && c <= '9') {
+            return c - '0';
+        }
+        if (c >= 'A' && c <= 'F') {
+            return c - ('A' - 10);
+        }
+        if (c >= 'a' && c <= 'f') {
+            return c - ('a' - 10);
+        }
+        return -1;
     }
 
     /**
@@ -141,7 +145,9 @@ public class JSONTokener {
      * character.
      *
      * @param c The character to match.
+     *
      * @return The character.
+     *
      * @throws JSONException if the character does not match.
      */
     public char next(char c) {
@@ -156,7 +162,9 @@ public class JSONTokener {
      * Get the next n characters.
      *
      * @param n The number of characters to take.
+     *
      * @return A string of n characters.
+     *
      * @throws JSONException Substring bounds error if there are not n characters
      *                       remaining in the source string.
      */
@@ -175,6 +183,7 @@ public class JSONTokener {
      * (slashslash, slashstar, and hash).
      *
      * @return A character, or 0 if there are no more characters.
+     *
      * @throws JSONException
      */
     public char nextClean() {
@@ -222,7 +231,9 @@ public class JSONTokener {
      *
      * @param quote The quoting character, either <code>"</code>&nbsp;<small>(double
      *              quote)</small> or <code>'</code>&nbsp;<small>(single quote)</small>.
+     *
      * @return A String.
+     *
      * @throws JSONException Unterminated string.
      */
     public String nextString(char quote) {
@@ -277,6 +288,7 @@ public class JSONTokener {
      * line, whichever comes first.
      *
      * @param d A delimiter character.
+     *
      * @return A string.
      */
     public String nextTo(char d) {
@@ -299,6 +311,7 @@ public class JSONTokener {
      * characters or the end of line, whichever comes first.
      *
      * @param delimiters A set of delimiter characters.
+     *
      * @return A string, trimmed.
      */
     public String nextTo(String delimiters) {
@@ -322,6 +335,7 @@ public class JSONTokener {
      * JSONArray, JSONObject, Long, or String, or the JSONObject.NULL object.
      *
      * @return An object.
+     *
      * @throws JSONException If syntax error.
      */
     public Object nextValue() {
@@ -333,6 +347,7 @@ public class JSONTokener {
      * JSONArray, JSONObject, Long, or String, or the JSONObject.NULL object.
      *
      * @return An object.
+     *
      * @throws JSONException If syntax error.
      */
     public Object nextValue(JsonConfig jsonConfig) {
@@ -472,8 +487,9 @@ public class JSONTokener {
      * the requested character is not found, no characters are skipped.
      *
      * @param to A character to skip to.
+     *
      * @return The requested character, or zero if the requested character is not
-     *         found.
+     * found.
      */
     public char skipTo(char to) {
         char c;
@@ -493,6 +509,7 @@ public class JSONTokener {
      * Make a JSONException to signal a syntax error.
      *
      * @param message The error message.
+     *
      * @return A JSONException object, suitable for throwing
      */
     public JSONException syntaxError(String message) {

@@ -17,6 +17,7 @@
  * (http://www.crockford.com) and released under the Apache Software
  * License version 2.0 in 2006.
  */
+
 import junit.framework.TestCase;
 import org.kordamp.json.JSONObject;
 import org.kordamp.json.JsonConfig;
@@ -25,11 +26,6 @@ import org.kordamp.json.JsonConfig;
  * @author Kohsuke Kawaguchi
  */
 public class FieldBindingTest extends TestCase {
-    public final class Foo {
-        public int x;
-        public String y;
-    }
-
     public void test1() throws Exception {
         Foo f = new Foo();
         f.x = 5;
@@ -40,11 +36,6 @@ public class FieldBindingTest extends TestCase {
         assertEquals(o.getInt("x"), 5);
         assertEquals(o.getString("y"), "test");
         assertEquals(o.size(), 2);
-    }
-
-    private final class Bar {
-        public int x;
-        public String y;
     }
 
     public void test2() throws Exception {
@@ -62,5 +53,15 @@ public class FieldBindingTest extends TestCase {
         // assertEquals(o.getInt("x"), 5);
         // assertEquals(o.getString("y"), "test");
         // assertEquals(o.size(), 2);
+    }
+
+    public final class Foo {
+        public int x;
+        public String y;
+    }
+
+    private final class Bar {
+        public int x;
+        public String y;
     }
 }

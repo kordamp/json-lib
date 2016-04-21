@@ -25,12 +25,12 @@ import junit.framework.TestCase;
  * @author Andres Almiray
  */
 public class TestMappingPropertyFilter extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestMappingPropertyFilter.class);
-    }
-
     public TestMappingPropertyFilter(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestMappingPropertyFilter.class);
     }
 
     public void testApply() {

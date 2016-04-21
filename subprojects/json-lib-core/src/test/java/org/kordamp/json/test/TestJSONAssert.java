@@ -21,7 +21,11 @@ package org.kordamp.json.test;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
-import org.kordamp.json.*;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONFunction;
+import org.kordamp.json.JSONNull;
+import org.kordamp.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,12 +34,12 @@ import java.util.Map;
  * @author Andres Almiray
  */
 public class TestJSONAssert extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONAssert.class);
-    }
-
     public TestJSONAssert(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONAssert.class);
     }
 
     public void testArrayWithNullsShouldFail() {

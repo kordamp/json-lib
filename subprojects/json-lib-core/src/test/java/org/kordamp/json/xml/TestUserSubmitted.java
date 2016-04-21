@@ -30,25 +30,25 @@ import org.kordamp.json.test.JSONAssert;
  * @author Andres Almiray
  */
 public class TestUserSubmitted extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestUserSubmitted.class);
-    }
-
     public TestUserSubmitted(String name) {
         super(name);
     }
 
-    public void testXMLElementOrdering_6() throws Exception{
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestUserSubmitted.class);
+    }
+
+    public void testXMLElementOrdering_6() throws Exception {
         String json = "{\"foo\":\"hi\",\"bar\":\"there\",\"abc\":\"how r u?\"}";
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><o><foo type=\"string\">hi</foo><bar type=\"string\">there</bar><abc type=\"string\">how r u?</abc></o>";
         XMLSerializer xmlSerializer = new XMLSerializer();
         String xml = xmlSerializer.write(JSONSerializer.toJSON(json));
-        assertEquals(xml.trim().replaceAll("[\t\n\r]",""),expectedXml);
+        assertEquals(xml.trim().replaceAll("[\t\n\r]", ""), expectedXml);
 
         xmlSerializer.setSortPropertyNames(true);
         xml = xmlSerializer.write(JSONSerializer.toJSON(json));
         expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><o><abc type=\"string\">how r u?</abc><bar type=\"string\">there</bar><foo type=\"string\">hi</foo></o>";
-        assertEquals(xml.trim().replaceAll("[\t\n\r]",""),expectedXml);
+        assertEquals(xml.trim().replaceAll("[\t\n\r]", ""), expectedXml);
     }
 
     public void testReadFromXMLToJSON_1735732() throws Exception {

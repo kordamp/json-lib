@@ -38,6 +38,10 @@ public final class JSONNull implements JSON {
         instance = new JSONNull();
     }
 
+    private JSONNull() {
+
+    }
+
     /**
      * Returns the singleton instance of JSONNull
      */
@@ -45,16 +49,17 @@ public final class JSONNull implements JSON {
         return instance;
     }
 
-    private JSONNull() {
-
+    public int hashCode() {
+        return 37 + "null".hashCode();
     }
 
     /**
      * A Null object is equal to the null value and to itself.
      *
      * @param object An object to test for nullness.
+     *
      * @return true if the object parameter is the JSONObject.NULL object or
-     *         null.
+     * null.
      */
     public boolean equals(Object object) {
         return object == null || object == this || object == instance
@@ -62,8 +67,13 @@ public final class JSONNull implements JSON {
             || "null".equals(object);
     }
 
-    public int hashCode() {
-        return 37 + "null".hashCode();
+    /**
+     * Get the "null" string value.
+     *
+     * @return The string "null".
+     */
+    public String toString() {
+        return "null";
     }
 
     public boolean isArray() {
@@ -76,15 +86,6 @@ public final class JSONNull implements JSON {
 
     public int size() {
         throw new JSONException("Object is null");
-    }
-
-    /**
-     * Get the "null" string value.
-     *
-     * @return The string "null".
-     */
-    public String toString() {
-        return "null";
     }
 
     public String toString(int indentFactor) {

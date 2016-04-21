@@ -37,6 +37,18 @@ public class SetBean {
         this.attributes.add(value);
     }
 
+    public Set getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Set attributes) {
+        this.attributes = attributes;
+    }
+
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
@@ -48,18 +60,6 @@ public class SetBean {
             return false;
         }
         return EqualsBuilder.reflectionEquals(this, obj);
-    }
-
-    public Set getAttributes() {
-        return attributes;
-    }
-
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    public void setAttributes(Set attributes) {
-        this.attributes = attributes;
     }
 
     public String toString() {

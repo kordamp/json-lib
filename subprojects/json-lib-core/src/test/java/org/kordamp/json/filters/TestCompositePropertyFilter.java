@@ -25,14 +25,14 @@ import junit.framework.TestCase;
  * @author Andres Almiray
  */
 public class TestCompositePropertyFilter extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestCompositePropertyFilter.class);
-    }
-
     private CompositePropertyFilter filter;
 
     public TestCompositePropertyFilter(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestCompositePropertyFilter.class);
     }
 
     public void testApply_addFilter() {

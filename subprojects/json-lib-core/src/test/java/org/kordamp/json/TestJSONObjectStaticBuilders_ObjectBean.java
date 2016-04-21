@@ -19,20 +19,20 @@
  */
 package org.kordamp.json;
 
-import org.kordamp.json.sample.ObjectBean;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.kordamp.json.sample.ObjectBean;
 
 /**
  * @author Andres Almiray
  */
 public class TestJSONObjectStaticBuilders_ObjectBean extends
     AbstractJSONObjectStaticBuildersTestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_ObjectBean.class);
-    }
-
     public TestJSONObjectStaticBuilders_ObjectBean(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_ObjectBean.class);
     }
 
     protected Object getSource() {

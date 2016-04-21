@@ -37,44 +37,44 @@ public class NumberArrayBean {
         return bytes;
     }
 
-    public double[] getDoubles() {
-        return doubles;
-    }
-
-    public float[] getFloats() {
-        return floats;
-    }
-
-    public int[] getInts() {
-        return ints;
-    }
-
-    public long[] getLongs() {
-        return longs;
-    }
-
-    public short[] getShorts() {
-        return shorts;
-    }
-
     public void setBytes(byte[] bytes) {
         this.bytes = bytes;
+    }
+
+    public double[] getDoubles() {
+        return doubles;
     }
 
     public void setDoubles(double[] doubles) {
         this.doubles = doubles;
     }
 
+    public float[] getFloats() {
+        return floats;
+    }
+
     public void setFloats(float[] floats) {
         this.floats = floats;
+    }
+
+    public int[] getInts() {
+        return ints;
     }
 
     public void setInts(int[] ints) {
         this.ints = ints;
     }
 
+    public long[] getLongs() {
+        return longs;
+    }
+
     public void setLongs(long[] longs) {
         this.longs = longs;
+    }
+
+    public short[] getShorts() {
+        return shorts;
     }
 
     public void setShorts(short[] shorts) {

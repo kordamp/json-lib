@@ -26,8 +26,8 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Andres Almiray
  */
 public class FieldBean {
-    private int value;
     public String string;
+    private int value;
 
     public int getValue() {
         return value;

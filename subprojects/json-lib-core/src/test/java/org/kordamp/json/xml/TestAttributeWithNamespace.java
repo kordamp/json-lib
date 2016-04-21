@@ -29,12 +29,12 @@ import org.kordamp.json.test.JSONAssert;
  */
 public class TestAttributeWithNamespace extends TestCase {
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestAttributeWithNamespace.class);
-    }
-
     public TestAttributeWithNamespace(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestAttributeWithNamespace.class);
     }
 
     public void testShouldCreateCorrectJson() throws Exception {

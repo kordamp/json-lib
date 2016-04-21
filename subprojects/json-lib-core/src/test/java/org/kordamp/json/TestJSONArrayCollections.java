@@ -26,18 +26,23 @@ import org.kordamp.ezmorph.bean.MorphDynaClass;
 import org.kordamp.json.sample.BeanA;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Andres Almiray
  */
 public class TestJSONArrayCollections extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONArrayCollections.class);
-    }
-
     public TestJSONArrayCollections(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayCollections.class);
     }
 
     public void testToList_bean_elements() {

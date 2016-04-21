@@ -20,12 +20,12 @@
 package org.kordamp.json;
 
 import junit.framework.TestCase;
+import org.apache.commons.beanutils.DynaBean;
 import org.kordamp.ezmorph.bean.MorphDynaBean;
 import org.kordamp.ezmorph.bean.MorphDynaClass;
 import org.kordamp.json.sample.BeanA;
 import org.kordamp.json.sample.JsonEventAdpater;
 import org.kordamp.json.sample.PropertyBean;
-import org.apache.commons.beanutils.DynaBean;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,15 +34,14 @@ import java.util.Map;
  * @author Andres Almiray
  */
 public class TestJSONObjectEvents extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONObjectEvents.class);
-    }
-
     private JsonConfig jsonConfig;
     private JsonEventAdpater jsonEventAdpater;
-
     public TestJSONObjectEvents(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectEvents.class);
     }
 
     public void testFromObject_bean() {

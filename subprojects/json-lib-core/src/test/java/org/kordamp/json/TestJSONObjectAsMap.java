@@ -28,14 +28,14 @@ import java.util.Map;
  * @author Andres Almiray
  */
 public class TestJSONObjectAsMap extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONObjectAsMap.class);
-    }
-
     private JSONObject jsonObject;
 
     public TestJSONObjectAsMap(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectAsMap.class);
     }
 
     public void testClear() {

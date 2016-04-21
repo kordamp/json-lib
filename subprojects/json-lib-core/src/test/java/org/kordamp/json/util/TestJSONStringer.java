@@ -27,12 +27,12 @@ import org.kordamp.json.JSONObject;
  * @author Andres Almiray
  */
 public class TestJSONStringer extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONStringer.class);
-    }
-
     public TestJSONStringer(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONStringer.class);
     }
 
     public void testCreateArray() {

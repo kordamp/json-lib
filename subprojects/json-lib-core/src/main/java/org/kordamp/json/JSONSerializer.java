@@ -38,8 +38,9 @@ public class JSONSerializer {
      * DynaBean, a bean, a List, or and array.
      *
      * @param json a JSON value
+     *
      * @return depends on the nature of the source object (JSONObject, JSONArray,
-     *         JSONNull).
+     * JSONNull).
      */
     public static Object toJava(JSON json) {
         return toJava(json, new JsonConfig());
@@ -52,8 +53,9 @@ public class JSONSerializer {
      *
      * @param json       a JSON value
      * @param jsonConfig additional configuration
+     *
      * @return depends on the nature of the source object (JSONObject, JSONArray,
-     *         JSONNull) and the configured rootClass, classMap and arrayMode
+     * JSONNull) and the configured rootClass, classMap and arrayMode
      */
     public static Object toJava(JSON json, JsonConfig jsonConfig) {
         if (JSONUtils.isNull(json)) {
@@ -81,6 +83,7 @@ public class JSONSerializer {
      * JavaBeans.
      *
      * @param object any java Object
+     *
      * @throws JSONException if the object can not be converted
      */
     public static JSON toJSON(Object object) {
@@ -94,6 +97,7 @@ public class JSONSerializer {
      *
      * @param object     any java Object
      * @param jsonConfig additional configuration
+     *
      * @throws JSONException if the object can not be converted
      */
     public static JSON toJSON(Object object, JsonConfig jsonConfig) {

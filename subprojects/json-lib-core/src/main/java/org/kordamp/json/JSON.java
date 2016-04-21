@@ -47,6 +47,7 @@ public interface JSON extends Serializable {
      * Returns the number of properties in an object or the size of the array.
      *
      * @return the size of an json object or array
+     *
      * @throws JSONException if called on a 'null' object
      */
     int size();
@@ -58,10 +59,12 @@ public interface JSON extends Serializable {
      *
      * @param indentFactor The number of spaces to add to each level of
      *                     indentation.
+     *
      * @return a printable, displayable, portable, transmittable representation
-     *         of the object, beginning with <code>{</code>&nbsp;<small>(left
-     *         brace)</small> and ending with <code>}</code>&nbsp;<small>(right
-     *         brace)</small>.
+     * of the object, beginning with <code>{</code>&nbsp;<small>(left
+     * brace)</small> and ending with <code>}</code>&nbsp;<small>(right
+     * brace)</small>.
+     *
      * @throws JSONException If the object contains an invalid number.
      */
     String toString(int indentFactor);
@@ -74,9 +77,11 @@ public interface JSON extends Serializable {
      * @param indentFactor The number of spaces to add to each level of
      *                     indentation.
      * @param indent       The indentation of the top level.
+     *
      * @return a printable, displayable, transmittable representation of the
-     *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
-     *         and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
+     * object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
+     * and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
+     *
      * @throws JSONException If the object contains an invalid number.
      */
     String toString(int indentFactor, int indent);
@@ -88,6 +93,7 @@ public interface JSON extends Serializable {
      * Warning: This method assumes that the data structure is acyclical.
      *
      * @return The writer.
+     *
      * @throws JSONException
      */
     Writer write(Writer writer) throws IOException;

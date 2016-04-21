@@ -19,8 +19,8 @@
  */
 package org.kordamp.json.sample;
 
-import org.kordamp.json.JSONString;
 import org.apache.commons.lang.ArrayUtils;
+import org.kordamp.json.JSONString;
 
 /**
  * @author Andres Almiray

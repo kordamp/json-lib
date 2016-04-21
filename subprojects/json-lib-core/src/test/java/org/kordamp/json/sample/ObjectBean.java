@@ -47,124 +47,124 @@ public class ObjectBean {
         return parray;
     }
 
-    public Object getPbean() {
-        return pbean;
-    }
-
-    public Object getPboolean() {
-        return pboolean;
-    }
-
-    public Object getPbyte() {
-        return pbyte;
-    }
-
-    public Object getPchar() {
-        return pchar;
-    }
-
-    public Object getPclass() {
-        return pclass;
-    }
-
-    public Object getPdouble() {
-        return pdouble;
-    }
-
-    public Object getPexcluded() {
-        return pexcluded;
-    }
-
-    public Object getPfloat() {
-        return pfloat;
-    }
-
-    public Object getPfunction() {
-        return pfunction;
-    }
-
-    public Object getPint() {
-        return pint;
-    }
-
-    public Object getPlist() {
-        return plist;
-    }
-
-    public Object getPlong() {
-        return plong;
-    }
-
-    public Object getPmap() {
-        return pmap;
-    }
-
-    public Object getPshort() {
-        return pshort;
-    }
-
-    public Object getPstring() {
-        return pstring;
-    }
-
     public void setParray(Object parray) {
         this.parray = parray;
+    }
+
+    public Object getPbean() {
+        return pbean;
     }
 
     public void setPbean(Object bean) {
         this.pbean = bean;
     }
 
+    public Object getPboolean() {
+        return pboolean;
+    }
+
     public void setPboolean(Object pboolean) {
         this.pboolean = pboolean;
+    }
+
+    public Object getPbyte() {
+        return pbyte;
     }
 
     public void setPbyte(Object pbyte) {
         this.pbyte = pbyte;
     }
 
+    public Object getPchar() {
+        return pchar;
+    }
+
     public void setPchar(Object pchar) {
         this.pchar = pchar;
+    }
+
+    public Object getPclass() {
+        return pclass;
     }
 
     public void setPclass(Object pclass) {
         this.pclass = pclass;
     }
 
+    public Object getPdouble() {
+        return pdouble;
+    }
+
     public void setPdouble(Object pdouble) {
         this.pdouble = pdouble;
+    }
+
+    public Object getPexcluded() {
+        return pexcluded;
     }
 
     public void setPexcluded(Object pexcluded) {
         this.pexcluded = pexcluded;
     }
 
+    public Object getPfloat() {
+        return pfloat;
+    }
+
     public void setPfloat(Object pfloat) {
         this.pfloat = pfloat;
+    }
+
+    public Object getPfunction() {
+        return pfunction;
     }
 
     public void setPfunction(Object pfunction) {
         this.pfunction = pfunction;
     }
 
+    public Object getPint() {
+        return pint;
+    }
+
     public void setPint(Object pint) {
         this.pint = pint;
+    }
+
+    public Object getPlist() {
+        return plist;
     }
 
     public void setPlist(Object plist) {
         this.plist = plist;
     }
 
+    public Object getPlong() {
+        return plong;
+    }
+
     public void setPlong(Object plong) {
         this.plong = plong;
+    }
+
+    public Object getPmap() {
+        return pmap;
     }
 
     public void setPmap(Object pmap) {
         this.pmap = pmap;
     }
 
+    public Object getPshort() {
+        return pshort;
+    }
+
     public void setPshort(Object pshort) {
         this.pshort = pshort;
+    }
+
+    public Object getPstring() {
+        return pstring;
     }
 
     public void setPstring(Object pstring) {

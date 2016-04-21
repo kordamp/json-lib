@@ -26,12 +26,12 @@ import org.kordamp.json.JSONException;
  * @author Andres Almiray
  */
 public class TestJSONTokener extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONTokener.class);
-    }
-
     public TestJSONTokener(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONTokener.class);
     }
 
     public void testDehexchar() {

@@ -29,7 +29,26 @@ import org.kordamp.ezmorph.test.ArrayAssertions;
 import org.kordamp.json.processors.DefaultValueProcessor;
 import org.kordamp.json.processors.DefaultValueProcessorMatcher;
 import org.kordamp.json.processors.PropertyNameProcessor;
-import org.kordamp.json.sample.*;
+import org.kordamp.json.sample.BeanA;
+import org.kordamp.json.sample.BeanB;
+import org.kordamp.json.sample.BeanC;
+import org.kordamp.json.sample.BeanFoo;
+import org.kordamp.json.sample.BeanWithFunc;
+import org.kordamp.json.sample.ChildBean;
+import org.kordamp.json.sample.ClassBean;
+import org.kordamp.json.sample.EmptyBean;
+import org.kordamp.json.sample.JavaIdentifierBean;
+import org.kordamp.json.sample.ListingBean;
+import org.kordamp.json.sample.MappingBean;
+import org.kordamp.json.sample.NumberBean;
+import org.kordamp.json.sample.ObjectBean;
+import org.kordamp.json.sample.ObjectJSONStringBean;
+import org.kordamp.json.sample.ParentBean;
+import org.kordamp.json.sample.PrimitiveBean;
+import org.kordamp.json.sample.PropertyBean;
+import org.kordamp.json.sample.SetBean;
+import org.kordamp.json.sample.TransientBean;
+import org.kordamp.json.sample.ValueBean;
 import org.kordamp.json.test.JSONAssert;
 import org.kordamp.json.util.CycleDetectionStrategy;
 import org.kordamp.json.util.JSONTokener;
@@ -55,14 +74,14 @@ import java.util.Set;
  * @author Andres Almiray
  */
 public class TestJSONObject extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONObject.class);
-    }
-
     private JsonConfig jsonConfig;
 
     public TestJSONObject(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObject.class);
     }
 
     public void testAccumulate() {
@@ -1594,6 +1613,27 @@ public class TestJSONObject extends TestCase {
         return dynaBean;
     }
 
+    public void test_fromJSONObject() {
+    }
+
+    public void testCanonicalWrite() throws Exception {
+        JSONArray a = new JSONArray();
+        a.add(Boolean.valueOf(true));
+        //        a.add(null);
+        a.add(Integer.valueOf(1));
+        a.add(Double.valueOf(5.3));
+        JSONObject o = new JSONObject();
+        o.put("key1", "1");
+        o.put("key2", "2");
+        o.put("key3", "3");
+        o.put("string", "123\r\n\b\t\f\\\\u65E5\\u672C\\u8A9E");
+        a.add(o);
+
+        StringWriter sw = new StringWriter();
+        a.writeCanonical(sw);
+        assertEquals(sw.toString(), "[true,1,5.3,{\"key1\":\"1\",\"key2\":\"2\",\"key3\":\"3\",\"string\":\"123\\u000d\\u000a\\u0008\\u0009\\u000c\\\\\\\\u65E5\\\\u672C\\\\u8A9E\"}]");
+    }
+
     public static class BeanAPropertyExclusionClassMatcher extends PropertyExclusionClassMatcher {
         public Object getMatch(Class target, Set set) {
             for (Iterator i = set.iterator(); i.hasNext(); ) {
@@ -1658,26 +1698,5 @@ public class TestJSONObject extends TestCase {
             }
             return name;
         }
-    }
-
-    public void test_fromJSONObject() {
-    }
-
-    public void testCanonicalWrite() throws Exception {
-        JSONArray a = new JSONArray();
-        a.add(Boolean.valueOf(true));
-//        a.add(null);
-        a.add(Integer.valueOf(1));
-        a.add(Double.valueOf(5.3));
-        JSONObject o = new JSONObject();
-        o.put("key1", "1");
-        o.put("key2", "2");
-        o.put("key3", "3");
-        o.put("string", "123\r\n\b\t\f\\\\u65E5\\u672C\\u8A9E");
-        a.add(o);
-
-        StringWriter sw = new StringWriter();
-        a.writeCanonical(sw);
-        assertEquals(sw.toString(), "[true,1,5.3,{\"key1\":\"1\",\"key2\":\"2\",\"key3\":\"3\",\"string\":\"123\\u000d\\u000a\\u0008\\u0009\\u000c\\\\\\\\u65E5\\\\u672C\\\\u8A9E\"}]");
     }
 }

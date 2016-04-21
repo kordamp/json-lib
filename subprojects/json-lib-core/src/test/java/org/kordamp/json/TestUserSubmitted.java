@@ -20,29 +20,61 @@
 package org.kordamp.json;
 
 import junit.framework.TestCase;
+import org.apache.commons.beanutils.DynaBean;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.kordamp.ezmorph.object.MapToDateMorpher;
-import org.kordamp.json.sample.*;
+import org.kordamp.json.sample.ArrayBean;
+import org.kordamp.json.sample.BeanA;
+import org.kordamp.json.sample.BeanA1763699;
+import org.kordamp.json.sample.BeanB1763699;
+import org.kordamp.json.sample.BeanC;
+import org.kordamp.json.sample.ChildBean;
+import org.kordamp.json.sample.DateBean;
+import org.kordamp.json.sample.FieldBean;
+import org.kordamp.json.sample.IdBean;
+import org.kordamp.json.sample.InterfaceBean;
+import org.kordamp.json.sample.JSONTestBean;
+import org.kordamp.json.sample.ListingBean;
+import org.kordamp.json.sample.MappedBean;
+import org.kordamp.json.sample.Media;
+import org.kordamp.json.sample.MediaBean;
+import org.kordamp.json.sample.MediaList;
+import org.kordamp.json.sample.MediaListBean;
+import org.kordamp.json.sample.NumberArrayBean;
+import org.kordamp.json.sample.PackageProtectedBean;
+import org.kordamp.json.sample.ParentBean;
+import org.kordamp.json.sample.Player;
+import org.kordamp.json.sample.PlayerList;
+import org.kordamp.json.sample.PrimitiveBean;
+import org.kordamp.json.sample.PrivateConstructorBean;
+import org.kordamp.json.sample.UnstandardBean;
+import org.kordamp.json.sample.UnstandardBeanInstanceStrategy;
 import org.kordamp.json.util.JSONUtils;
 import org.kordamp.json.util.JavaIdentifierTransformer;
 import org.kordamp.json.util.JsonEventListener;
-import org.apache.commons.beanutils.DynaBean;
-import org.apache.commons.beanutils.PropertyUtils;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 /**
  * @author Andres Almiray
  */
 public class TestUserSubmitted extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestUserSubmitted.class);
-    }
-
     private JsonConfig jsonConfig;
 
     public TestUserSubmitted(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestUserSubmitted.class);
     }
 
     public void testPatch_2929940() {
@@ -65,7 +97,7 @@ public class TestUserSubmitted extends TestCase {
     }
 
     public void testBug_1635890() throws NoSuchMethodException, IllegalAccessException,
-            InvocationTargetException {
+        InvocationTargetException {
         // submited by arco.vandenheuvel[at]points[dot].com
 
         String TEST_JSON_STRING = "{\"rateType\":\"HOTRATE\",\"rateBreakdown\":{\"rate\":[{\"amount\":\"109.74\",\"date\":{\"month\":\"01\",\"day\":\"15\",\"year\":\"2007\"}},{\"amount\":\"109.74\",\"date\":{\"month\":\"1\",\"day\":\"16\",\"year\":\"2007\"}}]}}";
@@ -191,7 +223,7 @@ public class TestUserSubmitted extends TestCase {
 
     public void testBug_1769559_array_conversion() {
         JSONObject jsonObject = new JSONObject().element("beans", new JSONArray().element("{}")
-                .element("{'bool':false,'integer':216,'string':'JsOn'}"));
+            .element("{'bool':false,'integer':216,'string':'JsOn'}"));
         ArrayBean bean = (ArrayBean) JSONObject.toBean(jsonObject, ArrayBean.class);
         assertNotNull(bean); // no error should happen here
         JSONArray jsonArray = jsonObject.getJSONArray("beans");
@@ -204,11 +236,11 @@ public class TestUserSubmitted extends TestCase {
 
     public void testBug_1769578_array_conversion() {
         JSONObject jsonObject = JSONObject
-                .fromObject("{'media':[{'title':'Giggles'},{'title':'Dreamland?'}]}");
+            .fromObject("{'media':[{'title':'Giggles'},{'title':'Dreamland?'}]}");
         Map classMap = new HashMap();
         classMap.put("media", MediaBean.class);
         MediaListBean bean = (MediaListBean) JSONObject.toBean(jsonObject, MediaListBean.class,
-                classMap);
+            classMap);
         assertNotNull(bean);
         assertNotNull(bean.getMedia());
         assertTrue(bean.getMedia().getClass().isArray());
@@ -222,8 +254,8 @@ public class TestUserSubmitted extends TestCase {
     public void testBug_1812682() {
         int[] numbers = new int[]{1, 2, 3, 4, 5};
         JSONObject json = new JSONObject().element("bytes", numbers).element("shorts", numbers)
-                .element("ints", numbers).element("longs", numbers).element("floats", numbers)
-                .element("doubles", numbers);
+            .element("ints", numbers).element("longs", numbers).element("floats", numbers)
+            .element("doubles", numbers);
         JsonConfig jsonConfig = new JsonConfig();
         jsonConfig.setRootClass(NumberArrayBean.class);
         NumberArrayBean bean = (NumberArrayBean) JSONObject.toBean(json, jsonConfig);
@@ -297,7 +329,7 @@ public class TestUserSubmitted extends TestCase {
     }
 
     public void testDynaBeanAttributeMap() throws NoSuchMethodException, IllegalAccessException,
-            InvocationTargetException {
+        InvocationTargetException {
         // submited by arco.vandenheuvel[at]points[dot].com
         JSONObject jsonObject = JSONObject.fromObject(new JSONTestBean());
         String jsonString = jsonObject.toString();
@@ -308,11 +340,11 @@ public class TestUserSubmitted extends TestCase {
 
     public void testFR_1768960_array_conversion() { // 2 items
         JSONObject jsonObject = JSONObject
-                .fromObject("{'media2':[{'title':'Giggles'},{'title':'Dreamland?'}]}");
+            .fromObject("{'media2':[{'title':'Giggles'},{'title':'Dreamland?'}]}");
         Map classMap = new HashMap();
         classMap.put("media2", MediaBean.class);
         MediaListBean bean = (MediaListBean) JSONObject.toBean(jsonObject, MediaListBean.class,
-                classMap);
+            classMap);
         assertNotNull(bean);
         assertNotNull(bean.getMedia2());
         List media2 = bean.getMedia2();
@@ -358,14 +390,14 @@ public class TestUserSubmitted extends TestCase {
         JsonConfig jsonConfig = new JsonConfig();
         jsonConfig.setRootClass(PrivateConstructorBean.class);
         PrivateConstructorBean bean = (PrivateConstructorBean) JSONObject.toBean(jsonObject,
-                jsonConfig);
+            jsonConfig);
         assertNotNull(bean);
         assertEquals(42, bean.getValue());
     }
 
     public void testFR_1858073_preserveInsertionOrder() {
         JSONObject jsonObject = new JSONObject().element("one", "one").element("two", "two")
-                .element("three", "three");
+            .element("three", "three");
         JSONArray actual = jsonObject.names();
         JSONArray expected = new JSONArray().element("one").element("two").element("three");
         Assertions.assertEquals(expected, actual);
@@ -437,7 +469,7 @@ public class TestUserSubmitted extends TestCase {
 
     public void testHandleJettisonSingleElementArray3() {
         JSONObject jsonObject = JSONObject
-                .fromObject("{'player':{'mediaList':{'media':{'title':'Giggles'}}}}");
+            .fromObject("{'player':{'mediaList':{'media':{'title':'Giggles'}}}}");
         Map classMap = new HashMap();
         classMap.put("media", Media.class);
         classMap.put("mediaList", MediaList.class);
@@ -464,11 +496,11 @@ public class TestUserSubmitted extends TestCase {
 
         jsonConfig.setJavaIdentifierTransformer(JavaIdentifierTransformer.NOOP);
         String str = "{'version':'1.0'," + "'sid':'AmazonDocStyle',    'svcVersion':'0.1',"
-                + "'oid':'ItemLookup',    'params':[{            'ns:ItemLookup': {"
-                + "'ns:SubscriptionId':'0525E2PQ81DD7ZTWTK82'," + "'ns:Validate':'False',"
-                + "'ns:Request':{" + "'ns:ItemId':'SDGKJSHDGAJSGL'," + "'ns:IdType':'ASIN',"
-                + "'ns:ResponseGroup':'Large'" + "}," + "'ns:Request':{" + "'ns:ItemId':'XXXXXXXXXX',"
-                + "'ns:IdType':'ASIN'," + "'ns:ResponseGroup':'Large'" + "}" + "}" + "}]" + "} ";
+            + "'oid':'ItemLookup',    'params':[{            'ns:ItemLookup': {"
+            + "'ns:SubscriptionId':'0525E2PQ81DD7ZTWTK82'," + "'ns:Validate':'False',"
+            + "'ns:Request':{" + "'ns:ItemId':'SDGKJSHDGAJSGL'," + "'ns:IdType':'ASIN',"
+            + "'ns:ResponseGroup':'Large'" + "}," + "'ns:Request':{" + "'ns:ItemId':'XXXXXXXXXX',"
+            + "'ns:IdType':'ASIN'," + "'ns:ResponseGroup':'Large'" + "}" + "}" + "}]" + "} ";
         JSONObject json = JSONObject.fromObject(str, jsonConfig);
         Object bean = JSONObject.toBean((JSONObject) json);
         assertNotNull(bean);
@@ -746,40 +778,40 @@ public class TestUserSubmitted extends TestCase {
         assertTrue("L'objet doit contenir une clef \"strArray\"", jsonObject.containsKey("strArray"));
         assertNotNull("Le membre \"strArray\" doit être une Array", jsonObject.optJSONArray("strArray"));
         assertEquals("L'element 0 de \"strArray\" doit être égal a \"a\"", "a", jsonObject.optJSONArray("strArray")
-                .optString(0));
+            .optString(0));
         assertEquals("L'element 1 de \"strArray\" doit être égal a \"b\"", "b", jsonObject.optJSONArray("strArray")
-                .optString(1));
+            .optString(1));
         assertEquals("L'element 2 de \"strArray\" doit être égal a \"c\"", "c", jsonObject.optJSONArray("strArray")
-                .optString(2));
+            .optString(2));
 
         // int array
         jsonObject = JSONObject.fromObject("{\"intArray\":[1,2,3]}", tConfig);
         assertTrue("L'objet doit contenir une clef \"intArray\"", jsonObject.containsKey("intArray"));
         assertNotNull("Le membre \"intArray\" doit être une Array", jsonObject.optJSONArray("intArray"));
         assertEquals("L'element 0 de \"intArray\" doit être égal a 1", 1, jsonObject.optJSONArray("intArray").optInt(
-                0));
+            0));
         assertEquals("L'element 1 de \"intArray\" doit être égal a 2", 2, jsonObject.optJSONArray("intArray").optInt(
-                1));
+            1));
         assertEquals("L'element 2 de \"intArray\" doit être égal a 3", 3, jsonObject.optJSONArray("intArray").optInt(
-                2));
+            2));
 
         // boolean array
         jsonObject = JSONObject.fromObject("{\"booleanArray\":[true, false, true]}", tConfig);
         assertTrue("L'objet doit contenir une clef \"booleanArray\"", jsonObject.containsKey("booleanArray"));
         assertNotNull("Le membre \"strArray\" doit être une booleanArray", jsonObject.optJSONArray("booleanArray"));
         assertEquals("L'element 0 de \"booleanArray\" doit être égal a true", true, jsonObject.optJSONArray(
-                "booleanArray").optBoolean(0));
+            "booleanArray").optBoolean(0));
         assertEquals("L'element 1 de \"booleanArray\" doit être égal a false", false, jsonObject.optJSONArray(
-                "booleanArray").optBoolean(1));
+            "booleanArray").optBoolean(1));
         assertEquals("L'element 2 de \"booleanArray\" doit être égal a true", true, jsonObject.optJSONArray(
-                "booleanArray").optBoolean(2));
+            "booleanArray").optBoolean(2));
 
         // double array
         jsonObject = JSONObject.fromObject("{\"doubleArray\":[\"a\",\"b\",\"c\"]}", tConfig);
         assertTrue("L'objet doit contenir une clef \"doubleArray\"", jsonObject.containsKey("doubleArray"));
         assertNotNull("Le membre \"doubleArray\" doit être une Array", jsonObject.optJSONArray("doubleArray"));
         assertEquals("L'element 0 de \"doubleArray\" doit être égal a \"a\"", "a", jsonObject.optJSONArray(
-                "doubleArray").optString(0));
+            "doubleArray").optString(0));
 
         jsonObject = JSONObject.fromObject("{\"weirdString\":\"[Hello]\"}", tConfig);
         assertTrue("L'objet doit contenir une clef \"weirdString\"", jsonObject.containsKey("weirdString"));
@@ -875,6 +907,11 @@ public class TestUserSubmitted extends TestCase {
 
     }
 
+    protected void setUp() throws Exception {
+        super.setUp();
+        jsonConfig = new JsonConfig();
+    }
+
     public static class Record {
         private String columns;
         private String portalLayout;
@@ -950,10 +987,5 @@ public class TestUserSubmitted extends TestCase {
 
         public void onWarning(String warning) {
         }
-    }
-
-    protected void setUp() throws Exception {
-        super.setUp();
-        jsonConfig = new JsonConfig();
     }
 }

@@ -34,20 +34,20 @@ public class EnumBean {
         return jsonEnum;
     }
 
-    public String getString() {
-        return string;
-    }
-
-    public Set<JsonEnum> getEnums() {
-        return enums;
-    }
-
     public void setJsonEnum(JsonEnum jsonEnum) {
         this.jsonEnum = jsonEnum;
     }
 
+    public String getString() {
+        return string;
+    }
+
     public void setString(String string) {
         this.string = string;
+    }
+
+    public Set<JsonEnum> getEnums() {
+        return enums;
     }
 
     public void setEnums(Set<JsonEnum> enums) {

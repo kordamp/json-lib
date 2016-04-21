@@ -29,15 +29,14 @@ import java.util.List;
  * @author Andres Almiray
  */
 public class TestJSONArrayEvents extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONArrayEvents.class);
-    }
-
     private JsonConfig jsonConfig;
     private JsonEventAdpater jsonEventAdpater;
-
     public TestJSONArrayEvents(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayEvents.class);
     }
 
     public void testFromObject_array() {

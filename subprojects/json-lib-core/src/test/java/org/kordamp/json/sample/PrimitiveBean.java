@@ -19,9 +19,9 @@
  */
 package org.kordamp.json.sample;
 
-import org.kordamp.json.JSONFunction;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.kordamp.json.JSONFunction;
 
 import java.util.List;
 import java.util.Map;
@@ -52,136 +52,136 @@ public class PrimitiveBean {
         return oarray;
     }
 
-    public int[] getParray() {
-        return parray;
-    }
-
-    public ObjectBean getPbean() {
-        return pbean;
-    }
-
-    public byte getPbyte() {
-        return pbyte;
-    }
-
-    public char getPchar() {
-        return pchar;
-    }
-
-    public Class getPclass() {
-        return pclass;
-    }
-
-    public double getPdouble() {
-        return pdouble;
-    }
-
-    public String getPexcluded() {
-        return pexcluded;
-    }
-
-    public float getPfloat() {
-        return pfloat;
-    }
-
-    public JSONFunction getPfunction() {
-        return pfunction;
-    }
-
-    public int getPint() {
-        return pint;
-    }
-
-    public List getPlist() {
-        return plist;
-    }
-
-    public long getPlong() {
-        return plong;
-    }
-
-    public Map getPmap() {
-        return pmap;
-    }
-
-    public short getPshort() {
-        return pshort;
-    }
-
-    public String getPstring() {
-        return pstring;
-    }
-
-    public boolean isPboolean() {
-        return pboolean;
-    }
-
     public void setOarray(Object[] oarray) {
         this.oarray = oarray;
+    }
+
+    public int[] getParray() {
+        return parray;
     }
 
     public void setParray(int[] parray) {
         this.parray = parray;
     }
 
+    public ObjectBean getPbean() {
+        return pbean;
+    }
+
     public void setPbean(ObjectBean pbean) {
         this.pbean = pbean;
     }
 
-    public void setPboolean(boolean pboolean) {
-        this.pboolean = pboolean;
+    public byte getPbyte() {
+        return pbyte;
     }
 
     public void setPbyte(byte pbyte) {
         this.pbyte = pbyte;
     }
 
+    public char getPchar() {
+        return pchar;
+    }
+
     public void setPchar(char pchar) {
         this.pchar = pchar;
+    }
+
+    public Class getPclass() {
+        return pclass;
     }
 
     public void setPclass(Class pclass) {
         this.pclass = pclass;
     }
 
+    public double getPdouble() {
+        return pdouble;
+    }
+
     public void setPdouble(double pdouble) {
         this.pdouble = pdouble;
+    }
+
+    public String getPexcluded() {
+        return pexcluded;
     }
 
     public void setPexcluded(String pexcluded) {
         this.pexcluded = pexcluded;
     }
 
+    public float getPfloat() {
+        return pfloat;
+    }
+
     public void setPfloat(float pfloat) {
         this.pfloat = pfloat;
+    }
+
+    public JSONFunction getPfunction() {
+        return pfunction;
     }
 
     public void setPfunction(JSONFunction pfunction) {
         this.pfunction = pfunction;
     }
 
+    public int getPint() {
+        return pint;
+    }
+
     public void setPint(int pint) {
         this.pint = pint;
+    }
+
+    public List getPlist() {
+        return plist;
     }
 
     public void setPlist(List plist) {
         this.plist = plist;
     }
 
+    public long getPlong() {
+        return plong;
+    }
+
     public void setPlong(long plong) {
         this.plong = plong;
+    }
+
+    public Map getPmap() {
+        return pmap;
     }
 
     public void setPmap(Map pmap) {
         this.pmap = pmap;
     }
 
+    public short getPshort() {
+        return pshort;
+    }
+
     public void setPshort(short pshort) {
         this.pshort = pshort;
     }
 
+    public String getPstring() {
+        return pstring;
+    }
+
     public void setPstring(String pstring) {
         this.pstring = pstring;
+    }
+
+    public boolean isPboolean() {
+        return pboolean;
+    }
+
+    public void setPboolean(boolean pboolean) {
+        this.pboolean = pboolean;
     }
 
     public String toString() {

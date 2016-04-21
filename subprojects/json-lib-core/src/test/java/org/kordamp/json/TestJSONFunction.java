@@ -26,12 +26,12 @@ import org.kordamp.json.test.JSONAssert;
  * @author Andres Almiray
  */
 public class TestJSONFunction extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONFunction.class);
-    }
-
     public TestJSONFunction(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONFunction.class);
     }
 
     public void testEquals() {

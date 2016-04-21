@@ -33,36 +33,36 @@ public class JSONTestBean {
         return email;
     }
 
-    public String getInventoryID() {
-        return inventoryID;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public Map getOptions() {
-        return options;
-    }
-
-    public String getRateID() {
-        return rateID;
-    }
-
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getInventoryID() {
+        return inventoryID;
     }
 
     public void setInventoryID(String inventoryID) {
         this.inventoryID = inventoryID;
     }
 
+    public String getNotes() {
+        return notes;
+    }
+
     public void setNotes(String notes) {
         this.notes = notes;
     }
 
+    public Map getOptions() {
+        return options;
+    }
+
     public void setOptions(Map options) {
         this.options = options;
+    }
+
+    public String getRateID() {
+        return rateID;
     }
 
     public void setRateID(String rateID) {

@@ -20,13 +20,13 @@
 package org.kordamp.json;
 
 import junit.framework.TestCase;
+import org.apache.commons.beanutils.DynaBean;
 import org.kordamp.ezmorph.MorphUtils;
 import org.kordamp.ezmorph.bean.MorphDynaBean;
 import org.kordamp.ezmorph.bean.MorphDynaClass;
 import org.kordamp.json.sample.ArrayJSONStringBean;
 import org.kordamp.json.sample.BeanA;
 import org.kordamp.json.util.JSONTokener;
-import org.apache.commons.beanutils.DynaBean;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -41,12 +41,12 @@ import java.util.Map;
  * @author Andres Almiray
  */
 public class TestJSONArray extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONArray.class);
-    }
-
     public TestJSONArray(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArray.class);
     }
 
     public void testDiscard() {
@@ -381,7 +381,6 @@ public class TestJSONArray extends TestCase {
 
     public void testElement_index_0_Array() {
         JSONArray array = JSONArray.fromObject("[null,null]");
-        ;
         int[] ints = {0, 2};
         array.element(0, ints);
         Assertions.assertEquals(JSONArray.fromObject(ints), array.getJSONArray(0));
@@ -389,7 +388,6 @@ public class TestJSONArray extends TestCase {
 
     public void testElement_index_0_Boolean() {
         JSONArray array = JSONArray.fromObject("[null,null]");
-        ;
         array.element(0, Boolean.TRUE);
         Assertions.assertTrue(array.getBoolean(0));
     }

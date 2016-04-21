@@ -47,6 +47,18 @@ public class IdBean {
             this.value = value;
         }
 
+        public long getValue() {
+            return value;
+        }
+
+        public void setValue(long value) {
+            this.value = value;
+        }
+
+        public int hashCode() {
+            return getClass().hashCode() + (int) value;
+        }
+
         public boolean equals(Object obj) {
             if (obj == this) {
                 return true;
@@ -59,18 +71,6 @@ public class IdBean {
             }
             Id other = (Id) obj;
             return value == other.value;
-        }
-
-        public long getValue() {
-            return value;
-        }
-
-        public int hashCode() {
-            return getClass().hashCode() + (int) value;
-        }
-
-        public void setValue(long value) {
-            this.value = value;
         }
     }
 

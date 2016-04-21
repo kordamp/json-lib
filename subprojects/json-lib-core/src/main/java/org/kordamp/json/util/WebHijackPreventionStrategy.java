@@ -43,6 +43,7 @@ public abstract class WebHijackPreventionStrategy {
      * Transforms the input with the desired strategy.<br>
      *
      * @param str a json string
+     *
      * @return String - the transformed json string
      */
     public abstract String protect(String str);

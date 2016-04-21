@@ -19,7 +19,6 @@
  */
 package org.kordamp.json.processors;
 
-import org.kordamp.json.JSONException;
 import org.kordamp.json.JsonConfig;
 
 /**
@@ -32,8 +31,10 @@ public interface JsonValueProcessor {
      * Processes the value an returns a suitable JSON value.
      *
      * @param value the input value
+     *
      * @return a valid JSON value that represents the input value
-     * @throws JSONException if an error occurs during transformation
+     *
+     * @throws org.kordamp.json.JSONException if an error occurs during transformation
      */
     Object processArrayValue(Object value, JsonConfig jsonConfig);
 
@@ -42,8 +43,10 @@ public interface JsonValueProcessor {
      *
      * @param key   the name of the property
      * @param value the value of the property
+     *
      * @return a valid JSON value that represents the input property
-     * @throws JSONException if an error occurs during transformation
+     *
+     * @throws org.kordamp.json.JSONException if an error occurs during transformation
      */
     Object processObjectValue(String key, Object value, JsonConfig jsonConfig);
 }

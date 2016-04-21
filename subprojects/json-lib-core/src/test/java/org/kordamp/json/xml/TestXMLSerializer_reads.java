@@ -20,30 +20,34 @@
 package org.kordamp.json.xml;
 
 import junit.framework.TestCase;
-import org.kordamp.json.*;
+import org.kordamp.json.Assertions;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONNull;
+import org.kordamp.json.JSONObject;
 import org.kordamp.json.test.JSONAssert;
 
 /**
  * @author Andres Almiray
  */
 public class TestXMLSerializer_reads extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestXMLSerializer_reads.class);
-    }
-
     private XMLSerializer xmlSerializer;
 
     public TestXMLSerializer_reads(String testName) {
         super(testName);
     }
 
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestXMLSerializer_reads.class);
+    }
+
     public void testSelfClosingTagsWithKeepArrayNames() {
         String xml = "<root><a><b /></a></root>";
         xmlSerializer.setKeepArrayName(true);
-        JSON actual = xmlSerializer.read( xml );
+        JSON actual = xmlSerializer.read(xml);
         xmlSerializer.setKeepArrayName(false);
-        JSON expected = JSONObject.fromObject( "{\"a\": { \"b\": [] } }" );
-        Assertions.assertEquals( expected, actual );
+        JSON expected = JSONObject.fromObject("{\"a\": { \"b\": [] } }");
+        Assertions.assertEquals(expected, actual);
     }
 
     public void testNullObjectArray() {

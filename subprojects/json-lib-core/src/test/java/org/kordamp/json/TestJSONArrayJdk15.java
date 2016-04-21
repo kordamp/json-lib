@@ -31,12 +31,12 @@ import java.util.List;
  * @author Andres Almiray
  */
 public class TestJSONArrayJdk15 extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONArrayJdk15.class);
-    }
-
     public TestJSONArrayJdk15(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayJdk15.class);
     }
 
     public void testConstructor_Annotation() {

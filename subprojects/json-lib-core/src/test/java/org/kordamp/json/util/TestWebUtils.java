@@ -27,12 +27,12 @@ import org.kordamp.json.JSONObject;
  * @author Andres Almiray
  */
 public class TestWebUtils extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestWebUtils.class);
-    }
-
     public TestWebUtils(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestWebUtils.class);
     }
 
     public void testProtect_comments() {

@@ -23,12 +23,12 @@ package org.kordamp.json;
  * @author Andres Almiray
  */
 public class TestJSONNullAsJSON extends AbstractJSONTest {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONNullAsJSON.class);
-    }
-
     public TestJSONNullAsJSON(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONNullAsJSON.class);
     }
 
     protected int getIndent() {

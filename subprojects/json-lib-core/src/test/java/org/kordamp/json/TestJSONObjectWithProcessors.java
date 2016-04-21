@@ -35,15 +35,14 @@ import java.util.Map;
  * @author Andres Almiray
  */
 public class TestJSONObjectWithProcessors extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONObjectWithProcessors.class);
-    }
-
     private Date date;
     private JsonConfig jsonConfig;
-
     public TestJSONObjectWithProcessors(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectWithProcessors.class);
     }
 
     public void testBeanWithDateProperty_fromObject_withJsonBeanProcessor() {

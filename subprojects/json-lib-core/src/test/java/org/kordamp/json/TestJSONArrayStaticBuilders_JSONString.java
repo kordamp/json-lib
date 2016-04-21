@@ -23,12 +23,12 @@ package org.kordamp.json;
  * @author Andres Almiray
  */
 public class TestJSONArrayStaticBuilders_JSONString extends AbstractJSONArrayStaticBuildersTestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONArrayStaticBuilders_JSONString.class);
-    }
-
     public TestJSONArrayStaticBuilders_JSONString(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayStaticBuilders_JSONString.class);
     }
 
     protected Object getSource() {

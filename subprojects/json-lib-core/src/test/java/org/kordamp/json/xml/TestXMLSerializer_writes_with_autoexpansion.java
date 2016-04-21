@@ -19,22 +19,22 @@
  */
 package org.kordamp.json.xml;
 
+import org.custommonkey.xmlunit.XMLTestCase;
 import org.kordamp.json.JSONArray;
 import org.kordamp.json.JSONObject;
-import org.custommonkey.xmlunit.XMLTestCase;
 
 /**
  * @author Andres Almiray
  */
 public class TestXMLSerializer_writes_with_autoexpansion extends XMLTestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestXMLSerializer_writes_with_autoexpansion.class);
-    }
-
     private XMLSerializer xmlSerializer;
 
     public TestXMLSerializer_writes_with_autoexpansion(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestXMLSerializer_writes_with_autoexpansion.class);
     }
 
     public void testWriteBooleanArray() throws Exception {

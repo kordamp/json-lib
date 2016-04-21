@@ -25,6 +25,10 @@ package org.kordamp.json.regexp;
  * @author Andres Almiray
  */
 public class RegexpUtils {
+    private RegexpUtils() {
+
+    }
+
     /**
      * Returns a RegexpMatcher that works in a specific environment.<br>
      */
@@ -37,9 +41,5 @@ public class RegexpUtils {
      */
     public static RegexpMatcher getMatcher(String pattern, boolean multiline) {
         return new JdkRegexpMatcher(pattern, multiline);
-    }
-
-    private RegexpUtils() {
-
     }
 }

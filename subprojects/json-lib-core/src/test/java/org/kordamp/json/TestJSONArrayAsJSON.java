@@ -23,12 +23,12 @@ package org.kordamp.json;
  * @author Andres Almiray
  */
 public class TestJSONArrayAsJSON extends AbstractJSONTest {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONArrayAsJSON.class);
-    }
-
     public TestJSONArrayAsJSON(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayAsJSON.class);
     }
 
     protected int getIndent() {

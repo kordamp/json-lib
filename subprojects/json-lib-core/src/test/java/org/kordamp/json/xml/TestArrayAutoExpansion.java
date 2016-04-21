@@ -19,8 +19,8 @@
  */
 package org.kordamp.json.xml;
 
-import org.kordamp.json.JSON;
 import org.custommonkey.xmlunit.XMLTestCase;
+import org.kordamp.json.JSON;
 
 
 /**
@@ -75,12 +75,12 @@ public class TestArrayAutoExpansion extends XMLTestCase {
         "</Properties>";
 
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestArrayAutoExpansion.class);
-    }
-
     public TestArrayAutoExpansion(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestArrayAutoExpansion.class);
     }
 
     public void testShouldCreateAutomaticExpansionWhenContainingArrayOfObjects() throws Exception {

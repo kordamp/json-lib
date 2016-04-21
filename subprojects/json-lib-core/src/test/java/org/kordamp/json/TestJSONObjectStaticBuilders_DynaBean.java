@@ -29,12 +29,12 @@ import java.util.Map;
  * @author Andres Almiray
  */
 public class TestJSONObjectStaticBuilders_DynaBean extends AbstractJSONObjectStaticBuildersTestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_DynaBean.class);
-    }
-
     public TestJSONObjectStaticBuilders_DynaBean(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_DynaBean.class);
     }
 
     protected Object getSource() {

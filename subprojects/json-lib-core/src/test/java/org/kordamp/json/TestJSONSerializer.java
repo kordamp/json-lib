@@ -20,10 +20,14 @@
 package org.kordamp.json;
 
 import junit.framework.TestCase;
-import org.kordamp.json.sample.*;
-import org.kordamp.json.util.JSONTokener;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.kordamp.json.sample.ArrayJSONStringBean;
+import org.kordamp.json.sample.BeanA;
+import org.kordamp.json.sample.MappingBean;
+import org.kordamp.json.sample.ObjectJSONStringBean;
+import org.kordamp.json.sample.ValueBean;
+import org.kordamp.json.util.JSONTokener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,19 +37,19 @@ import java.util.Map;
  * @author Andres Almiray
  */
 public class TestJSONSerializer extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONSerializer.class);
-    }
-
     private JsonConfig jsonConfig;
 
     public TestJSONSerializer(String name) {
         super(name);
     }
 
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONSerializer.class);
+    }
+
     public void testToJava_JSONArray_1() {
         // setName("JSONArray('[]') -&gt; ToJava[default]");
-        
+
         JSONArray jsonArray = JSONArray.fromObject("[]");
         Object java = JSONSerializer.toJava(jsonArray);
         assertNotNull(java);

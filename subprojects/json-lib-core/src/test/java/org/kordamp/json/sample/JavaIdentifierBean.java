@@ -31,20 +31,20 @@ public class JavaIdentifierBean {
         return camelCase;
     }
 
-    public String getUnder_score() {
-        return under_score;
-    }
-
-    public String getWhitespace() {
-        return whitespace;
-    }
-
     public void setCamelCase(String camelCase) {
         this.camelCase = camelCase;
     }
 
+    public String getUnder_score() {
+        return under_score;
+    }
+
     public void setUnder_score(String under_score) {
         this.under_score = under_score;
+    }
+
+    public String getWhitespace() {
+        return whitespace;
     }
 
     public void setWhitespace(String whitespace) {

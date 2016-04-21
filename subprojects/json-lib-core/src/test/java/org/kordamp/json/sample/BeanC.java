@@ -33,12 +33,12 @@ public class BeanC {
         return beanA;
     }
 
-    public BeanB getBeanB() {
-        return beanB;
-    }
-
     public void setBeanA(BeanA beanA) {
         this.beanA = beanA;
+    }
+
+    public BeanB getBeanB() {
+        return beanB;
     }
 
     public void setBeanB(BeanB beanB) {

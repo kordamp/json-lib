@@ -19,8 +19,8 @@
  */
 package org.kordamp.json.xml;
 
-import org.kordamp.json.JSON;
 import org.custommonkey.xmlunit.XMLTestCase;
+import org.kordamp.json.JSON;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;

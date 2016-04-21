@@ -28,14 +28,14 @@ import java.util.List;
  * @author Andres Almiray
  */
 public class TestJSONArrayAsList extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONArrayAsList.class);
-    }
-
     private JSONArray jsonArray;
 
     public TestJSONArrayAsList(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayAsList.class);
     }
 
     public void testAdd() {

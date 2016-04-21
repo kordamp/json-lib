@@ -40,76 +40,76 @@ public class EmptyBean {
         return arrayp;
     }
 
-    public Byte getBytep() {
-        return bytep;
-    }
-
-    public Character getCharp() {
-        return charp;
-    }
-
-    public Double getDoublep() {
-        return doublep;
-    }
-
-    public Float getFloatp() {
-        return floatp;
-    }
-
-    public Integer getIntp() {
-        return intp;
-    }
-
-    public List getListp() {
-        return listp;
-    }
-
-    public Long getLongp() {
-        return longp;
-    }
-
-    public Short getShortp() {
-        return shortp;
-    }
-
-    public String getStringp() {
-        return stringp;
-    }
-
     public void setArrayp(Object[] arrayp) {
         this.arrayp = arrayp;
+    }
+
+    public Byte getBytep() {
+        return bytep;
     }
 
     public void setBytep(Byte bytep) {
         this.bytep = bytep;
     }
 
+    public Character getCharp() {
+        return charp;
+    }
+
     public void setCharp(Character charp) {
         this.charp = charp;
+    }
+
+    public Double getDoublep() {
+        return doublep;
     }
 
     public void setDoublep(Double doublep) {
         this.doublep = doublep;
     }
 
+    public Float getFloatp() {
+        return floatp;
+    }
+
     public void setFloatp(Float floatp) {
         this.floatp = floatp;
+    }
+
+    public Integer getIntp() {
+        return intp;
     }
 
     public void setIntp(Integer intp) {
         this.intp = intp;
     }
 
+    public List getListp() {
+        return listp;
+    }
+
     public void setListp(List listp) {
         this.listp = listp;
+    }
+
+    public Long getLongp() {
+        return longp;
     }
 
     public void setLongp(Long longp) {
         this.longp = longp;
     }
 
+    public Short getShortp() {
+        return shortp;
+    }
+
     public void setShortp(Short shortp) {
         this.shortp = shortp;
+    }
+
+    public String getStringp() {
+        return stringp;
     }
 
     public void setStringp(String stringp) {

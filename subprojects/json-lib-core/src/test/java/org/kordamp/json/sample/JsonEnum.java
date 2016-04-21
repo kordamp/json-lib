@@ -23,5 +23,6 @@ package org.kordamp.json.sample;
  * @author Andres Almiray
  */
 public enum JsonEnum {
-    ARRAY, OBJECT
+    ARRAY,
+    OBJECT
 }

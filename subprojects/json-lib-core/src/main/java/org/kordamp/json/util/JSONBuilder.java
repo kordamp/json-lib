@@ -45,17 +45,17 @@ import java.io.Writer;
  *         .key("JSON")
  *         .value("Hello, World!")
  *     .endObject();</pre>
- *
+ * <p/>
  * which writes
- *
+ * <p/>
  * <pre>
  * {"JSON":"Hello, World!"}</pre>
- *
- *
+ * <p/>
+ * <p/>
  * The first method called must be <code>array</code> or <code>object</code>.
  * There are no methods for adding commas or colons. JSONBuilder adds them for
  * you. Objects and arrays can be nested up to 20 levels deep.
- *
+ * <p/>
  * This can sometimes be easier than using a JSONObject to build a string.
  *
  * @author JSON.org
@@ -63,33 +63,28 @@ import java.io.Writer;
  */
 public class JSONBuilder {
     private static final int MAXDEPTH = 20;
-
-    /**
-     * The comma flag determines if a comma should be output before the next
-     * value.
-     */
-    private boolean comma;
-
     /**
      * The current mode. Values: 'a' (array), 'd' (done), 'i' (initial), 'k'
      * (key), 'o' (object).
      */
     protected char mode;
-
-    /**
-     * The object/array stack.
-     */
-    private char stack[];
-
-    /**
-     * The stack top index. A value of 0 indicates that the stack is empty.
-     */
-    private int top;
-
     /**
      * The writer that will receive the output.
      */
     protected Writer writer;
+    /**
+     * The comma flag determines if a comma should be output before the next
+     * value.
+     */
+    private boolean comma;
+    /**
+     * The object/array stack.
+     */
+    private char stack[];
+    /**
+     * The stack top index. A value of 0 indicates that the stack is empty.
+     */
+    private int top;
 
     /**
      * Make a fresh JSONBuilder. It can be used to build one JSON text.
@@ -106,7 +101,9 @@ public class JSONBuilder {
      * Append a value.
      *
      * @param s A string value.
+     *
      * @return this
+     *
      * @throws JSONException If the value is out of sequence.
      */
     private JSONBuilder append(String s) {
@@ -137,6 +134,7 @@ public class JSONBuilder {
      * <code>endArray</code> method must be called to mark the array's end.
      *
      * @return this
+     *
      * @throws JSONException If the nesting is too deep, or if the object is
      *                       started in the wrong place (for example as a key or after the end
      *                       of the outermost array or object).
@@ -156,7 +154,9 @@ public class JSONBuilder {
      *
      * @param m Mode
      * @param c Closing character
+     *
      * @return this
+     *
      * @throws JSONException If unbalanced.
      */
     private JSONBuilder end(char m, char c) {
@@ -178,6 +178,7 @@ public class JSONBuilder {
      * <code>array</code>.
      *
      * @return this
+     *
      * @throws JSONException If incorrectly nested.
      */
     public JSONBuilder endArray() {
@@ -189,6 +190,7 @@ public class JSONBuilder {
      * <code>object</code>.
      *
      * @return this
+     *
      * @throws JSONException If incorrectly nested.
      */
     public JSONBuilder endObject() {
@@ -200,7 +202,9 @@ public class JSONBuilder {
      * object, every value must be preceded by a key.
      *
      * @param s A key string.
+     *
      * @return this
+     *
      * @throws JSONException If the key is out of place. For example, keys do not
      *                       belong in arrays or if the key is null.
      */
@@ -231,6 +235,7 @@ public class JSONBuilder {
      * <code>endObject</code> method must be called to mark the object's end.
      *
      * @return this
+     *
      * @throws JSONException If the nesting is too deep, or if the object is
      *                       started in the wrong place (for example as a key or after the end
      *                       of the outermost array or object).
@@ -253,6 +258,7 @@ public class JSONBuilder {
      * Pop an array or object scope.
      *
      * @param c The scope to close.
+     *
      * @throws JSONException If nesting is wrong.
      */
     private void pop(char c) {
@@ -267,6 +273,7 @@ public class JSONBuilder {
      * Push an array or object scope.
      *
      * @param c The scope to open.
+     *
      * @throws JSONException If nesting is too deep.
      */
     private void push(char c) {
@@ -283,7 +290,9 @@ public class JSONBuilder {
      * <code>false</code>.
      *
      * @param b A boolean.
+     *
      * @return this
+     *
      * @throws JSONException
      */
     public JSONBuilder value(boolean b) {
@@ -294,7 +303,9 @@ public class JSONBuilder {
      * Append a double value.
      *
      * @param d A double.
+     *
      * @return this
+     *
      * @throws JSONException If the number is not finite.
      */
     public JSONBuilder value(double d) {
@@ -305,7 +316,9 @@ public class JSONBuilder {
      * Append a long value.
      *
      * @param l A long.
+     *
      * @return this
+     *
      * @throws JSONException
      */
     public JSONBuilder value(long l) {
@@ -318,7 +331,9 @@ public class JSONBuilder {
      * @param o The object to append. It can be null, or a Boolean, Number,
      *          String, JSONObject, or JSONArray, or an object with a
      *          toJSONString() method.
+     *
      * @return this
+     *
      * @throws JSONException If the value is out of sequence.
      */
     public JSONBuilder value(Object o) {

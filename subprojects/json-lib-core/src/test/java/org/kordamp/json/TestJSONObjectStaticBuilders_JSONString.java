@@ -24,12 +24,12 @@ package org.kordamp.json;
  */
 public class TestJSONObjectStaticBuilders_JSONString extends
     AbstractJSONObjectStaticBuildersTestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_JSONString.class);
-    }
-
     public TestJSONObjectStaticBuilders_JSONString(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_JSONString.class);
     }
 
     protected Object getSource() {

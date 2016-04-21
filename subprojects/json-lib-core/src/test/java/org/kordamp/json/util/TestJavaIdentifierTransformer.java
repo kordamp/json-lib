@@ -25,12 +25,12 @@ import junit.framework.TestCase;
  * @author Andres Almiray
  */
 public class TestJavaIdentifierTransformer extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJavaIdentifierTransformer.class);
-    }
-
     public TestJavaIdentifierTransformer(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJavaIdentifierTransformer.class);
     }
 
     public void testCamelCase() {

@@ -70,12 +70,12 @@ public class TestJSONArrayEqualsHashCodeCompareTo extends TestCase {
         values.put("JSONObject.values.3", values3);
     }
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONArrayEqualsHashCodeCompareTo.class);
-    }
-
     public TestJSONArrayEqualsHashCodeCompareTo(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayEqualsHashCodeCompareTo.class);
     }
 
     public void testCompareTo_different_size() {

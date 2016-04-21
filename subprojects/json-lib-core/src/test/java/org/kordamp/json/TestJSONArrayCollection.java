@@ -26,12 +26,12 @@ import junit.framework.TestCase;
  */
 public class TestJSONArrayCollection extends TestCase {
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONArrayCollection.class);
-    }
-
     public TestJSONArrayCollection(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayCollection.class);
     }
 
    /*

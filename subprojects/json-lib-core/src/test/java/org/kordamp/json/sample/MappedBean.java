@@ -32,12 +32,12 @@ public class MappedBean extends HashMap {
         return (List) get("list");
     }
 
-    public String getName() {
-        return (String) get("name");
-    }
-
     public void setList(List list) {
         put("list", list);
+    }
+
+    public String getName() {
+        return (String) get("name");
     }
 
     public void setName(String name) {

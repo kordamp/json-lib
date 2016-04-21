@@ -32,12 +32,12 @@ import java.util.Map;
  */
 public class TestJSONArrayStaticBuilders_Collection_DynaBean extends
     AbstractJSONArrayStaticBuildersTestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONArrayStaticBuilders_Collection_DynaBean.class);
-    }
-
     public TestJSONArrayStaticBuilders_Collection_DynaBean(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONArrayStaticBuilders_Collection_DynaBean.class);
     }
 
     protected Object getSource() {

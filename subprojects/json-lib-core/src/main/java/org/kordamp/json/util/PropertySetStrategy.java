@@ -19,9 +19,9 @@
  */
 package org.kordamp.json.util;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.kordamp.json.JSONException;
 import org.kordamp.json.JsonConfig;
-import org.apache.commons.beanutils.PropertyUtils;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -54,7 +54,7 @@ public abstract class PropertySetStrategy {
                 if (!jsonConfig.isIgnorePublicFields()) {
                     try {
                         Field field = bean.getClass().getField(key);
-                        if (field != null) field.set(bean, value);
+                        if (field != null) { field.set(bean, value); }
                     } catch (Exception e) {
                         _setProperty(bean, key, value, jsonConfig);
                     }

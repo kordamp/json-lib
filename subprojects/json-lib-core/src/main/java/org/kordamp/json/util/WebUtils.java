@@ -35,6 +35,9 @@ public class WebUtils {
     private static final WebHijackPreventionStrategy DEFAULT_WEB_HIJACK_PREVENTION_STRATEGY = WebHijackPreventionStrategy.INFINITE_LOOP;
     private static WebHijackPreventionStrategy webHijackPreventionStrategy = DEFAULT_WEB_HIJACK_PREVENTION_STRATEGY;
 
+    private WebUtils() {
+    }
+
     /**
      * Returns the configured WebHijackPreventionStrategy.
      */
@@ -43,10 +46,21 @@ public class WebUtils {
     }
 
     /**
+     * Sets a WebHijackPreventionStrategy.<br>
+     * Will use default value (WebHijackPreventionStrategy.INFINITE_LOOP) if
+     * null.
+     */
+    public static void setWebHijackPreventionStrategy(WebHijackPreventionStrategy strategy) {
+        webHijackPreventionStrategy = strategy == null ? DEFAULT_WEB_HIJACK_PREVENTION_STRATEGY
+            : strategy;
+    }
+
+    /**
      * Transforms the input Json string using the configured
      * WebHijackPreventionStrategy.<br>
      *
      * @param json the input string
+     *
      * @return String a transformed json string
      */
     public static String protect(JSON json) {
@@ -59,21 +73,12 @@ public class WebUtils {
      *
      * @param json   the input string
      * @param shrink if redundant key quotes may be eliminated.
+     *
      * @return String a transformed json string
      */
     public static String protect(JSON json, boolean shrink) {
         String output = !shrink ? json.toString(0) : toString(json);
         return webHijackPreventionStrategy.protect(output);
-    }
-
-    /**
-     * Sets a WebHijackPreventionStrategy.<br>
-     * Will use default value (WebHijackPreventionStrategy.INFINITE_LOOP) if
-     * null.
-     */
-    public static void setWebHijackPreventionStrategy(WebHijackPreventionStrategy strategy) {
-        webHijackPreventionStrategy = strategy == null ? DEFAULT_WEB_HIJACK_PREVENTION_STRATEGY
-            : strategy;
     }
 
     /**
@@ -154,8 +159,5 @@ public class WebUtils {
         } else {
             return JSONUtils.valueToString(object);
         }
-    }
-
-    private WebUtils() {
     }
 }

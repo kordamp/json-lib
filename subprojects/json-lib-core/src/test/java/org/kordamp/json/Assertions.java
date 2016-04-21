@@ -104,10 +104,8 @@ public class Assertions extends JSONAssert {
     }
 
     public static void assertEquals(String message, Object expected, Object actual) {
-        if (expected == null && actual == null)
-            return;
-        if (expected != null && expected.equals(actual))
-            return;
+        if (expected == null && actual == null) { return; }
+        if (expected != null && expected.equals(actual)) { return; }
         Class expectedClass = expected.getClass();
         Class actualClass = actual.getClass();
         if (expectedClass.isArray() && actualClass.isArray()) {

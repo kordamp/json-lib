@@ -19,10 +19,10 @@
  */
 package org.kordamp.json;
 
-import org.kordamp.json.util.JSONUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.kordamp.json.util.JSONUtils;
 
 import java.io.Serializable;
 
@@ -36,26 +36,10 @@ public class JSONFunction implements Serializable {
      * constant array for empty parameters
      */
     private static final String[] EMPTY_PARAM_ARRAY = new String[0];
-
-
-    /**
-     * Constructs a JSONFunction from a text representation
-     */
-    public static JSONFunction parse(String str) {
-        if (!JSONUtils.isFunction(str)) {
-            throw new JSONException("String is not a function. " + str);
-        } else {
-            String params = JSONUtils.getFunctionParams(str);
-            String text = JSONUtils.getFunctionBody(str);
-            return new JSONFunction((params != null) ? StringUtils.split(params, ",") : null, text != null ? text : "");
-        }
-    }
-
     /**
      * the parameters of this function
      */
     private String[] params;
-
     /**
      * the text of this function
      */
@@ -95,6 +79,42 @@ public class JSONFunction implements Serializable {
         }
     }
 
+    /**
+     * Constructs a JSONFunction from a text representation
+     */
+    public static JSONFunction parse(String str) {
+        if (!JSONUtils.isFunction(str)) {
+            throw new JSONException("String is not a function. " + str);
+        } else {
+            String params = JSONUtils.getFunctionParams(str);
+            String text = JSONUtils.getFunctionBody(str);
+            return new JSONFunction((params != null) ? StringUtils.split(params, ",") : null, text != null ? text : "");
+        }
+    }
+
+    /**
+     * Returns the parameters of this function.
+     */
+    public String[] getParams() {
+        return params;
+    }
+
+    /**
+     * Reeturns the text of this function.
+     */
+    public String getText() {
+        return text;
+    }
+
+    public int hashCode() {
+        HashCodeBuilder builder = new HashCodeBuilder();
+        for (int i = 0; i < params.length; i++) {
+            builder.append(params[i]);
+        }
+        builder.append(text);
+        return builder.toHashCode();
+    }
+
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -126,29 +146,6 @@ public class JSONFunction implements Serializable {
         }
         builder.append(text, other.text);
         return builder.isEquals();
-    }
-
-    /**
-     * Returns the parameters of this function.
-     */
-    public String[] getParams() {
-        return params;
-    }
-
-    /**
-     * Reeturns the text of this function.
-     */
-    public String getText() {
-        return text;
-    }
-
-    public int hashCode() {
-        HashCodeBuilder builder = new HashCodeBuilder();
-        for (int i = 0; i < params.length; i++) {
-            builder.append(params[i]);
-        }
-        builder.append(text);
-        return builder.toHashCode();
     }
 
     /**

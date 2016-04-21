@@ -23,8 +23,8 @@ package org.kordamp.json.sample;
  * @author Andres Almiray
  */
 public class PropertyBean {
-    private String propertyWithNoReadMethod;
     private final String propertyWithNoWriteMethod = "json";
+    private String propertyWithNoReadMethod;
 
     public String getPropertyWithNoWriteMethod() {
         return propertyWithNoWriteMethod;

@@ -19,17 +19,28 @@
  */
 package org.kordamp.json.util;
 
+import org.apache.commons.beanutils.DynaBean;
 import org.kordamp.ezmorph.MorphUtils;
 import org.kordamp.ezmorph.MorpherRegistry;
 import org.kordamp.ezmorph.bean.MorphDynaBean;
 import org.kordamp.ezmorph.bean.MorphDynaClass;
-import org.kordamp.json.*;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONFunction;
+import org.kordamp.json.JSONNull;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.JSONString;
+import org.kordamp.json.JsonConfig;
 import org.kordamp.json.regexp.RegexpUtils;
-import org.apache.commons.beanutils.DynaBean;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provides useful methods on java objects and JSON values.
@@ -58,6 +69,10 @@ public final class JSONUtils {
     static {
         // register standard morphers
         MorphUtils.registerStandardMorphers(morpherRegistry);
+    }
+
+    private JSONUtils() {
+        super();
     }
 
     /**
@@ -92,6 +107,7 @@ public final class JSONUtils {
      * number is not finite.
      *
      * @param d A double.
+     *
      * @return A String.
      */
     public static String doubleToString(double d) {
@@ -428,7 +444,9 @@ public final class JSONUtils {
      * Produce a string from a Number.
      *
      * @param n A Number
+     *
      * @return A String.
+     *
      * @throws JSONException If n is a non-finite number.
      */
     public static String numberToString(Number n) {
@@ -458,6 +476,7 @@ public final class JSONUtils {
      * character or an unescaped quote or backslash.<br>
      *
      * @param string A String
+     *
      * @return A String correctly formatted for insertion in a JSON text.
      */
     public static String quote(String string) {
@@ -611,6 +630,7 @@ public final class JSONUtils {
      * Throw an exception if the object is an NaN or infinite number.
      *
      * @param o The object to test.
+     *
      * @throws JSONException If o is a non-finite number.
      */
     public static void testValidity(Object o) {
@@ -663,9 +683,11 @@ public final class JSONUtils {
      * Warning: This method assumes that the data structure is acyclical.
      *
      * @param value The value to be serialized.
+     *
      * @return a printable, displayable, transmittable representation of the
-     *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
-     *         and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
+     * object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
+     * and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
+     *
      * @throws JSONException If the value is or contains an invalid number.
      */
     public static String valueToString(Object value) {
@@ -715,9 +737,11 @@ public final class JSONUtils {
      * @param indentFactor The number of spaces to add to each level of
      *                     indentation.
      * @param indent       The indentation of the top level.
+     *
      * @return a printable, displayable, transmittable representation of the
-     *         object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
-     *         and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
+     * object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
+     * and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
+     *
      * @throws JSONException If the object contains an invalid number.
      */
     public static String valueToString(Object value, int indentFactor, int indent) {
@@ -749,7 +773,7 @@ public final class JSONUtils {
      * Finds out if n represents a BigInteger
      *
      * @return true if n is instanceOf BigInteger or the literal value can be
-     *         evaluated as a BigInteger
+     * evaluated as a BigInteger
      */
     private static boolean isBigDecimal(Number n) {
         if (n instanceof BigDecimal) {
@@ -767,7 +791,7 @@ public final class JSONUtils {
      * Finds out if n represents a BigInteger
      *
      * @return true if n is instanceOf BigInteger or the literal value can be
-     *         evaluated as a BigInteger
+     * evaluated as a BigInteger
      */
     private static boolean isBigInteger(Number n) {
         if (n instanceof BigInteger) {
@@ -785,7 +809,7 @@ public final class JSONUtils {
      * Finds out if n represents a Double.
      *
      * @return true if n is instanceOf Double or the literal value can be
-     *         evaluated as a Double.
+     * evaluated as a Double.
      */
     private static boolean isDouble(Number n) {
         if (n instanceof Double) {
@@ -803,7 +827,7 @@ public final class JSONUtils {
      * Finds out if n represents a Float.
      *
      * @return true if n is instanceOf Float or the literal value can be
-     *         evaluated as a Float.
+     * evaluated as a Float.
      */
     private static boolean isFloat(Number n) {
         if (n instanceof Float) {
@@ -821,7 +845,7 @@ public final class JSONUtils {
      * Finds out if n represents an Integer.
      *
      * @return true if n is instanceOf Integer or the literal value can be
-     *         evaluated as an Integer.
+     * evaluated as an Integer.
      */
     private static boolean isInteger(Number n) {
         if (n instanceof Integer) {
@@ -839,7 +863,7 @@ public final class JSONUtils {
      * Finds out if n represents a Long.
      *
      * @return true if n is instanceOf Long or the literal value can be evaluated
-     *         as a Long.
+     * as a Long.
      */
     private static boolean isLong(Number n) {
         if (n instanceof Long) {
@@ -851,9 +875,5 @@ public final class JSONUtils {
         } catch (NumberFormatException e) {
             return false;
         }
-    }
-
-    private JSONUtils() {
-        super();
     }
 }

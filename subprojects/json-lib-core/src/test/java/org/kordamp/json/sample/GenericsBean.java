@@ -39,44 +39,44 @@ public class GenericsBean {
         return genericsInternalBeanList;
     }
 
-    public List getNoTypeList() {
-        return noTypeList;
-    }
-
-    public ArrayList<String> getStringArrayList() {
-        return stringArrayList;
-    }
-
-    public HashSet<String> getStringHashSet() {
-        return stringHashSet;
-    }
-
-    public List<String> getStringList() {
-        return stringList;
-    }
-
-    public Set<String> getStringSet() {
-        return stringSet;
-    }
-
     public void setGenericsInternalBeanList(List<GenericsInternalBean> genericsInternalBeanList) {
         this.genericsInternalBeanList = genericsInternalBeanList;
+    }
+
+    public List getNoTypeList() {
+        return noTypeList;
     }
 
     public void setNoTypeList(List noTypeList) {
         this.noTypeList = noTypeList;
     }
 
+    public ArrayList<String> getStringArrayList() {
+        return stringArrayList;
+    }
+
     public void setStringArrayList(ArrayList<String> stringArrayList) {
         this.stringArrayList = stringArrayList;
+    }
+
+    public HashSet<String> getStringHashSet() {
+        return stringHashSet;
     }
 
     public void setStringHashSet(HashSet<String> stringHashSet) {
         this.stringHashSet = stringHashSet;
     }
 
+    public List<String> getStringList() {
+        return stringList;
+    }
+
     public void setStringList(List<String> stringList) {
         this.stringList = stringList;
+    }
+
+    public Set<String> getStringSet() {
+        return stringSet;
     }
 
     public void setStringSet(Set<String> stringSet) {

@@ -26,12 +26,12 @@ import org.kordamp.json.util.JSONTokener;
  */
 public class TestJSONObjectStaticBuilders_JSONTokener extends
     AbstractJSONObjectStaticBuildersTestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_JSONTokener.class);
-    }
-
     public TestJSONObjectStaticBuilders_JSONTokener(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_JSONTokener.class);
     }
 
     protected Object getSource() {

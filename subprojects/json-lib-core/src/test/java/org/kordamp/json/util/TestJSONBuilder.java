@@ -29,12 +29,12 @@ import java.io.StringWriter;
  * @author Andres Almiray
  */
 public class TestJSONBuilder extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONBuilder.class);
-    }
-
     public TestJSONBuilder(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONBuilder.class);
     }
 
     public void testCreateArray() {

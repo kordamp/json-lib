@@ -19,20 +19,20 @@
  */
 package org.kordamp.json;
 
-import org.kordamp.json.sample.PrimitiveBean;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.kordamp.json.sample.PrimitiveBean;
 
 /**
  * @author Andres Almiray
  */
 public class TestJSONObjectStaticBuilders_PrimitiveBean extends
     AbstractJSONObjectStaticBuildersTestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_PrimitiveBean.class);
-    }
-
     public TestJSONObjectStaticBuilders_PrimitiveBean(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_PrimitiveBean.class);
     }
 
     protected Object getSource() {

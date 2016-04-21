@@ -20,11 +20,17 @@
 package org.kordamp.json.test;
 
 import junit.framework.Assert;
+import org.apache.commons.lang.StringUtils;
 import org.kordamp.ezmorph.Morpher;
 import org.kordamp.ezmorph.object.IdentityObjectMorpher;
-import org.kordamp.json.*;
+import org.kordamp.json.JSON;
+import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONException;
+import org.kordamp.json.JSONFunction;
+import org.kordamp.json.JSONNull;
+import org.kordamp.json.JSONObject;
+import org.kordamp.json.JSONSerializer;
 import org.kordamp.json.util.JSONUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Iterator;
 import java.util.SortedSet;

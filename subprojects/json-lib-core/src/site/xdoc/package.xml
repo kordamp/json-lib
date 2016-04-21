@@ -1,89 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
 
-   <properties>
-      <title>Json-lib::Build instructions</title>
-   </properties>
+    <properties>
+        <title>Json-lib::Build instructions</title>
+    </properties>
 
-   <body>
-      <section name="Build instructions">
-         <a href="#jdk13">Building the jdk13 package</a>
-         <br />
-         <a href="#jdk15">Building the jdk15 package</a>
-         <a name="jdk13" />
-         <subsection name="Building the jdk13 package">
-            <p>
-               <ol>
-                  <li>
-                     Download the latest snapshot from
-                     <a
-                        href="http://sourceforge.net/cvs/?group_id=171425">
-                        cvs
-                     </a>
-                     .
-                  </li>
-                  <li>
-                     You must have ant 1.7.0 or newer installed in your system.
-                     You can download it from
-                     <a
-                        href="http://ant.apache.org"
-                        target="_new">
-                        here
-                     </a>
-                     .
-                  </li>
-                  <li>
-                     Execute 'ant jar', the distribution jar should be
-                     inside the
-                     <i>target</i>
-                     directory.
-                  </li>
-               </ol>
-            </p>
-         </subsection>
-         <a name="jdk15" />
-         <subsection name="Building the jdk15 package">
-            <p>
-               <ol>
-                  <li>
-                     Download the latest snapshot from
-                     <a
-                        href="http://sourceforge.net/cvs/?group_id=171425">
-                        cvs
-                     </a>
-                     .
-                  </li>
-                  <li>
-                     You must have ant 1.7.0 or newer installed in your system.
-                     You can download it from
-                     <a
-                        href="http://ant.apache.org"
-                        target="_new">
-                        here
-                     </a>
-                     .
-                  </li>
-                  <li>
-                     Execute 'ant jar.jdk5', the distribution jar
-                     should be inside the
-                     <i>target</i>
-                     directory.
-                  </li>
-               </ol>
-            </p>
-         </subsection>
-         <subsection name="Extras">
-            <p>
-               You may additionally generate the source jars and jdk15
-               javadoc API pages using the provided
-               <b>Ant</b>
-               targets. Type 'ant -p' to get more info on those targets.
-               This site and the documentation for the jdk13 package is
-               still built with
-               <b>Maven</b>
-               .
-            </p>
-         </subsection>
-      </section>
-   </body>
+    <body>
+        <section name="Build instructions">
+            <a href="#jdk13">Building the jdk13 package</a>
+            <br/>
+            <a href="#jdk15">Building the jdk15 package</a>
+            <a name="jdk13"/>
+            <subsection name="Building the jdk13 package">
+                <p>
+                    <ol>
+                        <li>
+                            Download the latest snapshot from
+                            <a
+                                href="http://sourceforge.net/cvs/?group_id=171425">
+                                cvs
+                            </a>
+                            .
+                        </li>
+                        <li>
+                            You must have ant 1.7.0 or newer installed in your system.
+                            You can download it from
+                            <a
+                                href="http://ant.apache.org"
+                                target="_new">
+                                here
+                            </a>
+                            .
+                        </li>
+                        <li>
+                            Execute 'ant jar', the distribution jar should be
+                            inside the
+                            <i>target</i>
+                            directory.
+                        </li>
+                    </ol>
+                </p>
+            </subsection>
+            <a name="jdk15"/>
+            <subsection name="Building the jdk15 package">
+                <p>
+                    <ol>
+                        <li>
+                            Download the latest snapshot from
+                            <a
+                                href="http://sourceforge.net/cvs/?group_id=171425">
+                                cvs
+                            </a>
+                            .
+                        </li>
+                        <li>
+                            You must have ant 1.7.0 or newer installed in your system.
+                            You can download it from
+                            <a
+                                href="http://ant.apache.org"
+                                target="_new">
+                                here
+                            </a>
+                            .
+                        </li>
+                        <li>
+                            Execute 'ant jar.jdk5', the distribution jar
+                            should be inside the
+                            <i>target</i>
+                            directory.
+                        </li>
+                    </ol>
+                </p>
+            </subsection>
+            <subsection name="Extras">
+                <p>
+                    You may additionally generate the source jars and jdk15
+                    javadoc API pages using the provided
+                    <b>Ant</b>
+                    targets. Type 'ant -p' to get more info on those targets.
+                    This site and the documentation for the jdk13 package is
+                    still built with
+                    <b>Maven</b>
+                    .
+                </p>
+            </subsection>
+        </section>
+    </body>
 </document>

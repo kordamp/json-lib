@@ -22,10 +22,10 @@
 -->
 <rdf:RDF
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns="http://purl.org/rss/1.0/"
     xmlns:taxo="http://purl.org/rss/1.0/modules/taxonomy/"
     xmlns:dc="http://purl.org/dc/elements/1.1/"
-    >
+    xmlns="http://purl.org/rss/1.0/"
+>
 
     <channel rdf:about="http://del.icio.us/aalmiray/javascript">
         <title>del.icio.us/aalmiray/javascript</title>

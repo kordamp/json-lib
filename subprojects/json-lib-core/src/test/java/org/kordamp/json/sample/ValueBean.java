@@ -30,6 +30,18 @@ import org.apache.commons.lang.builder.ToStringStyle;
 public class ValueBean {
     private int value;
 
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
@@ -41,18 +53,6 @@ public class ValueBean {
             return false;
         }
         return EqualsBuilder.reflectionEquals(this, obj);
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    public void setValue(int value) {
-        this.value = value;
     }
 
     public String toString() {

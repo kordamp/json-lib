@@ -23,12 +23,12 @@ package org.kordamp.json.regexp;
  * @author Andres Almiray
  */
 public class TestJdkRegexpMatcher extends AbstractRegexpMatcherTestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJdkRegexpMatcher.class);
-    }
-
     public TestJdkRegexpMatcher(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJdkRegexpMatcher.class);
     }
 
     protected RegexpMatcher getRegexpMatcher(String pattern) {

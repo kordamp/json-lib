@@ -19,7 +19,6 @@
  */
 package org.kordamp.json.processors;
 
-import org.kordamp.json.JSONException;
 import org.kordamp.json.JSONObject;
 import org.kordamp.json.JsonConfig;
 
@@ -34,8 +33,10 @@ public interface JsonBeanProcessor {
      *
      * @param bean       the input bean
      * @param jsonConfig the current configuration environment
+     *
      * @return a JSONObject that represents the input bean
-     * @throws JSONException if an error occurs during transformation
+     *
+     * @throws org.kordamp.json.JSONException if an error occurs during transformation
      */
     JSONObject processBean(Object bean, JsonConfig jsonConfig);
 }

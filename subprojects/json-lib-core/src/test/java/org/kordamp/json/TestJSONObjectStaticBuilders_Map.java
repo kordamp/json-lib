@@ -26,12 +26,12 @@ import java.util.Map;
  * @author Andres Almiray
  */
 public class TestJSONObjectStaticBuilders_Map extends AbstractJSONObjectStaticBuildersTestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_Map.class);
-    }
-
     public TestJSONObjectStaticBuilders_Map(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectStaticBuilders_Map.class);
     }
 
     protected Object getSource() {

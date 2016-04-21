@@ -19,13 +19,13 @@
  */
 package org.kordamp.json;
 
+import org.apache.commons.lang.StringUtils;
 import org.kordamp.ezmorph.Morpher;
 import org.kordamp.ezmorph.object.IdentityObjectMorpher;
 import org.kordamp.json.processors.JsonValueProcessor;
 import org.kordamp.json.processors.JsonVerifier;
 import org.kordamp.json.util.JSONTokener;
 import org.kordamp.json.util.JSONUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
@@ -35,7 +35,16 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * A JSONArray is an ordered sequence of values. Its external text form is a
@@ -87,11 +96,28 @@ import java.util.*;
  */
 public final class JSONArray extends AbstractJSON implements JSON, List<Object>, Comparable {
     /**
+     * The List where the JSONArray's properties are kept.
+     */
+    private List<Object> elements;
+    /**
+     * A flag for XML processing.
+     */
+    private boolean expandElements;
+
+    /**
+     * Construct an empty JSONArray.
+     */
+    public JSONArray() {
+        this.elements = new ArrayList<Object>();
+    }
+
+    /**
      * Creates a JSONArray.<br>
      * Inspects the object type to call the correct JSONArray factory method.
      * Accepts JSON formatted strings, arrays, Collections and Enums.
      *
      * @param object
+     *
      * @throws JSONException if the object can not be converted to a proper
      *                       JSONArray.
      */
@@ -105,6 +131,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * Accepts JSON formatted strings, arrays, Collections and Enums.
      *
      * @param object
+     *
      * @throws JSONException if the object can not be converted to a proper
      *                       JSONArray.
      */
@@ -364,87 +391,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
         }
         return array;
     }
-
-    /**
-     * Returns a List or a Set taking generics into account.<br/>
-     */
-    public static Collection toCollection(JSONArray jsonArray) {
-        return toCollection(jsonArray, new JsonConfig());
-    }
-
-    /**
-     * Returns a List or a Set taking generics into account.<br/>
-     */
-    public static Collection toCollection(JSONArray jsonArray, Class objectClass) {
-        JsonConfig jsonConfig = new JsonConfig();
-        jsonConfig.setRootClass(objectClass);
-        return toCollection(jsonArray, jsonConfig);
-    }
-
-    /**
-     * Returns a List or a Set taking generics into account.<br/>
-     * Contributed by [Matt Small @ WaveMaker].
-     */
-    public static Collection toCollection(JSONArray jsonArray, JsonConfig jsonConfig) {
-        Collection collection = null;
-        Class collectionType = jsonConfig.getCollectionType();
-
-        if (collectionType.isInterface()) {
-            if (collectionType.equals(List.class)) {
-                collection = new ArrayList();
-            } else if (collectionType.equals(Set.class)) {
-                collection = new HashSet();
-            } else {
-                throw new JSONException("unknown interface: " + collectionType);
-            }
-        } else {
-            try {
-                collection = (Collection) collectionType.newInstance();
-            } catch (InstantiationException e) {
-                throw new JSONException(e);
-            } catch (IllegalAccessException e) {
-                throw new JSONException(e);
-            }
-        }
-
-        Class objectClass = jsonConfig.getRootClass();
-        Map classMap = jsonConfig.getClassMap();
-
-        int size = jsonArray.size();
-        for (int i = 0; i < size; i++) {
-            Object value = jsonArray.get(i);
-
-            if (JSONUtils.isNull(value)) {
-                collection.add(null);
-            } else {
-                Class type = value.getClass();
-                if (JSONArray.class.isAssignableFrom(value.getClass())) {
-                    collection.add(toCollection((JSONArray) value, jsonConfig));
-                } else if (String.class.isAssignableFrom(type)
-                    || Boolean.class.isAssignableFrom(type) || JSONUtils.isNumber(type)
-                    || Character.class.isAssignableFrom(type)
-                    || JSONFunction.class.isAssignableFrom(type)) {
-
-                    if (objectClass != null && !objectClass.isAssignableFrom(type)) {
-                        value = JSONUtils.getMorpherRegistry()
-                            .morph(objectClass, value);
-                    }
-                    collection.add(value);
-                } else {
-                    if (objectClass != null) {
-                        JsonConfig jsc = jsonConfig.copy();
-                        jsc.setRootClass(objectClass);
-                        jsc.setClassMap(classMap);
-                        collection.add(JSONObject.toBean((JSONObject) value, jsc));
-                    } else {
-                        collection.add(JSONObject.toBean((JSONObject) value));
-                    }
-                }
-            }
-        }
-
-        return collection;
-    }
    /*
    public static Collection toCollection( JSONArray jsonArray, JsonConfig jsonConfig ) {
       Collection collection = null;
@@ -527,6 +473,87 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
       return collection;
    }
    */
+
+    /**
+     * Returns a List or a Set taking generics into account.<br/>
+     */
+    public static Collection toCollection(JSONArray jsonArray) {
+        return toCollection(jsonArray, new JsonConfig());
+    }
+
+    /**
+     * Returns a List or a Set taking generics into account.<br/>
+     */
+    public static Collection toCollection(JSONArray jsonArray, Class objectClass) {
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.setRootClass(objectClass);
+        return toCollection(jsonArray, jsonConfig);
+    }
+
+    /**
+     * Returns a List or a Set taking generics into account.<br/>
+     * Contributed by [Matt Small @ WaveMaker].
+     */
+    public static Collection toCollection(JSONArray jsonArray, JsonConfig jsonConfig) {
+        Collection collection = null;
+        Class collectionType = jsonConfig.getCollectionType();
+
+        if (collectionType.isInterface()) {
+            if (collectionType.equals(List.class)) {
+                collection = new ArrayList();
+            } else if (collectionType.equals(Set.class)) {
+                collection = new HashSet();
+            } else {
+                throw new JSONException("unknown interface: " + collectionType);
+            }
+        } else {
+            try {
+                collection = (Collection) collectionType.newInstance();
+            } catch (InstantiationException e) {
+                throw new JSONException(e);
+            } catch (IllegalAccessException e) {
+                throw new JSONException(e);
+            }
+        }
+
+        Class objectClass = jsonConfig.getRootClass();
+        Map classMap = jsonConfig.getClassMap();
+
+        int size = jsonArray.size();
+        for (int i = 0; i < size; i++) {
+            Object value = jsonArray.get(i);
+
+            if (JSONUtils.isNull(value)) {
+                collection.add(null);
+            } else {
+                Class type = value.getClass();
+                if (JSONArray.class.isAssignableFrom(value.getClass())) {
+                    collection.add(toCollection((JSONArray) value, jsonConfig));
+                } else if (String.class.isAssignableFrom(type)
+                    || Boolean.class.isAssignableFrom(type) || JSONUtils.isNumber(type)
+                    || Character.class.isAssignableFrom(type)
+                    || JSONFunction.class.isAssignableFrom(type)) {
+
+                    if (objectClass != null && !objectClass.isAssignableFrom(type)) {
+                        value = JSONUtils.getMorpherRegistry()
+                            .morph(objectClass, value);
+                    }
+                    collection.add(value);
+                } else {
+                    if (objectClass != null) {
+                        JsonConfig jsc = jsonConfig.copy();
+                        jsc.setRootClass(objectClass);
+                        jsc.setClassMap(classMap);
+                        collection.add(JSONObject.toBean((JSONObject) value, jsc));
+                    } else {
+                        collection.add(JSONObject.toBean((JSONObject) value));
+                    }
+                }
+            }
+        }
+
+        return collection;
+    }
 
     /**
      * Creates a List from a JSONArray.<br>
@@ -805,6 +832,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * Construct a JSONArray from an Enum value.
      *
      * @param e A enum value.
+     *
      * @throws JSONException If there is a syntax error.
      */
     private static JSONArray _fromArray(Enum e, JsonConfig jsonConfig) {
@@ -839,6 +867,8 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
         fireArrayEndEvent(jsonConfig);
         return jsonArray;
     }
+
+    // ------------------------------------------------------
 
     /**
      * Construct a JSONArray from an float[].<br>
@@ -948,8 +978,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
         fireArrayEndEvent(jsonConfig);
         return jsonArray;
     }
-
-    // ------------------------------------------------------
 
     private static JSONArray _fromArray(Object[] array, JsonConfig jsonConfig) {
         if (!addInstance(array)) {
@@ -1100,6 +1128,8 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
         return _fromJSONTokener(new JSONTokener(string.toJSONString()), jsonConfig);
     }
 
+    // ------------------------------------------------------
+
     private static JSONArray _fromJSONTokener(JSONTokener tokener, JsonConfig jsonConfig) {
 
         JSONArray jsonArray = new JSONArray();
@@ -1203,44 +1233,13 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
         }
     }
 
-    // ------------------------------------------------------
-
-    /**
-     * The List where the JSONArray's properties are kept.
-     */
-    private List<Object> elements;
-
-    /**
-     * A flag for XML processing.
-     */
-    private boolean expandElements;
-
-    /**
-     * Construct an empty JSONArray.
-     */
-    public JSONArray() {
-        this.elements = new ArrayList<Object>();
-    }
-
-    public void add(int index, Object value) {
-        add(index, value, new JsonConfig());
-    }
-
     public void add(int index, Object value, JsonConfig jsonConfig) {
         this.elements.add(index, processValue(value, jsonConfig));
-    }
-
-    public boolean add(Object value) {
-        return add(value, new JsonConfig());
     }
 
     public boolean add(Object value, JsonConfig jsonConfig) {
         element(value, jsonConfig);
         return true;
-    }
-
-    public boolean addAll(Collection collection) {
-        return addAll(collection, new JsonConfig());
     }
 
     public boolean addAll(Collection collection, JsonConfig jsonConfig) {
@@ -1253,10 +1252,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
         return true;
     }
 
-    public boolean addAll(int index, Collection collection) {
-        return addAll(index, collection, new JsonConfig());
-    }
-
     public boolean addAll(int index, Collection collection, JsonConfig jsonConfig) {
         if (collection == null || collection.size() == 0) {
             return false;
@@ -1266,10 +1261,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
             this.elements.add(index + (offset++), processValue(a, jsonConfig));
         }
         return true;
-    }
-
-    public void clear() {
-        elements.clear();
     }
 
     public int compareTo(Object obj) {
@@ -1292,12 +1283,107 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
         return contains(o, new JsonConfig());
     }
 
-    public boolean contains(Object o, JsonConfig jsonConfig) {
-        return elements.contains(processValue(o, jsonConfig));
+    /**
+     * Returns an Iterator for this JSONArray
+     */
+    public Iterator iterator() {
+        return new JSONArrayListIterator();
+    }
+
+    /**
+     * Produce an Object[] with the contents of this JSONArray.
+     */
+    public Object[] toArray() {
+        return this.elements.toArray();
+    }
+
+    public Object[] toArray(Object[] array) {
+        return elements.toArray(array);
+    }
+
+    public boolean add(Object value) {
+        return add(value, new JsonConfig());
+    }
+
+    public boolean remove(Object o) {
+        return elements.remove(o);
     }
 
     public boolean containsAll(Collection collection) {
         return containsAll(collection, new JsonConfig());
+    }
+
+    public boolean addAll(Collection collection) {
+        return addAll(collection, new JsonConfig());
+    }
+
+    public boolean addAll(int index, Collection collection) {
+        return addAll(index, collection, new JsonConfig());
+    }
+
+    public boolean removeAll(Collection collection) {
+        return removeAll(collection, new JsonConfig());
+    }
+
+    public boolean retainAll(Collection collection) {
+        return retainAll(collection, new JsonConfig());
+    }
+
+    public void clear() {
+        elements.clear();
+    }
+
+    /**
+     * Get the object value associated with an index.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return An object value.
+     */
+    public Object get(int index) {
+      /*
+       * Object o = opt( index ); if( o == null ){ throw new JSONException(
+       * "JSONArray[" + index + "] not found." ); } return o;
+       */
+        return this.elements.get(index);
+    }
+
+    public Object set(int index, Object value) {
+        return set(index, value, new JsonConfig());
+    }
+
+    public void add(int index, Object value) {
+        add(index, value, new JsonConfig());
+    }
+
+    public Object remove(int index) {
+        return elements.remove(index);
+    }
+
+    public int indexOf(Object o) {
+        return elements.indexOf(o);
+    }
+
+    public int lastIndexOf(Object o) {
+        return elements.lastIndexOf(o);
+    }
+
+    public ListIterator listIterator() {
+        return listIterator(0);
+    }
+
+    public ListIterator listIterator(int index) {
+        if (index < 0 || index > size()) { throw new IndexOutOfBoundsException("Index: " + index); }
+
+        return new JSONArrayListIterator(index);
+    }
+
+    public List subList(int fromIndex, int toIndex) {
+        return elements.subList(fromIndex, toIndex);
+    }
+
+    public boolean contains(Object o, JsonConfig jsonConfig) {
+        return elements.contains(processValue(o, jsonConfig));
     }
 
     public boolean containsAll(Collection collection, JsonConfig jsonConfig) {
@@ -1308,6 +1394,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * Remove an element, if present.
      *
      * @param index the index of the element.
+     *
      * @return this.
      */
     public JSONArray discard(int index) {
@@ -1319,6 +1406,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * Remove an element, if present.
      *
      * @param index the element.
+     *
      * @return this.
      */
     public JSONArray discard(Object o) {
@@ -1330,6 +1418,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * Append a boolean value. This increases the array's length by one.
      *
      * @param value A boolean value.
+     *
      * @return this.
      */
     public JSONArray element(boolean value) {
@@ -1341,6 +1430,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * is produced from a Collection.
      *
      * @param value A Collection value.
+     *
      * @return this.
      */
     public JSONArray element(Collection value) {
@@ -1352,6 +1442,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * is produced from a Collection.
      *
      * @param value A Collection value.
+     *
      * @return this.
      */
     public JSONArray element(Collection value, JsonConfig jsonConfig) {
@@ -1367,7 +1458,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * Append a double value. This increases the array's length by one.
      *
      * @param value A double value.
+     *
      * @return this.
+     *
      * @throws JSONException if the value is not finite.
      */
     public JSONArray element(double value) {
@@ -1380,6 +1473,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * Append an int value. This increases the array's length by one.
      *
      * @param value An int value.
+     *
      * @return this.
      */
     public JSONArray element(int value) {
@@ -1393,7 +1487,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      *
      * @param index The subscript.
      * @param value A boolean value.
+     *
      * @return this.
+     *
      * @throws JSONException If the index is negative.
      */
     public JSONArray element(int index, boolean value) {
@@ -1406,7 +1502,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      *
      * @param index The subscript.
      * @param value A Collection value.
+     *
      * @return this.
+     *
      * @throws JSONException If the index is negative or if the value is not
      *                       finite.
      */
@@ -1420,7 +1518,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      *
      * @param index The subscript.
      * @param value A Collection value.
+     *
      * @return this.
+     *
      * @throws JSONException If the index is negative or if the value is not
      *                       finite.
      */
@@ -1450,7 +1550,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      *
      * @param index The subscript.
      * @param value A double value.
+     *
      * @return this.
+     *
      * @throws JSONException If the index is negative or if the value is not
      *                       finite.
      */
@@ -1465,7 +1567,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      *
      * @param index The subscript.
      * @param value An int value.
+     *
      * @return this.
+     *
      * @throws JSONException If the index is negative.
      */
     public JSONArray element(int index, int value) {
@@ -1479,7 +1583,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      *
      * @param index The subscript.
      * @param value A long value.
+     *
      * @return this.
+     *
      * @throws JSONException If the index is negative.
      */
     public JSONArray element(int index, long value) {
@@ -1492,7 +1598,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      *
      * @param index The subscript.
      * @param value The Map value.
+     *
      * @return this.
+     *
      * @throws JSONException If the index is negative or if the the value is an
      *                       invalid number.
      */
@@ -1506,7 +1614,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      *
      * @param index The subscript.
      * @param value The Map value.
+     *
      * @return this.
+     *
      * @throws JSONException If the index is negative or if the the value is an
      *                       invalid number.
      */
@@ -1538,7 +1648,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * @param value An object value. The value should be a Boolean, Double,
      *              Integer, JSONArray, JSONObject, JSONFunction, Long, String,
      *              JSONString or the JSONNull object.
+     *
      * @return this.
+     *
      * @throws JSONException If the index is negative or if the the value is an
      *                       invalid number.
      */
@@ -1555,7 +1667,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * @param value An object value. The value should be a Boolean, Double,
      *              Integer, JSONArray, JSONObject, JSONFunction, Long, String,
      *              JSONString or the JSONNull object.
+     *
      * @return this.
+     *
      * @throws JSONException If the index is negative or if the the value is an
      *                       invalid number.
      */
@@ -1584,7 +1698,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      *
      * @param index The subscript.
      * @param value A String value.
+     *
      * @return this.
+     *
      * @throws JSONException If the index is negative or if the the value is an
      *                       invalid number.
      */
@@ -1601,7 +1717,9 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      *
      * @param index The subscript.
      * @param value A String value.
+     *
      * @return this.
+     *
      * @throws JSONException If the index is negative or if the the value is an
      *                       invalid number.
      */
@@ -1634,6 +1752,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * Append an JSON value. This increases the array's length by one.
      *
      * @param value An JSON value.
+     *
      * @return this.
      */
     public JSONArray element(JSONNull value) {
@@ -1645,6 +1764,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * Append an JSON value. This increases the array's length by one.
      *
      * @param value An JSON value.
+     *
      * @return this.
      */
     public JSONArray element(JSONObject value) {
@@ -1656,6 +1776,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * Append an long value. This increases the array's length by one.
      *
      * @param value A long value.
+     *
      * @return this.
      */
     public JSONArray element(long value) {
@@ -1667,6 +1788,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * is produced from a Map.
      *
      * @param value A Map value.
+     *
      * @return this.
      */
     public JSONArray element(Map value) {
@@ -1678,6 +1800,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * is produced from a Map.
      *
      * @param value A Map value.
+     *
      * @return this.
      */
     public JSONArray element(Map value, JsonConfig jsonConfig) {
@@ -1695,6 +1818,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * @param value An object value. The value should be a Boolean, Double,
      *              Integer, JSONArray, JSONObject, JSONFunction, Long, String,
      *              JSONString or the JSONNull object.
+     *
      * @return this.
      */
     public JSONArray element(Object value) {
@@ -1707,6 +1831,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * @param value An object value. The value should be a Boolean, Double,
      *              Integer, JSONArray, JSONObject, JSONFunction, Long, String,
      *              JSONString or the JSONNull object.
+     *
      * @return this.
      */
     public JSONArray element(Object value, JsonConfig jsonConfig) {
@@ -1719,6 +1844,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * transformed to a JSONArray, JSONObject or JSONNull.
      *
      * @param value A String value.
+     *
      * @return this.
      */
     public JSONArray element(String value) {
@@ -1731,6 +1857,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * transformed to a JSONArray, JSONObject or JSONNull.
      *
      * @param value A String value.
+     *
      * @return this.
      */
     public JSONArray element(String value, JsonConfig jsonConfig) {
@@ -1756,6 +1883,157 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
             this.elements.add(value);
         }
         return this;
+    }
+
+    /**
+     * Get the boolean value associated with an index. The string values "true"
+     * and "false" are converted to boolean.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return The truth.
+     *
+     * @throws JSONException If there is no value for the index or if the value
+     *                       is not convertable to boolean.
+     */
+    public boolean getBoolean(int index) {
+        Object o = get(index);
+        if (o != null) {
+            if (o.equals(Boolean.FALSE)
+                || (o instanceof String && ((String) o).equalsIgnoreCase("false"))) {
+                return false;
+            } else if (o.equals(Boolean.TRUE)
+                || (o instanceof String && ((String) o).equalsIgnoreCase("true"))) {
+                return true;
+            }
+        }
+        throw new JSONException("JSONArray[" + index + "] is not a Boolean.");
+    }
+
+    /**
+     * Get the double value associated with an index.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return The value.
+     *
+     * @throws JSONException If the key is not found or if the value cannot be
+     *                       converted to a number.
+     */
+    public double getDouble(int index) {
+        Object o = get(index);
+        if (o != null) {
+            try {
+                return o instanceof Number ? ((Number) o).doubleValue()
+                    : Double.parseDouble((String) o);
+            } catch (Exception e) {
+                throw new JSONException("JSONArray[" + index + "] is not a number.");
+            }
+        }
+        throw new JSONException("JSONArray[" + index + "] is not a number.");
+    }
+
+    /**
+     * Get the int value associated with an index.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return The value.
+     *
+     * @throws JSONException If the key is not found or if the value cannot be
+     *                       converted to a number. if the value cannot be converted to a
+     *                       number.
+     */
+    public int getInt(int index) {
+        Object o = get(index);
+        if (o != null) {
+            return o instanceof Number ? ((Number) o).intValue() : (int) getDouble(index);
+        }
+        throw new JSONException("JSONArray[" + index + "] is not a number.");
+    }
+
+    /**
+     * Get the JSONArray associated with an index.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return A JSONArray value.
+     *
+     * @throws JSONException If there is no value for the index. or if the value
+     *                       is not a JSONArray
+     */
+    public JSONArray getJSONArray(int index) {
+        Object o = get(index);
+        if (o != null && o instanceof JSONArray) {
+            return (JSONArray) o;
+        }
+        throw new JSONException("JSONArray[" + index + "] is not a JSONArray.");
+    }
+
+    /**
+     * Get the JSONObject associated with an index.
+     *
+     * @param index subscript
+     *
+     * @return A JSONObject value.
+     *
+     * @throws JSONException If there is no value for the index or if the value
+     *                       is not a JSONObject
+     */
+    public JSONObject getJSONObject(int index) {
+        Object o = get(index);
+        if (JSONNull.getInstance()
+            .equals(o)) {
+            return new JSONObject(true);
+        } else if (o instanceof JSONObject) {
+            return (JSONObject) o;
+        }
+        throw new JSONException("JSONArray[" + index + "] is not a JSONObject.");
+    }
+
+    /**
+     * Get the long value associated with an index.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return The value.
+     *
+     * @throws JSONException If the key is not found or if the value cannot be
+     *                       converted to a number.
+     */
+    public long getLong(int index) {
+        Object o = get(index);
+        if (o != null) {
+            return o instanceof Number ? ((Number) o).longValue() : (long) getDouble(index);
+        }
+        throw new JSONException("JSONArray[" + index + "] is not a number.");
+    }
+
+    /**
+     * Get the string associated with an index.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return A string value.
+     *
+     * @throws JSONException If there is no value for the index.
+     */
+    public String getString(int index) {
+        Object o = get(index);
+        if (o != null) {
+            return o.toString();
+        }
+        throw new JSONException("JSONArray[" + index + "] not found.");
+    }
+
+    public int hashCode() {
+        int hashcode = 29;
+
+        for (Iterator e = elements.iterator(); e.hasNext(); ) {
+            Object element = e.next();
+            hashcode += JSONUtils.hashCode(element);
+        }
+        return hashcode;
     }
 
     public boolean equals(Object obj) {
@@ -1862,158 +2140,22 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
     }
 
     /**
-     * Get the object value associated with an index.
+     * Make a JSON text of this JSONArray. For compactness, no unnecessary
+     * whitespace is added. If it is not possible to produce a syntactically
+     * correct JSON text then null will be returned instead. This could occur if
+     * the array contains an invalid number.
+     * <p/>
+     * Warning: This method assumes that the data structure is acyclical.
      *
-     * @param index The index must be between 0 and size() - 1.
-     * @return An object value.
+     * @return a printable, displayable, transmittable representation of the
+     * array.
      */
-    public Object get(int index) {
-      /*
-       * Object o = opt( index ); if( o == null ){ throw new JSONException(
-       * "JSONArray[" + index + "] not found." ); } return o;
-       */
-        return this.elements.get(index);
-    }
-
-    /**
-     * Get the boolean value associated with an index. The string values "true"
-     * and "false" are converted to boolean.
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return The truth.
-     * @throws JSONException If there is no value for the index or if the value
-     *                       is not convertable to boolean.
-     */
-    public boolean getBoolean(int index) {
-        Object o = get(index);
-        if (o != null) {
-            if (o.equals(Boolean.FALSE)
-                || (o instanceof String && ((String) o).equalsIgnoreCase("false"))) {
-                return false;
-            } else if (o.equals(Boolean.TRUE)
-                || (o instanceof String && ((String) o).equalsIgnoreCase("true"))) {
-                return true;
-            }
+    public String toString() {
+        try {
+            return '[' + join(",") + ']';
+        } catch (Exception e) {
+            return null;
         }
-        throw new JSONException("JSONArray[" + index + "] is not a Boolean.");
-    }
-
-    /**
-     * Get the double value associated with an index.
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return The value.
-     * @throws JSONException If the key is not found or if the value cannot be
-     *                       converted to a number.
-     */
-    public double getDouble(int index) {
-        Object o = get(index);
-        if (o != null) {
-            try {
-                return o instanceof Number ? ((Number) o).doubleValue()
-                    : Double.parseDouble((String) o);
-            } catch (Exception e) {
-                throw new JSONException("JSONArray[" + index + "] is not a number.");
-            }
-        }
-        throw new JSONException("JSONArray[" + index + "] is not a number.");
-    }
-
-    /**
-     * Get the int value associated with an index.
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return The value.
-     * @throws JSONException If the key is not found or if the value cannot be
-     *                       converted to a number. if the value cannot be converted to a
-     *                       number.
-     */
-    public int getInt(int index) {
-        Object o = get(index);
-        if (o != null) {
-            return o instanceof Number ? ((Number) o).intValue() : (int) getDouble(index);
-        }
-        throw new JSONException("JSONArray[" + index + "] is not a number.");
-    }
-
-    /**
-     * Get the JSONArray associated with an index.
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return A JSONArray value.
-     * @throws JSONException If there is no value for the index. or if the value
-     *                       is not a JSONArray
-     */
-    public JSONArray getJSONArray(int index) {
-        Object o = get(index);
-        if (o != null && o instanceof JSONArray) {
-            return (JSONArray) o;
-        }
-        throw new JSONException("JSONArray[" + index + "] is not a JSONArray.");
-    }
-
-    /**
-     * Get the JSONObject associated with an index.
-     *
-     * @param index subscript
-     * @return A JSONObject value.
-     * @throws JSONException If there is no value for the index or if the value
-     *                       is not a JSONObject
-     */
-    public JSONObject getJSONObject(int index) {
-        Object o = get(index);
-        if (JSONNull.getInstance()
-            .equals(o)) {
-            return new JSONObject(true);
-        } else if (o instanceof JSONObject) {
-            return (JSONObject) o;
-        }
-        throw new JSONException("JSONArray[" + index + "] is not a JSONObject.");
-    }
-
-    /**
-     * Get the long value associated with an index.
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return The value.
-     * @throws JSONException If the key is not found or if the value cannot be
-     *                       converted to a number.
-     */
-    public long getLong(int index) {
-        Object o = get(index);
-        if (o != null) {
-            return o instanceof Number ? ((Number) o).longValue() : (long) getDouble(index);
-        }
-        throw new JSONException("JSONArray[" + index + "] is not a number.");
-    }
-
-    /**
-     * Get the string associated with an index.
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return A string value.
-     * @throws JSONException If there is no value for the index.
-     */
-    public String getString(int index) {
-        Object o = get(index);
-        if (o != null) {
-            return o.toString();
-        }
-        throw new JSONException("JSONArray[" + index + "] not found.");
-    }
-
-    public int hashCode() {
-        int hashcode = 29;
-
-        for (Iterator e = elements.iterator(); e.hasNext(); ) {
-            Object element = e.next();
-            hashcode += JSONUtils.hashCode(element);
-        }
-        return hashcode;
-    }
-
-    public int indexOf(Object o) {
-        return elements.indexOf(o);
     }
 
     public boolean isArray() {
@@ -2022,282 +2164,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
 
     public boolean isEmpty() {
         return this.elements.isEmpty();
-    }
-
-    public boolean isExpandElements() {
-        return expandElements;
-    }
-
-    /**
-     * Returns an Iterator for this JSONArray
-     */
-    public Iterator iterator() {
-        return new JSONArrayListIterator();
-    }
-
-    /**
-     * Make a string from the contents of this JSONArray. The
-     * <code>separator</code> string is inserted between each element. Warning:
-     * This method assumes that the data structure is acyclical.
-     *
-     * @param separator A string that will be inserted between the elements.
-     * @return a string.
-     * @throws JSONException If the array contains an invalid number.
-     */
-    public String join(String separator) {
-        return join(separator, false);
-    }
-
-    /**
-     * Make a string from the contents of this JSONArray. The
-     * <code>separator</code> string is inserted between each element. Warning:
-     * This method assumes that the data structure is acyclical.
-     *
-     * @param separator A string that will be inserted between the elements.
-     * @return a string.
-     * @throws JSONException If the array contains an invalid number.
-     */
-    public String join(String separator, boolean stripQuotes) {
-        int len = size();
-        StringBuffer sb = new StringBuffer();
-
-        for (int i = 0; i < len; i += 1) {
-            if (i > 0) {
-                sb.append(separator);
-            }
-            String value = JSONUtils.valueToString(this.elements.get(i));
-            sb.append(stripQuotes ? JSONUtils.stripQuotes(value) : value);
-        }
-        return sb.toString();
-    }
-
-    public int lastIndexOf(Object o) {
-        return elements.lastIndexOf(o);
-    }
-
-    public ListIterator listIterator() {
-        return listIterator(0);
-    }
-
-    public ListIterator listIterator(int index) {
-        if (index < 0 || index > size())
-            throw new IndexOutOfBoundsException("Index: " + index);
-
-        return new JSONArrayListIterator(index);
-    }
-
-    /**
-     * Get the optional object value associated with an index.
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return An object value, or null if there is no object at that index.
-     */
-    public Object opt(int index) {
-        return (index < 0 || index >= size()) ? null : this.elements.get(index);
-    }
-
-    /**
-     * Get the optional boolean value associated with an index. It returns false
-     * if there is no value at that index, or if the value is not Boolean.TRUE or
-     * the String "true".
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return The truth.
-     */
-    public boolean optBoolean(int index) {
-        return optBoolean(index, false);
-    }
-
-    /**
-     * Get the optional boolean value associated with an index. It returns the
-     * defaultValue if there is no value at that index or if it is not a Boolean
-     * or the String "true" or "false" (case insensitive).
-     *
-     * @param index        The index must be between 0 and size() - 1.
-     * @param defaultValue A boolean default.
-     * @return The truth.
-     */
-    public boolean optBoolean(int index, boolean defaultValue) {
-        try {
-            return getBoolean(index);
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Get the optional double value associated with an index. NaN is returned if
-     * there is no value for the index, or if the value is not a number and
-     * cannot be converted to a number.
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return The value.
-     */
-    public double optDouble(int index) {
-        return optDouble(index, Double.NaN);
-    }
-
-    /**
-     * Get the optional double value associated with an index. The defaultValue
-     * is returned if there is no value for the index, or if the value is not a
-     * number and cannot be converted to a number.
-     *
-     * @param index        subscript
-     * @param defaultValue The default value.
-     * @return The value.
-     */
-    public double optDouble(int index, double defaultValue) {
-        try {
-            return getDouble(index);
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Get the optional int value associated with an index. Zero is returned if
-     * there is no value for the index, or if the value is not a number and
-     * cannot be converted to a number.
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return The value.
-     */
-    public int optInt(int index) {
-        return optInt(index, 0);
-    }
-
-    /**
-     * Get the optional int value associated with an index. The defaultValue is
-     * returned if there is no value for the index, or if the value is not a
-     * number and cannot be converted to a number.
-     *
-     * @param index        The index must be between 0 and size() - 1.
-     * @param defaultValue The default value.
-     * @return The value.
-     */
-    public int optInt(int index, int defaultValue) {
-        try {
-            return getInt(index);
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Get the optional JSONArray associated with an index.
-     *
-     * @param index subscript
-     * @return A JSONArray value, or null if the index has no value, or if the
-     *         value is not a JSONArray.
-     */
-    public JSONArray optJSONArray(int index) {
-        Object o = opt(index);
-        return o instanceof JSONArray ? (JSONArray) o : null;
-    }
-
-    /**
-     * Get the optional JSONObject associated with an index. Null is returned if
-     * the key is not found, or null if the index has no value, or if the value
-     * is not a JSONObject.
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return A JSONObject value.
-     */
-    public JSONObject optJSONObject(int index) {
-        Object o = opt(index);
-        return o instanceof JSONObject ? (JSONObject) o : null;
-    }
-
-    /**
-     * Get the optional long value associated with an index. Zero is returned if
-     * there is no value for the index, or if the value is not a number and
-     * cannot be converted to a number.
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return The value.
-     */
-    public long optLong(int index) {
-        return optLong(index, 0);
-    }
-
-    /**
-     * Get the optional long value associated with an index. The defaultValue is
-     * returned if there is no value for the index, or if the value is not a
-     * number and cannot be converted to a number.
-     *
-     * @param index        The index must be between 0 and size() - 1.
-     * @param defaultValue The default value.
-     * @return The value.
-     */
-    public long optLong(int index, long defaultValue) {
-        try {
-            return getLong(index);
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Get the optional string value associated with an index. It returns an
-     * empty string if there is no value at that index. If the value is not a
-     * string and is not null, then it is coverted to a string.
-     *
-     * @param index The index must be between 0 and size() - 1.
-     * @return A String value.
-     */
-    public String optString(int index) {
-        return optString(index, "");
-    }
-
-    /**
-     * Get the optional string associated with an index. The defaultValue is
-     * returned if the key is not found.
-     *
-     * @param index        The index must be between 0 and size() - 1.
-     * @param defaultValue The default value.
-     * @return A String value.
-     */
-    public String optString(int index, String defaultValue) {
-        Object o = opt(index);
-        return o != null ? o.toString() : defaultValue;
-    }
-
-    public Object remove(int index) {
-        return elements.remove(index);
-    }
-
-    public boolean remove(Object o) {
-        return elements.remove(o);
-    }
-
-    public boolean removeAll(Collection collection) {
-        return removeAll(collection, new JsonConfig());
-    }
-
-    public boolean removeAll(Collection collection, JsonConfig jsonConfig) {
-        return elements.removeAll(fromObject(collection, jsonConfig));
-    }
-
-    public boolean retainAll(Collection collection) {
-        return retainAll(collection, new JsonConfig());
-    }
-
-    public boolean retainAll(Collection collection, JsonConfig jsonConfig) {
-        return elements.retainAll(fromObject(collection, jsonConfig));
-    }
-
-    public Object set(int index, Object value) {
-        return set(index, value, new JsonConfig());
-    }
-
-    public Object set(int index, Object value, JsonConfig jsonConfig) {
-        Object previous = get(index);
-        element(index, value, jsonConfig);
-        return previous;
-    }
-
-    public void setExpandElements(boolean expandElements) {
-        this.expandElements = expandElements;
     }
 
     /**
@@ -2309,71 +2175,18 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
         return this.elements.size();
     }
 
-    public List subList(int fromIndex, int toIndex) {
-        return elements.subList(fromIndex, toIndex);
-    }
-
-    /**
-     * Produce an Object[] with the contents of this JSONArray.
-     */
-    public Object[] toArray() {
-        return this.elements.toArray();
-    }
-
-    public Object[] toArray(Object[] array) {
-        return elements.toArray(array);
-    }
-
-    /**
-     * Produce a JSONObject by combining a JSONArray of names with the values of
-     * this JSONArray.
-     *
-     * @param names A JSONArray containing a list of key strings. These will be
-     *              paired with the values.
-     * @return A JSONObject, or null if there are no names or if this JSONArray
-     *         has no values.
-     * @throws JSONException If any of the names are null.
-     */
-    public JSONObject toJSONObject(JSONArray names) {
-        if (names == null || names.size() == 0 || size() == 0) {
-            return null;
-        }
-        JSONObject jo = new JSONObject();
-        for (int i = 0; i < names.size(); i++) {
-            jo.element(names.getString(i), this.opt(i));
-        }
-        return jo;
-    }
-
-    /**
-     * Make a JSON text of this JSONArray. For compactness, no unnecessary
-     * whitespace is added. If it is not possible to produce a syntactically
-     * correct JSON text then null will be returned instead. This could occur if
-     * the array contains an invalid number.
-     * <p/>
-     * Warning: This method assumes that the data structure is acyclical.
-     *
-     * @return a printable, displayable, transmittable representation of the
-     *         array.
-     */
-    public String toString() {
-        try {
-            return '[' + join(",") + ']';
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     /**
      * Make a prettyprinted JSON text of this JSONArray. Warning: This method
      * assumes that the data structure is acyclical.
      *
      * @param indentFactor The number of spaces to add to each level of
      *                     indentation.
+     *
      * @return a printable, displayable, transmittable representation of the
-     *         object, beginning with <code>[</code>&nbsp;<small>(left
-     *         bracket)</small> and ending with <code>]</code>&nbsp;<small>(right
-     *         bracket)</small>.
+     * object, beginning with <code>[</code>&nbsp;<small>(left
+     * bracket)</small> and ending with <code>]</code>&nbsp;<small>(right
+     * bracket)</small>.
+     *
      * @throws JSONException
      */
     public String toString(int indentFactor) {
@@ -2390,8 +2203,10 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * @param indentFactor The number of spaces to add to each level of
      *                     indentation.
      * @param indent       The indention of the top level.
+     *
      * @return a printable, displayable, transmittable representation of the
-     *         array.
+     * array.
+     *
      * @throws JSONException
      */
     public String toString(int indentFactor, int indent) {
@@ -2430,6 +2245,316 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
         return sb.toString();
     }
 
+    public boolean isExpandElements() {
+        return expandElements;
+    }
+
+    public void setExpandElements(boolean expandElements) {
+        this.expandElements = expandElements;
+    }
+
+    /**
+     * Make a string from the contents of this JSONArray. The
+     * <code>separator</code> string is inserted between each element. Warning:
+     * This method assumes that the data structure is acyclical.
+     *
+     * @param separator A string that will be inserted between the elements.
+     *
+     * @return a string.
+     *
+     * @throws JSONException If the array contains an invalid number.
+     */
+    public String join(String separator) {
+        return join(separator, false);
+    }
+
+    /**
+     * Make a string from the contents of this JSONArray. The
+     * <code>separator</code> string is inserted between each element. Warning:
+     * This method assumes that the data structure is acyclical.
+     *
+     * @param separator A string that will be inserted between the elements.
+     *
+     * @return a string.
+     *
+     * @throws JSONException If the array contains an invalid number.
+     */
+    public String join(String separator, boolean stripQuotes) {
+        int len = size();
+        StringBuffer sb = new StringBuffer();
+
+        for (int i = 0; i < len; i += 1) {
+            if (i > 0) {
+                sb.append(separator);
+            }
+            String value = JSONUtils.valueToString(this.elements.get(i));
+            sb.append(stripQuotes ? JSONUtils.stripQuotes(value) : value);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Get the optional object value associated with an index.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return An object value, or null if there is no object at that index.
+     */
+    public Object opt(int index) {
+        return (index < 0 || index >= size()) ? null : this.elements.get(index);
+    }
+
+    /**
+     * Get the optional boolean value associated with an index. It returns false
+     * if there is no value at that index, or if the value is not Boolean.TRUE or
+     * the String "true".
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return The truth.
+     */
+    public boolean optBoolean(int index) {
+        return optBoolean(index, false);
+    }
+
+    /**
+     * Get the optional boolean value associated with an index. It returns the
+     * defaultValue if there is no value at that index or if it is not a Boolean
+     * or the String "true" or "false" (case insensitive).
+     *
+     * @param index        The index must be between 0 and size() - 1.
+     * @param defaultValue A boolean default.
+     *
+     * @return The truth.
+     */
+    public boolean optBoolean(int index, boolean defaultValue) {
+        try {
+            return getBoolean(index);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Get the optional double value associated with an index. NaN is returned if
+     * there is no value for the index, or if the value is not a number and
+     * cannot be converted to a number.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return The value.
+     */
+    public double optDouble(int index) {
+        return optDouble(index, Double.NaN);
+    }
+
+    /**
+     * Get the optional double value associated with an index. The defaultValue
+     * is returned if there is no value for the index, or if the value is not a
+     * number and cannot be converted to a number.
+     *
+     * @param index        subscript
+     * @param defaultValue The default value.
+     *
+     * @return The value.
+     */
+    public double optDouble(int index, double defaultValue) {
+        try {
+            return getDouble(index);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Get the optional int value associated with an index. Zero is returned if
+     * there is no value for the index, or if the value is not a number and
+     * cannot be converted to a number.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return The value.
+     */
+    public int optInt(int index) {
+        return optInt(index, 0);
+    }
+
+    /**
+     * Get the optional int value associated with an index. The defaultValue is
+     * returned if there is no value for the index, or if the value is not a
+     * number and cannot be converted to a number.
+     *
+     * @param index        The index must be between 0 and size() - 1.
+     * @param defaultValue The default value.
+     *
+     * @return The value.
+     */
+    public int optInt(int index, int defaultValue) {
+        try {
+            return getInt(index);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Get the optional JSONArray associated with an index.
+     *
+     * @param index subscript
+     *
+     * @return A JSONArray value, or null if the index has no value, or if the
+     * value is not a JSONArray.
+     */
+    public JSONArray optJSONArray(int index) {
+        Object o = opt(index);
+        return o instanceof JSONArray ? (JSONArray) o : null;
+    }
+
+    /**
+     * Get the optional JSONObject associated with an index. Null is returned if
+     * the key is not found, or null if the index has no value, or if the value
+     * is not a JSONObject.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return A JSONObject value.
+     */
+    public JSONObject optJSONObject(int index) {
+        Object o = opt(index);
+        return o instanceof JSONObject ? (JSONObject) o : null;
+    }
+
+    /**
+     * Get the optional long value associated with an index. Zero is returned if
+     * there is no value for the index, or if the value is not a number and
+     * cannot be converted to a number.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return The value.
+     */
+    public long optLong(int index) {
+        return optLong(index, 0);
+    }
+
+    /**
+     * Get the optional long value associated with an index. The defaultValue is
+     * returned if there is no value for the index, or if the value is not a
+     * number and cannot be converted to a number.
+     *
+     * @param index        The index must be between 0 and size() - 1.
+     * @param defaultValue The default value.
+     *
+     * @return The value.
+     */
+    public long optLong(int index, long defaultValue) {
+        try {
+            return getLong(index);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Get the optional string value associated with an index. It returns an
+     * empty string if there is no value at that index. If the value is not a
+     * string and is not null, then it is coverted to a string.
+     *
+     * @param index The index must be between 0 and size() - 1.
+     *
+     * @return A String value.
+     */
+    public String optString(int index) {
+        return optString(index, "");
+    }
+
+    /**
+     * Get the optional string associated with an index. The defaultValue is
+     * returned if the key is not found.
+     *
+     * @param index        The index must be between 0 and size() - 1.
+     * @param defaultValue The default value.
+     *
+     * @return A String value.
+     */
+    public String optString(int index, String defaultValue) {
+        Object o = opt(index);
+        return o != null ? o.toString() : defaultValue;
+    }
+
+    public boolean removeAll(Collection collection, JsonConfig jsonConfig) {
+        return elements.removeAll(fromObject(collection, jsonConfig));
+    }
+
+    public boolean retainAll(Collection collection, JsonConfig jsonConfig) {
+        return elements.retainAll(fromObject(collection, jsonConfig));
+    }
+
+    public Object set(int index, Object value, JsonConfig jsonConfig) {
+        Object previous = get(index);
+        element(index, value, jsonConfig);
+        return previous;
+    }
+
+    /**
+     * Produce a JSONObject by combining a JSONArray of names with the values of
+     * this JSONArray.
+     *
+     * @param names A JSONArray containing a list of key strings. These will be
+     *              paired with the values.
+     *
+     * @return A JSONObject, or null if there are no names or if this JSONArray
+     * has no values.
+     *
+     * @throws JSONException If any of the names are null.
+     */
+    public JSONObject toJSONObject(JSONArray names) {
+        if (names == null || names.size() == 0 || size() == 0) {
+            return null;
+        }
+        JSONObject jo = new JSONObject();
+        for (int i = 0; i < names.size(); i++) {
+            jo.element(names.getString(i), this.opt(i));
+        }
+        return jo;
+    }
+
+    /**
+     * Adds a String without performing any conversion on it.
+     */
+    protected JSONArray addString(String str) {
+        if (str != null) {
+            elements.add(str);
+        }
+        return this;
+    }
+
+    /**
+     * Append an object value. This increases the array's length by one.
+     *
+     * @param value An object value. The value should be a Boolean, Double,
+     *              Integer, JSONArray, JSONObject, JSONFunction, Long, String,
+     *              JSONString or the JSONNull object.
+     *
+     * @return this.
+     */
+    private JSONArray _addValue(Object value, JsonConfig jsonConfig) {
+        this.elements.add(value);
+        return this;
+    }
+
+    protected Object _processValue(Object value, JsonConfig jsonConfig) {
+        if (value instanceof JSONTokener) {
+            return _fromJSONTokener((JSONTokener) value, jsonConfig);
+        } else if (value != null && Enum.class.isAssignableFrom(value.getClass())) {
+            return ((Enum) value).name();
+        } else if (value instanceof Annotation || (value != null && value.getClass()
+            .isAnnotation())) {
+            throw new JSONException("Unsupported type");
+        }
+        return super._processValue(value, jsonConfig);
+    }
+
     protected void write(Writer writer, WritingVisitor visitor) throws IOException {
         boolean b = false;
         int len = size();
@@ -2452,46 +2577,12 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
     }
 
     /**
-     * Adds a String without performing any conversion on it.
-     */
-    protected JSONArray addString(String str) {
-        if (str != null) {
-            elements.add(str);
-        }
-        return this;
-    }
-
-    /**
      * Append an object value. This increases the array's length by one.
      *
      * @param value An object value. The value should be a Boolean, Double,
      *              Integer, JSONArray, JSONObject, JSONFunction, Long, String,
      *              JSONString or the JSONNull object.
-     * @return this.
-     */
-    private JSONArray _addValue(Object value, JsonConfig jsonConfig) {
-        this.elements.add(value);
-        return this;
-    }
-
-    protected Object _processValue(Object value, JsonConfig jsonConfig) {
-        if (value instanceof JSONTokener) {
-            return _fromJSONTokener((JSONTokener) value, jsonConfig);
-        } else if (value != null && Enum.class.isAssignableFrom(value.getClass())) {
-            return ((Enum) value).name();
-        } else if (value instanceof Annotation || (value != null && value.getClass()
-            .isAnnotation())) {
-            throw new JSONException("Unsupported type");
-        }
-        return super._processValue(value, jsonConfig);
-    }
-
-    /**
-     * Append an object value. This increases the array's length by one.
      *
-     * @param value An object value. The value should be a Boolean, Double,
-     *              Integer, JSONArray, JSONObject, JSONFunction, Long, String,
-     *              JSONString or the JSONNull object.
      * @return this.
      */
     private JSONArray addValue(Object value, JsonConfig jsonConfig) {
@@ -2537,20 +2628,6 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
             }
         }
 
-        public void remove() {
-            if (lastIndex == -1)
-                throw new IllegalStateException();
-            try {
-                JSONArray.this.remove(lastIndex);
-                if (lastIndex < currentIndex) {
-                    currentIndex--;
-                }
-                lastIndex = -1;
-            } catch (IndexOutOfBoundsException e) {
-                throw new ConcurrentModificationException();
-            }
-        }
-
         public boolean hasPrevious() {
             return currentIndex != 0;
         }
@@ -2572,6 +2649,19 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
 
         public int previousIndex() {
             return currentIndex - 1;
+        }
+
+        public void remove() {
+            if (lastIndex == -1) { throw new IllegalStateException(); }
+            try {
+                JSONArray.this.remove(lastIndex);
+                if (lastIndex < currentIndex) {
+                    currentIndex--;
+                }
+                lastIndex = -1;
+            } catch (IndexOutOfBoundsException e) {
+                throw new ConcurrentModificationException();
+            }
         }
 
         public void set(Object obj) {

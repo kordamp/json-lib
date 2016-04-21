@@ -89,9 +89,9 @@ import java.util.Set;
  * <p/>
  * <pre>
  *     myString = new JSONObject().put("JSON", "Hello, World!").toString();</pre>
- *
+ * <p/>
  * produces the string <code>{"JSON": "Hello, World"}</code>.
- *
+ * <p/>
  * The texts produced by the <code>toString</code> methods strictly conform to
  * the JSON syntax rules. The constructors are more forgiving in the texts they
  * will accept:
@@ -118,7 +118,30 @@ import java.util.Set;
  * @author JSON.org
  */
 public final class JSONObject extends AbstractJSON implements JSON, Map<String, Object>, Comparable {
-    private static final Logger log = LoggerFactory.getLogger(JSONObject.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JSONObject.class);
+    /**
+     * identifies this object as null
+     */
+    private boolean nullObject;
+    /**
+     * The Map where the JSONObject's properties are kept.
+     */
+    private Map properties;
+
+    /**
+     * Construct an empty JSONObject.
+     */
+    public JSONObject() {
+        this.properties = new ListOrderedMap();
+    }
+
+    /**
+     * Creates a JSONObject that is null.
+     */
+    public JSONObject(boolean isNull) {
+        this();
+        this.nullObject = isNull;
+    }
 
     /**
      * Creates a JSONObject.<br>
@@ -126,6 +149,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * Accepts JSON formatted strings, Maps, DynaBeans and JavaBeans.
      *
      * @param object
+     *
      * @throws JSONException if the object can not be converted to a proper
      *                       JSONObject.
      */
@@ -140,6 +164,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * Accepts JSON formatted strings, Maps, DynaBeans and JavaBeans.
      *
      * @param object
+     *
      * @throws JSONException if the object can not be converted to a proper
      *                       JSONObject.
      */
@@ -170,13 +195,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         } else {
             return _fromBean(object, jsonConfig);
         }
-    }
-
-    /**
-     * Creates a JSONDynaBean from a JSONObject.
-     */
-    public Object toBean() {
-        return toBean(this);
     }
 
     public static Object toBean(JSONObject jsonObject) {
@@ -210,7 +228,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
                 } else {
                     if (type.isPrimitive()) {
                         // assume assigned default value
-                        log.warn("Tried to assign null value to " + key + ":" + type.getName());
+                        LOG.warn("Tried to assign null value to " + key + ":" + type.getName());
                         dynaBean.set(key, JSONUtils.getMorpherRegistry()
                             .morph(type, null));
                     } else {
@@ -225,10 +243,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         }
 
         return dynaBean;
-    }
-
-    public Object toBean(Class beanClass) {
-        return toBean(this, beanClass);
     }
 
     /**
@@ -258,118 +272,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         jsonConfig.setClassMap(classMap);
         return toBean(jsonObject, jsonConfig);
     }
-
-    private interface Property {
-        boolean isWritable();
-
-        Class getPropertyType();
-
-        String name();
-
-        void set(Object bean, Object value, JsonConfig jsonConfig) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
-    }
-
-    private static class PropertyOnMap implements Property {
-        private final String name;
-
-        private PropertyOnMap(String name) {
-            this.name = name;
-        }
-
-        public boolean isWritable() {
-            return true;
-        }
-
-        public String name() {
-            return name;
-        }
-
-        public Class getPropertyType() {
-            return Object.class;
-        }
-
-        public void set(Object bean, Object value, JsonConfig jsonConfig) {
-            ((Map) bean).put(name, value);
-        }
-    }
-
-    private static class MethodProperty implements Property {
-        private final PropertyDescriptor pd;
-
-        private MethodProperty(PropertyDescriptor pd) {
-            this.pd = pd;
-        }
-
-        public boolean isWritable() {
-            return pd.getWriteMethod() != null;
-        }
-
-        public String name() {
-            return pd.getName();
-        }
-
-        public Class getPropertyType() {
-            return pd.getPropertyType();
-        }
-
-        public void set(Object bean, Object value, JsonConfig jsonConfig) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-            PropertyUtils.setSimpleProperty(bean, pd.getName(), value);
-        }
-    }
-
-    private static class FieldProperty implements Property {
-        private final Field f;
-
-        private FieldProperty(Field f) {
-            this.f = f;
-        }
-
-        public boolean isWritable() {
-            return true;
-        }
-
-        public Class getPropertyType() {
-            return f.getType();
-        }
-
-        public String name() {
-            return f.getName();
-        }
-
-        public void set(Object bean, Object value, JsonConfig jsonConfig) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-            f.set(bean, value);
-        }
-    }
-
-    /**
-     * Uses {@link PropertySetStrategy} instead of the normal set method.
-     */
-    private static class PropertySetterStrategyDecorator implements Property {
-        private final Property inner;
-        private final PropertySetStrategy strategy;
-
-        private PropertySetterStrategyDecorator(Property inner, PropertySetStrategy strategy) {
-            this.inner = inner;
-            this.strategy = strategy;
-        }
-
-        public boolean isWritable() {
-            return inner.isWritable();
-        }
-
-        public Class getPropertyType() {
-            return inner.getPropertyType();
-        }
-
-        public String name() {
-            return inner.name();
-        }
-
-        public void set(Object bean, Object value, JsonConfig jsonConfig) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-            strategy.setProperty(bean, name(), value, jsonConfig);
-        }
-    }
-
 
     /**
      * Creates a bean from a JSONObject, with the specific configuration.
@@ -410,18 +312,15 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
             : JSONUtils.convertToJavaIdentifier(key, jsonConfig);
 
         try {
-            if (!jsonConfig.isIgnorePublicFields())
-                return new FieldProperty(bean.getClass().getField(key));
+            if (!jsonConfig.isIgnorePublicFields()) { return new FieldProperty(bean.getClass().getField(key)); }
         } catch (NoSuchFieldException e) {
             // fall through
         }
 
         PropertyDescriptor pd = PropertyUtils.getPropertyDescriptor(bean, key);
-        if (pd != null)
-            return new MethodProperty(pd);
+        if (pd != null) { return new MethodProperty(pd); }
 
-        if (Map.class.isAssignableFrom(beanClass))
-            return new PropertyOnMap(key);
+        if (Map.class.isAssignableFrom(beanClass)) { return new PropertyOnMap(key); }
 
         return null;
     }
@@ -462,11 +361,12 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
                 Property pd = getProperty(rootClass, bean, key, jsonConfig);
                 if (pd != null) {
                     if (!pd.isWritable()) {
-                        log.info("Property '" + key + "' of " + bean.getClass() + " has no write method. SKIPPED.");
+                        LOG.info("Property '" + key + "' of " + bean.getClass() + " has no write method. SKIPPED.");
                         continue;
                     }
-                    if (jsonConfig.getPropertySetStrategy() != null)
+                    if (jsonConfig.getPropertySetStrategy() != null) {
                         pd = new PropertySetterStrategyDecorator(pd, jsonConfig.getPropertySetStrategy());
+                    }
 
                     Class targetType = pd.getPropertyType();
                     if (!JSONUtils.isNull(value)) {
@@ -496,7 +396,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
                             } else if (beanClass == null || bean instanceof Map) {
                                 pd.set(bean, value, jsonConfig);
                             } else {
-                                log.warn("Tried to assign property " + key + ":" + type.getName()
+                                LOG.warn("Tried to assign property " + key + ":" + type.getName()
                                     + " to bean of class " + bean.getClass()
                                     .getName());
                             }
@@ -537,7 +437,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
                     } else {
                         if (type.isPrimitive()) {
                             // assume assigned default value
-                            log.warn("Tried to assign null value to " + key + ":" + type.getName());
+                            LOG.warn("Tried to assign null value to " + key + ":" + type.getName());
                             pd.set(bean, JSONUtils.getMorpherRegistry()
                                 .morph(type, null), jsonConfig);
                         } else {
@@ -556,7 +456,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
                                 !jsonConfig.isIgnorePublicFields()) {
                                 setProperty(bean, name, value, jsonConfig);
                             } else {
-                                log.warn("Tried to assign property " + key + ":" + type.getName()
+                                LOG.warn("Tried to assign property " + key + ":" + type.getName()
                                     + " to bean of class " + bean.getClass()
                                     .getName());
                             }
@@ -574,7 +474,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
                     } else {
                         if (type.isPrimitive()) {
                             // assume assigned default value
-                            log.warn("Tried to assign null value to " + key + ":" + type.getName());
+                            LOG.warn("Tried to assign null value to " + key + ":" + type.getName());
                             setProperty(bean, name, JSONUtils.getMorpherRegistry()
                                 .morph(type, null), jsonConfig);
                         } else {
@@ -597,6 +497,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * Supports nested maps, POJOs, and arrays/collections.
      *
      * @param bean An object with POJO conventions
+     *
      * @throws JSONException if the bean can not be converted to a proper
      *                       JSONObject.
      */
@@ -677,7 +578,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
                     // bug 2565295
                     String warning = "Property '" + key + "' of " + beanClass + " has no read method. SKIPPED";
                     fireWarnEvent(warning, jsonConfig);
-                    log.info(warning);
+                    LOG.info(warning);
                     continue;
                 }
                 if (pds[i].getReadMethod() != null) {
@@ -694,7 +595,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
                   }
                }
                */
-                    if (isTransient(pds[i].getReadMethod(), jsonConfig)) continue;
+                    if (isTransient(pds[i].getReadMethod(), jsonConfig)) { continue; }
 
                     Object value = PropertyUtils.getProperty(bean, key);
                     if (jsonPropertyFilter != null && jsonPropertyFilter.apply(bean, key, value)) {
@@ -716,7 +617,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
                 } else {
                     String warning = "Property '" + key + "' of " + beanClass + " has no read method. SKIPPED";
                     fireWarnEvent(warning, jsonConfig);
-                    log.info(warning);
+                    LOG.info(warning);
                 }
             }
             // inspect public fields, this operation may fail under
@@ -761,7 +662,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
                     }
                 }
             } catch (Exception e) {
-                log.trace("Couldn't read public fields.", e);
+                LOG.trace("Couldn't read public fields.", e);
             }
         } catch (JSONException jsone) {
             removeInstance(bean);
@@ -1212,40 +1113,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         return JSONArray.toCollection((JSONArray) value, jsc);
     }
 
-   /*
-   private static Collection convertPropertyValueToCollection( String key, Object value, JsonConfig jsonConfig,
-         String name, Map classMap, Object bean ) {
-      Class targetClass = findTargetClass( key, classMap );
-      targetClass = targetClass == null ? findTargetClass( name, classMap ) : targetClass;
-
-      PropertyDescriptor pd;
-      try{
-         pd = PropertyUtils.getPropertyDescriptor( bean, key );
-      }catch( IllegalAccessException e ){
-         throw new JSONException( e );
-      }catch( InvocationTargetException e ){
-         throw new JSONException( e );
-      }catch( NoSuchMethodException e ){
-         throw new JSONException( e );
-      }
-
-      if( null == targetClass ){
-         Class[] cType = JSONArray.getCollectionType( pd, false );
-         if( null != cType && cType.length == 1 ){
-            targetClass = cType[0];
-         }
-      }
-
-      JsonConfig jsc = jsonConfig.copy();
-      jsc.setRootClass( targetClass );
-      jsc.setClassMap( classMap );
-      jsc.setCollectionType( pd.getPropertyType() );
-      jsc.setEnclosedType( targetClass );
-      Collection collection = JSONArray.toCollection( (JSONArray) value, jsonConfig );
-      return collection;
-   }
-   */
-
     private static Class resolveClass(Map classMap, String key, String name, Class type) {
         Class targetClass = findTargetClass(key, classMap);
         if (targetClass == null) {
@@ -1294,17 +1161,51 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         try {
             return isTransientField(beanClass.getDeclaredField(name), jsonConfig);
         } catch (Exception e) {
-            log.info("Error while inspecting field " + beanClass + "." + name + " for transient status.", e);
+            LOG.info("Error while inspecting field " + beanClass + "." + name + " for transient status.", e);
         }
         return false;
     }
 
+   /*
+   private static Collection convertPropertyValueToCollection( String key, Object value, JsonConfig jsonConfig,
+         String name, Map classMap, Object bean ) {
+      Class targetClass = findTargetClass( key, classMap );
+      targetClass = targetClass == null ? findTargetClass( name, classMap ) : targetClass;
+
+      PropertyDescriptor pd;
+      try{
+         pd = PropertyUtils.getPropertyDescriptor( bean, key );
+      }catch( IllegalAccessException e ){
+         throw new JSONException( e );
+      }catch( InvocationTargetException e ){
+         throw new JSONException( e );
+      }catch( NoSuchMethodException e ){
+         throw new JSONException( e );
+      }
+
+      if( null == targetClass ){
+         Class[] cType = JSONArray.getCollectionType( pd, false );
+         if( null != cType && cType.length == 1 ){
+            targetClass = cType[0];
+         }
+      }
+
+      JsonConfig jsc = jsonConfig.copy();
+      jsc.setRootClass( targetClass );
+      jsc.setClassMap( classMap );
+      jsc.setCollectionType( pd.getPropertyType() );
+      jsc.setEnclosedType( targetClass );
+      Collection collection = JSONArray.toCollection( (JSONArray) value, jsonConfig );
+      return collection;
+   }
+   */
+
     private static boolean isTransientField(Field field, JsonConfig jsonConfig) {
         try {
-            if ((field.getModifiers() & Modifier.TRANSIENT) == Modifier.TRANSIENT) return true;
+            if ((field.getModifiers() & Modifier.TRANSIENT) == Modifier.TRANSIENT) { return true; }
             return isTransient(field, jsonConfig);
         } catch (Exception e) {
-            log.info("Error while inspecting field " + field + " for transient status.", e);
+            LOG.info("Error while inspecting field " + field + " for transient status.", e);
         }
         return false;
     }
@@ -1313,9 +1214,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         for (Iterator annotations = jsonConfig.getIgnoreFieldAnnotations().iterator(); annotations.hasNext(); ) {
             try {
                 String annotationClassName = (String) annotations.next();
-                if (element.getAnnotation((Class) Class.forName(annotationClassName)) != null) return true;
+                if (element.getAnnotation((Class) Class.forName(annotationClassName)) != null) { return true; }
             } catch (Exception e) {
-                log.info("Error while inspecting " + element + " for transient status.", e);
+                LOG.info("Error while inspecting " + element + " for transient status.", e);
             }
         }
         return false;
@@ -1326,7 +1227,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
             .getMorpherFor(targetType);
         if (IdentityObjectMorpher.getInstance()
             .equals(morpher)) {
-            log.warn("Can't transform property '" + key + "' from " + type.getName() + " into "
+            LOG.warn("Can't transform property '" + key + "' from " + type.getName() + " into "
                 + targetType.getName() + ". Will register a default Morpher");
             if (Enum.class.isAssignableFrom(targetType)) {
                 JSONUtils.getMorpherRegistry()
@@ -1392,31 +1293,15 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         firePropertySetEvent(key, value, accumulated, jsonConfig);
     }
 
-    // ------------------------------------------------------
-
     /**
-     * identifies this object as null
+     * Creates a JSONDynaBean from a JSONObject.
      */
-    private boolean nullObject;
-
-    /**
-     * The Map where the JSONObject's properties are kept.
-     */
-    private Map properties;
-
-    /**
-     * Construct an empty JSONObject.
-     */
-    public JSONObject() {
-        this.properties = new ListOrderedMap();
+    public Object toBean() {
+        return toBean(this);
     }
 
-    /**
-     * Creates a JSONObject that is null.
-     */
-    public JSONObject(boolean isNull) {
-        this();
-        this.nullObject = isNull;
+    public Object toBean(Class beanClass) {
+        return toBean(this, beanClass);
     }
 
     /**
@@ -1428,7 +1313,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value An object to be accumulated under the key.
+     *
      * @return this.
+     *
      * @throws JSONException If the value is an invalid number or if the key is
      *                       null.
      */
@@ -1436,6 +1323,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         return _accumulate(key, value ? Boolean.TRUE : Boolean.FALSE, new JsonConfig());
     }
 
+    // ------------------------------------------------------
+
     /**
      * Accumulate values under a key. It is similar to the element method except
      * that if there is already an object stored under the key then a JSONArray
@@ -1445,7 +1334,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value An object to be accumulated under the key.
+     *
      * @return this.
+     *
      * @throws JSONException If the value is an invalid number or if the key is
      *                       null.
      */
@@ -1462,7 +1353,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value An object to be accumulated under the key.
+     *
      * @return this.
+     *
      * @throws JSONException If the value is an invalid number or if the key is
      *                       null.
      */
@@ -1479,7 +1372,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value An object to be accumulated under the key.
+     *
      * @return this.
+     *
      * @throws JSONException If the value is an invalid number or if the key is
      *                       null.
      */
@@ -1496,7 +1391,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value An object to be accumulated under the key.
+     *
      * @return this.
+     *
      * @throws JSONException If the value is an invalid number or if the key is
      *                       null.
      */
@@ -1513,7 +1410,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value An object to be accumulated under the key.
+     *
      * @return this.
+     *
      * @throws JSONException If the value is an invalid number or if the key is
      *                       null.
      */
@@ -1545,10 +1444,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         }
     }
 
-    public void clear() {
-        properties.clear();
-    }
-
     public int compareTo(Object obj) {
         if (obj != null && (obj instanceof JSONObject)) {
             JSONObject other = (JSONObject) obj;
@@ -1573,6 +1468,46 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         return containsValue(value, new JsonConfig());
     }
 
+    public Object get(Object key) {
+        if (key instanceof String) {
+            return get((String) key);
+        }
+        return null;
+    }
+
+    public Object put(String key, Object value) {
+        if (key == null) {
+            throw new IllegalArgumentException("key is null.");
+        }
+        Object previous = properties.get(key);
+        element(String.valueOf(key), value);
+        return previous;
+    }
+
+    public Object remove(Object key) {
+        return properties.remove(key);
+    }
+
+    public void putAll(Map map) {
+        putAll(map, new JsonConfig());
+    }
+
+    public void clear() {
+        properties.clear();
+    }
+
+    public Set keySet() {
+        return Collections.unmodifiableSet(properties.keySet());
+    }
+
+    public Collection values() {
+        return Collections.unmodifiableCollection(properties.values());
+    }
+
+    public Set entrySet() {
+        return Collections.unmodifiableSet(properties.entrySet());
+    }
+
     public boolean containsValue(Object value, JsonConfig jsonConfig) {
         try {
             value = processValue(value, jsonConfig);
@@ -1586,6 +1521,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * Remove a name and its value, if present.
      *
      * @param key A key string.
+     *
      * @return this.
      */
     public JSONObject discard(String key) {
@@ -1599,7 +1535,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value A boolean which is the value.
+     *
      * @return this.
+     *
      * @throws JSONException If the key is null.
      */
     public JSONObject element(String key, boolean value) {
@@ -1613,7 +1551,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value A Collection value.
+     *
      * @return this.
+     *
      * @throws JSONException
      */
     public JSONObject element(String key, Collection value) {
@@ -1626,7 +1566,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value A Collection value.
+     *
      * @return this.
+     *
      * @throws JSONException
      */
     public JSONObject element(String key, Collection value, JsonConfig jsonConfig) {
@@ -1641,7 +1583,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value A double which is the value.
+     *
      * @return this.
+     *
      * @throws JSONException If the key is null or if the number is invalid.
      */
     public JSONObject element(String key, double value) {
@@ -1656,7 +1600,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value An int which is the value.
+     *
      * @return this.
+     *
      * @throws JSONException If the key is null.
      */
     public JSONObject element(String key, int value) {
@@ -1669,7 +1615,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value A long which is the value.
+     *
      * @return this.
+     *
      * @throws JSONException If the key is null.
      */
     public JSONObject element(String key, long value) {
@@ -1683,7 +1631,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value A Map value.
+     *
      * @return this.
+     *
      * @throws JSONException
      */
     public JSONObject element(String key, Map value) {
@@ -1696,7 +1646,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param key   A key string.
      * @param value A Map value.
+     *
      * @return this.
+     *
      * @throws JSONException
      */
     public JSONObject element(String key, Map value, JsonConfig jsonConfig) {
@@ -1717,7 +1669,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * @param value An object which is the value. It should be of one of these
      *              types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
      *              String, or the JSONNull object.
+     *
      * @return this.
+     *
      * @throws JSONException If the value is non-finite number or if the key is
      *                       null.
      */
@@ -1734,7 +1688,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * @param value An object which is the value. It should be of one of these
      *              types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
      *              String, or the JSONNull object.
+     *
      * @return this.
+     *
      * @throws JSONException If the value is non-finite number or if the key is
      *                       null.
      */
@@ -1760,7 +1716,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * @param value An object which is the value. It should be of one of these
      *              types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
      *              String, or the JSONNull object.
+     *
      * @return this.
+     *
      * @throws JSONException If the value is a non-finite number.
      */
     public JSONObject elementOpt(String key, Object value) {
@@ -1775,7 +1733,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * @param value An object which is the value. It should be of one of these
      *              types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
      *              String, or the JSONNull object.
+     *
      * @return this.
+     *
      * @throws JSONException If the value is a non-finite number.
      */
     public JSONObject elementOpt(String key, Object value, JsonConfig jsonConfig) {
@@ -1786,8 +1746,194 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         return this;
     }
 
-    public Set entrySet() {
-        return Collections.unmodifiableSet(properties.entrySet());
+    /**
+     * Get the value object associated with a key.
+     *
+     * @param key A key string.
+     *
+     * @return The object associated with the key.
+     *
+     * @throws JSONException if this.isNull() returns true.
+     */
+    public Object get(String key) {
+        verifyIsNull();
+        return this.properties.get(key);
+    }
+
+    /**
+     * Get the boolean value associated with a key.
+     *
+     * @param key A key string.
+     *
+     * @return The truth.
+     *
+     * @throws JSONException if the value is not a Boolean or the String "true"
+     *                       or "false".
+     */
+    public boolean getBoolean(String key) {
+        verifyIsNull();
+        Object o = get(key);
+        if (o != null) {
+            if (o.equals(Boolean.FALSE)
+                || (o instanceof String && ((String) o).equalsIgnoreCase("false"))) {
+                return false;
+            } else if (o.equals(Boolean.TRUE)
+                || (o instanceof String && ((String) o).equalsIgnoreCase("true"))) {
+                return true;
+            }
+        }
+        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a Boolean.");
+    }
+
+    /**
+     * Get the double value associated with a key.
+     *
+     * @param key A key string.
+     *
+     * @return The numeric value.
+     *
+     * @throws JSONException if the key is not found or if the value is not a
+     *                       Number object and cannot be converted to a number.
+     */
+    public double getDouble(String key) {
+        verifyIsNull();
+        Object o = get(key);
+        if (o != null) {
+            try {
+                return o instanceof Number ? ((Number) o).doubleValue()
+                    : Double.parseDouble((String) o);
+            } catch (Exception e) {
+                throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a number.");
+            }
+        }
+        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a number.");
+    }
+
+    /**
+     * Get the int value associated with a key. If the number value is too large
+     * for an int, it will be clipped.
+     *
+     * @param key A key string.
+     *
+     * @return The integer value.
+     *
+     * @throws JSONException if the key is not found or if the value cannot be
+     *                       converted to an integer.
+     */
+    public int getInt(String key) {
+        verifyIsNull();
+        Object o = get(key);
+        if (o != null) {
+            return o instanceof Number ? ((Number) o).intValue() : (int) getDouble(key);
+        }
+        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a number.");
+    }
+
+    /**
+     * Get the JSONArray value associated with a key.
+     *
+     * @param key A key string.
+     *
+     * @return A JSONArray which is the value.
+     *
+     * @throws JSONException if the key is not found or if the value is not a
+     *                       JSONArray.
+     */
+    public JSONArray getJSONArray(String key) {
+        verifyIsNull();
+        Object o = get(key);
+        if (o != null && o instanceof JSONArray) {
+            return (JSONArray) o;
+        }
+        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a JSONArray.");
+    }
+
+    /**
+     * Get the JSONObject value associated with a key.
+     *
+     * @param key A key string.
+     *
+     * @return A JSONObject which is the value.
+     *
+     * @throws JSONException if the key is not found or if the value is not a
+     *                       JSONObject.
+     */
+    public JSONObject getJSONObject(String key) {
+        verifyIsNull();
+        Object o = get(key);
+        if (JSONNull.getInstance()
+            .equals(o)) {
+            return new JSONObject(true);
+        } else if (o instanceof JSONObject) {
+            return (JSONObject) o;
+        }
+        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a JSONObject.");
+    }
+
+    /**
+     * Get the long value associated with a key. If the number value is too long
+     * for a long, it will be clipped.
+     *
+     * @param key A key string.
+     *
+     * @return The long value.
+     *
+     * @throws JSONException if the key is not found or if the value cannot be
+     *                       converted to a long.
+     */
+    public long getLong(String key) {
+        verifyIsNull();
+        Object o = get(key);
+        if (o != null) {
+            return o instanceof Number ? ((Number) o).longValue() : (long) getDouble(key);
+        }
+        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a number.");
+    }
+
+    /**
+     * Get the string associated with a key.
+     *
+     * @param key A key string.
+     *
+     * @return A string which is the value.
+     *
+     * @throws JSONException if the key is not found.
+     */
+    public String getString(String key) {
+        verifyIsNull();
+        Object o = get(key);
+        if (o != null) {
+            return o.toString();
+        }
+        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] not found.");
+    }
+
+    /**
+     * Determine if the JSONObject contains a specific key.
+     *
+     * @param key A key string.
+     *
+     * @return true if the key exists in the JSONObject.
+     */
+    public boolean has(String key) {
+        verifyIsNull();
+        return this.properties.containsKey(key);
+    }
+
+    public int hashCode() {
+        int hashcode = 19;
+        if (isNullObject()) {
+            return hashcode + JSONNull.getInstance()
+                .hashCode();
+        }
+        for (Iterator entries = properties.entrySet()
+            .iterator(); entries.hasNext(); ) {
+            Map.Entry entry = (Map.Entry) entries.next();
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+            hashcode += key.hashCode() + JSONUtils.hashCode(value);
+        }
+        return hashcode;
     }
 
     public boolean equals(Object obj) {
@@ -1896,519 +2042,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         return true;
     }
 
-    public Object get(Object key) {
-        if (key instanceof String) {
-            return get((String) key);
-        }
-        return null;
-    }
-
-    /**
-     * Get the value object associated with a key.
-     *
-     * @param key A key string.
-     * @return The object associated with the key.
-     * @throws JSONException if this.isNull() returns true.
-     */
-    public Object get(String key) {
-        verifyIsNull();
-        return this.properties.get(key);
-    }
-
-    /**
-     * Get the boolean value associated with a key.
-     *
-     * @param key A key string.
-     * @return The truth.
-     * @throws JSONException if the value is not a Boolean or the String "true"
-     *                       or "false".
-     */
-    public boolean getBoolean(String key) {
-        verifyIsNull();
-        Object o = get(key);
-        if (o != null) {
-            if (o.equals(Boolean.FALSE)
-                || (o instanceof String && ((String) o).equalsIgnoreCase("false"))) {
-                return false;
-            } else if (o.equals(Boolean.TRUE)
-                || (o instanceof String && ((String) o).equalsIgnoreCase("true"))) {
-                return true;
-            }
-        }
-        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a Boolean.");
-    }
-
-    /**
-     * Get the double value associated with a key.
-     *
-     * @param key A key string.
-     * @return The numeric value.
-     * @throws JSONException if the key is not found or if the value is not a
-     *                       Number object and cannot be converted to a number.
-     */
-    public double getDouble(String key) {
-        verifyIsNull();
-        Object o = get(key);
-        if (o != null) {
-            try {
-                return o instanceof Number ? ((Number) o).doubleValue()
-                    : Double.parseDouble((String) o);
-            } catch (Exception e) {
-                throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a number.");
-            }
-        }
-        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a number.");
-    }
-
-    /**
-     * Get the int value associated with a key. If the number value is too large
-     * for an int, it will be clipped.
-     *
-     * @param key A key string.
-     * @return The integer value.
-     * @throws JSONException if the key is not found or if the value cannot be
-     *                       converted to an integer.
-     */
-    public int getInt(String key) {
-        verifyIsNull();
-        Object o = get(key);
-        if (o != null) {
-            return o instanceof Number ? ((Number) o).intValue() : (int) getDouble(key);
-        }
-        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a number.");
-    }
-
-    /**
-     * Get the JSONArray value associated with a key.
-     *
-     * @param key A key string.
-     * @return A JSONArray which is the value.
-     * @throws JSONException if the key is not found or if the value is not a
-     *                       JSONArray.
-     */
-    public JSONArray getJSONArray(String key) {
-        verifyIsNull();
-        Object o = get(key);
-        if (o != null && o instanceof JSONArray) {
-            return (JSONArray) o;
-        }
-        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a JSONArray.");
-    }
-
-    /**
-     * Get the JSONObject value associated with a key.
-     *
-     * @param key A key string.
-     * @return A JSONObject which is the value.
-     * @throws JSONException if the key is not found or if the value is not a
-     *                       JSONObject.
-     */
-    public JSONObject getJSONObject(String key) {
-        verifyIsNull();
-        Object o = get(key);
-        if (JSONNull.getInstance()
-            .equals(o)) {
-            return new JSONObject(true);
-        } else if (o instanceof JSONObject) {
-            return (JSONObject) o;
-        }
-        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a JSONObject.");
-    }
-
-    /**
-     * Get the long value associated with a key. If the number value is too long
-     * for a long, it will be clipped.
-     *
-     * @param key A key string.
-     * @return The long value.
-     * @throws JSONException if the key is not found or if the value cannot be
-     *                       converted to a long.
-     */
-    public long getLong(String key) {
-        verifyIsNull();
-        Object o = get(key);
-        if (o != null) {
-            return o instanceof Number ? ((Number) o).longValue() : (long) getDouble(key);
-        }
-        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] is not a number.");
-    }
-
-    /**
-     * Get the string associated with a key.
-     *
-     * @param key A key string.
-     * @return A string which is the value.
-     * @throws JSONException if the key is not found.
-     */
-    public String getString(String key) {
-        verifyIsNull();
-        Object o = get(key);
-        if (o != null) {
-            return o.toString();
-        }
-        throw new JSONException("JSONObject[" + JSONUtils.quote(key) + "] not found.");
-    }
-
-    /**
-     * Determine if the JSONObject contains a specific key.
-     *
-     * @param key A key string.
-     * @return true if the key exists in the JSONObject.
-     */
-    public boolean has(String key) {
-        verifyIsNull();
-        return this.properties.containsKey(key);
-    }
-
-    public int hashCode() {
-        int hashcode = 19;
-        if (isNullObject()) {
-            return hashcode + JSONNull.getInstance()
-                .hashCode();
-        }
-        for (Iterator entries = properties.entrySet()
-            .iterator(); entries.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) entries.next();
-            Object key = entry.getKey();
-            Object value = entry.getValue();
-            hashcode += key.hashCode() + JSONUtils.hashCode(value);
-        }
-        return hashcode;
-    }
-
-    public boolean isArray() {
-        return false;
-    }
-
-    public boolean isEmpty() {
-        // verifyIsNull();
-        return this.properties.isEmpty();
-    }
-
-    /**
-     * Returs if this object is a null JSONObject.
-     */
-    public boolean isNullObject() {
-        return nullObject;
-    }
-
-    /**
-     * Get an enumeration of the keys of the JSONObject.
-     *
-     * @return An iterator of the keys.
-     */
-    public Iterator keys() {
-        verifyIsNull();
-        return keySet().iterator();
-    }
-
-    public Set keySet() {
-        return Collections.unmodifiableSet(properties.keySet());
-    }
-
-    /**
-     * Produce a JSONArray containing the names of the elements of this
-     * JSONObject.
-     *
-     * @return A JSONArray containing the key strings, or null if the JSONObject
-     * is empty.
-     */
-    public JSONArray names() {
-        verifyIsNull();
-        JSONArray ja = new JSONArray();
-        Iterator keys = keys();
-        while (keys.hasNext()) {
-            ja.element(keys.next());
-        }
-        return ja;
-    }
-
-    /**
-     * Produce a JSONArray containing the names of the elements of this
-     * JSONObject.
-     *
-     * @return A JSONArray containing the key strings, or null if the JSONObject
-     * is empty.
-     */
-    public JSONArray names(JsonConfig jsonConfig) {
-        verifyIsNull();
-        JSONArray ja = new JSONArray();
-        Iterator keys = keys();
-        while (keys.hasNext()) {
-            ja.element(keys.next(), jsonConfig);
-        }
-        return ja;
-    }
-
-    /**
-     * Get an optional value associated with a key.
-     *
-     * @param key A key string.
-     * @return An object which is the value, or null if there is no value.
-     */
-    public Object opt(String key) {
-        verifyIsNull();
-        return key == null ? null : this.properties.get(key);
-    }
-
-    /**
-     * Get an optional boolean associated with a key. It returns false if there
-     * is no such key, or if the value is not Boolean.TRUE or the String "true".
-     *
-     * @param key A key string.
-     * @return The truth.
-     */
-    public boolean optBoolean(String key) {
-        verifyIsNull();
-        return optBoolean(key, false);
-    }
-
-    /**
-     * Get an optional boolean associated with a key. It returns the defaultValue
-     * if there is no such key, or if it is not a Boolean or the String "true" or
-     * "false" (case insensitive).
-     *
-     * @param key          A key string.
-     * @param defaultValue The default.
-     * @return The truth.
-     */
-    public boolean optBoolean(String key, boolean defaultValue) {
-        verifyIsNull();
-        try {
-            return getBoolean(key);
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Get an optional double associated with a key, or NaN if there is no such
-     * key or if its value is not a number. If the value is a string, an attempt
-     * will be made to evaluate it as a number.
-     *
-     * @param key A string which is the key.
-     * @return An object which is the value.
-     */
-    public double optDouble(String key) {
-        verifyIsNull();
-        return optDouble(key, Double.NaN);
-    }
-
-    /**
-     * Get an optional double associated with a key, or the defaultValue if there
-     * is no such key or if its value is not a number. If the value is a string,
-     * an attempt will be made to evaluate it as a number.
-     *
-     * @param key          A key string.
-     * @param defaultValue The default.
-     * @return An object which is the value.
-     */
-    public double optDouble(String key, double defaultValue) {
-        verifyIsNull();
-        try {
-            Object o = opt(key);
-            return o instanceof Number ? ((Number) o).doubleValue()
-                : Double.parseDouble((String) o);
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Get an optional int value associated with a key, or zero if there is no
-     * such key or if the value is not a number. If the value is a string, an
-     * attempt will be made to evaluate it as a number.
-     *
-     * @param key A key string.
-     * @return An object which is the value.
-     */
-    public int optInt(String key) {
-        verifyIsNull();
-        return optInt(key, 0);
-    }
-
-    /**
-     * Get an optional int value associated with a key, or the default if there
-     * is no such key or if the value is not a number. If the value is a string,
-     * an attempt will be made to evaluate it as a number.
-     *
-     * @param key          A key string.
-     * @param defaultValue The default.
-     * @return An object which is the value.
-     */
-    public int optInt(String key, int defaultValue) {
-        verifyIsNull();
-        try {
-            return getInt(key);
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Get an optional JSONArray associated with a key. It returns null if there
-     * is no such key, or if its value is not a JSONArray.
-     *
-     * @param key A key string.
-     * @return A JSONArray which is the value.
-     */
-    public JSONArray optJSONArray(String key) {
-        verifyIsNull();
-        Object o = opt(key);
-        return o instanceof JSONArray ? (JSONArray) o : null;
-    }
-
-    /**
-     * Get an optional JSONObject associated with a key. It returns null if there
-     * is no such key, or if its value is not a JSONObject.
-     *
-     * @param key A key string.
-     * @return A JSONObject which is the value.
-     */
-    public JSONObject optJSONObject(String key) {
-        verifyIsNull();
-        Object o = opt(key);
-        return o instanceof JSONObject ? (JSONObject) o : null;
-    }
-
-    /**
-     * Get an optional long value associated with a key, or zero if there is no
-     * such key or if the value is not a number. If the value is a string, an
-     * attempt will be made to evaluate it as a number.
-     *
-     * @param key A key string.
-     * @return An object which is the value.
-     */
-    public long optLong(String key) {
-        verifyIsNull();
-        return optLong(key, 0);
-    }
-
-    /**
-     * Get an optional long value associated with a key, or the default if there
-     * is no such key or if the value is not a number. If the value is a string,
-     * an attempt will be made to evaluate it as a number.
-     *
-     * @param key          A key string.
-     * @param defaultValue The default.
-     * @return An object which is the value.
-     */
-    public long optLong(String key, long defaultValue) {
-        verifyIsNull();
-        try {
-            return getLong(key);
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Get an optional string associated with a key. It returns an empty string
-     * if there is no such key. If the value is not a string and is not null,
-     * then it is coverted to a string.
-     *
-     * @param key A key string.
-     * @return A string which is the value.
-     */
-    public String optString(String key) {
-        verifyIsNull();
-        return optString(key, "");
-    }
-
-    /**
-     * Get an optional string associated with a key. It returns the defaultValue
-     * if there is no such key.
-     *
-     * @param key          A key string.
-     * @param defaultValue The default.
-     * @return A string which is the value.
-     */
-    public String optString(String key, String defaultValue) {
-        verifyIsNull();
-        Object o = opt(key);
-        return o != null ? o.toString() : defaultValue;
-    }
-
-    public Object put(String key, Object value) {
-        if (key == null) {
-            throw new IllegalArgumentException("key is null.");
-        }
-        Object previous = properties.get(key);
-        element(String.valueOf(key), value);
-        return previous;
-    }
-
-    public void putAll(Map map) {
-        putAll(map, new JsonConfig());
-    }
-
-    public void putAll(Map map, JsonConfig jsonConfig) {
-        if (map instanceof JSONObject) {
-            for (Iterator entries = map.entrySet()
-                .iterator(); entries.hasNext(); ) {
-                Map.Entry entry = (Map.Entry) entries.next();
-                String key = (String) entry.getKey();
-                Object value = entry.getValue();
-                this.properties.put(key, value);
-            }
-        } else {
-            for (Iterator entries = map.entrySet()
-                .iterator(); entries.hasNext(); ) {
-                Map.Entry entry = (Map.Entry) entries.next();
-                String key = String.valueOf(entry.getKey());
-                Object value = entry.getValue();
-                element(key, value, jsonConfig);
-            }
-        }
-    }
-
-    public Object remove(Object key) {
-        return properties.remove(key);
-    }
-
-    /**
-     * Remove a name and its value, if present.
-     *
-     * @param key The name to be removed.
-     * @return The value that was associated with the name, or null if there was
-     * no value.
-     */
-    public Object remove(String key) {
-        verifyIsNull();
-        return this.properties.remove(key);
-    }
-
-    /**
-     * Get the number of keys stored in the JSONObject.
-     *
-     * @return The number of keys in the JSONObject.
-     */
-    public int size() {
-        // verifyIsNull();
-        return this.properties.size();
-    }
-
-    /**
-     * Produce a JSONArray containing the values of the members of this
-     * JSONObject.
-     *
-     * @param names A JSONArray containing a list of key strings. This determines
-     *              the sequence of the values in the result.
-     * @return A JSONArray of values.
-     * @throws JSONException If any of the values are non-finite numbers.
-     */
-    public JSONArray toJSONArray(JSONArray names) {
-        verifyIsNull();
-        if (names == null || names.size() == 0) {
-            return null;
-        }
-        JSONArray ja = new JSONArray();
-        for (int i = 0; i < names.size(); i += 1) {
-            ja.element(this.opt(names.getString(i)));
-        }
-        return ja;
-    }
-
     /**
      * Make a JSON text of this JSONObject. For compactness, no whitespace is
      * added. If this would not result in a syntactically correct JSON text, then
@@ -2446,6 +2079,25 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         }
     }
 
+    public boolean isArray() {
+        return false;
+    }
+
+    public boolean isEmpty() {
+        // verifyIsNull();
+        return this.properties.isEmpty();
+    }
+
+    /**
+     * Get the number of keys stored in the JSONObject.
+     *
+     * @return The number of keys in the JSONObject.
+     */
+    public int size() {
+        // verifyIsNull();
+        return this.properties.size();
+    }
+
     /**
      * Make a prettyprinted JSON text of this JSONObject.
      * <p/>
@@ -2453,10 +2105,12 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      *
      * @param indentFactor The number of spaces to add to each level of
      *                     indentation.
+     *
      * @return a printable, displayable, portable, transmittable representation
      * of the object, beginning with <code>{</code>&nbsp;<small>(left
      * brace)</small> and ending with <code>}</code>&nbsp;<small>(right
      * brace)</small>.
+     *
      * @throws JSONException If the object contains an invalid number.
      */
     public String toString(int indentFactor) {
@@ -2478,9 +2132,11 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * @param indentFactor The number of spaces to add to each level of
      *                     indentation.
      * @param indent       The indentation of the top level.
+     *
      * @return a printable, displayable, transmittable representation of the
      * object, beginning with <code>{</code>&nbsp;<small>(left brace)</small>
      * and ending with <code>}</code>&nbsp;<small>(right brace)</small>.
+     *
      * @throws JSONException If the object contains an invalid number.
      */
     public String toString(int indentFactor, int indent) {
@@ -2534,8 +2190,342 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         return sb.toString();
     }
 
-    public Collection values() {
-        return Collections.unmodifiableCollection(properties.values());
+    /**
+     * Returs if this object is a null JSONObject.
+     */
+    public boolean isNullObject() {
+        return nullObject;
+    }
+
+    /**
+     * Get an enumeration of the keys of the JSONObject.
+     *
+     * @return An iterator of the keys.
+     */
+    public Iterator keys() {
+        verifyIsNull();
+        return keySet().iterator();
+    }
+
+    /**
+     * Produce a JSONArray containing the names of the elements of this
+     * JSONObject.
+     *
+     * @return A JSONArray containing the key strings, or null if the JSONObject
+     * is empty.
+     */
+    public JSONArray names() {
+        verifyIsNull();
+        JSONArray ja = new JSONArray();
+        Iterator keys = keys();
+        while (keys.hasNext()) {
+            ja.element(keys.next());
+        }
+        return ja;
+    }
+
+    /**
+     * Produce a JSONArray containing the names of the elements of this
+     * JSONObject.
+     *
+     * @return A JSONArray containing the key strings, or null if the JSONObject
+     * is empty.
+     */
+    public JSONArray names(JsonConfig jsonConfig) {
+        verifyIsNull();
+        JSONArray ja = new JSONArray();
+        Iterator keys = keys();
+        while (keys.hasNext()) {
+            ja.element(keys.next(), jsonConfig);
+        }
+        return ja;
+    }
+
+    /**
+     * Get an optional value associated with a key.
+     *
+     * @param key A key string.
+     *
+     * @return An object which is the value, or null if there is no value.
+     */
+    public Object opt(String key) {
+        verifyIsNull();
+        return key == null ? null : this.properties.get(key);
+    }
+
+    /**
+     * Get an optional boolean associated with a key. It returns false if there
+     * is no such key, or if the value is not Boolean.TRUE or the String "true".
+     *
+     * @param key A key string.
+     *
+     * @return The truth.
+     */
+    public boolean optBoolean(String key) {
+        verifyIsNull();
+        return optBoolean(key, false);
+    }
+
+    /**
+     * Get an optional boolean associated with a key. It returns the defaultValue
+     * if there is no such key, or if it is not a Boolean or the String "true" or
+     * "false" (case insensitive).
+     *
+     * @param key          A key string.
+     * @param defaultValue The default.
+     *
+     * @return The truth.
+     */
+    public boolean optBoolean(String key, boolean defaultValue) {
+        verifyIsNull();
+        try {
+            return getBoolean(key);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Get an optional double associated with a key, or NaN if there is no such
+     * key or if its value is not a number. If the value is a string, an attempt
+     * will be made to evaluate it as a number.
+     *
+     * @param key A string which is the key.
+     *
+     * @return An object which is the value.
+     */
+    public double optDouble(String key) {
+        verifyIsNull();
+        return optDouble(key, Double.NaN);
+    }
+
+    /**
+     * Get an optional double associated with a key, or the defaultValue if there
+     * is no such key or if its value is not a number. If the value is a string,
+     * an attempt will be made to evaluate it as a number.
+     *
+     * @param key          A key string.
+     * @param defaultValue The default.
+     *
+     * @return An object which is the value.
+     */
+    public double optDouble(String key, double defaultValue) {
+        verifyIsNull();
+        try {
+            Object o = opt(key);
+            return o instanceof Number ? ((Number) o).doubleValue()
+                : Double.parseDouble((String) o);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Get an optional int value associated with a key, or zero if there is no
+     * such key or if the value is not a number. If the value is a string, an
+     * attempt will be made to evaluate it as a number.
+     *
+     * @param key A key string.
+     *
+     * @return An object which is the value.
+     */
+    public int optInt(String key) {
+        verifyIsNull();
+        return optInt(key, 0);
+    }
+
+    /**
+     * Get an optional int value associated with a key, or the default if there
+     * is no such key or if the value is not a number. If the value is a string,
+     * an attempt will be made to evaluate it as a number.
+     *
+     * @param key          A key string.
+     * @param defaultValue The default.
+     *
+     * @return An object which is the value.
+     */
+    public int optInt(String key, int defaultValue) {
+        verifyIsNull();
+        try {
+            return getInt(key);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Get an optional JSONArray associated with a key. It returns null if there
+     * is no such key, or if its value is not a JSONArray.
+     *
+     * @param key A key string.
+     *
+     * @return A JSONArray which is the value.
+     */
+    public JSONArray optJSONArray(String key) {
+        verifyIsNull();
+        Object o = opt(key);
+        return o instanceof JSONArray ? (JSONArray) o : null;
+    }
+
+    /**
+     * Get an optional JSONObject associated with a key. It returns null if there
+     * is no such key, or if its value is not a JSONObject.
+     *
+     * @param key A key string.
+     *
+     * @return A JSONObject which is the value.
+     */
+    public JSONObject optJSONObject(String key) {
+        verifyIsNull();
+        Object o = opt(key);
+        return o instanceof JSONObject ? (JSONObject) o : null;
+    }
+
+    /**
+     * Get an optional long value associated with a key, or zero if there is no
+     * such key or if the value is not a number. If the value is a string, an
+     * attempt will be made to evaluate it as a number.
+     *
+     * @param key A key string.
+     *
+     * @return An object which is the value.
+     */
+    public long optLong(String key) {
+        verifyIsNull();
+        return optLong(key, 0);
+    }
+
+    /**
+     * Get an optional long value associated with a key, or the default if there
+     * is no such key or if the value is not a number. If the value is a string,
+     * an attempt will be made to evaluate it as a number.
+     *
+     * @param key          A key string.
+     * @param defaultValue The default.
+     *
+     * @return An object which is the value.
+     */
+    public long optLong(String key, long defaultValue) {
+        verifyIsNull();
+        try {
+            return getLong(key);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Get an optional string associated with a key. It returns an empty string
+     * if there is no such key. If the value is not a string and is not null,
+     * then it is coverted to a string.
+     *
+     * @param key A key string.
+     *
+     * @return A string which is the value.
+     */
+    public String optString(String key) {
+        verifyIsNull();
+        return optString(key, "");
+    }
+
+    /**
+     * Get an optional string associated with a key. It returns the defaultValue
+     * if there is no such key.
+     *
+     * @param key          A key string.
+     * @param defaultValue The default.
+     *
+     * @return A string which is the value.
+     */
+    public String optString(String key, String defaultValue) {
+        verifyIsNull();
+        Object o = opt(key);
+        return o != null ? o.toString() : defaultValue;
+    }
+
+    public void putAll(Map map, JsonConfig jsonConfig) {
+        if (map instanceof JSONObject) {
+            for (Iterator entries = map.entrySet()
+                .iterator(); entries.hasNext(); ) {
+                Map.Entry entry = (Map.Entry) entries.next();
+                String key = (String) entry.getKey();
+                Object value = entry.getValue();
+                this.properties.put(key, value);
+            }
+        } else {
+            for (Iterator entries = map.entrySet()
+                .iterator(); entries.hasNext(); ) {
+                Map.Entry entry = (Map.Entry) entries.next();
+                String key = String.valueOf(entry.getKey());
+                Object value = entry.getValue();
+                element(key, value, jsonConfig);
+            }
+        }
+    }
+
+    /**
+     * Remove a name and its value, if present.
+     *
+     * @param key The name to be removed.
+     *
+     * @return The value that was associated with the name, or null if there was
+     * no value.
+     */
+    public Object remove(String key) {
+        verifyIsNull();
+        return this.properties.remove(key);
+    }
+
+    /**
+     * Produce a JSONArray containing the values of the members of this
+     * JSONObject.
+     *
+     * @param names A JSONArray containing a list of key strings. This determines
+     *              the sequence of the values in the result.
+     *
+     * @return A JSONArray of values.
+     *
+     * @throws JSONException If any of the values are non-finite numbers.
+     */
+    public JSONArray toJSONArray(JSONArray names) {
+        verifyIsNull();
+        if (names == null || names.size() == 0) {
+            return null;
+        }
+        JSONArray ja = new JSONArray();
+        for (int i = 0; i < names.size(); i += 1) {
+            ja.element(this.opt(names.getString(i)));
+        }
+        return ja;
+    }
+
+    private JSONObject _accumulate(String key, Object value, JsonConfig jsonConfig) {
+        if (isNullObject()) {
+            throw new JSONException("Can't accumulate on null object");
+        }
+
+        if (!has(key)) {
+            setInternal(key, value, jsonConfig);
+        } else {
+            Object o = opt(key);
+            if (o instanceof JSONArray) {
+                ((JSONArray) o).element(value, jsonConfig);
+            } else {
+                setInternal(key, new JSONArray().element(o)
+                    .element(value, jsonConfig), jsonConfig);
+            }
+        }
+
+        return this;
+    }
+
+    protected Object _processValue(Object value, JsonConfig jsonConfig) {
+        if (value instanceof JSONTokener) {
+            return _fromJSONTokener((JSONTokener) value, jsonConfig);
+        } else if (value != null && Enum.class.isAssignableFrom(value.getClass())) {
+            return ((Enum) value).name();
+        }
+        return super._processValue(value, jsonConfig);
     }
 
     /**
@@ -2545,6 +2535,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * Warning: This method assumes that the data structure is acyclical.
      *
      * @return The writer.
+     *
      * @throws JSONException
      */
     protected void write(Writer writer, WritingVisitor visitor) throws IOException {
@@ -2579,35 +2570,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
         }
     }
 
-    private JSONObject _accumulate(String key, Object value, JsonConfig jsonConfig) {
-        if (isNullObject()) {
-            throw new JSONException("Can't accumulate on null object");
-        }
-
-        if (!has(key)) {
-            setInternal(key, value, jsonConfig);
-        } else {
-            Object o = opt(key);
-            if (o instanceof JSONArray) {
-                ((JSONArray) o).element(value, jsonConfig);
-            } else {
-                setInternal(key, new JSONArray().element(o)
-                    .element(value, jsonConfig), jsonConfig);
-            }
-        }
-
-        return this;
-    }
-
-    protected Object _processValue(Object value, JsonConfig jsonConfig) {
-        if (value instanceof JSONTokener) {
-            return _fromJSONTokener((JSONTokener) value, jsonConfig);
-        } else if (value != null && Enum.class.isAssignableFrom(value.getClass())) {
-            return ((Enum) value).name();
-        }
-        return super._processValue(value, jsonConfig);
-    }
-
     /**
      * Put a key/value pair in the JSONObject.
      *
@@ -2615,7 +2577,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * @param value An object which is the value. It should be of one of these
      *              types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
      *              String, or the JSONNull object.
+     *
      * @return this.
+     *
      * @throws JSONException If the value is non-finite number or if the key is
      *                       null.
      */
@@ -2637,10 +2601,8 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
             this.properties.put( key, jo );
          }
          */
-            if (CycleDetectionStrategy.IGNORE_PROPERTY_OBJ == value
-                || CycleDetectionStrategy.IGNORE_PROPERTY_ARR == value) {
-                // do nothing
-            } else {
+            if (CycleDetectionStrategy.IGNORE_PROPERTY_OBJ != value
+                && CycleDetectionStrategy.IGNORE_PROPERTY_ARR != value) {
                 this.properties.put(key, value);
             }
         }
@@ -2681,7 +2643,9 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * @param value An object which is the value. It should be of one of these
      *              types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
      *              String, or the JSONNull object.
+     *
      * @return this.
+     *
      * @throws JSONException If the value is non-finite number or if the key is
      *                       null.
      */
@@ -2695,6 +2659,117 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
     private void verifyIsNull() {
         if (isNullObject()) {
             throw new JSONException("null object");
+        }
+    }
+
+    private interface Property {
+        boolean isWritable();
+
+        Class getPropertyType();
+
+        String name();
+
+        void set(Object bean, Object value, JsonConfig jsonConfig) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+    }
+
+    private static class PropertyOnMap implements Property {
+        private final String name;
+
+        private PropertyOnMap(String name) {
+            this.name = name;
+        }
+
+        public boolean isWritable() {
+            return true;
+        }
+
+        public String name() {
+            return name;
+        }
+
+        public Class getPropertyType() {
+            return Object.class;
+        }
+
+        public void set(Object bean, Object value, JsonConfig jsonConfig) {
+            ((Map) bean).put(name, value);
+        }
+    }
+
+    private static class MethodProperty implements Property {
+        private final PropertyDescriptor pd;
+
+        private MethodProperty(PropertyDescriptor pd) {
+            this.pd = pd;
+        }
+
+        public boolean isWritable() {
+            return pd.getWriteMethod() != null;
+        }
+
+        public String name() {
+            return pd.getName();
+        }
+
+        public Class getPropertyType() {
+            return pd.getPropertyType();
+        }
+
+        public void set(Object bean, Object value, JsonConfig jsonConfig) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+            PropertyUtils.setSimpleProperty(bean, pd.getName(), value);
+        }
+    }
+
+    private static class FieldProperty implements Property {
+        private final Field f;
+
+        private FieldProperty(Field f) {
+            this.f = f;
+        }
+
+        public boolean isWritable() {
+            return true;
+        }
+
+        public Class getPropertyType() {
+            return f.getType();
+        }
+
+        public String name() {
+            return f.getName();
+        }
+
+        public void set(Object bean, Object value, JsonConfig jsonConfig) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+            f.set(bean, value);
+        }
+    }
+
+    /**
+     * Uses {@link PropertySetStrategy} instead of the normal set method.
+     */
+    private static class PropertySetterStrategyDecorator implements Property {
+        private final Property inner;
+        private final PropertySetStrategy strategy;
+
+        private PropertySetterStrategyDecorator(Property inner, PropertySetStrategy strategy) {
+            this.inner = inner;
+            this.strategy = strategy;
+        }
+
+        public boolean isWritable() {
+            return inner.isWritable();
+        }
+
+        public Class getPropertyType() {
+            return inner.getPropertyType();
+        }
+
+        public String name() {
+            return inner.name();
+        }
+
+        public void set(Object bean, Object value, JsonConfig jsonConfig) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+            strategy.setProperty(bean, name(), value, jsonConfig);
         }
     }
 }

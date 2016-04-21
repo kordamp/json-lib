@@ -88,7 +88,7 @@ import java.util.TreeMap;
 public class XMLSerializer {
     private static final String[] EMPTY_ARRAY = new String[0];
     private static final String JSON_PREFIX = "json_";
-    private static final Logger log = LoggerFactory.getLogger(XMLSerializer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(XMLSerializer.class);
     /**
      * the name for an JSONArray Element
      */
@@ -218,17 +218,17 @@ public class XMLSerializer {
     }
 
     /**
-     * Sets whether JSON literals are parsed as JSON or not.
-     */
-    public void setParseJsonLiterals(boolean parseJsonLiterals) {
-        this.parseJsonLiterals = parseJsonLiterals;
-    }
-
-    /**
      * Returns whether JSON literals are parsed as JSON or not.
      */
     public boolean isParseJsonLiterals() {
         return parseJsonLiterals;
+    }
+
+    /**
+     * Sets whether JSON literals are parsed as JSON or not.
+     */
+    public void setParseJsonLiterals(boolean parseJsonLiterals) {
+        this.parseJsonLiterals = parseJsonLiterals;
     }
 
     /**
@@ -513,7 +513,9 @@ public class XMLSerializer {
      * Creates a JSON value from a XML string.
      *
      * @param xml A well-formed xml document in a String
+     *
      * @return a JSONNull, JSONObject or JSONArray
+     *
      * @throws JSONException if the conversion from XML to JSON can't be made for
      *                       I/O or format reasons.
      */
@@ -551,7 +553,9 @@ public class XMLSerializer {
      * Creates a JSON value from a File.
      *
      * @param file
+     *
      * @return a JSONNull, JSONObject or JSONArray
+     *
      * @throws JSONException if the conversion from XML to JSON can't be made for
      *                       I/O or format reasons.
      */
@@ -576,7 +580,9 @@ public class XMLSerializer {
      * Creates a JSON value from a File.
      *
      * @param path
+     *
      * @return a JSONNull, JSONObject or JSONArray
+     *
      * @throws JSONException if the conversion from XML to JSON can't be made for
      *                       I/O or format reasons.
      */
@@ -590,7 +596,9 @@ public class XMLSerializer {
      * Creates a JSON value from an input stream.
      *
      * @param stream
+     *
      * @return a JSONNull, JSONObject or JSONArray
+     *
      * @throws JSONException if the conversion from XML to JSON can't be made for
      *                       I/O or format reasons.
      */
@@ -716,7 +724,9 @@ public class XMLSerializer {
      * Writes a JSON value into a XML string with UTF-8 encoding.<br>
      *
      * @param json The JSON value to transform
+     *
      * @return a String representation of a well-formed xml document.
+     *
      * @throws JSONException if the conversion from JSON to XML can't be made for
      *                       I/O reasons.
      */
@@ -730,7 +740,9 @@ public class XMLSerializer {
      *
      * @param json     The JSON value to transform
      * @param encoding The xml encoding to use
+     *
      * @return a String representation of a well-formed xml document.
+     *
      * @throws JSONException if the conversion from JSON to XML can't be made for
      *                       I/O reasons or the encoding is not supported.
      */
@@ -839,7 +851,7 @@ public class XMLSerializer {
                 return false;
             } else if (childName.compareTo(elements.get(i)
                 .getQualifiedName()) != 0 && forcedArrayElements.contains(element.getQualifiedName())) {
-                log.warn("Child elements [{},{}] of forced array element [{}] are not from the same type",
+                LOG.warn("Child elements [{},{}] of forced array element [{}] are not from the same type",
                     childName,
                     elements.get(i).getQualifiedName(),
                     element.getQualifiedName());
@@ -893,7 +905,7 @@ public class XMLSerializer {
             }
         } else {
             if (defaultType != null) {
-                log.info("Using default type {}", defaultType);
+                LOG.info("Using default type {}", defaultType);
                 type = defaultType;
             }
         }
@@ -1056,7 +1068,7 @@ public class XMLSerializer {
                 } else if (!arrayName.equals(arrayElement) && forcedArrayElements.isEmpty()) {
                     isSameElementNameInArray = false;
                 } else if (!arrayName.equals(arrayElement) && forcedArrayElements.contains(element.getQualifiedName())) {
-                    log.warn("Child elements [{},{}] of forced array element [{}] are not from the same type",
+                    LOG.warn("Child elements [{},{}] of forced array element [{}] are not from the same type",
                         arrayName,
                         arrayElement,
                         element.getQualifiedName());
@@ -1073,7 +1085,7 @@ public class XMLSerializer {
                 result.put(arrayName, jsonArray);
                 return result;
             }
-        } else if ((forcedArrayElements != null)?forcedArrayElements.contains(element.getQualifiedName()):false) {
+        } else if ((forcedArrayElements != null) ? forcedArrayElements.contains(element.getQualifiedName()) : false) {
             // array not named, check if forced array and give warning if elements not same type
             String arrayName = null;
             for (int i = 0; i < element.getChildElements().size(); i++) {
@@ -1081,9 +1093,9 @@ public class XMLSerializer {
                 if (arrayName == null) {
                     arrayName = arrayElement;
                 } else if (!arrayName.equals(arrayElement)) {
-                    log.warn("Child elements [" + arrayName + "," + arrayElement + "] of " +
-                            "forced array element [" + element.getQualifiedName() + "] " +
-                            "are not from the same type");
+                    LOG.warn("Child elements [" + arrayName + "," + arrayElement + "] of " +
+                        "forced array element [" + element.getQualifiedName() + "] " +
+                        "are not from the same type");
                 }
             }
 
@@ -1143,7 +1155,7 @@ public class XMLSerializer {
 
         Object[] names = jsonObject.names().toArray();
         List unprocessed = new ArrayList();
-        if (isSortPropertyNames()) Arrays.sort(names);
+        if (isSortPropertyNames()) { Arrays.sort(names); }
         for (int i = 0; i < names.length; i++) {
             String name = (String) names[i];
             Object value = jsonObject.get(name);
@@ -1217,6 +1229,7 @@ public class XMLSerializer {
      * Only perform auto expansion if all children are objects.
      *
      * @param array The array to check
+     *
      * @return True if all children are objects, false otherwise.
      */
     private boolean canAutoExpand(JSONArray array) {
@@ -1618,23 +1631,6 @@ public class XMLSerializer {
             super(out, encoding);
         }
 
-        protected void write(Text text) throws IOException {
-            String value = text.getValue();
-            if (value.startsWith("<![CDATA[") && value.endsWith("]]>")) {
-                value = value.substring(9);
-                value = value.substring(0, value.length() - 3);
-                writeRaw("<![CDATA[");
-                writeRaw(value);
-                writeRaw("]]>");
-            } else {
-                if (isEscapeLowerChars) {
-                    writeRaw(escape(value));
-                } else {
-                    super.write(text);
-                }
-            }
-        }
-
         private String escape(String text) {
             StringBuffer buffer = new StringBuffer();
             for (int i = 0; i < text.length(); i++) {
@@ -1650,15 +1646,6 @@ public class XMLSerializer {
             return buffer.toString();
         }
 
-        protected void writeEmptyElementTag(Element element) throws IOException {
-            if (element instanceof CustomElement && isNamespaceLenient()) {
-                writeTagBeginning((CustomElement) element);
-                writeRaw("/>");
-            } else {
-                super.writeEmptyElementTag(element);
-            }
-        }
-
         protected void writeEndTag(Element element) throws IOException {
             if (element instanceof CustomElement && isNamespaceLenient()) {
                 writeRaw("</");
@@ -1669,18 +1656,44 @@ public class XMLSerializer {
             }
         }
 
-        protected void writeNamespaceDeclaration(String prefix, String uri) throws IOException {
-            if (!StringUtils.isBlank(uri)) {
-                super.writeNamespaceDeclaration(prefix, uri);
-            }
-        }
-
         protected void writeStartTag(Element element) throws IOException {
             if (element instanceof CustomElement && isNamespaceLenient()) {
                 writeTagBeginning((CustomElement) element);
                 writeRaw(">");
             } else {
                 super.writeStartTag(element);
+            }
+        }
+
+        protected void writeEmptyElementTag(Element element) throws IOException {
+            if (element instanceof CustomElement && isNamespaceLenient()) {
+                writeTagBeginning((CustomElement) element);
+                writeRaw("/>");
+            } else {
+                super.writeEmptyElementTag(element);
+            }
+        }
+
+        protected void writeNamespaceDeclaration(String prefix, String uri) throws IOException {
+            if (!StringUtils.isBlank(uri)) {
+                super.writeNamespaceDeclaration(prefix, uri);
+            }
+        }
+
+        protected void write(Text text) throws IOException {
+            String value = text.getValue();
+            if (value.startsWith("<![CDATA[") && value.endsWith("]]>")) {
+                value = value.substring(9);
+                value = value.substring(0, value.length() - 3);
+                writeRaw("<![CDATA[");
+                writeRaw(value);
+                writeRaw("]]>");
+            } else {
+                if (isEscapeLowerChars) {
+                    writeRaw(escape(value));
+                } else {
+                    super.write(text);
+                }
             }
         }
 

@@ -26,12 +26,12 @@ import org.kordamp.json.util.PropertyFilter;
  * @author Orres Almiray <aalmiray@users.sourceforge.net>
  */
 public class TestOrPropertyFilter extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestOrPropertyFilter.class);
-    }
-
     public TestOrPropertyFilter(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestOrPropertyFilter.class);
     }
 
     public void testApply_false_false() {

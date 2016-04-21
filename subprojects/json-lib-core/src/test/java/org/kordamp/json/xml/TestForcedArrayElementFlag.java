@@ -59,7 +59,7 @@ public class TestForcedArrayElementFlag extends TestCase {
             "</Document>\n");
 
         String expectedJsonString = "{@DOMVersion:\"8.0\", @Self:\"d\", TinDocumentDataObject:{" +
-                        "Properties:[\"/////wAAAAAAAAAA\",\"/////wBBBBBBBBBB\"]}}";
+            "Properties:[\"/////wAAAAAAAAAA\",\"/////wBBBBBBBBBB\"]}}";
         final JSONObject expected = JSONObject.fromObject(expectedJsonString);
 
         assertEquals(expected, actual);
@@ -90,9 +90,9 @@ public class TestForcedArrayElementFlag extends TestCase {
         String expectedWarningMessage = "Child elements [GaijiRefMaps,ForcedArrayElement] of forced array element [Properties] are not from the same type";
         boolean expectedWarningFound = false;
         ImmutableList<LoggingEvent> loggingEvents = logger.getLoggingEvents();
-        for (LoggingEvent le : loggingEvents)
-            if (le.getLevel() == Level.WARN)
-                expectedWarningFound = le.getMessage().equals(expectedWarningMessage);
+        for (LoggingEvent le : loggingEvents) {
+            if (le.getLevel() == Level.WARN) { expectedWarningFound = le.getMessage().equals(expectedWarningMessage); }
+        }
         assertTrue("Expected warning message has been found to notify the caller that child the elements are not from the same type", expectedWarningFound);
     }
 

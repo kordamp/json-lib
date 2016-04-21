@@ -1,38 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
 
-   <properties>
-      <title>Json-lib::Groovy integration</title>
-   </properties>
+    <properties>
+        <title>Json-lib::Groovy integration</title>
+    </properties>
 
-   <body>
-      <section name="Using Json-lib with Groovy">
-	      <p><center><a href="http://groovy.codehaus.org"><img src="images/logos/groovy-logo.png"/></a></center></p>
-	      <p>Since version 2.0 Json-lib has integrated <a href="http://groovy.codehaus.org">Groovy</a> support, meaning that POGOs can be transformed into JSON and back, in the same manner as you do now with POJOs. There are other features as well:<ul>
-	      <li>Type transformations with the <tt>as</tt> keyword.<br/>
-	A Groovy List (default type is ArrayList) can be transformed into a JSONArray.<br/>	      
-	A Groovy Map (default type is HashMap) can be transformed into a JSONObject.<br/>	      
-	A String can be transformed into JSON, JSONObject, JSONArray and JSONFunction.<br/>
-<textarea cols="70" rows="4" class="groovy:nocontrols:nogutter" name="srccode">
-	def fromList = [1,true,'json'] as JSONarray
-	def fromMap = [integer:1, bool: true] as JSONObject
-	def strAsJson1 = "{integer:1, bool: true}" as JSON
-	def strAsJson2 = "[1,2,3]" as JSON
-	def strAsJsonObject = "{integer:1, bool: true}" as JSONObject
-	def strAsJsonArray = "[1,2,3]" as JSONArray
-	def strAsFunc = "function(param){ this.param = param; }" as JSONFunction</textarea></li>
-<li>JSONObject supports the leftShift (&lt;&lt;) operator to append values, the following rules apply:<ul>
-<li>If the shifted arg is a Map, it will call putAll() on the object.</li>
-<li>If the shifted arg is a List and its size == 2, the first element will be the key, and the second will be the value.</li>
-<li>If the shifted arg is a List and its size > 2, the first element will be the key, the arg will be shifted by 1 and passed as the value (will create a JSONArray because it is a List).</li>
-<li>Any other type will be discarded, the object will not be affected nor an exception will be thrown.</li>
-</ul></li>
-<li>JSONObject and JSONarray implement java.util.Comparable, which enables the use of the comparison operators with them (including the spaceship operator).</li>
-<li>JSONObject implements java.util.Map and JSONArray implements java.util.List, anything you can do with Maps and List can be done with JSONObject and JSONArray.</li>
-<li>JsonGroovyBuilder behaves like the JsonBuilder found in Grails but it will create a JSONObject/JSONArray instead of writing the built structure into a String.</li>
-      </ul>
-      <p><center><table><td valign="middle"><img src="images/icon_warning_sml.gif"/></td><td><strong><font color="#FF0000">CAUTION:</font> Since version 2.2.1 Json-lib will not automatically enhance class through custom metaclasses, you must call GJson.enhanceClasses() before executing the examples shown on this page.</strong></td><td valign="middle"><img src="images/icon_warning_sml.gif"/></td></table></center></p>
-      </p>
-      </section>
-   </body>
+    <body>
+        <section name="Using Json-lib with Groovy">
+            <p>
+                <center>
+                    <a href="http://groovy.codehaus.org">
+                        <img src="images/logos/groovy-logo.png"/>
+                    </a>
+                </center>
+            </p>
+            <p>Since version 2.0 Json-lib has integrated
+                <a href="http://groovy.codehaus.org">Groovy</a>
+                support, meaning that POGOs can be transformed into JSON and back, in the same manner as you do now with POJOs. There are other features as well:
+                <ul>
+                    <li>Type transformations with the
+                        <tt>as</tt>
+                        keyword.
+                        <br/>
+                        A Groovy List (default type is ArrayList) can be transformed into a JSONArray.
+                        <br/>
+                        A Groovy Map (default type is HashMap) can be transformed into a JSONObject.
+                        <br/>
+                        A String can be transformed into JSON, JSONObject, JSONArray and JSONFunction.
+                        <br/>
+                        <textarea cols="70" rows="4" class="groovy:nocontrols:nogutter" name="srccode">
+                            def fromList = [1,true,'json'] as JSONarray
+                            def fromMap = [integer:1, bool: true] as JSONObject
+                            def strAsJson1 = "{integer:1, bool: true}" as JSON
+                            def strAsJson2 = "[1,2,3]" as JSON
+                            def strAsJsonObject = "{integer:1, bool: true}" as JSONObject
+                            def strAsJsonArray = "[1,2,3]" as JSONArray
+                            def strAsFunc = "function(param){ this.param = param; }" as JSONFunction
+                        </textarea>
+                    </li>
+                    <li>JSONObject supports the leftShift (&lt;&lt;) operator to append values, the following rules apply:
+                        <ul>
+                            <li>If the shifted arg is a Map, it will call putAll() on the object.</li>
+                            <li>If the shifted arg is a List and its size == 2, the first element will be the key, and the second will be the value.</li>
+                            <li>If the shifted arg is a List and its size > 2, the first element will be the key, the arg will be shifted by 1 and passed as the value (will create a JSONArray because it is a List).</li>
+                            <li>Any other type will be discarded, the object will not be affected nor an exception will be thrown.</li>
+                        </ul>
+                    </li>
+                    <li>JSONObject and JSONarray implement java.util.Comparable, which enables the use of the comparison operators with them (including the spaceship operator).</li>
+                    <li>JSONObject implements java.util.Map and JSONArray implements java.util.List, anything you can do with Maps and List can be done with JSONObject and JSONArray.</li>
+                    <li>JsonGroovyBuilder behaves like the JsonBuilder found in Grails but it will create a JSONObject/JSONArray instead of writing the built structure into a String.</li>
+                </ul>
+                <p>
+                    <center>
+                        <table>
+                            <td valign="middle">
+                                <img src="images/icon_warning_sml.gif"/>
+                            </td>
+                            <td>
+                                <strong>
+                                    <font color="#FF0000">CAUTION:</font>
+                                    Since version 2.2.1 Json-lib will not automatically enhance class through custom metaclasses, you must call GJson.enhanceClasses() before executing the examples shown on this page.
+                                </strong>
+                            </td>
+                            <td valign="middle">
+                                <img src="images/icon_warning_sml.gif"/>
+                            </td>
+                        </table>
+                    </center>
+                </p>
+            </p>
+        </section>
+    </body>
 </document>

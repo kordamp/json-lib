@@ -39,29 +39,40 @@ import java.util.TreeSet;
  * @author Andres Almiray
  */
 abstract class AbstractJSON implements JSON {
-    private static class CycleSet extends ThreadLocal {
-        protected Object initialValue() {
-            return new SoftReference(new HashSet());
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractJSON.class);
+    private static final WritingVisitor NORMAL = new WritingVisitor() {
+        public Collection keySet(JSONObject o) {
+            return o.keySet();
         }
 
-        public Set getSet() {
-            Set set = (Set) ((SoftReference) get()).get();
-            if (set == null) {
-                set = new HashSet();
-                set(new SoftReference(set));
-            }
-            return set;
+        public void on(JSON o, Writer w) throws IOException {
+            o.write(w);
         }
-    }
 
+        public void on(Object value, Writer w) throws IOException {
+            w.write(JSONUtils.valueToString(value));
+        }
+    };
+    private static final WritingVisitor CANONICAL = new WritingVisitor() {
+        public Collection keySet(JSONObject o) {
+            return new TreeSet(o.keySet()); // sort them alphabetically
+        }
+
+        public void on(JSON o, Writer w) throws IOException {
+            o.writeCanonical(w);
+        }
+
+        public void on(Object value, Writer w) throws IOException {
+            w.write(JSONUtils.valueToCanonicalString(value));
+        }
+    };
     private static CycleSet cycleSet = new CycleSet();
-
-    private static final Logger log = LoggerFactory.getLogger(AbstractJSON.class);
 
     /**
      * Adds a reference for cycle detection check.
      *
      * @param instance the reference to add
+     *
      * @return true if the instance has not been added previously, false
      * otherwise.
      */
@@ -80,7 +91,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onArrayEnd();
                 } catch (RuntimeException e) {
-                    log.warn(e.getMessage(), e);
+                    LOG.warn(e.getMessage(), e);
                 }
             }
         }
@@ -97,7 +108,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onArrayStart();
                 } catch (RuntimeException e) {
-                    log.warn(e.getMessage(), e);
+                    LOG.warn(e.getMessage(), e);
                 }
             }
         }
@@ -117,7 +128,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onElementAdded(index, element);
                 } catch (RuntimeException e) {
-                    log.warn(e.getMessage(), e);
+                    LOG.warn(e.getMessage(), e);
                 }
             }
         }
@@ -136,7 +147,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onError(jsone);
                 } catch (RuntimeException e) {
-                    log.warn(e.getMessage(), e);
+                    LOG.warn(e.getMessage(), e);
                 }
             }
         }
@@ -153,7 +164,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onObjectEnd();
                 } catch (RuntimeException e) {
-                    log.warn(e.getMessage(), e);
+                    LOG.warn(e.getMessage(), e);
                 }
             }
         }
@@ -170,7 +181,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onObjectStart();
                 } catch (RuntimeException e) {
-                    log.warn(e.getMessage(), e);
+                    LOG.warn(e.getMessage(), e);
                 }
             }
         }
@@ -192,7 +203,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onPropertySet(key, value, accumulated);
                 } catch (RuntimeException e) {
-                    log.warn(e.getMessage(), e);
+                    LOG.warn(e.getMessage(), e);
                 }
             }
         }
@@ -211,7 +222,7 @@ abstract class AbstractJSON implements JSON {
                 try {
                     listener.onWarning(warning);
                 } catch (RuntimeException e) {
-                    log.warn(e.getMessage(), e);
+                    LOG.warn(e.getMessage(), e);
                 }
             }
         }
@@ -226,6 +237,10 @@ abstract class AbstractJSON implements JSON {
         if (set.size() == 0) {
             cycleSet.remove();
         }
+    }
+
+    private static Set getCycleSet() {
+        return cycleSet.getSet();
     }
 
     protected Object _processValue(Object value, JsonConfig jsonConfig) {
@@ -258,10 +273,6 @@ abstract class AbstractJSON implements JSON {
         }
     }
 
-    private static Set getCycleSet() {
-        return cycleSet.getSet();
-    }
-
     public final Writer write(Writer writer) throws IOException {
         write(writer, NORMAL);
         return writer;
@@ -282,31 +293,18 @@ abstract class AbstractJSON implements JSON {
         void on(Object value, Writer w) throws IOException;
     }
 
-    private static final WritingVisitor NORMAL = new WritingVisitor() {
-        public Collection keySet(JSONObject o) {
-            return o.keySet();
+    private static class CycleSet extends ThreadLocal {
+        protected Object initialValue() {
+            return new SoftReference(new HashSet());
         }
 
-        public void on(JSON o, Writer w) throws IOException {
-            o.write(w);
+        public Set getSet() {
+            Set set = (Set) ((SoftReference) get()).get();
+            if (set == null) {
+                set = new HashSet();
+                set(new SoftReference(set));
+            }
+            return set;
         }
-
-        public void on(Object value, Writer w) throws IOException {
-            w.write(JSONUtils.valueToString(value));
-        }
-    };
-
-    private static final WritingVisitor CANONICAL = new WritingVisitor() {
-        public Collection keySet(JSONObject o) {
-            return new TreeSet(o.keySet()); // sort them alphabetically
-        }
-
-        public void on(JSON o, Writer w) throws IOException {
-            o.writeCanonical(w);
-        }
-
-        public void on(Object value, Writer w) throws IOException {
-            w.write(JSONUtils.valueToCanonicalString(value));
-        }
-    };
+    }
 }

@@ -43,6 +43,26 @@ public class BeanA {
         this.string = string;
     }
 
+    public int getInteger() {
+        return integer;
+    }
+
+    public void setInteger(int integer) {
+        this.integer = integer;
+    }
+
+    public String getString() {
+        return string;
+    }
+
+    public void setString(String string) {
+        this.string = string;
+    }
+
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
@@ -56,16 +76,8 @@ public class BeanA {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
-    public int getInteger() {
-        return integer;
-    }
-
-    public String getString() {
-        return string;
-    }
-
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 
     public boolean isBool() {
@@ -74,17 +86,5 @@ public class BeanA {
 
     public void setBool(boolean bool) {
         this.bool = bool;
-    }
-
-    public void setInteger(int integer) {
-        this.integer = integer;
-    }
-
-    public void setString(String string) {
-        this.string = string;
-    }
-
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 }

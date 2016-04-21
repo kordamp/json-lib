@@ -23,7 +23,11 @@ import junit.framework.TestCase;
 import org.kordamp.ezmorph.Morpher;
 import org.kordamp.ezmorph.bean.MorphDynaBean;
 import org.kordamp.ezmorph.bean.MorphDynaClass;
-import org.kordamp.json.sample.*;
+import org.kordamp.json.sample.AnnotatedBean;
+import org.kordamp.json.sample.AnnotationBean;
+import org.kordamp.json.sample.EnumBean;
+import org.kordamp.json.sample.JsonAnnotation;
+import org.kordamp.json.sample.JsonEnum;
 import org.kordamp.json.util.EnumMorpher;
 import org.kordamp.json.util.JSONUtils;
 
@@ -35,12 +39,12 @@ import java.util.Map;
  * @author Andres Almiray
  */
 public class TestJSONObjectJdk15 extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONObjectJdk15.class);
-    }
-
     public TestJSONObjectJdk15(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONObjectJdk15.class);
     }
 
     public void testFromBean_AnnotationBean() {

@@ -28,12 +28,12 @@ import java.util.List;
  */
 public class TestGenerics extends TestCase {
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestGenerics.class);
-    }
-
     public TestGenerics(String testName) {
         super(testName);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestGenerics.class);
     }
 
    /*

@@ -36,7 +36,6 @@ public final class PropertyConstants {
     private static final String BYTE = "pbyte";
     private static final String CHAR = "pchar";
     private static final String CLASS = "pclass";
-    private static Map classes = new HashMap();
     private static final String DOUBLE = "pdouble";
     private static final String FLOAT = "pfloat";
     private static final String FUNCTION = "pfunction";
@@ -45,6 +44,7 @@ public final class PropertyConstants {
     private static final String LONG = "plong";
     private static final String SHORT = "pshort";
     private static final String STRING = "pstring";
+    private static Map classes = new HashMap();
     private static Map values = new HashMap();
 
     static {

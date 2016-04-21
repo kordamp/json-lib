@@ -29,12 +29,12 @@ import java.util.Collections;
  * @author Andres Almiray
  */
 public class TestJSONUtils extends TestCase {
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TestJSONUtils.class);
-    }
-
     public TestJSONUtils(String name) {
         super(name);
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(TestJSONUtils.class);
     }
 
     public void testDoubleToString_infinite() {
