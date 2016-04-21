@@ -1,5 +1,5 @@
 /*
- * Copyright 2006-2015 the original author or authors.
+ * Copyright 2006-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,43 +12,47 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * This product includes software developed by Douglas Crockford
- * (http://www.crockford.com) and released under the Apache Software
- * License version 2.0 in 2006.
  */
 
-//apply plugin: 'findbugs'
 apply plugin: 'jdepend'
+apply plugin: 'checkstyle'
 apply plugin: 'com.github.hierynomus.license'
 
 def configDir = new File(buildscript.sourceFile.parentFile.parentFile, 'config')
 ext.checkstyleConfigDir = "$configDir/checkstyle"
 
-/*
-findbugs {
-    toolVersion = '3.0.0'
-    sourceSets = [sourceSets.main]
-    ignoreFailures = true
-    reportsDir = file("$project.buildDir/reports/findbugs")
-    effort = 'max'
-    reportLevel = 'high'
+checkstyle {
+    toolVersion = '6.0'
+    configFile = new File(checkstyleConfigDir, 'checkstyle.xml')
+    configProperties.checkstyleConfigDir = checkstyleConfigDir
 }
 
-findbugsMain {
-    reports {
-        xml.enabled = false
-        html.enabled = true
+if (project.hasProperty('findBugsEnabled') && project.findBugsEnabled.toBoolean()) {
+    apply plugin: 'findbugs'
+    findbugs {
+        toolVersion = '3.0.0'
+        sourceSets = [sourceSets.main]
+        ignoreFailures = true
+        reportsDir = file("$project.buildDir/reports/findbugs")
+        effort = 'max'
+        reportLevel = 'high'
+    }
+
+    findbugsMain {
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
+
+    findbugsTest {
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
     }
 }
 
-findbugsTest {
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
-}
-*/
 
 jdepend {
     toolVersion = '2.9.1'
@@ -62,10 +66,10 @@ license {
     strictCheck = true
     ignoreFailures = true
     mapping {
-        java   = 'SLASHSTAR_STYLE'
-        groovy = 'SLASHSTAR_STYLE'
+        java = 'SLASHSTAR_STYLE'
+        xml = 'XML_STYLE'
     }
-    ext.year = '2015'
+    ext.year = '2006-2016'
 }
 
 licenseTest {

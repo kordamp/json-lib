@@ -2,4 +2,4 @@ language: java
 script: ./gradlew clean build jacocoTestReport
 jdk: oraclejdk7
 env: TERM=dumb
-after_success: ./gradlew coveralls
+after_success: ./gradlew jacocoRootReport coveralls

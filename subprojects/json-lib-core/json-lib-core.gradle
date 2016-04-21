@@ -1,0 +1,29 @@
+dependencies {
+    def compileExcludingCommonsLogging = { String dependency ->
+        compile(dependency)  {
+            exclude group: 'commons-logging', module: 'commons-logging'
+        }
+    }
+
+    def testCompileExcludingCommonsLogging = { String dependency ->
+        testCompile(dependency)  {
+            exclude group: 'commons-logging', module: 'commons-logging'
+        }
+    }
+
+    compile('junit:junit:4.12')
+    compileExcludingCommonsLogging('commons-beanutils:commons-beanutils:1.9.2')
+    compileExcludingCommonsLogging('commons-collections:commons-collections:3.2.2')
+    compileExcludingCommonsLogging('commons-lang:commons-lang:2.6')
+    compile("org.slf4j:slf4j-api:$slf4jVersion")
+    compile("org.slf4j:jcl-over-slf4j:$slf4jVersion")  {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+
+    // the following should be marked as optional
+    compileExcludingCommonsLogging('xom:xom:1.2.5')
+    compileExcludingCommonsLogging('org.kordamp.ezmorph:ezmorph:2.0.0')
+
+    testCompileExcludingCommonsLogging('xmlunit:xmlunit:1.6')
+    testCompile("uk.org.lidalia:slf4j-test:1.2.0")
+}
