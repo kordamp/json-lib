@@ -18,6 +18,8 @@
  * License version 2.0 in 2006.
  */
 
+package org.kordamp.json.bugs;
+
 import junit.framework.TestCase;
 import org.kordamp.json.JSONObject;
 import org.kordamp.json.JsonConfig;
