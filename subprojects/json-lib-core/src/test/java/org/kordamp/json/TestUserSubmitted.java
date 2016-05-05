@@ -512,6 +512,7 @@ public class TestUserSubmitted extends TestCase {
     }
 
     public void testToBeanSimpleToComplexValueTransformation() {
+
         // Submitted by Oliver Zyngier
         JSONObject jsonObject = JSONObject.fromObject("{'id':null}");
         IdBean idBean = (IdBean) JSONObject.toBean(jsonObject, IdBean.class);
@@ -524,11 +525,16 @@ public class TestUserSubmitted extends TestCase {
         assertNotNull(idBean.getId());
         assertEquals(0L, idBean.getId().getValue());
 
-        JSONUtils.getMorpherRegistry().registerMorpher(new IdBean.IdMorpher(), true);
-        jsonObject = JSONObject.fromObject("{'id':1}");
-        idBean = (IdBean) JSONObject.toBean(jsonObject, IdBean.class);
-        assertNotNull(idBean);
-        assertEquals(new IdBean.Id(1L), idBean.getId());
+        IdBean.IdMorpher morpher = new IdBean.IdMorpher();
+        JSONUtils.getMorpherRegistry().registerMorpher(morpher, true);
+        try {
+            jsonObject = JSONObject.fromObject("{'id':1}");
+            idBean = (IdBean) JSONObject.toBean(jsonObject, IdBean.class);
+            assertNotNull(idBean);
+            assertEquals(new IdBean.Id(1L), idBean.getId());
+        } finally {
+            JSONUtils.getMorpherRegistry().deregisterMorpher(morpher);
+        }
     }
 
     public void testToBeanWithMultipleMorphersForTargetType() {
