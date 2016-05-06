@@ -53,6 +53,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -268,7 +269,7 @@ public class XMLSerializer {
         if (StringUtils.isBlank(uri)) {
             return;
         }
-        if (prefix == null) {
+        if (StringUtils.isBlank(prefix)) {
             prefix = "";
         }
         if (StringUtils.isBlank(elementName)) {
@@ -281,6 +282,26 @@ public class XMLSerializer {
             }
             nameSpaces.put(prefix, uri);
         }
+    }
+
+    /**
+     * Returns a read-only view of the root name space.
+     */
+    public Map getRootNamespace() {
+        return Collections.unmodifiableMap(rootNamespace);
+    }
+
+    /**
+     * Returns a read-only view of the particular element name space if found.
+     */
+    public Map getElementNamespace(String elementName) {
+        if (!StringUtils.isBlank(elementName)) {
+            Map nameSpaces = (Map) namespacesPerElement.get(elementName);
+            if (nameSpaces != null) {
+                return Collections.unmodifiableMap(nameSpaces);
+            }
+        }
+        return Collections.emptyMap();
     }
 
     /**
@@ -634,7 +655,7 @@ public class XMLSerializer {
      * @param elementName name of target element
      */
     public void removeNamespace(String prefix, String elementName) {
-        if (prefix == null) {
+        if (StringUtils.isBlank(prefix)) {
             prefix = "";
         }
         if (StringUtils.isBlank(elementName)) {
@@ -669,7 +690,7 @@ public class XMLSerializer {
         if (StringUtils.isBlank(uri)) {
             return;
         }
-        if (prefix == null) {
+        if (StringUtils.isBlank(prefix)) {
             prefix = "";
         }
         if (StringUtils.isBlank(elementName)) {

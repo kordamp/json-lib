@@ -486,6 +486,21 @@ public class TestXMLSerializer_reads extends TestCase {
         JSONAssert.assertEquals(expected, actual);
     }
 
+    public void testForceTopLevelObject() throws Exception {
+        JSON expected = new JSONObject().element("a", JSONArray.fromObject("['1','2']"));
+        String xml = "<a><e type=\"string\">1</e><e type=\"string\">2</e></a>";
+        xmlSerializer.setForceTopLevelObject(true);
+        JSON actual = xmlSerializer.read(xml);
+        assertTrue(xmlSerializer.isForceTopLevelObject());
+        JSONAssert.assertEquals(expected, actual);
+
+        expected = JSONArray.fromObject("['1','2']");
+        xmlSerializer.setForceTopLevelObject(false);
+        actual = xmlSerializer.read(xml);
+        assertFalse(xmlSerializer.isForceTopLevelObject());
+        JSONAssert.assertEquals(expected, actual);
+    }
+
     protected void setUp() throws Exception {
         super.setUp();
         xmlSerializer = new XMLSerializer();

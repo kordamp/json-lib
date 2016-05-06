@@ -20,9 +20,15 @@
 package org.kordamp.json.xml;
 
 import org.custommonkey.xmlunit.XMLTestCase;
+import org.kordamp.ezmorph.test.ArrayAssertions;
+import org.kordamp.json.JSON;
 import org.kordamp.json.JSONArray;
+import org.kordamp.json.JSONFunction;
 import org.kordamp.json.JSONNull;
 import org.kordamp.json.JSONObject;
+import org.kordamp.json.test.JSONAssert;
+
+import java.util.Arrays;
 
 /**
  * @author Andres Almiray
@@ -77,13 +83,21 @@ public class TestXMLSerializer_writes extends XMLTestCase {
         JSONObject jsonObject = new JSONObject();
         jsonObject.element("duplicated", "json1");
         jsonObject.accumulate("duplicated", "json2");
-        jsonObject.getJSONArray("duplicated")
-            .setExpandElements(true);
+        jsonObject.getJSONArray("duplicated").setExpandElements(true);
         JSONArray jsonArray = new JSONArray().element(jsonObject);
         String expected = "<a><e class=\"object\"><duplicated type=\"string\">json1</duplicated><duplicated type=\"string\">json2</duplicated></e></a>";
         xmlSerializer.setExpandableProperties(new String[]{"duplicated"});
         String xml = xmlSerializer.write(jsonArray);
         assertXMLEqual(expected, xml);
+        ArrayAssertions.assertEquals(new String[]{"duplicated"}, xmlSerializer.getExpandableProperties());
+
+        jsonObject.getJSONArray("duplicated").setExpandElements(false);
+        jsonArray = new JSONArray().element(jsonObject);
+        expected = "<a><e class=\"object\"><duplicated class=\"array\"><e type=\"string\">json1</e><e type=\"string\">json2</e></duplicated></e></a>";
+        xmlSerializer.setExpandableProperties(null);
+        xml = xmlSerializer.write(jsonArray);
+        assertXMLEqual(expected, xml);
+        ArrayAssertions.assertEquals(new String[0], xmlSerializer.getExpandableProperties());
     }
 
     public void testWriteJSONNull() throws Exception {
@@ -231,6 +245,84 @@ public class TestXMLSerializer_writes extends XMLTestCase {
         assertXMLEqual(expected, xml);
     }
 
+    public void testNamespaces() throws Exception {
+        assertTrue(xmlSerializer.getElementNamespace(null).isEmpty());
+
+        assertTrue(xmlSerializer.getRootNamespace().isEmpty());
+        assertTrue(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+
+        xmlSerializer.addNamespace(null, null, "ns:name");
+        assertTrue(xmlSerializer.getRootNamespace().isEmpty());
+        assertTrue(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+
+        xmlSerializer.addNamespace(null, "http://json.org", null);
+        assertFalse(xmlSerializer.getRootNamespace().isEmpty());
+        assertTrue(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+        xmlSerializer.clearNamespaces();
+
+        xmlSerializer.addNamespace(null, "http://json.org", "ns:name");
+        assertTrue(xmlSerializer.getRootNamespace().isEmpty());
+        assertFalse(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+        xmlSerializer.clearNamespaces();
+
+        xmlSerializer.addNamespace("ns", "http://json.org/ns-schema", null);
+        assertFalse(xmlSerializer.getRootNamespace().isEmpty());
+        assertTrue(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+        xmlSerializer.clearNamespaces("ns:name");
+        assertFalse(xmlSerializer.getRootNamespace().isEmpty());
+        assertTrue(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+        xmlSerializer.clearNamespaces("");
+        assertTrue(xmlSerializer.getRootNamespace().isEmpty());
+        assertTrue(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+
+        xmlSerializer.addNamespace("ns", "http://json.org/ns-schema");
+        xmlSerializer.addNamespace("ns", "http://json.org/ns-schema", "ns:name");
+        xmlSerializer.removeNamespace("");
+        assertFalse(xmlSerializer.getRootNamespace().isEmpty());
+        assertFalse(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+
+        xmlSerializer.removeNamespace("ns");
+        assertTrue(xmlSerializer.getRootNamespace().isEmpty());
+        assertFalse(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+
+        xmlSerializer.addNamespace("ns", "http://json.org/ns-schema");
+        xmlSerializer.removeNamespace("ns", null);
+        assertTrue(xmlSerializer.getRootNamespace().isEmpty());
+        assertFalse(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+
+        xmlSerializer.addNamespace("ns", "http://json.org/ns-schema");
+        xmlSerializer.removeNamespace("ns", "ns:name");
+        assertFalse(xmlSerializer.getRootNamespace().isEmpty());
+        assertTrue(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+
+        xmlSerializer.clearNamespaces();
+
+        xmlSerializer.setNamespace(null, null, "ns:name");
+        assertTrue(xmlSerializer.getRootNamespace().isEmpty());
+        assertTrue(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+
+        xmlSerializer.setNamespace(null, "http://json.org", null);
+        assertFalse(xmlSerializer.getRootNamespace().isEmpty());
+        assertTrue(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+        xmlSerializer.clearNamespaces();
+
+        xmlSerializer.setNamespace(null, "http://json.org", "ns:name");
+        assertTrue(xmlSerializer.getRootNamespace().isEmpty());
+        assertFalse(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+        xmlSerializer.clearNamespaces();
+
+        xmlSerializer.setNamespace("ns", "http://json.org/ns-schema", null);
+        assertFalse(xmlSerializer.getRootNamespace().isEmpty());
+        assertTrue(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+        xmlSerializer.clearNamespaces("ns:name");
+
+        xmlSerializer.setNamespace("ns", "http://json.org/ns-schema", "ns:name");
+        xmlSerializer.setNamespace("ns", "http://json.org/ns-schema", "ns:name");
+        xmlSerializer.removeNamespace("");
+        assertFalse(xmlSerializer.getRootNamespace().isEmpty());
+        assertFalse(xmlSerializer.getElementNamespace("ns:name").isEmpty());
+    }
+
     public void testWriteObject_withText() throws Exception {
         JSONObject jsonObject = new JSONObject().element("#text", "json")
             .element("string", "json");
@@ -270,6 +362,80 @@ public class TestXMLSerializer_writes extends XMLTestCase {
             + " xmlns:ns=\"http://www.w3.org/2001/XMLSchema-instance\">"
             + "<ns:number type=\"string\">1</ns:number><ns:string type=\"string\">json</ns:string></o>";
         String xml = xmlSerializer.write(jsonObject);
+        assertXMLEqual(expected, xml);
+    }
+
+    public void testWriteWithCustomNames_1() throws Exception {
+        JSONObject root = new JSONObject()
+            .element("items", JSONArray.fromObject(Arrays.asList("one", JSONObject.fromObject("{\"name\":\"json\"}"))));
+        String expected = "<root><items class=\"array\"><element type=\"string\">one</element><element class=\"object\"><name type=\"string\">json</name></element></items></root>";
+        xmlSerializer.setRootName("root");
+        xmlSerializer.setElementName("element");
+        String xml = xmlSerializer.write(root);
+        assertXMLEqual(expected, xml);
+
+        expected = "<o><items class=\"array\"><e type=\"string\">one</e><e class=\"object\"><name type=\"string\">json</name></e></items></o>";
+        xmlSerializer.setRootName("");
+        xmlSerializer.setElementName("");
+        xml = xmlSerializer.write(root);
+        assertXMLEqual(expected, xml);
+    }
+
+    public void testWriteWithCustomNames_2() throws Exception {
+        JSONObject root = new JSONObject()
+            .element("items", JSONArray.fromObject(Arrays.asList("one", JSONObject.fromObject("{\"name\":\"json\"}"))));
+        String expected = "<object><items class=\"array\"><element type=\"string\">one</element><element class=\"object\"><name type=\"string\">json</name></element></items></object>";
+        xmlSerializer.setObjectName("object");
+        xmlSerializer.setElementName("element");
+        String xml = xmlSerializer.write(root);
+        assertXMLEqual(expected, xml);
+
+        expected = "<o><items class=\"array\"><e type=\"string\">one</e><e class=\"object\"><name type=\"string\">json</name></e></items></o>";
+        xmlSerializer.setObjectName("");
+        xmlSerializer.setElementName("");
+        xml = xmlSerializer.write(root);
+        assertXMLEqual(expected, xml);
+    }
+
+    public void testWriteWithCustomNames_3() throws Exception {
+        JSONArray root = JSONArray.fromObject("['1','2']");
+        String expected = "<array><element type=\"string\">1</element><element type=\"string\">2</element></array>";
+        xmlSerializer.setArrayName("array");
+        xmlSerializer.setElementName("element");
+        String xml = xmlSerializer.write(root);
+        assertXMLEqual(expected, xml);
+
+        expected = "<a><e type=\"string\">1</e><e type=\"string\">2</e></a>";
+        xmlSerializer.setArrayName("");
+        xmlSerializer.setElementName("");
+        xml = xmlSerializer.write(root);
+        assertXMLEqual(expected, xml);
+    }
+
+    public void testTypeHintsEnabled() throws Exception {
+        JSON json = new JSONObject()
+            .element("boolean", true)
+            .element("number", 1)
+            .element("string", "string")
+            .element("fun1", JSONFunction.parse("function() {}"))
+            .element("fun2", "function() {}")
+            .element("object", JSONObject.fromObject("{\"name\":\"json\"}"))
+            .element("array", JSONArray.fromObject("['1','2']"))
+            .element("nil", JSONNull.getInstance());
+
+        String expected = "<o><boolean type=\"boolean\">true</boolean><number type=\"number\">1</number><string type=\"string\">string</string>" +
+            "<fun1 type=\"function\" params=\"\"><![CDATA[]]></fun1><fun2 type=\"function\" params=\"\"><![CDATA[]]></fun2>" +
+            "<object class=\"object\"><name type=\"string\">json</name></object>" +
+            "<array class=\"array\"><e type=\"string\">1</e><e type=\"string\">2</e></array><nil class=\"object\" null=\"true\"/></o>";
+        String xml = xmlSerializer.write(json);
+        assertXMLEqual(expected, xml);
+
+        xmlSerializer.setTypeHintsEnabled(false);
+        expected = "<o><boolean>true</boolean><number>1</number><string>string</string>" +
+            "<fun1 params=\"\"><![CDATA[]]></fun1><fun2 params=\"\"><![CDATA[]]></fun2>" +
+            "<object><name>json</name></object>" +
+            "<array><e>1</e><e>2</e></array><nil null=\"true\"/></o>";
+        xml = xmlSerializer.write(json);
         assertXMLEqual(expected, xml);
     }
 
