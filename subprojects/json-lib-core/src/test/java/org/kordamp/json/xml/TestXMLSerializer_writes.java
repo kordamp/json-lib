@@ -26,7 +26,6 @@ import org.kordamp.json.JSONArray;
 import org.kordamp.json.JSONFunction;
 import org.kordamp.json.JSONNull;
 import org.kordamp.json.JSONObject;
-import org.kordamp.json.test.JSONAssert;
 
 import java.util.Arrays;
 
