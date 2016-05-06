@@ -22,7 +22,9 @@ package org.kordamp.json;
 import junit.framework.TestCase;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.kordamp.ezmorph.object.DateMorpher;
 import org.kordamp.ezmorph.object.MapToDateMorpher;
+import org.kordamp.json.processors.JsonValueProcessor;
 import org.kordamp.json.sample.ArrayBean;
 import org.kordamp.json.sample.BeanA;
 import org.kordamp.json.sample.BeanA1763699;
@@ -54,6 +56,7 @@ import org.kordamp.json.util.JavaIdentifierTransformer;
 import org.kordamp.json.util.JsonEventListener;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -913,6 +916,27 @@ public class TestUserSubmitted extends TestCase {
 
     }
 
+    public void testDateMorpher() {
+        JSONUtils.getMorpherRegistry().registerMorpher(new DateMorpher(new String[]{"yyyy-MM-dd"}));
+        JSONObject json = JSONObject.fromObject("{\"date\": \"2016-05-06\"}");
+        DateBean bean = (DateBean) JSONObject.toBean(json, DateBean.class);
+        jsonConfig.registerJsonValueProcessor(Date.class, new JsonValueProcessor() {
+            private final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+            @Override
+            public Object processArrayValue(Object value, JsonConfig jsonConfig) {
+                return null;
+            }
+
+            @Override
+            public Object processObjectValue(String key, Object value, JsonConfig jsonConfig) {
+                return df.format((Date) value);
+            }
+        });
+        JSONObject actual = JSONObject.fromObject(bean, jsonConfig);
+        assertEquals("2016-05-06", actual.getString("date"));
+    }
+
     protected void setUp() throws Exception {
         super.setUp();
         jsonConfig = new JsonConfig();
@@ -962,6 +986,7 @@ public class TestUserSubmitted extends TestCase {
         assertTrue(jsonObject.getJSONArray("a").getJSONObject(0).get("c") instanceof String);
     }
     */
+
     public static class RunnableImpl implements Runnable {
         public void run() {
 
