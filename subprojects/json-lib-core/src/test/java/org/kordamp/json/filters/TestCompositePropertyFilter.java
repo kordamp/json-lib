@@ -20,6 +20,10 @@
 package org.kordamp.json.filters;
 
 import junit.framework.TestCase;
+import org.kordamp.json.util.PropertyFilter;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Andres Almiray
@@ -40,6 +44,28 @@ public class TestCompositePropertyFilter extends TestCase {
         assertFalse(filter.apply(null, null, null));
         filter.addPropertyFilter(new TruePropertyFilter());
         assertTrue(filter.apply(null, null, null));
+    }
+
+    public void testConstructor() {
+        PropertyFilter filter1 = new FalsePropertyFilter();
+        PropertyFilter filter2 = new FalsePropertyFilter();
+        PropertyFilter filter3 = new TruePropertyFilter();
+        List filters = Arrays.asList(filter1, filter2, filter3, filter3, new Object());
+
+        filter = new CompositePropertyFilter(filters);
+        assertTrue(filter.apply(null, null, null));
+
+        filter.addPropertyFilter(filter1);
+        assertTrue(filter.apply(null, null, null));
+
+        filter.addPropertyFilter(null);
+        assertTrue(filter.apply(null, null, null));
+
+        filter.removePropertyFilter(filter3);
+        assertFalse(filter.apply(null, null, null));
+
+        filter.removePropertyFilter(null);
+        assertFalse(filter.apply(null, null, null));
     }
 
     protected void setUp() throws Exception {

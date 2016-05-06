@@ -57,4 +57,16 @@ public class TestAndPropertyFilter extends TestCase {
             new TruePropertyFilter());
         assertTrue(filter.apply(null, null, null));
     }
+
+    public void testApply_null_true() {
+        PropertyFilter filter = new AndPropertyFilter(null,
+            new TruePropertyFilter());
+        assertFalse(filter.apply(null, null, null));
+    }
+
+    public void testApply_true_null() {
+        PropertyFilter filter = new AndPropertyFilter(new TruePropertyFilter(),
+            null);
+        assertFalse(filter.apply(null, null, null));
+    }
 }

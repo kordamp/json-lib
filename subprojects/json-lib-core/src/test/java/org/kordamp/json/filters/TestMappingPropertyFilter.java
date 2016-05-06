@@ -21,6 +21,9 @@ package org.kordamp.json.filters;
 
 import junit.framework.TestCase;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Andres Almiray
  */
@@ -33,8 +36,20 @@ public class TestMappingPropertyFilter extends TestCase {
         junit.textui.TestRunner.run(TestMappingPropertyFilter.class);
     }
 
+    public void testConstructor() {
+        Map filters = new HashMap();
+        filters.put(Integer.class, null);
+        filters.put(String.class, new TruePropertyFilter());
+        filters.put(Long.class, new TruePropertyFilter());
+        MappingPropertyFilter filter = new SampleMappingPropertyFilter(filters);
+
+        assertFalse(filter.apply("String", null, null));
+        assertTrue(filter.apply(new Long(1L), null, null));
+    }
+
     public void testApply() {
         MappingPropertyFilter filter = new SampleMappingPropertyFilter();
+        filter.addPropertyFilter(Integer.class, null);
         filter.addPropertyFilter(String.class, new TruePropertyFilter());
         filter.addPropertyFilter(Long.class, new TruePropertyFilter());
 
@@ -42,10 +57,27 @@ public class TestMappingPropertyFilter extends TestCase {
         assertTrue(filter.apply(new Long(1L), null, null));
     }
 
+    public void testRemove() {
+        MappingPropertyFilter filter = new SampleMappingPropertyFilter();
+        filter.addPropertyFilter(String.class, new TruePropertyFilter());
+        filter.addPropertyFilter(Long.class, new TruePropertyFilter());
+        filter.removePropertyFilter(Long.class);
+        filter.removePropertyFilter(null);
+
+        assertFalse(filter.apply("String", null, null));
+        assertFalse(filter.apply(new Long(1L), null, null));
+    }
+
     public static class SampleMappingPropertyFilter extends MappingPropertyFilter {
+        public SampleMappingPropertyFilter() {
+        }
+
+        public SampleMappingPropertyFilter(Map filters) {
+            super(filters);
+        }
+
         protected boolean keyMatches(Object key, Object source, String name, Object value) {
             return ((Class) key).isAssignableFrom(source.getClass()) && source instanceof Number;
         }
-
     }
 }

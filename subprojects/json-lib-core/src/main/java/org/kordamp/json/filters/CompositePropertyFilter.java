@@ -39,7 +39,7 @@ public class CompositePropertyFilter implements PropertyFilter {
         if (filters != null) {
             for (Iterator i = filters.iterator(); i.hasNext(); ) {
                 Object filter = i.next();
-                if (filter instanceof PropertyFilter) {
+                if (filter instanceof PropertyFilter && !this.filters.contains(filter)) {
                     this.filters.add(filter);
                 }
             }
@@ -47,7 +47,7 @@ public class CompositePropertyFilter implements PropertyFilter {
     }
 
     public void addPropertyFilter(PropertyFilter filter) {
-        if (filter != null) {
+        if (filter != null && !this.filters.contains(filter)) {
             filters.add(filter);
         }
     }

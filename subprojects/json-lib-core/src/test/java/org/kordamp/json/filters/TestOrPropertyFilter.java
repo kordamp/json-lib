@@ -57,4 +57,28 @@ public class TestOrPropertyFilter extends TestCase {
             new TruePropertyFilter());
         assertTrue(filter.apply(null, null, null));
     }
+
+    public void testApply_null_false() {
+        PropertyFilter filter = new OrPropertyFilter(null,
+            new FalsePropertyFilter());
+        assertFalse(filter.apply(null, null, null));
+    }
+
+    public void testApply_false_null() {
+        PropertyFilter filter = new OrPropertyFilter(new FalsePropertyFilter(),
+            null);
+        assertFalse(filter.apply(null, null, null));
+    }
+
+    public void testApply_null_true() {
+        PropertyFilter filter = new OrPropertyFilter(null,
+            new TruePropertyFilter());
+        assertTrue(filter.apply(null, null, null));
+    }
+
+    public void testApply_true_null() {
+        PropertyFilter filter = new OrPropertyFilter(new TruePropertyFilter(),
+            null);
+        assertTrue(filter.apply(null, null, null));
+    }
 }

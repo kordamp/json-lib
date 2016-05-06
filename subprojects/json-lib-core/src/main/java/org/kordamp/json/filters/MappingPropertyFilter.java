@@ -37,8 +37,7 @@ public abstract class MappingPropertyFilter implements PropertyFilter {
 
     public MappingPropertyFilter(Map filters) {
         if (filters != null) {
-            for (Iterator i = filters.entrySet()
-                .iterator(); i.hasNext(); ) {
+            for (Iterator i = filters.entrySet().iterator(); i.hasNext(); ) {
                 Map.Entry entry = (Map.Entry) i.next();
                 Object key = entry.getKey();
                 Object filter = entry.getValue();
@@ -56,8 +55,7 @@ public abstract class MappingPropertyFilter implements PropertyFilter {
     }
 
     public boolean apply(Object source, String name, Object value) {
-        for (Iterator i = filters.entrySet()
-            .iterator(); i.hasNext(); ) {
+        for (Iterator i = filters.entrySet().iterator(); i.hasNext(); ) {
             Map.Entry entry = (Map.Entry) i.next();
             Object key = entry.getKey();
             if (keyMatches(key, source, name, value)) {

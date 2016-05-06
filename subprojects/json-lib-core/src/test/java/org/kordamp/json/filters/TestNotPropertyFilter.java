@@ -42,4 +42,9 @@ public class TestNotPropertyFilter extends TestCase {
         NotPropertyFilter filter = new NotPropertyFilter(new FalsePropertyFilter());
         assertTrue(filter.apply(null, null, null));
     }
+
+    public void testApply_null() {
+        NotPropertyFilter filter = new NotPropertyFilter(null);
+        assertFalse(filter.apply(null, null, null));
+    }
 }
