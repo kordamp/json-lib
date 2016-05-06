@@ -19,24 +19,25 @@
  */
 package org.kordamp.json.processors;
 
-import junit.framework.TestSuite;
+import junit.framework.TestCase;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Andres Almiray
  */
-public class AllTests extends TestSuite {
-    public static TestSuite suite() throws Exception {
-        TestSuite suite = new TestSuite();
-        suite.setName("processors");
+public class TestDefaultJsonValueProcessorMatcher extends TestCase {
+    public void testDefault() {
+        JsonValueProcessorMatcher matcher = JsonValueProcessorMatcher.DEFAULT;
 
-        suite.addTest(new TestSuite(TestJsDateJsonBeanProcessor.class));
-        suite.addTest(new TestSuite(TestJsDateJsonValueProcessor.class));
-        suite.addTest(new TestSuite(TestJsonBeanProcessorMatcher.class));
-        suite.addTest(new TestSuite(TestJsonVerifier.class));
-        suite.addTest(new TestSuite(TestDefaultJsonValueProcessorMatcher.class));
-        suite.addTest(new TestSuite(TestDefaultValueProcessorMatcher.class));
-        suite.addTest(new TestSuite(TestDefaultPropertyNameProcessorMatcher.class));
-
-        return suite;
+        assertNull(matcher.getMatch(null, null));
+        assertNull(matcher.getMatch(Long.class, null));
+        assertNull(matcher.getMatch(null, new HashSet()));
+        assertNull(matcher.getMatch(Long.class, new HashSet()));
+        Set set = new HashSet();
+        set.add(Long.class);
+        assertNotNull(matcher.getMatch(Long.class, set));
+        assertEquals(Long.class, matcher.getMatch(Long.class, set));
     }
 }

@@ -22,6 +22,7 @@ package org.kordamp.json.processors;
 import junit.framework.TestCase;
 import org.kordamp.json.JSONObject;
 import org.kordamp.json.JsonConfig;
+import org.kordamp.json.test.JSONAssert;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -81,6 +82,11 @@ public class TestJsDateJsonBeanProcessor extends TestCase {
         assertEquals(13, jsonObject.getInt("minutes"));
         assertEquals(14, jsonObject.getInt("seconds"));
         assertEquals(150, jsonObject.getInt("milliseconds"));
+    }
+
+    public void testProcessBean_object() {
+        JSONObject jsonObject = processor.processBean(new Object(), new JsonConfig());
+        JSONAssert.assertNull(jsonObject);
     }
 
     protected void setUp() throws Exception {
