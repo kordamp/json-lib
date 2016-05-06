@@ -19,24 +19,25 @@
  */
 package org.kordamp.json.util;
 
-import junit.framework.TestSuite;
+import junit.framework.TestCase;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Andres Almiray
  */
-public class AllTests extends TestSuite {
-    public static TestSuite suite() throws Exception {
-        TestSuite suite = new TestSuite();
-        suite.setName("util");
+public class TestDefaultPropertyExclusionClassMatcher extends TestCase {
+    public void testDefault() {
+        PropertyExclusionClassMatcher matcher = PropertyExclusionClassMatcher.DEFAULT;
 
-        suite.addTest(new TestSuite(TestJavaIdentifierTransformer.class));
-        suite.addTest(new TestSuite(TestJSONUtils.class));
-        suite.addTest(new TestSuite(TestJSONTokener.class));
-        suite.addTest(new TestSuite(TestJSONBuilder.class));
-        suite.addTest(new TestSuite(TestJSONStringer.class));
-        suite.addTest(new TestSuite(TestWebUtils.class));
-        suite.addTest(new TestSuite(TestDefaultPropertyExclusionClassMatcher.class));
-
-        return suite;
+        assertNull(matcher.getMatch(null, null));
+        assertNull(matcher.getMatch(Long.class, null));
+        assertNull(matcher.getMatch(null, new HashSet()));
+        assertNull(matcher.getMatch(Long.class, new HashSet()));
+        Set set = new HashSet();
+        set.add(Long.class);
+        assertNotNull(matcher.getMatch(Long.class, set));
+        assertEquals(Long.class, matcher.getMatch(Long.class, set));
     }
 }

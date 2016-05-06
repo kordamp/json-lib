@@ -95,7 +95,7 @@ public class JSONAssert extends Assert {
      * Asserts that two JSON values are equal.
      */
     public static void assertEquals(String message, JSON expected, JSON actual) {
-        String header = message == null ? "" : message + ": ";
+        String header = StringUtils.isBlank(message) ? "" : message + ": ";
         if (expected == null) {
             fail(header + "expected was null");
         }
@@ -138,7 +138,7 @@ public class JSONAssert extends Assert {
      * Asserts that two JSONArrays are equal.
      */
     public static void assertEquals(String message, JSONArray expected, JSONArray actual) {
-        String header = message == null ? "" : message + ": ";
+        String header = StringUtils.isBlank(message) ? "" : message + ": ";
         if (expected == null) {
             fail(header + "expected array was null");
         }
@@ -230,7 +230,7 @@ public class JSONAssert extends Assert {
         try {
             assertEquals(message, expected, JSONArray.fromObject(actual));
         } catch (JSONException e) {
-            String header = message == null ? "" : message + ": ";
+            String header = StringUtils.isBlank(message) ? "" : message + ": ";
             fail(header + "actual is not a JSONArray");
         }
     }
@@ -246,7 +246,7 @@ public class JSONAssert extends Assert {
      * Asserts that two JSONFunctions are equal.
      */
     public static void assertEquals(String message, JSONFunction expected, String actual) {
-        String header = message == null ? "" : message + ": ";
+        String header = StringUtils.isBlank(message) ? "" : message + ": ";
         if (expected == null) {
             fail(header + "expected function was null");
         }
@@ -272,7 +272,7 @@ public class JSONAssert extends Assert {
      * Asserts that two JSONNulls are equal.
      */
     public static void assertEquals(String message, JSONNull expected, String actual) {
-        String header = message == null ? "" : message + ": ";
+        String header = StringUtils.isBlank(message) ? "" : message + ": ";
         if (actual == null) {
             fail(header + "actual string was null");
         } else if (expected == null) {
@@ -293,7 +293,7 @@ public class JSONAssert extends Assert {
      * Asserts that two JSONObjects are equal.
      */
     public static void assertEquals(String message, JSONObject expected, JSONObject actual) {
-        String header = message == null ? "" : message + ": ";
+        String header = StringUtils.isBlank(message) ? "" : message + ": ";
         if (expected == null) {
             fail(header + "expected object was null");
         }
@@ -424,7 +424,7 @@ public class JSONAssert extends Assert {
         try {
             assertEquals(message, expected, JSONObject.fromObject(actual));
         } catch (JSONException e) {
-            String header = message == null ? "" : message + ": ";
+            String header = StringUtils.isBlank(message) ? "" : message + ": ";
             fail(header + "actual is not a JSONObject");
         }
     }
@@ -436,7 +436,7 @@ public class JSONAssert extends Assert {
         try {
             assertEquals(message, JSONArray.fromObject(expected), actual);
         } catch (JSONException e) {
-            String header = message == null ? "" : message + ": ";
+            String header = StringUtils.isBlank(message) ? "" : message + ": ";
             fail(header + "expected is not a JSONArray");
         }
     }
@@ -445,7 +445,7 @@ public class JSONAssert extends Assert {
      * Asserts that two JSONFunctions are equal.
      */
     public static void assertEquals(String message, String expected, JSONFunction actual) {
-        String header = message == null ? "" : message + ": ";
+        String header = StringUtils.isBlank(message) ? "" : message + ": ";
         if (expected == null) {
             fail(header + "expected string was null");
         }
@@ -464,7 +464,7 @@ public class JSONAssert extends Assert {
      * Asserts that two JSONNulls are equal.
      */
     public static void assertEquals(String message, String expected, JSONNull actual) {
-        String header = message == null ? "" : message + ": ";
+        String header = StringUtils.isBlank(message) ? "" : message + ": ";
         if (expected == null) {
             fail(header + "expected was null");
         } else if (actual == null) {
@@ -481,7 +481,7 @@ public class JSONAssert extends Assert {
         try {
             assertEquals(message, JSONObject.fromObject(expected), actual);
         } catch (JSONException e) {
-            String header = message == null ? "" : message + ": ";
+            String header = StringUtils.isBlank(message) ? "" : message + ": ";
             fail(header + "expected is not a JSONObject");
         }
     }
@@ -497,7 +497,7 @@ public class JSONAssert extends Assert {
      * Asserts that two JSON strings are equal.
      */
     public static void assertJsonEquals(String message, String expected, String actual) {
-        String header = message == null ? "" : message + ": ";
+        String header = StringUtils.isBlank(message) ? "" : message + ": ";
         if (expected == null) {
             fail(header + "expected was null");
         }
@@ -541,7 +541,7 @@ public class JSONAssert extends Assert {
      * </ul>
      */
     public static void assertNotNull(String message, JSON json) {
-        String header = message == null ? "" : message + ": ";
+        String header = StringUtils.isBlank(message) ? "" : message + ": ";
         if (json instanceof JSONObject) {
             assertFalse(header + "Object is null", ((JSONObject) json).isNullObject());
         } else if (JSONNull.getInstance()
@@ -571,7 +571,7 @@ public class JSONAssert extends Assert {
      * </ul>
      */
     public static void assertNull(String message, JSON json) {
-        String header = message == null ? "" : message + ": ";
+        String header = StringUtils.isBlank(message) ? "" : message + ": ";
         if (json instanceof JSONObject) {
             assertTrue(header + "Object is not null", ((JSONObject) json).isNullObject());
         } else if (!JSONNull.getInstance()

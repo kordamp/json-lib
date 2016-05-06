@@ -611,4 +611,74 @@ public class TestJSONAssert extends TestCase {
             fail("Parameter is null and assertion failed");
         }
     }
+
+    public void testAssertEquals_expected_was_null() {
+        try {
+            JSONAssert.assertEquals("", (JSON) null, (JSON) null);
+            fail("did not fail as expected!");
+        } catch (AssertionFailedError expected) {
+            assertEquals("expected was null", expected.getMessage());
+        }
+    }
+
+    public void testAssertEquals_actual_was_null() {
+        try {
+            JSONAssert.assertEquals("", (JSON) JSONNull.getInstance(), (JSON) null);
+            fail("did not fail as expected!");
+        } catch (AssertionFailedError expected) {
+            assertEquals("actual was null", expected.getMessage());
+        }
+    }
+
+    public void testAssertEquals_equality__operator() {
+        JSONAssert.assertEquals("", (JSON) JSONNull.getInstance(), (JSON) JSONNull.getInstance());
+    }
+
+    public void testAssertEquals_equality__method() {
+        JSONAssert.assertEquals("", (JSON) JSONNull.getInstance(), (JSON) new JSONObject(true));
+    }
+
+    public void testAssertEquals_array_object() {
+        try {
+            JSONAssert.assertEquals("", (JSON) new JSONArray(), (JSON) new JSONObject());
+            fail("did not fail as expected!");
+        } catch (AssertionFailedError expected) {
+            assertEquals("actual is not a JSONArray", expected.getMessage());
+        }
+    }
+
+    public void testAssertEquals_object_array() {
+        try {
+            JSONAssert.assertEquals("", (JSON) new JSONObject(), (JSON) new JSONArray());
+            fail("did not fail as expected!");
+        } catch (AssertionFailedError expected) {
+            assertEquals("actual is not a JSONObject", expected.getMessage());
+        }
+    }
+
+    public void testAssertEquals_array_array_true() {
+        JSONAssert.assertEquals("", (JSON) new JSONArray(), (JSON) new JSONArray());
+    }
+
+    public void testAssertEquals_array_array_false() {
+        try {
+            JSONAssert.assertEquals("", (JSON) new JSONArray(), (JSON) JSONArray.fromObject("[1]"));
+            fail("did not fail as expected!");
+        } catch (AssertionFailedError expected) {
+            assertTrue(expected.getMessage().contains("arrays sizes differed"));
+        }
+    }
+
+    public void testAssertEquals_object_object_true() {
+        JSONAssert.assertEquals("", (JSON) new JSONObject(), (JSON) new JSONObject());
+    }
+
+    public void testAssertEquals_object_object_false() {
+        try {
+            JSONAssert.assertEquals("", (JSON) JSONObject.fromObject("{\"key\":\"value1\"}"), (JSON) JSONObject.fromObject("{\"key\":\"value2\"}"));
+            fail("did not fail as expected!");
+        } catch (AssertionFailedError expected) {
+            assertTrue(expected.getMessage().contains("objects differed"));
+        }
+    }
 }
