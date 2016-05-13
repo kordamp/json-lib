@@ -1,4 +1,264 @@
 
 [[_usage]]
 = Usage
+:toc:
+:icons: font
 
+== Json-lib: Getting started
+
+=== How to use json-lib
+
+==== Using the JSONSerializer
+
+JSONSerializer can transform any java object to JSON notation and back with a simple and
+clean interface, leveraging all the builders in JSONObject and JSONArray. To transform a
+Java object into JSON use `JSONSerializer.toJSON()`. To transform a valid JSON
+value (by JSON, I mean an Object implementing that interface), use `toJava()`.
+The last method is an instance method because the serializer needs special configuration to
+transform a JSON value to a bean class, array, List or DynaBean.
+
+==== Working with arrays and collections
+
+The simplest way to create a
+`JSONArray` from a Java array or collection
+is through the static factory methods from `JSONArray`.
+`JSONArray.fromObject()` will inspect its parameter and 
+call the correct factory or constructor.
+
+Examples:
+
+[source,java]
+----
+boolean[] boolArray = new boolean[]{true,false,true};
+JSONArray jsonArray = JSONArray.fromObject( boolArray );
+System.out.println( jsonArray );
+// prints [true,false,true]
+----
+
+[source,java]
+----
+List list = new ArrayList();
+list.add( "first" );
+list.add( "second" );
+JSONArray jsonArray = JSONArray.fromObject( list );
+System.out.println( jsonArray );
+// prints ["first","second"]
+----
+
+[source,java]
+----
+JSONArray jsonArray = JSONArray.fromObject( "['json','is','easy']" );
+System.out.println( jsonArray );
+// prints ["json","is","easy"]
+----
+
+==== Working with objects
+==== From Beans and Maps to JSON
+The simplest way to create a
+`JSONObject` from a bean or `Map` is through the static factory methods 
+from `JSONObject`. `JSONObject.fromObject()`
+will inspect its parameter and call the correct factory or constructor.
+
+Examples:
+
+[source,java]
+----
+Map map = new HashMap();
+map.put( "name", "json" );
+map.put( "bool", Boolean.TRUE );
+map.put( "int", new Integer(1) );
+map.put( "arr", new String[]{"a","b"} );
+map.put( "func", "function(i){ return this.arr[i]; }" );
+
+JSONObject jsonObject = JSONObject.fromObject( map );
+System.out.println( jsonObject );
+// prints ["name":"json","bool":true,"int":1,"arr":["a","b"],"func":function(i){ return this.arr[i]; }]
+----
+
+[source,java]
+----
+class MyBean{
+  private String name = "json";
+  private int pojoId = 1;
+  private char[] options = new char[]{'a','f'};
+  private String func1 = "function(i){ return this.options[i]; }";
+  private JSONFunction func2 = new JSONFunction(new String[]{"i"},"return this.options[i];");
+
+// getters &amp; setters
+...
+}
+
+JSONObject jsonObject = JSONObject.fromObject( new MyBean() );
+System.out.println( jsonObject );
+/* prints
+  {"name":"json","pojoId":1,"options":["a","f"],
+  "func1":function(i){ return this.options[i];},
+  "func2":function(i){ return this.options[i];}}
+*/
+----
+
+*CAUTION*: when parsing, JSONObject and JSONArray will check for cycles in the hierarchy, throwing an exception
+if one is found. You can change this behavior by registering a CycleDetectionStrategy.
+
+==== From JSON to Beans
+Json-lib can transform JSONObjects to either a DynaBean or an specific bean class.
+<br/>
+When using DynaBean all arrays are converted to Lists, when using an specific bean class
+the transformation will use type conversion if necessary on array properties.
+
+Convert to DynaBean:
+
+[source,java]
+----
+String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
+JSONObject jsonObject = JSONObject.fromObject( json );
+Object bean = JSONObject.toBean( jsonObject );
+assertEquals( jsonObject.get( "name" ), PropertyUtils.getProperty( bean, "name" ) );
+assertEquals( jsonObject.get( "bool" ), PropertyUtils.getProperty( bean, "bool" ) );
+assertEquals( jsonObject.get( "int" ), PropertyUtils.getProperty( bean, "int" ) );
+assertEquals( jsonObject.get( "double" ), PropertyUtils.getProperty( bean, "double" ) );
+assertEquals( jsonObject.get( "func" ), PropertyUtils.getProperty( bean, "func" ) );
+List expected = JSONArray.toList( jsonObject.getJSONArray( "array" ) );
+Assertions.assertListEquals( expected, (List) PropertyUtils.getProperty( bean, "array" ) );
+----
+
+Convert to Bean:
+[source,java]
+----
+String json = "{bool:true,integer:1,string:\"json\"}";
+JSONObject jsonObject = JSONObject.fromObject( json );
+BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
+assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
+assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
+assertEquals( jsonObject.get( "string" ), bean.getString() );                    
+----
+
+There are two special cases when converting to an specific bean, if the target bean
+has a Map property and it must contain other beans,
+`JSONObject.toBean()` will transform the nested beans into DynaBeans. If you need those nested beans transformed into an
+specific class, you can either postprocess the Map attribute or provide hints on JSONObject's
+attributes for conversion.
+`JSONObject.toBean()`
+may be passed a third argument,
+a Map, that will provide those hints. Every key must be either the name of a property or a
+regular expression matching the object's properties, and the value must be a `Class`.
+
+The second case is similar and it happens when the target bean has a Collection (List) as a
+property and it must contain other beans. In this case there is no way to provide hints for
+class conversion. The only possible solution is to postprocess the collection transforming each
+DynaBean into an specific bean.
+
+To ease the postprocessing scenarios, EZMorph provides a Morpher capable of
+ transforming a DynaBean into an specific bean, 
+ http://ezmorph.sourceforge.net/apidocs/net/sf/ezmorph/bean/BeanMorpher.html[BeanMorpher]
+
+Example:
+
+[source,java]
+----
+class MyBean{
+  private List data;
+  // getters &amp; setters
+}
+
+class Person{
+  private String name;
+  // getters &amp; setters
+}
+
+...
+
+String json = "{'data':[{'name':'Wallace'},{'name':'Grommit'}]}";
+Map classMap = new HashMap();
+classMap.put( "data", Person.class );
+MyBean bean = JSONObject.toBean( JSONObject.fromObject(json), MyBean.class, classMap );
+----
+
+This yields a MyBean instance that has DynaBeans inside the 'data' attribute', so now comes
+the postprocessing part, this can be done with an Iterator.
+
+Example:
+
+[source,java]
+----
+Morpher dynaMorpher = new BeanMorpher( Person.class, JSONUtils.getMorpherRegistry() );
+morpherRegistry.registerMorpher( dynaMorpher );
+List output = new ArrayList();
+for( Iterator i = bean.getData().iterator(); i.hasNext(); ){
+  output.add( morpherRegistry.morph( Person.class, i.next() ) );
+}
+bean.setData( output );
+----
+
+To learn more about Morphers, please visit http://ezmorph.sourceforge.net[EZMorph's project site].
+
+==== Working with XML
+Working with XML has become easier since version 1.1. Transforming JSONObjects and JSONArrays from and to XML
+is done through the XMLSerializer.
+
+==== From JSON to XML
+Writing to JSON to XML is as simple as calling
+`XMLSerializer.write()`, but there are a lot
+of options that you may configure to get better control of the XML output. For example you may change the
+default names for the root element ('o' if object, 'a' if array), the default name for object (an object inside
+an array is "anonymous"), the default name for array (for the same reason as object), the default name for
+element (array items have no name). If you'd like to output namescape information but your JSON does not
+includes it, no problem, you have 8 methods that will let you register and manage namespaces; namespaces
+defined this way have precedence on any namespace declaration that may be inside the JSON. By default
+XMLSerializer will append special attributes to each xml element for easing the transformation back to JSON
+but you may configure it to skip appending those attributes. Any property on a JSONObject that begins
+with '@' will be treated as an attribute, any property named '#text' will be treated as a Text node.
+
+Please review the javadoc for XMLSerializer to know more about the configurable options.
+[cols="l,l"]
+|===
+|Code | XML output
+
+| JSONObject json = new JSONObject( true );
+ String xml = XMLSerializer.write( json );
+| <o class="object" null="true">
+
+| JSONObject json = JSONObject.fromObject("{\"name\":\"json\",\"bool\":true,\"int\":1}");
+ String xml = XMLSerializer.write( json );
+| <o class="object">
+  <name type="string">json</name>
+  <bool type="boolean">true</bool>
+  <int type="number">1</int>
+  </o>
+  
+| JSONArray json = JSONArray.fromObject("[1,2,3]");
+  String xml = XMLSerializer.write( json );
+|<a class="array">
+ <e type="number">1</e>
+ <e type="number">2</e>
+ <e type="number">3</e>
+ </a>
+
+|===
+
+==== From XML to JSON
+XMLSerializer treats each element as a
+`string`
+unless a type parameter is specified. +
+JSONFunction needs an additional parameter that specifies that function's params. +
+
+All xml attributes will have the prefix '@' and text nodes will have the property name '#text'. XMLSerializer supports
+the rules outlined at http://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html[Converting Between XML and JSON]
+
+[cols="l,l"]
+|===
+|XML input | Code
+
+|<a class="array">
+ <e type="function" params="i,j">
+  return matrix[i][j];
+ </e>
+</a>
+|JSONArray json = (JSONArray) XMLSerializer.read( xml );
+ System.out.println( json );
+ // prints [function(i,j){ return matrix[i][j]; }
+
+|===
+
+*CAUTION:*  when parsing, JSONObject and JSONArray will check for cycles in the hierarchy, throwing an exception
+if one is found. You can change this behavior by registering a CycleDetectionStrategy.
