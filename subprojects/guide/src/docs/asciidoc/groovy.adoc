@@ -2,3 +2,44 @@
 = Using Json-lib with Groovy
 
 image::logos/groovy-logo.png[link="http://groovy.codehaus.org"]
+
+Since version 2.0 Json-lib has integrated http://groovy.codehaus.org[Groovy]
+support, meaning that POGOs can be transformed into JSON and back,
+in the same manner as you do now with POJOs. There are other features as well:
+
+* Type transformations with the `as` keyword. +
+  A Groovy List (default type is ArrayList) can be transformed into a JSONArray. +
+  A Groovy Map (default type is HashMap) can be transformed into a JSONObject. +
+  A String can be transformed into JSON, JSONObject, JSONArray and JSONFunction.
+
+[source,groovy]
+----
+def fromList = [1,true,'json'] as JSONarray
+def fromMap = [integer:1, bool: true] as JSONObject
+def strAsJson1 = "{integer:1, bool: true}" as JSON
+def strAsJson2 = "[1,2,3]" as JSON
+def strAsJsonObject = "{integer:1, bool: true}" as JSONObject
+def strAsJsonArray = "[1,2,3]" as JSONArray
+def strAsFunc = "function(param){ this.param = param; }" as JSONFunction
+----
+
+* JSONObject supports the leftShift (&lt;&lt;) operator to append values, the
+  following rules apply:
+  ** If the shifted arg is a Map, it will call putAll() on the object.
+  ** If the shifted arg is a List and its size == 2, the first element will
+     be the key, and the second will be the value.
+  ** If the shifted arg is a List and its size > 2, the first element will
+     be the key, the arg will be shifted by 1 and passed as the value (wi
+     ll create a JSONArray because it is a List).
+  ** Any other type will be discarded, the object will not be affected nor
+     an exception will be thrown.
+* JSONObject and JSONarray implement java.util.Comparable, which enables the use of
+  the comparison operators with them (including the spaceship operator).
+* JSONObject implements java.util.Map and JSONArray implements java.util.List,
+  anything you can do with Maps and List can be done with JSONObject and JSONArray.
+* JsonGroovyBuilder behaves like the JsonBuilder found in Grails but it will create a
+  JSONObject/JSONArray instead of writing the built structure into a String.
+
+WARNING: Since version 2.2.1 Json-lib will not automatically enhance class through
+         custom metaclasses, you must call GJson.enhanceClasses() before executing
+         the examples shown on this page.
