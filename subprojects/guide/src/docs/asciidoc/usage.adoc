@@ -1,14 +1,9 @@
 
 [[_usage]]
 = Usage
-:toc:
 :icons: font
 
-== Json-lib: Getting started
-
-=== How to use json-lib
-
-==== Using the JSONSerializer
+== Using the JSONSerializer
 
 JSONSerializer can transform any java object to JSON notation and back with a simple and
 clean interface, leveraging all the builders in JSONObject and JSONArray. To transform a
@@ -17,7 +12,7 @@ value (by JSON, I mean an Object implementing that interface), use `toJava()`.
 The last method is an instance method because the serializer needs special configuration to
 transform a JSON value to a bean class, array, List or DynaBean.
 
-==== Working with arrays and collections
+== Working with arrays and collections
 
 The simplest way to create a
 `JSONArray` from a Java array or collection
@@ -52,8 +47,8 @@ System.out.println( jsonArray );
 // prints ["json","is","easy"]
 ----
 
-==== Working with objects
-==== From Beans and Maps to JSON
+== Working with objects
+=== From Beans and Maps to JSON
 The simplest way to create a
 `JSONObject` from a bean or `Map` is through the static factory methods 
 from `JSONObject`. `JSONObject.fromObject()`
@@ -97,10 +92,10 @@ System.out.println( jsonObject );
 */
 ----
 
-*CAUTION*: when parsing, JSONObject and JSONArray will check for cycles in the hierarchy, throwing an exception
+*CAUTION:* when parsing, JSONObject and JSONArray will check for cycles in the hierarchy, throwing an exception
 if one is found. You can change this behavior by registering a CycleDetectionStrategy.
 
-==== From JSON to Beans
+=== From JSON to Beans
 Json-lib can transform JSONObjects to either a DynaBean or an specific bean class.
 <br/>
 When using DynaBean all arrays are converted to Lists, when using an specific bean class
@@ -192,11 +187,11 @@ bean.setData( output );
 
 To learn more about Morphers, please visit http://ezmorph.sourceforge.net[EZMorph's project site].
 
-==== Working with XML
+== Working with XML
 Working with XML has become easier since version 1.1. Transforming JSONObjects and JSONArrays from and to XML
 is done through the XMLSerializer.
 
-==== From JSON to XML
+=== From JSON to XML
 Writing to JSON to XML is as simple as calling
 `XMLSerializer.write()`, but there are a lot
 of options that you may configure to get better control of the XML output. For example you may change the
@@ -210,33 +205,39 @@ but you may configure it to skip appending those attributes. Any property on a J
 with '@' will be treated as an attribute, any property named '#text' will be treated as a Text node.
 
 Please review the javadoc for XMLSerializer to know more about the configurable options.
+
 [cols="l,l"]
 |===
-|Code | XML output
+|*Code* | *XML output*
 
-| JSONObject json = new JSONObject( true );
- String xml = XMLSerializer.write( json );
-| <o class="object" null="true">
+|
+JSONObject json = new JSONObject( true );
+String xml = XMLSerializer.write( json );
+|
+<o class="object" null="true">
 
-| JSONObject json = JSONObject.fromObject("{\"name\":\"json\",\"bool\":true,\"int\":1}");
- String xml = XMLSerializer.write( json );
-| <o class="object">
+|
+JSONObject json = JSONObject.fromObject("{\"name\":\"json\",\"bool\":true,\"int\":1}");
+String xml = XMLSerializer.write( json );
+|
+<o class="object">
   <name type="string">json</name>
   <bool type="boolean">true</bool>
   <int type="number">1</int>
-  </o>
+</o>
   
-| JSONArray json = JSONArray.fromObject("[1,2,3]");
-  String xml = XMLSerializer.write( json );
-|<a class="array">
+|
+JSONArray json = JSONArray.fromObject("[1,2,3]");
+String xml = XMLSerializer.write( json );  
+|
+<a class="array">
  <e type="number">1</e>
  <e type="number">2</e>
  <e type="number">3</e>
- </a>
-
+</a>
 |===
 
-==== From XML to JSON
+=== From XML to JSON
 XMLSerializer treats each element as a
 `string`
 unless a type parameter is specified. +
@@ -247,16 +248,18 @@ the rules outlined at http://www.xml.com/pub/a/2006/05/31/converting-between-xml
 
 [cols="l,l"]
 |===
-|XML input | Code
+|*XML input* | *Code*
 
-|<a class="array">
+|
+<a class="array">
  <e type="function" params="i,j">
   return matrix[i][j];
  </e>
 </a>
-|JSONArray json = (JSONArray) XMLSerializer.read( xml );
- System.out.println( json );
- // prints [function(i,j){ return matrix[i][j]; }
+|
+JSONArray json = (JSONArray) XMLSerializer.read( xml );
+System.out.println( json );
+// prints [function(i,j){ return matrix[i][j]; }
 
 |===
 
