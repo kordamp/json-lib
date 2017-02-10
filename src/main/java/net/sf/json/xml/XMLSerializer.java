@@ -1258,23 +1258,23 @@ public class XMLSerializer {
    private void setValue( JSONArray jsonArray, Element element, String defaultType ) {
       String clazz = getClass( element );
       String type = getType( element );
-      type = (type == null) ? defaultType : type;
+      boolean forcedType = false;
+      if(type == null) {
+    	  type = defaultType;
+      } else {
+    	  forcedType = true;
+      }
 
       if( hasNamespaces( element ) && !skipNamespaces ){
          jsonArray.element( simplifyValue( null, processElement( element, type ) ) );
          return;
-      }else if( element.getAttributeCount() > 0 ){
-         if( isFunction( element ) ){
+      }else if( element.getAttributeCount() > 0 && isFunction( element ) ){
             Attribute paramsAttribute = element.getAttribute( addJsonPrefix( "params" ) );
             String[] params = null;
             String text = element.getValue();
             params = StringUtils.split( paramsAttribute.getValue(), "," );
             jsonArray.element( new JSONFunction( params, text ) );
             return;
-         }else{
-            jsonArray.element( simplifyValue( null, processElement( element, type ) ) );
-            return;
-         }
       }
 
       boolean classProcessed = false;
@@ -1291,12 +1291,16 @@ public class XMLSerializer {
          if( type.compareToIgnoreCase( JSONTypes.BOOLEAN ) == 0 ){
             jsonArray.element( Boolean.valueOf( element.getValue() ) );
          }else if( type.compareToIgnoreCase( JSONTypes.NUMBER ) == 0 ){
-            // try integer first
-            try{
-               jsonArray.element( Integer.valueOf( element.getValue() ) );
-            }catch( NumberFormatException e ){
-               jsonArray.element( Double.valueOf( element.getValue() ) );
-            }
+        	if(element.getValue().trim().isEmpty()) {
+        		jsonArray.element(JSONNull.getInstance());
+        	} else {
+	            // try integer first
+	            try{
+	               jsonArray.element( Integer.valueOf( element.getValue() ) );
+	            }catch( NumberFormatException e ){
+	               jsonArray.element( Double.valueOf( element.getValue() ) );
+	            }
+        	}
          }else if( type.compareToIgnoreCase( JSONTypes.INTEGER ) == 0 ){
             jsonArray.element( Integer.valueOf( element.getValue() ) );
          }else if( type.compareToIgnoreCase( JSONTypes.FLOAT ) == 0 ){
@@ -1318,9 +1322,9 @@ public class XMLSerializer {
                params = StringUtils.split( paramsAttribute.getValue(), "," );
                jsonArray.element( new JSONFunction( params, text ) );
             }else{
-               if( isArray( element, false ) ){
+               if(!forcedType && isArray( element, false ) ){
                   jsonArray.element( processArrayElement( element, defaultType ) );
-               }else if( isObject( element, false ) ){
+               }else if(!forcedType &&  isObject( element, false ) ){
                   jsonArray.element( simplifyValue( null, processObjectElement( element,
                         defaultType ) ) );
                }else{
@@ -1334,8 +1338,12 @@ public class XMLSerializer {
    private void setValue( JSONObject jsonObject, Element element, String defaultType ) {
       String clazz = getClass( element );
       String type = getType( element );
-      type = (type == null) ? defaultType : type;
-
+      boolean forcedType = false;
+      if(type == null) {
+    	  type = defaultType;
+      } else {
+    	  forcedType = true;
+      }
 
       String key = removeNamespacePrefix( element.getQualifiedName() );
       if( hasNamespaces( element ) && !skipNamespaces ){
@@ -1398,9 +1406,9 @@ public class XMLSerializer {
                params = StringUtils.split( paramsAttribute.getValue(), "," );
                setOrAccumulate( jsonObject, key, new JSONFunction( params, text ) );
             }else{
-               if( isArray( element, false ) ){
+               if(!forcedType && isArray( element, false ) ){
                   setOrAccumulate( jsonObject, key, processArrayElement( element, defaultType ) );
-               }else if( isObject( element, false ) ){
+               }else if(!forcedType && isObject( element, false ) ){
                   setOrAccumulate( jsonObject, key, simplifyValue( jsonObject,
                         processObjectElement( element, defaultType ) ) );
                }else{
