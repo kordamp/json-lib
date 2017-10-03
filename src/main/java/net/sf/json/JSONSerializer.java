@@ -103,6 +103,8 @@ public class JSONSerializer {
          json = toJSON( (String) object, jsonConfig );
       }else if( JSONUtils.isArray( object ) ){
          json = JSONArray.fromObject( object, jsonConfig );
+      }else if( object instanceof JSONObject){
+         json = (JSONObject)object;
       }else{
          try{
             json = JSONObject.fromObject( object, jsonConfig );

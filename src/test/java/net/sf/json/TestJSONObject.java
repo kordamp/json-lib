@@ -376,6 +376,16 @@ public class TestJSONObject extends TestCase {
             jsonObject.getJSONObject( "bean" ) );
    }
 
+   public void testElement_Object_nested() {
+      JSONObject jsonObject1 = new JSONObject();
+      jsonObject1.element( "str", "\"[]\"" );
+      Assertions.assertTrue(jsonObject1.get( "str" ) instanceof String);
+
+      JSONObject jsonObject2 = new JSONObject();
+      jsonObject2.element( "obj", jsonObject1);
+      Assertions.assertTrue(jsonObject2.getJSONObject( "obj" ).get( "str" ) instanceof String);
+   }
+
    public void testElement_String() {
       JSONObject jsonObject = new JSONObject();
       jsonObject.element( "str", "json" );
