@@ -35,14 +35,11 @@
    </organization>
 
    <scm>
-      <connection>
-         git://github.com/aalmiray/Json-lib.git
-      </connection>
-      <url>git://github.com/aalmiray/Json-lib.git</url>
-      <developerConnection>
-         git@github.com:aalmiray/Json-lib.git
-      </developerConnection>
+      <connection>scm:git:https://github.com/aalmiray/Json-lib.git</connection>
+      <developerConnection>scm:git:git@github.com:aalmiray/Json-lib.git</developerConnection>
+      <url>https://github.com/aalmiray/Json-lib</url>
    </scm>
+
    <issueManagement>
       <system>SourceForge</system>
       <url>https://sourceforge.net/tracker/?group_id=171425</url>
