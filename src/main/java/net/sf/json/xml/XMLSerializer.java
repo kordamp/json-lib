@@ -648,6 +648,14 @@ public class XMLSerializer {
    }
 
    /**
+    * Sets whether convert long integers to Long or Double (exponential) format
+    * @param useLongDecimals
+    */
+   public void setUseLongDecimals(boolean useLongDecimals) {
+      this.useLongDecimals = useLongDecimals;
+   }
+
+   /**
     * Writes a JSON value into a XML string with UTF-8 encoding.<br>
     *
     * @param json The JSON value to transform
