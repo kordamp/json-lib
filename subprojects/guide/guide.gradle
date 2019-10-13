@@ -1,153 +1,52 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven { url 'http://dl.bintray.com/content/bmuschko/maven' }
-        maven { url 'http://dl.bintray.com/content/bmuschko/gradle-plugins' }
-    }
-
-    dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
-        classpath 'com.bmuschko:gradle-java2html-plugin:2.0'
-    }
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright 2006-2019 Andres Almiray.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+plugins {
+    id 'org.kordamp.gradle.guide'   version '0.27.0'
+    id 'org.ajoberstar.git-publish' version '0.3.2'
 }
 
-apply plugin: 'org.asciidoctor.convert'
-apply plugin: 'com.bmuschko.java2html'
-
-ext.childProjects = [
-    ':json-lib-core'
-]
-
-ext.childProjects.each { evaluationDependsOn it }
+configurations {
+    asciidoctorExtensions
+}
 
 dependencies {
-    java2html 'de.java2html:java2html:5.0'
-}
-
-task copyDocs(type: Copy) {
-    destinationDir = "${buildDir}/sources" as File
-    project.ext.childProjects.each { projectName ->
-        from(project(projectName).sourceSets.main.allSource) {
-            include '**/*.java'
-            include '**/*.html'
-        }
-    }
-}
-
-task apiDocs(type: Javadoc, dependsOn: copyDocs) {
-    source          = copyDocs.destinationDir
-    destinationDir  = file("${buildDir}/api")
-    title           = "Json-lib ${project.version}"
-    classpath       = project.ext.childProjects.collect { projectName ->
-                          [project(projectName).sourceSets.main.output,
-                           project(projectName).configurations.compile,
-                           project(projectName).configurations.compileOnly]
-                      }.flatten().sum() as FileCollection
-
-    excludes = ['**/*.html', 'META-INF/**']
-
-    options.use         = true
-    options.splitIndex  = true
-    options.encoding    = 'UTF-8'
-    options.author      = true
-    options.version     = true
-    options.source      = project.sourceCompatibility
-    options.overview    = file('src/javadoc/overview.html')
-    options.windowTitle = "Json-lib ${project.version}"
-    options.docTitle    = "Json-lib ${project.version}"
-    options.footer      = project.javadocFooter
-    options.links       = ['http://www.slf4j.org/apidocs/',
-                           'http://junit.org/javadoc/latest/',
-                           'http://docs.oracle.com/javase/7/docs/api/',
-                           'http://jsr-305.googlecode.com/svn/trunk/javadoc/',
-                           'http://atinject.googlecode.com/svn/trunk/javadoc/']
-
-    doLast { task ->
-        copy {
-            into task.destinationDir
-            from file('src/javadoc/resources/css/stylesheet.css')
-        }
-    }
-}
-
-task generateJava2html {
-    dependsOn apiDocs
-    dependsOn "java2htmlGenerateOverview"
-    dependsOn java2htmlConvertCode
-}
-
-task javadocJar(type: Jar, dependsOn: apiDocs, overwrite: true) {
-    archiveName    = "json-lib-${version}-javadoc.jar"
-    destinationDir = "${buildDir}/assemble/jars" as File
-    from apiDocs.destinationDir
-}
-
-task sourceHtmlJar(type: Jar, dependsOn: java2html) {
-    archiveName    = "json-lib-${version}-sources-html.jar"
-    destinationDir = "${buildDir}/assemble/jars" as File
-    from java2htmlConvertCode.destDir
-}
-
-task docsJar(dependsOn: [javadocJar, sourceHtmlJar]) { }
-
-java2html {
-    conversion {
-        srcDirs = files(copyDocs.destinationDir)
-        tabs = 4
-        style = 'kawa'
-        addLineAnchors = true
-        showFileName = true
-        useShortFileName = true
-        overwrite = true
-        showDefaultTitle = true
-    }
-
-    overview {
-        windowTitle    = "Json-lib ${project.version}"
-        docTitle       = "Json-lib ${project.version}"
-        docDescription = "Json-lib ${project.version}"
-        stylesheet     = file('src/javadoc/resources/css/stylesheet.css')
-    }
+    asciidoctorExtensions 'com.bmuschko:asciidoctorj-tabbed-code-extension:0.2'
 }
 
 asciidoctor {
+    configurations 'asciidoctorExtensions'
     attributes = [
-        toc                    : 'left',
-        doctype                : 'book',
-        icons                  : 'font',
-        encoding               : 'utf-8',
-        sectlink               : true,
-        sectanchors            : true,
-        numbered               : true,
-        linkattrs              : true,
-        imagesdir              : 'images',
-        linkcss                : true,
-        stylesheet             : 'css/style.css',
-        'source-highlighter'   : 'coderay',
-        'coderay-linenums-mode': 'table',
-        'project-title'        : project.project_description,
-        'project-author'       : 'Andres Almiray',
-        'project-url'          : project.project_url,
-        'project-vcs'          : project.project_scm,
-        'project-issue-tracker': project.project_issues,
-        'project-group'        : project.group
+        'gradle-version'       : project.gradle.gradleVersion,
+        'source-highlighter'   : 'prettify'
     ]
-    sources {
-        include 'index.adoc'
-    }
-    resources {
-        from file('src/resources')
-    }
 }
 
-task guide(type: Copy, dependsOn: [apiDocs, generateJava2html, asciidoctor]) {
-    destinationDir = "${buildDir}/guide" as File
-    from(apiDocs.destinationDir)       { into 'api' }
-    from(java2htmlConvertCode.destDir) { into 'api-src'}
-    from("${asciidoctor.outputDir}/html5")
-}
+afterEvaluate {
+    project.tasks.findByName('createGuide')
 
-task guideZip(type: Zip, dependsOn: guide) {
-    baseName = "json-lib-guide"
-    from guide.destinationDir
+    gitPublish {
+        repoUri = rootProject.extensions.findByName('config').info.links.scm
+        branch  = 'gh-pages'
+        contents {
+            from project.tasks.findByName('createGuide').outputs.files
+        }
+        commitMessage = "Publish guide for $version"
+    }
+
+    gitPublishCommit.dependsOn(project.tasks.findByName('createGuide'))
 }

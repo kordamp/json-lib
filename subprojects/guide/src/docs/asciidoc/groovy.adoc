@@ -1,8 +1,6 @@
 [[_groovy]]
 = Using Json-lib with Groovy
 
-image::logos/groovy-logo.png[link="http://groovy.codehaus.org"]
-
 Since version 2.0 Json-lib has integrated http://groovy.codehaus.org[Groovy]
 support, meaning that POGOs can be transformed into JSON and back,
 in the same manner as you do now with POJOs. There are other features as well:
