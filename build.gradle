@@ -103,6 +103,12 @@ config {
                 password = project.sonatypePassword
             }
         }
+
+        scm {
+            url                 = 'https://github.com/aalmiray/json-lib'
+            connection          = 'scm:git:https://github.com/aalmiray/json-lib.git'
+            developerConnection = 'scm:git:git@github.com:aalmiray/json-lib.git'
+        }
     }
 
     sourceXref {

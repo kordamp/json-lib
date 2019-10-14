@@ -20,3 +20,5 @@ include::{includedir}/groovy.adoc[]
 link:api/index.html[Javadoc, window="_blank"]
 
 link:api-html/index.html[Source, window="_blank"]
+
+link:api-xref/index.html[Xref Source, window="_blank"]

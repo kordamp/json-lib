@@ -50,3 +50,18 @@ afterEvaluate {
 
     gitPublishCommit.dependsOn(project.tasks.findByName('createGuide'))
 }
+
+gradle.addBuildListener(new BuildAdapter(){
+    @Override
+    void projectsEvaluated(Gradle gradle) {
+        def createGuideTask = project.tasks.findByName('createGuide')
+
+        def aggregateSourceXrefTask = rootProject.tasks.findByName('aggregateSourceXref')
+
+        createGuideTask.finalizedBy project.tasks.create('copyAggregateXref', Copy) {
+            dependsOn aggregateSourceXrefTask
+            destinationDir = project.file("${createGuideTask.destinationDir}/api-xref")
+            from aggregateSourceXrefTask.outputDirectory
+        }
+    }
+})
