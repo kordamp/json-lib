@@ -21,7 +21,7 @@ import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.map.ListOrderedMap;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kordamp.ezmorph.Morpher;
 import org.kordamp.ezmorph.array.ObjectArrayMorpher;
 import org.kordamp.ezmorph.bean.BeanMorpher;
@@ -116,6 +116,8 @@ import java.util.Set;
  * @author JSON.org
  */
 public final class JSONObject extends AbstractJSON implements JSON, Map<String, Object>, Comparable {
+    private static final long serialVersionUID = 1997944501504436316L;
+
     private static final Logger LOG = LoggerFactory.getLogger(JSONObject.class);
     /**
      * identifies this object as null

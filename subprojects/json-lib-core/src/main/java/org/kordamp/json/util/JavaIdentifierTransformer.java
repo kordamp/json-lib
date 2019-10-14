@@ -17,7 +17,7 @@
  */
 package org.kordamp.json.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kordamp.json.JSONException;
 
 /**

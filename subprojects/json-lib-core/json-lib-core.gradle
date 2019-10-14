@@ -33,9 +33,10 @@ dependencies {
     }
 
     compile('junit:junit:4.12')
-    compileExcludingCommonsLogging('commons-beanutils:commons-beanutils:1.9.2')
-    compileExcludingCommonsLogging('commons-collections:commons-collections:3.2.2')
-    compileExcludingCommonsLogging('commons-lang:commons-lang:2.6')
+    compileExcludingCommonsLogging('commons-beanutils:commons-beanutils:1.9.3')
+    compileExcludingCommonsLogging('org.apache.commons:commons-collections4:4.4')
+    compileExcludingCommonsLogging('org.apache.commons:commons-lang3:3.9')
+
     compile("org.slf4j:slf4j-api:$slf4jVersion")
     compile("org.slf4j:jcl-over-slf4j:$slf4jVersion")  {
         exclude group: 'org.slf4j', module: 'slf4j-api'

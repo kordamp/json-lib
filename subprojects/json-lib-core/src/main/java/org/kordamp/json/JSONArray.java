@@ -17,7 +17,6 @@
  */
 package org.kordamp.json;
 
-import org.apache.commons.lang.StringUtils;
 import org.kordamp.ezmorph.Morpher;
 import org.kordamp.ezmorph.object.IdentityObjectMorpher;
 import org.kordamp.json.processors.JsonValueProcessor;
@@ -93,6 +92,8 @@ import java.util.Set;
  * @author JSON.org
  */
 public final class JSONArray extends AbstractJSON implements JSON, List<Object>, Comparable {
+    private static final long serialVersionUID = 3086569904717035510L;
+
     /**
      * The List where the JSONArray's properties are kept.
      */
@@ -586,7 +587,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
      * <li>A key may be a regular expression.</li>
      * </ul>
      *
-     * @see #toCollection(JSONArray, Class, Map)
+     * @see #toList(JSONArray, Class, Map)
      * @deprecated replaced by toCollection
      */
     public static List toList(JSONArray jsonArray, Class objectClass, Map classMap) {
@@ -1189,8 +1190,7 @@ public final class JSONArray extends AbstractJSON implements JSON, List<Object>,
                             String text = sb.toString();
                             text = text.substring(1, text.length() - 1)
                                 .trim();
-                            jsonArray.addValue(new JSONFunction((params != null) ? StringUtils.split(
-                                params, ",") : null, text), jsonConfig);
+                            jsonArray.addValue(new JSONFunction((params != null) ? params.split(",") : null, text), jsonConfig);
                             fireElementAddedEvent(index, jsonArray.get(index++), jsonConfig);
                         }
                     }

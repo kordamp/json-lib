@@ -18,7 +18,7 @@
 package org.kordamp.json;
 
 import org.apache.commons.collections.map.MultiKeyMap;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kordamp.json.processors.DefaultDefaultValueProcessor;
 import org.kordamp.json.processors.DefaultValueProcessor;
 import org.kordamp.json.processors.DefaultValueProcessorMatcher;

@@ -18,7 +18,7 @@
 package org.kordamp.json.test;
 
 import junit.framework.Assert;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kordamp.ezmorph.Morpher;
 import org.kordamp.ezmorph.object.IdentityObjectMorpher;
 import org.kordamp.json.JSON;

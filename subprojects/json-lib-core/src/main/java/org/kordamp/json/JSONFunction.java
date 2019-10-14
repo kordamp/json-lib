@@ -17,9 +17,9 @@
  */
 package org.kordamp.json;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.kordamp.json.util.JSONUtils;
 
 import java.io.Serializable;
@@ -30,6 +30,8 @@ import java.io.Serializable;
  * @author Andres Almiray
  */
 public class JSONFunction implements Serializable {
+    private static final long serialVersionUID = -2843629081338113323L;
+
     /**
      * constant array for empty parameters
      */

@@ -17,7 +17,7 @@
  */
 package org.kordamp.json.util;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.kordamp.json.JSONArray;
 import org.kordamp.json.JSONException;
 import org.kordamp.json.JSONNull;

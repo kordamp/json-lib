@@ -27,6 +27,8 @@ import java.io.Writer;
  * @author JSON.org
  */
 public final class JSONNull implements JSON {
+    private static final long serialVersionUID = 846922348514513763L;
+
     /**
      * singleton instance
      */
