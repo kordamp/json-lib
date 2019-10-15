@@ -206,7 +206,7 @@ with '@' will be treated as an attribute, any property named '#text' will be tre
 
 Please review the javadoc for XMLSerializer to know more about the configurable options.
 
-[cols="l,l"]
+[cols="1,1"]
 |===
 |*Code* | *XML output*
 
@@ -246,7 +246,7 @@ JSONFunction needs an additional parameter that specifies that function's params
 All xml attributes will have the prefix '@' and text nodes will have the property name '#text'. XMLSerializer supports
 the rules outlined at http://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html[Converting Between XML and JSON]
 
-[cols="l,l"]
+[cols="1,1"]
 |===
 |*XML input* | *Code*
 
