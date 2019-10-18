@@ -3,12 +3,6 @@
 :project-name: json-lib
 :linkattrs:
 
-image:http://img.shields.io/travis/aalmiray/Json-lib/development.svg["Build Status", link="https://travis-ci.org/aalmiray/Json-lib"]
-image:http://img.shields.io/coveralls/aalmiray/Json-lib/development.svg["Coverage Status", link="https://coveralls.io/r/aalmiray/Json-lib"]
-image:http://img.shields.io/:semver-{version}-blue.svg["Semantic Versioning", link="http://semver.org"]
-image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
-image:http://img.shields.io/badge/download-latest-bb00bb.svg[link="https://bintray.com/aalmiray/kordamp/json-lib/_latestVersion"]
-
 image:https://img.shields.io/travis/aalmiray/{project-name}/master.svg?logo=travis["Build Status", link="https://travis-ci.org/aalmiray/{project-name}"]
 image:https://img.shields.io/badge/license-ASF2-blue.svg?logo=apache["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
 image:https://api.bintray.com/packages/aalmiray/kordamp/{project-name}/images/download.svg[link="https://bintray.com/aalmiray/kordamp/{project-name}/_latestVersion"]
