@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.8">
+<meta name="author" content="Andres Almiray">
+<title>Json-lib</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+.hidden {
+    display: none;
+}
+
+.switch {
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #7a2518;
+    display: inline-block;
+}
+
+.switch--item {
+    padding: 10px;
+    background-color: #ffffff;
+    color: #7a2518;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.switch--item.selected {
+    background-color: #7a2519;
+    color: #ffffff;
+}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+<script type="text/javascript">
+function addBlockSwitches() {
+    $('.primary').each(function() {
+        primary = $(this);
+        createSwitchItem(primary, createBlockSwitch(primary)).item.addClass("selected");
+        primary.children('.title').remove();
+    });
+    $('.secondary').each(function(idx, node) {
+        secondary = $(node);
+        primary = findPrimary(secondary);
+        switchItem = createSwitchItem(secondary, primary.children('.switch'));
+        switchItem.content.addClass('hidden');
+        findPrimary(secondary).append(switchItem.content);
+        secondary.remove();
+    });
+}
+
+function createBlockSwitch(primary) {
+    blockSwitch = $('<div class="switch"></div>');
+    primary.prepend(blockSwitch);
+    return blockSwitch;
+}
+
+function findPrimary(secondary) {
+    candidate = secondary.prev();
+    while (!candidate.is('.primary')) {
+        candidate = candidate.prev();
+    }
+    return candidate;
+}
+
+function createSwitchItem(block, blockSwitch) {
+    blockName = block.children('.title').text();
+    content = block.children('.content').first().append(block.next('.colist'));
+    item = $('<div class="switch--item">' + blockName + '</div>');
+    item.on('click', '', content, function(e) {
+        $(this).addClass('selected');
+        $(this).siblings().removeClass('selected');
+        e.data.siblings('.content').addClass('hidden');
+        e.data.removeClass('hidden');
+    });
+    blockSwitch.append(item);
+    return {'item': item, 'content': content};
+}
+
+$(addBlockSwitches);
+
+</script>
+
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<h1>Json-lib</h1>
+<div class="details">
+<span id="author" class="author">Andres Almiray</span><br>
+<span id="revnumber">version 3.0.0-SNAPSHOT</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_introduction">1. Introduction</a>
+<ul class="sectlevel2">
+<li><a href="#_welcome_to_json_lib">1.1. Welcome to Json-lib</a></li>
+<li><a href="#_what_is_json">1.2. What is JSON</a></li>
+</ul>
+</li>
+<li><a href="#_usage">2. Usage</a>
+<ul class="sectlevel2">
+<li><a href="#_using_the_jsonserializer">2.1. Using the JSONSerializer</a></li>
+<li><a href="#_working_with_arrays_and_collections">2.2. Working with arrays and collections</a></li>
+<li><a href="#_working_with_objects">2.3. Working with objects</a>
+<ul class="sectlevel3">
+<li><a href="#_from_beans_and_maps_to_json">2.3.1. From Beans and Maps to JSON</a></li>
+<li><a href="#_from_json_to_beans">2.3.2. From JSON to Beans</a></li>
+</ul>
+</li>
+<li><a href="#_working_with_xml">2.4. Working with XML</a>
+<ul class="sectlevel3">
+<li><a href="#_from_json_to_xml">2.4.1. From JSON to XML</a></li>
+<li><a href="#_from_xml_to_json">2.4.2. From XML to JSON</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_configuration">3. Build Configuration</a>
+<ul class="sectlevel2">
+<li><a href="#_gradle">3.1. Gradle</a></li>
+<li><a href="#_maven">3.2. Maven</a></li>
+</ul>
+</li>
+<li><a href="#_compatibility">4. Compatibility</a></li>
+<li><a href="#_groovy">5. Using Json-lib with Groovy</a></li>
+<li><a href="#_faq_">6. FAQ</a>
+<ul class="sectlevel2">
+<li><a href="#_if_i_use_a_linkedhasmap_to_create_a_jsonobject_the_order_is_not_preserved_why">6.1. If I use a LinkedHasMap to create a JSONObject the order is not preserved, why ?</a></li>
+<li><a href="#_json_lib_creates_empty_jsonobjects_from_my_bean_class_help_me">6.2. Json-lib creates empty JSONObjects from my bean class, help me!</a></li>
+<li><a href="#_how_do_i_configure_json_lib_as_a_dependency_with_maven2">6.3. How do I configure Json-lib as a dependency with Maven2 ?</a></li>
+<li><a href="#_how_can_i_transform_a_json_string_into_a_bean_with_an_enum_property">6.4. How can I transform a JSON string into a bean with an Enum property ?</a></li>
+<li><a href="#_how_can_i_transform_a_simple_value_into_a_complex_one_when_serializing_back_to_java">6.5. How can I transform a simple value into a complex one when serializing back to Java ?</a></li>
+<li><a href="#_json_lib_does_not_find_my_inner_bean_help">6.6. Json-lib does not find my inner bean, help!</a></li>
+<li><a href="#_id_like_to_use_xpath_like_expressions_with_json_how_do_i_do_it">6.7. I&#8217;d like to use XPath-like expressions with JSON, how do I do it ?</a></li>
+</ul>
+</li>
+<li><a href="#_links">7. Links</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_welcome_to_json_lib"><a class="anchor" href="#_welcome_to_json_lib"></a>1.1. Welcome to Json-lib</h3>
+<div class="paragraph">
+<p>JSON-lib is a java library for transforming beans, maps, collections, arrays and XML to JSON
+and back again to beans and DynaBeans. It is based on the work by Douglas Crockford in
+<a href="http://www.json.org/java" target="_blank" rel="noopener">http://www.json.org/java</a>.</p>
+</div>
+<div class="paragraph">
+<p>The following table summarizes the types conversion between Java and JavaScript:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 36.3636%;">
+<col style="width: 9.0909%;">
+<col style="width: 54.5455%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">JSON</th>
+<th class="tableblock halign-left valign-top"></th>
+<th class="tableblock halign-left valign-top">Java</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8660;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String, java.lang.Character, char</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8660;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Number, byte, short, int, long, float, double</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true/false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8660;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean, boolean</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">null</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8660;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">null</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">function</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8660;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.kordamp.json.JSONFunction</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">array</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8660;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.kordamp.json.JSONArray (object, string, number, boolean, function)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">object</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8660;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.kordamp.json.JSONObject</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The <code>function</code> type from JavaScript is not part of the JSON
+format "officially" (please refer to <a href="http://www.json.org">http://www.json.org</a>)
+but it is supported as well.</p>
+</div>
+<div class="paragraph">
+<p>Json-lib requires (at least) the following dependencies in your classpath:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Apache commons-lang3 3.9</p>
+</li>
+<li>
+<p>Apache commons-beanutils 1.9.3</p>
+</li>
+<li>
+<p>Apache commons-collections4 4.4</p>
+</li>
+<li>
+<p>slf4j 1.7.28</p>
+</li>
+<li>
+<p>ezmorph 1.0.6</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Other dependencies are needed if working with XML and Groovy.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>xom 1.3.2</p>
+</li>
+<li>
+<p>groovy 2.5.8</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_what_is_json"><a class="anchor" href="#_what_is_json"></a>1.2. What is JSON</h3>
+<div class="paragraph">
+<p>JSON (JavaScript Object Notation) is a lightweight
+data-interchange format. It is easy for humans to read
+and write. It is easy for machines to parse and
+generate. It is based on a subset of the JavaScript
+Programming Language, Standard ECMA-262 3rd Edition -
+December 1999. JSON is a text format that is completely
+language independent but uses conventions that are
+familiar to programmers of the C-family of languages,
+including C, C++, C#, Java, JavaScript, Perl, Python,
+and many others.</p>
+</div>
+<div class="paragraph">
+<p>These properties make JSON an ideal data-interchange
+language.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Documentation for older releases can be found at <a href="json-lib.sourceforge.net/" class="bare">json-lib.sourceforge.net/</a>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_usage"><a class="anchor" href="#_usage"></a>2. Usage</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_using_the_jsonserializer"><a class="anchor" href="#_using_the_jsonserializer"></a>2.1. Using the JSONSerializer</h3>
+<div class="paragraph">
+<p>JSONSerializer can transform any java object to JSON notation and back with a simple and
+clean interface, leveraging all the builders in JSONObject and JSONArray. To transform a
+Java object into JSON use <code>JSONSerializer.toJSON()</code>. To transform a valid JSON
+value (by JSON, I mean an Object implementing that interface), use <code>toJava()</code>.
+The last method is an instance method because the serializer needs special configuration to
+transform a JSON value to a bean class, array, List or DynaBean.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_working_with_arrays_and_collections"><a class="anchor" href="#_working_with_arrays_and_collections"></a>2.2. Working with arrays and collections</h3>
+<div class="paragraph">
+<p>The simplest way to create a
+<code>JSONArray</code> from a Java array or collection
+is through the static factory methods from <code>JSONArray</code>.
+<code>JSONArray.fromObject()</code> will inspect its parameter and
+call the correct factory or constructor.</p>
+</div>
+<div class="paragraph">
+<p>Examples:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">boolean[] boolArray = new boolean[]{true,false,true};
+JSONArray jsonArray = JSONArray.fromObject( boolArray );
+System.out.println( jsonArray );
+// prints [true,false,true]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">List list = new ArrayList();
+list.add( "first" );
+list.add( "second" );
+JSONArray jsonArray = JSONArray.fromObject( list );
+System.out.println( jsonArray );
+// prints ["first","second"]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">JSONArray jsonArray = JSONArray.fromObject( "['json','is','easy']" );
+System.out.println( jsonArray );
+// prints ["json","is","easy"]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_working_with_objects"><a class="anchor" href="#_working_with_objects"></a>2.3. Working with objects</h3>
+<div class="sect3">
+<h4 id="_from_beans_and_maps_to_json"><a class="anchor" href="#_from_beans_and_maps_to_json"></a>2.3.1. From Beans and Maps to JSON</h4>
+<div class="paragraph">
+<p>The simplest way to create a
+<code>JSONObject</code> from a bean or <code>Map</code> is through the static factory methods
+from <code>JSONObject</code>. <code>JSONObject.fromObject()</code>
+will inspect its parameter and call the correct factory or constructor.</p>
+</div>
+<div class="paragraph">
+<p>Examples:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">Map map = new HashMap();
+map.put( "name", "json" );
+map.put( "bool", Boolean.TRUE );
+map.put( "int", new Integer(1) );
+map.put( "arr", new String[]{"a","b"} );
+map.put( "func", "function(i){ return this.arr[i]; }" );
+
+JSONObject jsonObject = JSONObject.fromObject( map );
+System.out.println( jsonObject );
+// prints ["name":"json","bool":true,"int":1,"arr":["a","b"],"func":function(i){ return this.arr[i]; }]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">class MyBean{
+  private String name = "json";
+  private int pojoId = 1;
+  private char[] options = new char[]{'a','f'};
+  private String func1 = "function(i){ return this.options[i]; }";
+  private JSONFunction func2 = new JSONFunction(new String[]{"i"},"return this.options[i];");
+
+// getters &amp;amp; setters
+...
+}
+
+JSONObject jsonObject = JSONObject.fromObject( new MyBean() );
+System.out.println( jsonObject );
+/* prints
+  {"name":"json","pojoId":1,"options":["a","f"],
+  "func1":function(i){ return this.options[i];},
+  "func2":function(i){ return this.options[i];}}
+*/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>CAUTION:</strong> when parsing, JSONObject and JSONArray will check for cycles in the hierarchy, throwing an exception
+if one is found. You can change this behavior by registering a CycleDetectionStrategy.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_from_json_to_beans"><a class="anchor" href="#_from_json_to_beans"></a>2.3.2. From JSON to Beans</h4>
+<div class="paragraph">
+<p>Json-lib can transform JSONObjects to either a DynaBean or an specific bean class.
+&lt;br/&gt;
+When using DynaBean all arrays are converted to Lists, when using an specific bean class
+the transformation will use type conversion if necessary on array properties.</p>
+</div>
+<div class="paragraph">
+<p>Convert to DynaBean:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
+JSONObject jsonObject = JSONObject.fromObject( json );
+Object bean = JSONObject.toBean( jsonObject );
+assertEquals( jsonObject.get( "name" ), PropertyUtils.getProperty( bean, "name" ) );
+assertEquals( jsonObject.get( "bool" ), PropertyUtils.getProperty( bean, "bool" ) );
+assertEquals( jsonObject.get( "int" ), PropertyUtils.getProperty( bean, "int" ) );
+assertEquals( jsonObject.get( "double" ), PropertyUtils.getProperty( bean, "double" ) );
+assertEquals( jsonObject.get( "func" ), PropertyUtils.getProperty( bean, "func" ) );
+List expected = JSONArray.toList( jsonObject.getJSONArray( "array" ) );
+Assertions.assertListEquals( expected, (List) PropertyUtils.getProperty( bean, "array" ) );</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Convert to Bean:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">String json = "{bool:true,integer:1,string:\"json\"}";
+JSONObject jsonObject = JSONObject.fromObject( json );
+BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
+assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
+assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
+assertEquals( jsonObject.get( "string" ), bean.getString() );</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There are two special cases when converting to an specific bean, if the target bean
+has a Map property and it must contain other beans,
+<code>JSONObject.toBean()</code> will transform the nested beans into DynaBeans. If you need those nested beans transformed into an
+specific class, you can either postprocess the Map attribute or provide hints on JSONObject&#8217;s
+attributes for conversion.
+<code>JSONObject.toBean()</code>
+may be passed a third argument,
+a Map, that will provide those hints. Every key must be either the name of a property or a
+regular expression matching the object&#8217;s properties, and the value must be a <code>Class</code>.</p>
+</div>
+<div class="paragraph">
+<p>The second case is similar and it happens when the target bean has a Collection (List) as a
+property and it must contain other beans. In this case there is no way to provide hints for
+class conversion. The only possible solution is to postprocess the collection transforming each
+DynaBean into an specific bean.</p>
+</div>
+<div class="paragraph">
+<p>To ease the postprocessing scenarios, EZMorph provides a Morpher capable of
+ transforming a DynaBean into an specific bean,
+ <a href="http://ezmorph.sourceforge.net/apidocs/net/sf/ezmorph/bean/BeanMorpher.html">BeanMorpher</a></p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">class MyBean{
+  private List data;
+  // getters &amp;amp; setters
+}
+
+class Person{
+  private String name;
+  // getters &amp;amp; setters
+}
+
+...
+
+String json = "{'data':[{'name':'Wallace'},{'name':'Grommit'}]}";
+Map classMap = new HashMap();
+classMap.put( "data", Person.class );
+MyBean bean = JSONObject.toBean( JSONObject.fromObject(json), MyBean.class, classMap );</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This yields a MyBean instance that has DynaBeans inside the 'data' attribute', so now comes
+the postprocessing part, this can be done with an Iterator.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">Morpher dynaMorpher = new BeanMorpher( Person.class, JSONUtils.getMorpherRegistry() );
+morpherRegistry.registerMorpher( dynaMorpher );
+List output = new ArrayList();
+for( Iterator i = bean.getData().iterator(); i.hasNext(); ){
+  output.add( morpherRegistry.morph( Person.class, i.next() ) );
+}
+bean.setData( output );</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To learn more about Morphers, please visit <a href="http://ezmorph.sourceforge.net">EZMorph&#8217;s project site</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_working_with_xml"><a class="anchor" href="#_working_with_xml"></a>2.4. Working with XML</h3>
+<div class="paragraph">
+<p>Working with XML has become easier since version 1.1. Transforming JSONObjects and JSONArrays from and to XML
+is done through the XMLSerializer.</p>
+</div>
+<div class="sect3">
+<h4 id="_from_json_to_xml"><a class="anchor" href="#_from_json_to_xml"></a>2.4.1. From JSON to XML</h4>
+<div class="paragraph">
+<p>Writing to JSON to XML is as simple as calling
+<code>XMLSerializer.write()</code>, but there are a lot
+of options that you may configure to get better control of the XML output. For example you may change the
+default names for the root element ('o' if object, 'a' if array), the default name for object (an object inside
+an array is "anonymous"), the default name for array (for the same reason as object), the default name for
+element (array items have no name). If you&#8217;d like to output namescape information but your JSON does not
+includes it, no problem, you have 8 methods that will let you register and manage namespaces; namespaces
+defined this way have precedence on any namespace declaration that may be inside the JSON. By default
+XMLSerializer will append special attributes to each xml element for easing the transformation back to JSON
+but you may configure it to skip appending those attributes. Any property on a JSONObject that begins
+with '@' will be treated as an attribute, any property named '#text' will be treated as a Text node.</p>
+</div>
+<div class="paragraph">
+<p>Please review the javadoc for XMLSerializer to know more about the configurable options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">*Code*</th>
+<th class="tableblock halign-left valign-top"> *XML output*</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="literal"><pre>JSONObject json = new JSONObject( true );
+String xml = XMLSerializer.write( json );</pre></div></td>
+<td class="tableblock halign-left valign-top"><div class="literal"><pre>&lt;o class="object" null="true"&gt;</pre></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="literal"><pre>JSONObject json = JSONObject.fromObject("{\"name\":\"json\",\"bool\":true,\"int\":1}");
+String xml = XMLSerializer.write( json );</pre></div></td>
+<td class="tableblock halign-left valign-top"><div class="literal"><pre>&lt;o class="object"&gt;
+  &lt;name type="string"&gt;json&lt;/name&gt;
+  &lt;bool type="boolean"&gt;true&lt;/bool&gt;
+  &lt;int type="number"&gt;1&lt;/int&gt;
+&lt;/o&gt;</pre></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="literal"><pre>JSONArray json = JSONArray.fromObject("[1,2,3]");
+String xml = XMLSerializer.write( json );</pre></div></td>
+<td class="tableblock halign-left valign-top"><div class="literal"><pre>&lt;a class="array"&gt;
+ &lt;e type="number"&gt;1&lt;/e&gt;
+ &lt;e type="number"&gt;2&lt;/e&gt;
+ &lt;e type="number"&gt;3&lt;/e&gt;
+&lt;/a&gt;</pre></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_from_xml_to_json"><a class="anchor" href="#_from_xml_to_json"></a>2.4.2. From XML to JSON</h4>
+<div class="paragraph">
+<p>XMLSerializer treats each element as a
+<code>string</code>
+unless a type parameter is specified.<br>
+JSONFunction needs an additional parameter that specifies that function&#8217;s params.<br></p>
+</div>
+<div class="paragraph">
+<p>All xml attributes will have the prefix '@' and text nodes will have the property name '#text'. XMLSerializer supports
+the rules outlined at <a href="http://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html">Converting Between XML and JSON</a></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">*XML input*</th>
+<th class="tableblock halign-left valign-top"> *Code*</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="literal"><pre>&lt;a class="array"&gt;
+ &lt;e type="function" params="i,j"&gt;
+  return matrix[i][j];
+ &lt;/e&gt;
+&lt;/a&gt;</pre></div></td>
+<td class="tableblock halign-left valign-top"><div class="literal"><pre>JSONArray json = (JSONArray) XMLSerializer.read( xml );
+System.out.println( json );</pre></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>CAUTION:</strong>  when parsing, JSONObject and JSONArray will check for cycles in the hierarchy, throwing an exception
+if one is found. You can change this behavior by registering a CycleDetectionStrategy.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configuration"><a class="anchor" href="#_configuration"></a>3. Build Configuration</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_gradle"><a class="anchor" href="#_gradle"></a>3.1. Gradle</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight nowrap"><code class="language-groovy" data-lang="groovy">dependencies {
+    compile 'org.kordamp.json:json-lib:3.0.0-SNAPSHOT'
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_maven"><a class="anchor" href="#_maven"></a>3.2. Maven</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight nowrap"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.kordamp.json&lt;/groupId&gt;
+    &lt;artifactId&gt;json-lib&lt;/artifactId&gt;
+    &lt;version&gt;3.0.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_compatibility"><a class="anchor" href="#_compatibility"></a>4. Compatibility</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following lists summarizes the differences between Json-lib 3.x and 2.x</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>All classes have moved from package <code>net.sf.json-lib</code> to <code>org.kordamp.json-lib</code>.</p>
+</li>
+<li>
+<p>JDK 7 is the new binary base line.</p>
+</li>
+<li>
+<p>Java Generics have been added to method signatures.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_groovy"><a class="anchor" href="#_groovy"></a>5. Using Json-lib with Groovy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Since version 2.0 Json-lib has integrated <a href="http://groovy.codehaus.org">Groovy</a>
+support, meaning that POGOs can be transformed into JSON and back,
+in the same manner as you do now with POJOs. There are other features as well:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Type transformations with the <code>as</code> keyword.<br>
+A Groovy List (default type is ArrayList) can be transformed into a JSONArray.<br>
+A Groovy Map (default type is HashMap) can be transformed into a JSONObject.<br>
+A String can be transformed into JSON, JSONObject, JSONArray and JSONFunction.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">def fromList = [1,true,'json'] as JSONarray
+def fromMap = [integer:1, bool: true] as JSONObject
+def strAsJson1 = "{integer:1, bool: true}" as JSON
+def strAsJson2 = "[1,2,3]" as JSON
+def strAsJsonObject = "{integer:1, bool: true}" as JSONObject
+def strAsJsonArray = "[1,2,3]" as JSONArray
+def strAsFunc = "function(param){ this.param = param; }" as JSONFunction</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>JSONObject supports the leftShift (&lt;&lt;) operator to append values, the
+following rules apply:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If the shifted arg is a Map, it will call putAll() on the object.</p>
+</li>
+<li>
+<p>If the shifted arg is a List and its size == 2, the first element will
+be the key, and the second will be the value.</p>
+</li>
+<li>
+<p>If the shifted arg is a List and its size &gt; 2, the first element will
+be the key, the arg will be shifted by 1 and passed as the value (wi
+ll create a JSONArray because it is a List).</p>
+</li>
+<li>
+<p>Any other type will be discarded, the object will not be affected nor
+an exception will be thrown.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>JSONObject and JSONarray implement java.util.Comparable, which enables the use of
+the comparison operators with them (including the spaceship operator).</p>
+</li>
+<li>
+<p>JSONObject implements java.util.Map and JSONArray implements java.util.List,
+anything you can do with Maps and List can be done with JSONObject and JSONArray.</p>
+</li>
+<li>
+<p>JsonGroovyBuilder behaves like the JsonBuilder found in Grails but it will create a
+JSONObject/JSONArray instead of writing the built structure into a String.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Since version 2.2.1 Json-lib will not automatically enhance class through
+         custom metaclasses, you must call GJson.enhanceClasses() before executing
+         the examples shown on this page.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_faq_"><a class="anchor" href="#_faq_"></a>6. FAQ</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_if_i_use_a_linkedhasmap_to_create_a_jsonobject_the_order_is_not_preserved_why"><a class="anchor" href="#_if_i_use_a_linkedhasmap_to_create_a_jsonobject_the_order_is_not_preserved_why"></a>6.1. If I use a LinkedHasMap to create a JSONObject the order is not preserved, why ?</h3>
+<div class="paragraph">
+<p>The answer is in the JSON specification "An object is an unordered set of name/value pairs.
+An object begins with <code>{</code> (left brace) and ends with <code>}</code> (right brace).
+Each name is followed by <code>:</code> (colon) and the name/value pairs are separated by <code>,</code> (comma).".</p>
+</div>
+<div class="paragraph">
+<p>JSONObject uses a HashMap for its properties representation because the order of its properties is not important.</p>
+</div>
+<div class="paragraph">
+<p><a href="#_faq_"><span class="icon"><i class="fa fa-arrow-up"></i></span> top</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_json_lib_creates_empty_jsonobjects_from_my_bean_class_help_me"><a class="anchor" href="#_json_lib_creates_empty_jsonobjects_from_my_bean_class_help_me"></a>6.2. Json-lib creates empty JSONObjects from my bean class, help me!</h3>
+<div class="paragraph">
+<p>Json-lib uses the JavaBeans convention to inspect your beans and create JSONObjects.
+If the properties of your beans do not adhere to the convention, the resulting JSONObject will be empty or half empty.
+You must provide a read/write method pair for each property.</p>
+</div>
+<div class="paragraph">
+<p><a href="#_faq_"><span class="icon"><i class="fa fa-arrow-up"></i></span> top</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_how_do_i_configure_json_lib_as_a_dependency_with_maven2"><a class="anchor" href="#_how_do_i_configure_json_lib_as_a_dependency_with_maven2"></a>6.3. How do I configure Json-lib as a dependency with Maven2 ?</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight nowrap"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.kordamp.json&lt;/groupId&gt;
+    &lt;artifactId&gt;json-lib&lt;/artifactId&gt;
+    &lt;version&gt;3.0.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="#_faq_"><span class="icon"><i class="fa fa-arrow-up"></i></span> top</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_how_can_i_transform_a_json_string_into_a_bean_with_an_enum_property"><a class="anchor" href="#_how_can_i_transform_a_json_string_into_a_bean_with_an_enum_property"></a>6.4. How can I transform a JSON string into a bean with an Enum property ?</h3>
+<div class="paragraph">
+<p>You&#8217;ll have to register a Morpher that can handle your Enum. Json-lib conveniently includes such a Morpher,
+so the only thing left to do is configure it and register the Morpher into the MorpherRegistry as follows
+<code>JSONUtils.getMorpherRegistry().registerMorpher(new EnumMorpher(MyEnum.class))</code></p>
+</div>
+<div class="paragraph">
+<p>This step is optional since Json-lib 2.2</p>
+</div>
+<div class="paragraph">
+<p><a href="#_faq_"><span class="icon"><i class="fa fa-arrow-up"></i></span> top</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_how_can_i_transform_a_simple_value_into_a_complex_one_when_serializing_back_to_java"><a class="anchor" href="#_how_can_i_transform_a_simple_value_into_a_complex_one_when_serializing_back_to_java"></a>6.5. How can I transform a simple value into a complex one when serializing back to Java ?</h3>
+<div class="paragraph">
+<p>Perhaps you&#8217;ve come across a scenario where you&#8217;ll want a JSON string like "{'id':1}" transformed back to a Java class,
+but the catch is that the id property is not a simple value but another class (a complex value), say a wrapper around a
+primitive long. If you try to serialize such a string back to Java you&#8217;ll get a ClassCastException. The solution to this
+problem is registering a Morpher that can handle the input and transform it into an instance of the expected type, in
+this case the class of the id property.</p>
+</div>
+<div class="paragraph">
+<p><a href="#_faq_"><span class="icon"><i class="fa fa-arrow-up"></i></span> top</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_json_lib_does_not_find_my_inner_bean_help"><a class="anchor" href="#_json_lib_does_not_find_my_inner_bean_help"></a>6.6. Json-lib does not find my inner bean, help!</h3>
+<div class="paragraph">
+<p>In order for Json-lib (in fact the PropertyDescriptors) to find and inspect your beans they have to be declared public,
+ and all desired properties must have a public pair of reader/writer. The same applies to beans declared as inner classes
+ (which by the way must also be declared static). Its a good practice to define each bean in its own file, but if you
+ can&#8217;t please make your inner beans public and static if possible.</p>
+</div>
+<div class="paragraph">
+<p><a href="#_faq_"><span class="icon"><i class="fa fa-arrow-up"></i></span> top</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_id_like_to_use_xpath_like_expressions_with_json_how_do_i_do_it"><a class="anchor" href="#_id_like_to_use_xpath_like_expressions_with_json_how_do_i_do_it"></a>6.7. I&#8217;d like to use XPath-like expressions with JSON, how do I do it ?</h3>
+<div class="paragraph">
+<p>Use <a href="http://commons.apache.org/jxpath/">JXPath</a>, which is a simple yet powerful project that enables XPath-like
+expressions to be used with java beans and maps.</p>
+</div>
+<div class="paragraph">
+<p><a href="#_faq_"><span class="icon"><i class="fa fa-arrow-up"></i></span> top</a></p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_links"><a class="anchor" href="#_links"></a>7. Links</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="api/index.html" target="_blank" rel="noopener">Javadoc</a></p>
+</div>
+<div class="paragraph">
+<p><a href="api-html/index.html" target="_blank" rel="noopener">Source</a></p>
+</div>
+<div class="paragraph">
+<p><a href="api-xref/index.html" target="_blank" rel="noopener">Xref Source</a></p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 3.0.0-SNAPSHOT<br>
+Last updated 2019-10-18 23:14:17 +0200
+</div>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
+<script>prettyPrint()</script>
+</body>
+</html>
