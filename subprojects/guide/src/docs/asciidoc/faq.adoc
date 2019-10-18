@@ -1,0 +1,71 @@
+
+[[_faq_]]
+= FAQ
+
+== If I use a LinkedHasMap to create a JSONObject the order is not preserved, why ?
+
+The answer is in the JSON specification "An object is an unordered set of name/value pairs.
+An object begins with `{` (left brace) and ends with `}` (right brace).
+Each name is followed by `:` (colon) and the name/value pairs are separated by `,` (comma).".
+
+JSONObject uses a HashMap for its properties representation because the order of its properties is not important.
+
+<<_faq_,icon:arrow-up[] top>>
+
+== Json-lib creates empty JSONObjects from my bean class, help me!
+
+Json-lib uses the JavaBeans convention to inspect your beans and create JSONObjects.
+If the properties of your beans do not adhere to the convention, the resulting JSONObject will be empty or half empty.
+You must provide a read/write method pair for each property.
+
+<<_faq_,icon:arrow-up[] top>>
+
+== How do I configure Json-lib as a dependency with Maven2 ?
+
+[source,xml,options="nowrap"]
+[subs="attributes,verbatim"]
+----
+<dependency>
+    <groupId>{project-group}</groupId>
+    <artifactId>{project-name}</artifactId>
+    <version>{project-version}</version>
+</dependency>
+----
+
+<<_faq_,icon:arrow-up[] top>>
+
+== How can I transform a JSON string into a bean with an Enum property ?
+
+You'll have to register a Morpher that can handle your Enum. Json-lib conveniently includes such a Morpher,
+so the only thing left to do is configure it and register the Morpher into the MorpherRegistry as follows
+`JSONUtils.getMorpherRegistry().registerMorpher(new EnumMorpher(MyEnum.class))`
+
+This step is optional since Json-lib 2.2
+
+<<_faq_,icon:arrow-up[] top>>
+
+== How can I transform a simple value into a complex one when serializing back to Java ?
+
+Perhaps you've come across a scenario where you'll want a JSON string like "{'id':1}" transformed back to a Java class,
+but the catch is that the id property is not a simple value but another class (a complex value), say a wrapper around a
+primitive long. If you try to serialize such a string back to Java you'll get a ClassCastException. The solution to this
+problem is registering a Morpher that can handle the input and transform it into an instance of the expected type, in
+this case the class of the id property.
+
+<<_faq_,icon:arrow-up[] top>>
+
+== Json-lib does not find my inner bean, help!
+
+In order for Json-lib (in fact the PropertyDescriptors) to find and inspect your beans they have to be declared public,
+ and all desired properties must have a public pair of reader/writer. The same applies to beans declared as inner classes
+ (which by the way must also be declared static). Its a good practice to define each bean in its own file, but if you
+ can't please make your inner beans public and static if possible.
+
+<<_faq_,icon:arrow-up[] top>>
+
+== I'd like to use XPath-like expressions with JSON, how do I do it ?
+
+Use link:http://commons.apache.org/jxpath/[JXPath], which is a simple yet powerful project that enables XPath-like
+expressions to be used with java beans and maps.
+
+<<_faq_,icon:arrow-up[] top>>

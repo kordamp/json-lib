@@ -16,6 +16,8 @@ image:https://img.shields.io/badge/donations-Patreon-f96854.svg?logo=patreon[lin
 
 ---
 
+image::resources/images/json-lib.png[]
+
 JSON-lib is a java library for transforming beans, maps, collections, java arrays and XML to JSON and back again to beans and DynaBeans.
 
 Refer to the link:http://aalmiray.github.io/json-lib/[project guide, window="_blank"] for

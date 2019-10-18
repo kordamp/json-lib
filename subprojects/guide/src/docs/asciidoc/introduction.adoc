@@ -69,3 +69,5 @@ and many others.
 
 These properties make JSON an ideal data-interchange
 language.
+
+NOTE: Documentation for older releases can be found at link:json-lib.sourceforge.net/[]
