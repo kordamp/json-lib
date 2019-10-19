@@ -87,7 +87,7 @@ JSONObject jsonObject = JSONObject.fromObject( new MyBean() );
 System.out.println( jsonObject );
 /* prints
   {"name":"json","pojoId":1,"options":["a","f"],
-  "func1":function(i){ return this.options[i];},
+  "func1":"function(i){ return this.options[i];}",
   "func2":function(i){ return this.options[i];}}
 */
 ----
