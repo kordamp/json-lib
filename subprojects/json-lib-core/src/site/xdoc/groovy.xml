@@ -29,7 +29,7 @@
                         A String can be transformed into JSON, JSONObject, JSONArray and JSONFunction.
                         <br/>
                         <textarea cols="70" rows="4" class="groovy:nocontrols:nogutter" name="srccode">
-                            def fromList = [1,true,'json'] as JSONarray
+                            def fromList = [1,true,'json'] as JSONArray
                             def fromMap = [integer:1, bool: true] as JSONObject
                             def strAsJson1 = "{integer:1, bool: true}" as JSON
                             def strAsJson2 = "[1,2,3]" as JSON
@@ -46,7 +46,7 @@
                             <li>Any other type will be discarded, the object will not be affected nor an exception will be thrown.</li>
                         </ul>
                     </li>
-                    <li>JSONObject and JSONarray implement java.util.Comparable, which enables the use of the comparison operators with them (including the spaceship operator).</li>
+                    <li>JSONObject and JSONArray implement java.util.Comparable, which enables the use of the comparison operators with them (including the spaceship operator).</li>
                     <li>JSONObject implements java.util.Map and JSONArray implements java.util.List, anything you can do with Maps and List can be done with JSONObject and JSONArray.</li>
                     <li>JsonGroovyBuilder behaves like the JsonBuilder found in Grails but it will create a JSONObject/JSONArray instead of writing the built structure into a String.</li>
                 </ul>
