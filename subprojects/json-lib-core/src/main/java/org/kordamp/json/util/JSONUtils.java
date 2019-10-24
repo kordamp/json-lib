@@ -327,8 +327,7 @@ public final class JSONUtils {
         if (obj instanceof JSONObject) {
             return ((JSONObject) obj).isNullObject();
         }
-        return JSONNull.getInstance()
-            .equals(obj);
+        return obj instanceof JSONNull;
     }
 
     /**
