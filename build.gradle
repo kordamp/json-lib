@@ -16,9 +16,8 @@
  * limitations under the License.
  */
 plugins {
-    id 'org.kordamp.gradle.kordamp-parentpom' version '1.7.0'
-    id 'org.kordamp.gradle.source-xref'       version '0.27.0'
-    // id 'org.kordamp.gradle.clirr'             version '0.27.0'
+    id 'org.kordamp.gradle.kordamp-parentpom' version '1.8.0'
+    id 'org.kordamp.gradle.source-xref'       version '0.29.0'
 } 
 
 config {
@@ -34,7 +33,7 @@ config {
             person {
                 name  = 'Douglas Crockford'
                 email = 'json@json.org'
-                roles = ['Original source code developer']
+                roles = ['developer', 'Original source code developer']
             }
             person {
                 name = 'Matt Small'
@@ -109,6 +108,17 @@ config {
             connection          = 'scm:git:https://github.com/aalmiray/json-lib.git'
             developerConnection = 'scm:git:git@github.com:aalmiray/json-lib.git'
         }
+
+        repositories {
+            repository {
+                name = 'stagingRelease'
+                url  = "${project.rootProject.buildDir}/repos/staging/release"
+            }
+            repository {
+                name = 'stagingSnapshot'
+                url  = "${project.rootProject.buildDir}/repos/staging/snapshot"
+            }
+        }
     }
 
     sourceXref {
@@ -118,6 +128,16 @@ config {
 	// clirr {
 	//     baseline = [project.group, project.name, project.previousVersion].join(':')
 	// }
+
+    javadoc {
+        enabled =true
+    }
+
+    publishing {
+        signing             = false
+        releasesRepository  = 'stagingRelease'
+        snapshotsRepository = 'stagingSnapshot'
+    }
 }
 
 allprojects {
