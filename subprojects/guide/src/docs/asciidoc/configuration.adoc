@@ -8,7 +8,7 @@
 [subs="attributes"]
 ----
 dependencies {
-    compile '{project-group}:{project-name}:{project-version}'
+    compile '{project-group}:{project-name}-core:{project-version}'
 }
 ----
 
@@ -19,7 +19,7 @@ dependencies {
 ----
 <dependency>
     <groupId>{project-group}</groupId>
-    <artifactId>{project-name}</artifactId>
+    <artifactId>{project-name}-core</artifactId>
     <version>{project-version}</version>
 </dependency>
 ----
