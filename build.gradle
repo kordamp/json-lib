@@ -16,8 +16,9 @@
  * limitations under the License.
  */
 plugins {
-    id 'org.kordamp.gradle.kordamp-parentpom' version '1.8.0'
-    id 'org.kordamp.gradle.source-xref'       version '0.29.0'
+    id 'org.kordamp.gradle.kordamp-parentpom' version '1.9.1'
+    id 'org.kordamp.gradle.java-project'      version '0.30.3'
+    id 'org.kordamp.gradle.source-xref'       version '0.30.3'
 } 
 
 config {
@@ -95,30 +96,6 @@ config {
                 roles = ['contributor']
             }
         }
-
-        credentials {
-            sonatype {
-                username = project.sonatypeUsername
-                password = project.sonatypePassword
-            }
-        }
-
-        scm {
-            url                 = 'https://github.com/aalmiray/json-lib'
-            connection          = 'scm:git:https://github.com/aalmiray/json-lib.git'
-            developerConnection = 'scm:git:git@github.com:aalmiray/json-lib.git'
-        }
-
-        repositories {
-            repository {
-                name = 'stagingRelease'
-                url  = "${project.rootProject.buildDir}/repos/staging/release"
-            }
-            repository {
-                name = 'stagingSnapshot'
-                url  = "${project.rootProject.buildDir}/repos/staging/snapshot"
-            }
-        }
     }
 
     sourceXref {
@@ -130,36 +107,13 @@ config {
 	// }
 
     javadoc {
-        enabled =true
-    }
-
-    publishing {
-        signing             = false
-        releasesRepository  = 'stagingRelease'
-        snapshotsRepository = 'stagingSnapshot'
+        enabled = true
     }
 }
 
 allprojects {
     apply plugin: 'base'
     apply plugin: 'idea'
-
-    repositories {
-        jcenter()
-    }
-
-    dependencyUpdates.resolutionStrategy = {
-        componentSelection { rules ->
-            rules.all { selection ->
-                boolean rejected = ['alpha', 'beta', 'rc', 'cr'].any { qualifier ->
-                    selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-                }
-                if (rejected) {
-                    selection.reject('Release candidate')
-                }
-            }
-        }
-    }
 }
 
 idea {
