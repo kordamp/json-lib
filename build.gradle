@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 plugins {
-    id 'org.kordamp.gradle.kordamp-parentpom' version '1.9.1'
-    id 'org.kordamp.gradle.java-project'      version '0.30.3'
-    id 'org.kordamp.gradle.source-xref'       version '0.30.3'
+    id 'org.kordamp.gradle.kordamp-parentpom' version '1.10.0'
+    id 'org.kordamp.gradle.source-xref'       version '0.31.0'
+    id 'org.kordamp.gradle.clirr'             version '0.31.0'
 } 
 
 config {
@@ -98,17 +98,15 @@ config {
         }
     }
 
-    sourceXref {
-        inputEncoding = 'UTF-8'
+    docs {
+        sourceXref {
+            inputEncoding = 'UTF-8'
+        }
     }
 	
-	// clirr {
-	//     baseline = [project.group, project.name, project.previousVersion].join(':')
-	// }
-
-    javadoc {
-        enabled = true
-    }
+	clirr {
+	    baseline = [project.group, project.name, project.previousVersion].join(':')
+	}
 }
 
 allprojects {
