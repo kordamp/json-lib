@@ -16,9 +16,8 @@
  * limitations under the License.
  */
 plugins {
-    id 'org.kordamp.gradle.kordamp-parentpom' version '1.10.1'
-    id 'org.kordamp.gradle.source-xref'       version '0.31.1'
-    id 'org.kordamp.gradle.clirr'             version '0.31.1'
+    id 'org.kordamp.gradle.kordamp-parentpom'
+    id 'org.kordamp.gradle.clirr'
 } 
 
 config {
@@ -116,8 +115,8 @@ allprojects {
 
 idea {
     project {
-        jdkName '1.7'
-        languageLevel '1.7'
+        jdkName sourceCompatibility
+        languageLevel sourceCompatibility
 
         ipr {
             withXml { provider ->
