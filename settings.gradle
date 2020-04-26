@@ -22,26 +22,37 @@ pluginManagement {
         mavenLocal()
     }
     plugins {
-        id 'org.kordamp.gradle.kordamp-parentpom' version kordampPomVersion
-        id 'org.kordamp.gradle.clirr'             version kordampPluginVersion
-        id 'org.kordamp.gradle.guide'             version kordampPluginVersion
-        id 'org.ajoberstar.git-publish'           version gitPluginVersion
+        id 'org.kordamp.gradle.clirr'   version kordampPluginVersion
+        id 'org.kordamp.gradle.guide'   version kordampPluginVersion
+        id 'org.ajoberstar.git-publish' version gitPluginVersion
     }
 }
 
 buildscript {
     repositories {
         gradlePluginPortal()
+        jcenter()
         mavenLocal()
     }
     dependencies {
-        classpath "org.kordamp.gradle:settings-gradle-plugin:$kordampPluginVersion"
+        classpath "org.kordamp.gradle:kordamp-parentbuild:$kordampBuildVersion"
     }
 }
-apply plugin: 'org.kordamp.gradle.settings'
+apply plugin: 'org.kordamp.gradle.kordamp-parentbuild'
 
 rootProject.name = 'json-lib'
 
-projects {
-    directories = ['subprojects']
+enforce {
+    rule(enforcer.rules.ExcludeDependencies) { r ->
+        r.exclude('commons-logging:commons-logging')
+        r.exclude('org.slf4j:slf4j-compile')
+    }
+    rule(enforcer.rules.ForceDependencies) { r ->
+        r.dependencies.addAll 'xml-apis:xml-apis:2.0.2',
+            "org.apache.commons:commons-lang3:$commonsLangVersion",
+            "org.slf4j:slf4j-api:$slf4jVersion",
+            "junit:junit:$junitVersion",
+            "commons-beanutils:commons-beanutils:$commonsBeanutilsVersion",
+            "org.slf4j:jcl-over-slf4j:$slf4jVersion"
+    }
 }
