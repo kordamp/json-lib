@@ -21,47 +21,23 @@ plugins {
 
 config {
     clirr {
-//        enabled  = false
         baseline = [project.group, project.name, project.previousVersion].join(':')
     }
 }
 
-configurations.all {
-    resolutionStrategy.force 'xml-apis:xml-apis:2.0.2',
-        "org.apache.commons:commons-lang3:$commonsLangVersion",
-        "org.slf4j:slf4j-api:$slf4jVersion",
-        "junit:junit:$junitVersion",
-        "commons-beanutils:commons-beanutils:$commonsBeanutilsVersion",
-        "org.slf4j:jcl-over-slf4j:$slf4jVersion"
-}
-
 dependencies {
-    def compileExcludingCommonsLogging = { String dependency ->
-        compile(dependency)  {
-            exclude group: 'commons-logging', module: 'commons-logging'
-        }
-    }
+    api("junit:junit:$junitVersion")
+    api("commons-beanutils:commons-beanutils:$commonsBeanutilsVersion")
+    api('org.apache.commons:commons-collections4:4.4')
+    api("org.apache.commons:commons-lang3:$commonsLangVersion")
 
-    def testCompileExcludingCommonsLogging = { String dependency ->
-        testCompile(dependency)  {
-            exclude group: 'commons-logging', module: 'commons-logging'
-        }
-    }
-
-    compile("junit:junit:$junitVersion")
-    compileExcludingCommonsLogging("commons-beanutils:commons-beanutils:$commonsBeanutilsVersion")
-    compileExcludingCommonsLogging('org.apache.commons:commons-collections4:4.4')
-    compileExcludingCommonsLogging("org.apache.commons:commons-lang3:$commonsLangVersion")
-
-    compile("org.slf4j:slf4j-api:$slf4jVersion")
-    compile("org.slf4j:jcl-over-slf4j:$slf4jVersion")  {
-        exclude group: 'org.slf4j', module: 'slf4j-compile'
-    }
+    api("org.slf4j:slf4j-api:$slf4jVersion")
+    api("org.slf4j:jcl-over-slf4j:$slf4jVersion")
 
     // the following should be marked as optional
-    compileExcludingCommonsLogging('xom:xom:1.3.2')
-    compileExcludingCommonsLogging('org.kordamp.ezmorph:ezmorph-core:3.0.0')
+    api('xom:xom:1.3.2')
+    api('org.kordamp.ezmorph:ezmorph-core:3.0.0')
 
-    testCompileExcludingCommonsLogging('xmlunit:xmlunit:1.6')
-    testCompile('uk.org.lidalia:slf4j-test:1.2.0')
+    testImplementation('xmlunit:xmlunit:1.6')
+    testImplementation('uk.org.lidalia:slf4j-test:1.2.0')
 }

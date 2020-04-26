@@ -31,7 +31,7 @@ dependencies {
 asciidoctor {
     configurations 'asciidoctorExtensions'
     attributes = [
-        'gradle-version'       : project.gradle.gradleVersion,
-        'source-highlighter'   : 'prettify'
+        'gradle-version'    : project.gradle.gradleVersion,
+        'source-highlighter': 'prettify'
     ]
 }
