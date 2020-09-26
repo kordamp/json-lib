@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.8">
+<meta name="generator" content="Asciidoctor 2.0.10">
 <meta name="author" content="Andres Almiray">
 <title>Json-lib</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -92,7 +92,7 @@ $(addBlockSwitches);
 <h1>Json-lib</h1>
 <div class="details">
 <span id="author" class="author">Andres Almiray</span><br>
-<span id="revnumber">version 3.0.1</span>
+<span id="revnumber">version 3.0.2-SNAPSHOT</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -229,23 +229,20 @@ but it is supported as well.</p>
 <p>Apache commons-collections4 4.4</p>
 </li>
 <li>
-<p>slf4j 1.7.28</p>
+<p>slf4j 1.7.30</p>
 </li>
 <li>
-<p>ezmorph 1.0.6</p>
+<p>ezmorph 3.0.0</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Other dependencies are needed if working with XML and Groovy.</p>
+<p>Other dependencies are needed if working with XML:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>xom 1.3.2</p>
-</li>
-<li>
-<p>groovy 2.5.8</p>
+<p>xom 1.3.5</p>
 </li>
 </ul>
 </div>
@@ -311,7 +308,7 @@ call the correct factory or constructor.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">boolean[] boolArray = new boolean[]{true,false,true};
+<pre class="prettyprint highlight"><code data-lang="java">boolean[] boolArray = new boolean[]{true,false,true};
 JSONArray jsonArray = JSONArray.fromObject( boolArray );
 System.out.println( jsonArray );
 // prints [true,false,true]</code></pre>
@@ -319,7 +316,7 @@ System.out.println( jsonArray );
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">List list = new ArrayList();
+<pre class="prettyprint highlight"><code data-lang="java">List list = new ArrayList();
 list.add( "first" );
 list.add( "second" );
 JSONArray jsonArray = JSONArray.fromObject( list );
@@ -329,7 +326,7 @@ System.out.println( jsonArray );
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">JSONArray jsonArray = JSONArray.fromObject( "['json','is','easy']" );
+<pre class="prettyprint highlight"><code data-lang="java">JSONArray jsonArray = JSONArray.fromObject( "['json','is','easy']" );
 System.out.println( jsonArray );
 // prints ["json","is","easy"]</code></pre>
 </div>
@@ -350,7 +347,7 @@ will inspect its parameter and call the correct factory or constructor.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">Map map = new HashMap();
+<pre class="prettyprint highlight"><code data-lang="java">Map map = new HashMap();
 map.put( "name", "json" );
 map.put( "bool", Boolean.TRUE );
 map.put( "int", new Integer(1) );
@@ -364,7 +361,7 @@ System.out.println( jsonObject );
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">class MyBean{
+<pre class="prettyprint highlight"><code data-lang="java">class MyBean{
   private String name = "json";
   private int pojoId = 1;
   private char[] options = new char[]{'a','f'};
@@ -402,7 +399,7 @@ the transformation will use type conversion if necessary on array properties.</p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
+<pre class="prettyprint highlight"><code data-lang="java">String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
 JSONObject jsonObject = JSONObject.fromObject( json );
 Object bean = JSONObject.toBean( jsonObject );
 assertEquals( jsonObject.get( "name" ), PropertyUtils.getProperty( bean, "name" ) );
@@ -419,7 +416,7 @@ Assertions.assertListEquals( expected, (List) PropertyUtils.getProperty( bean, "
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">String json = "{bool:true,integer:1,string:\"json\"}";
+<pre class="prettyprint highlight"><code data-lang="java">String json = "{bool:true,integer:1,string:\"json\"}";
 JSONObject jsonObject = JSONObject.fromObject( json );
 BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
 assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
@@ -454,7 +451,7 @@ DynaBean into an specific bean.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">class MyBean{
+<pre class="prettyprint highlight"><code data-lang="java">class MyBean{
   private List data;
   // getters &amp;amp; setters
 }
@@ -481,7 +478,7 @@ the postprocessing part, this can be done with an Iterator.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-java" data-lang="java">Morpher dynaMorpher = new BeanMorpher( Person.class, JSONUtils.getMorpherRegistry() );
+<pre class="prettyprint highlight"><code data-lang="java">Morpher dynaMorpher = new BeanMorpher( Person.class, JSONUtils.getMorpherRegistry() );
 morpherRegistry.registerMorpher( dynaMorpher );
 List output = new ArrayList();
 for( Iterator i = bean.getData().iterator(); i.hasNext(); ){
@@ -607,8 +604,8 @@ if one is found. You can change this behavior by registering a CycleDetectionStr
 <h3 id="_gradle"><a class="anchor" href="#_gradle"></a>3.1. Gradle</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight nowrap"><code class="language-groovy" data-lang="groovy">dependencies {
-    compile 'org.kordamp.json:json-lib-core:3.0.1'
+<pre class="prettyprint highlight nowrap"><code data-lang="groovy">dependencies {
+    compile 'org.kordamp.json:json-lib-core:3.0.2-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -617,10 +614,10 @@ if one is found. You can change this behavior by registering a CycleDetectionStr
 <h3 id="_maven"><a class="anchor" href="#_maven"></a>3.2. Maven</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight nowrap"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+<pre class="prettyprint highlight nowrap"><code data-lang="xml">&lt;dependency&gt;
     &lt;groupId&gt;org.kordamp.json&lt;/groupId&gt;
     &lt;artifactId&gt;json-lib-core&lt;/artifactId&gt;
-    &lt;version&gt;3.0.1&lt;/version&gt;
+    &lt;version&gt;3.0.2-SNAPSHOT&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
@@ -668,7 +665,7 @@ A String can be transformed into JSON, JSONObject, JSONArray and JSONFunction.</
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">def fromList = [1,true,'json'] as JSONarray
+<pre class="prettyprint highlight"><code data-lang="groovy">def fromList = [1,true,'json'] as JSONarray
 def fromMap = [integer:1, bool: true] as JSONObject
 def strAsJson1 = "{integer:1, bool: true}" as JSON
 def strAsJson2 = "[1,2,3]" as JSON
@@ -765,10 +762,10 @@ You must provide a read/write method pair for each property.</p>
 <h3 id="_how_do_i_configure_json_lib_as_a_dependency_with_maven2"><a class="anchor" href="#_how_do_i_configure_json_lib_as_a_dependency_with_maven2"></a>6.3. How do I configure Json-lib as a dependency with Maven2 ?</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight nowrap"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+<pre class="prettyprint highlight nowrap"><code data-lang="xml">&lt;dependency&gt;
     &lt;groupId&gt;org.kordamp.json&lt;/groupId&gt;
     &lt;artifactId&gt;json-lib&lt;/artifactId&gt;
-    &lt;version&gt;3.0.1&lt;/version&gt;
+    &lt;version&gt;3.0.2-SNAPSHOT&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
@@ -844,12 +841,11 @@ expressions to be used with java beans and maps.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 3.0.1<br>
+Version 3.0.2-SNAPSHOT<br>
 Last updated 2019-11-01 15:43:33 +0100
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
-<script>prettyPrint()</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/run_prettify.min.js"></script>
 </body>
 </html>
