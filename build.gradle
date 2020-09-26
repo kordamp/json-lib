@@ -105,6 +105,12 @@ config {
 	clirr {
 	    baseline = [project.group, project.name, project.previousVersion].join(':')
 	}
+
+    coverage {
+        jacoco {
+            toolVersion = '0.8.6'
+        }
+    }
 }
 
 allprojects {

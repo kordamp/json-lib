@@ -1,5 +1,23 @@
 language: java
-script: ./gradlew clean build jacocoTestReport
+
 jdk: openjdk8
+
+install: true
+
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+
+cache:
+  directories:
+  - $HOME/.m2/
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+
+before_script:
+  - ./gradlew --version
+
+script: ./gradlew build aggregateJacocoReport -S
+
 env: TERM=dumb
-after_success: ./gradlew jacocoRootReport coveralls
+
+after_success: ./gradlew coveralls
