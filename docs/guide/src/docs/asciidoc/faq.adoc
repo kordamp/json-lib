@@ -27,7 +27,7 @@ You must provide a read/write method pair for each property.
 ----
 <dependency>
     <groupId>{project-group}</groupId>
-    <artifactId>{project-name}</artifactId>
+    <artifactId>{project-name}-core</artifactId>
     <version>{project-version}</version>
 </dependency>
 ----
