@@ -108,7 +108,7 @@ config {
 
     coverage {
         jacoco {
-            toolVersion = '0.8.6'
+            toolVersion = jacocoVersion
         }
     }
 }
@@ -116,6 +116,10 @@ config {
 allprojects {
     apply plugin: 'base'
     apply plugin: 'idea'
+
+    repositories {
+        mavenLocal()
+    }
 }
 
 idea {
