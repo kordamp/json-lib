@@ -21,3 +21,11 @@ JSON-lib is a java library for transforming beans, maps, collections, java array
 
 Refer to the link:http://{project-owner}.github.io/json-lib/[project guide, window="_blank"] for
 further information on configuration and usage.
+
+== Enterprise Support
+
+Available as part of the Tidelift Subscription.
+
+The maintainers of org.kordamp.json:json-lib-core and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for
+the open source packages you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact packages 
+you use. link:https://tidelift.com/subscription/pkg/maven-org.kordamp.json.json-lib-core?utm_source=maven-org.kordamp.json.json-lib-core&utm_medium=referral&utm_campaign=enterprise&utm_term=repo[Learn more].
