@@ -17,7 +17,7 @@
  */
 pluginManagement {
     repositories {
-        jcenter()
+        mavenCentral()
         gradlePluginPortal()
         mavenLocal()
     }
@@ -31,7 +31,7 @@ pluginManagement {
 buildscript {
     repositories {
         gradlePluginPortal()
-        jcenter()
+        mavenCentral()
         mavenLocal()
     }
     dependencies {
@@ -41,6 +41,22 @@ buildscript {
 apply plugin: 'org.kordamp.gradle.kordamp-parentbuild'
 
 rootProject.name = 'json-lib'
+
+projects {
+    directories = ['docs', 'subprojects']
+
+    plugins {
+        all {
+            id 'idea'
+        }
+        path(':') {
+            id 'org.kordamp.gradle.java-project'
+        }
+        dirs(['subprojects']) {
+            id 'java-library'
+        }
+    }
+}
 
 enforce {
     rule(enforcer.rules.ExcludeDependencies) { r ->
