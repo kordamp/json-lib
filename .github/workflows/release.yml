@@ -59,10 +59,11 @@ jobs:
           VERSION=${{ github.event.inputs.version }}
           echo $VERSION > VERSION
           git add VERSION
+          sed -i -e "s/^\:project-version\:\ .*/:project-version: ${{ needs.precheck.outputs.VERSION }}/g" README.adoc
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Action"
           git commit -a -m "Releasing version $VERSION"
-          git push origin main
+          git push origin master
 
       - name: Build
         run: |
@@ -80,7 +81,7 @@ jobs:
           build publishToSonatype closeAndReleaseSonatypeStagingRepository -S
 
       - name: Release
-        uses: jreleaser/release-action@v1
+        uses: jreleaser/release-action@v2
         with:
           version: early-access
           arguments: full-release
