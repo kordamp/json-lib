@@ -2542,8 +2542,6 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      * <p/>
      * Warning: This method assumes that the data structure is acyclical.
      *
-     * @return The writer.
-     *
      * @throws JSONException
      */
     @Override
