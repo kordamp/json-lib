@@ -31,6 +31,8 @@ release:
   github:
     branch: master
     overwrite: true
+    milestone:
+      name: '{{projectVersion}}'
     changelog:
       formatted: ALWAYS
       preset: conventional-commits

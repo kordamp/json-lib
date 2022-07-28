@@ -20,7 +20,7 @@ package org.kordamp.json;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.kordamp.ezmorph.Morpher;
 import org.kordamp.ezmorph.array.ObjectArrayMorpher;
