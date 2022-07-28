@@ -28,7 +28,7 @@ config {
 dependencies {
     api("junit:junit:$junitVersion")
     api("commons-beanutils:commons-beanutils:$commonsBeanutilsVersion")
-    api('org.apache.commons:commons-collections4:4.4')
+    api("org.apache.commons:commons-collections4:$commonsCollections4Version")
     api("org.apache.commons:commons-lang3:$commonsLangVersion")
 
     api("org.slf4j:slf4j-api:$slf4jVersion")
