@@ -148,15 +148,15 @@ public class XMLSerializer {
     /**
      * flag for performing auto-expansion of arrays if
      */
-    private boolean isPerformAutoExpansion;
+    private boolean performAutoExpansion;
     /**
      * flag for if text with CDATA should keep the information in the value or not
      */
-    private boolean isKeepCData;
+    private boolean keepCData;
     /**
      * flag for if characters lower than ' ' should be escaped in texts.
      */
-    private boolean isEscapeLowerChars;
+    private boolean escapeLowerChars;
     /**
      * flag for if array name should be kept in JSON data
      */
@@ -180,8 +180,8 @@ public class XMLSerializer {
      * <li><code>objectName</code>: 'o'</li>
      * <li><code>arrayName</code>: 'a'</li>
      * <li><code>elementName</code>: 'e'</li>
-     * <li><code>typeHinstEnabled</code>: true</li>
-     * <li><code>typeHinstCompatibility</code>: true</li>
+     * <li><code>typeHintsEnabled</code>: true</li>
+     * <li><code>typeHintsCompatibility</code>: true</li>
      * <li><code>namespaceLenient</code>: false</li>
      * <li><code>expandableProperties</code>: []</li>
      * <li><code>skipNamespaces</code>: false</li>
@@ -195,6 +195,7 @@ public class XMLSerializer {
      * <li><code>keepArrayName</code>: false</li>
      * <li><code>forcedArrayElements</code>: []</li>
      * <li><code>parseJsonLiterals</code>: true</li>
+     * <li><code>sortPropertyNames</code>: false</li>
      * </ul>
      */
     public XMLSerializer() {
@@ -701,7 +702,7 @@ public class XMLSerializer {
      * Sets whether this serializer should perform automatic expansion of array elements or not.
      */
     public void setPerformAutoExpansion(boolean autoExpansion) {
-        isPerformAutoExpansion = autoExpansion;
+        performAutoExpansion = autoExpansion;
     }
 
     /**
@@ -710,7 +711,7 @@ public class XMLSerializer {
      * @param keepCData True to keep CDATA, false to only use the text value.
      */
     public void setKeepCData(boolean keepCData) {
-        isKeepCData = keepCData;
+        this.keepCData = keepCData;
     }
 
     /**
@@ -719,7 +720,7 @@ public class XMLSerializer {
      * @param escape True to escape, false otherwise.
      */
     public void setEscapeLowerChars(boolean escape) {
-        isEscapeLowerChars = escape;
+        escapeLowerChars = escape;
     }
 
     /**
@@ -1203,7 +1204,7 @@ public class XMLSerializer {
                 }
             } else if (value instanceof JSONArray
                 && (((JSONArray) value).isExpandElements() || ArrayUtils.contains(
-                expandableProperties, name) || (isPerformAutoExpansion && canAutoExpand((JSONArray) value)))) {
+                expandableProperties, name) || (performAutoExpansion && canAutoExpand((JSONArray) value)))) {
                 JSONArray array = (JSONArray) value;
                 int l = array.size();
                 for (Object item : array) {
@@ -1522,7 +1523,7 @@ public class XMLSerializer {
                             processObjectElement(element, defaultType)));
                     } else {
                         String value;
-                        if (isKeepCData && isCData(element)) {
+                        if (keepCData && isCData(element)) {
                             value = "<![CDATA[" + element.getValue() + "]]>";
                         } else {
                             value = element.getValue();
@@ -1690,7 +1691,7 @@ public class XMLSerializer {
                 writeRaw(value);
                 writeRaw("]]>");
             } else {
-                if (isEscapeLowerChars) {
+                if (escapeLowerChars) {
                     writeRaw(escape(value));
                 } else {
                     super.write(text);
