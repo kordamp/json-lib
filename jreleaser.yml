@@ -19,13 +19,12 @@
 project:
   name: json-lib
   description: Java library for transforming beans, maps, collections, arrays and XML to JSON.
-
-  website: https://github.com/kordamp/json-lib
+  links:
+    homepage: https://github.com/kordamp/json-lib
   authors:
     - Andres Almiray
   license: Apache-2.0
-  extraProperties:
-    inceptionYear: 2006
+  inceptionYear: 2006
 
 release:
   github:
@@ -40,24 +39,22 @@ release:
       contributors:
         format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
       labelers:
-        - label: allcontributors
-          title: 'docs: update'
-          order: -1
-        - label: revert
-          title: regex:^(?:reverts(?:\(.*\))?!?):\s.*
-          order: -2
+        - label: 'dependencies'
+          title: 'regex:^(?:deps(?:\(.*\))?!?):\s.*'
+          order: 120
       categories:
-        - title: allcontributors
-          order: 55
+        - title: '⚙️  Dependencies'
+          key: 'dependencies'
+          order: 70
           labels:
-            - allcontributors
+            - 'dependencies'
       hide:
         categories:
           - 'merge'
-          - allcontributors
         contributors:
           - 'GitHub'
-          - allcontributors
+      replacers:
+        - search: 'deps: '
 
 announce:
   twitter:
