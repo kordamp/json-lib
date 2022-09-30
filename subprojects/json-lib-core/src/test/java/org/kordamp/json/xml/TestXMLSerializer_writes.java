@@ -436,6 +436,14 @@ public class TestXMLSerializer_writes extends XMLTestCase {
         assertXMLEqual(expected, xml);
     }
 
+    public void testMappedPropertyNames_issue34() throws Exception {
+        JSONObject jsonObject = JSONObject.fromObject("{\"16x16\": \"image_url\"}");
+        String expected = "<o><image_16x16 type=\"string\">image_url</image_16x16></o>";
+        xmlSerializer.addMappedPropertyName("16x16", "image_16x16");
+        String xml = xmlSerializer.write(jsonObject);
+        assertXMLEqual(expected, xml);
+    }
+
     protected void setUp() throws Exception {
         super.setUp();
         xmlSerializer = new XMLSerializer();

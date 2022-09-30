@@ -53,6 +53,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -173,6 +174,10 @@ public class XMLSerializer {
      * should JSON literals be parsed or not
      */
     private boolean parseJsonLiterals = true;
+    /**
+     * Map JSON property names to XML elements
+     */
+    private final Map<String, String> mappedPropertyNames = new LinkedHashMap<>();
 
     /**
      * Creates a new XMLSerializer with default options.<br>
@@ -215,6 +220,32 @@ public class XMLSerializer {
         setEscapeLowerChars(false);
         setKeepArrayName(false);
         setSortPropertyNames(false); // TODO jenkinsci/json-lib requires this to be set to true
+    }
+
+    /**
+     * Returns mappings between JSON properties to XML elements.
+     */
+    public Map<String, String> getMappedPropertyNames() {
+        return mappedPropertyNames;
+    }
+
+    /**
+     * Sets mappings between JSON properties to XML elements.
+     */
+    public void setMappedPropertyNames(Map<String, String> mappedPropertyNames) {
+        this.mappedPropertyNames.clear();
+        if (mappedPropertyNames != null) {
+            this.mappedPropertyNames.putAll(mappedPropertyNames);
+        }
+    }
+
+    /**
+     * Add a mapped JSON property name to XML element.
+     */
+    public void addMappedPropertyName(String json, String xml) {
+        if (StringUtils.isNotBlank(json) && StringUtils.isNotBlank(xml)) {
+            this.mappedPropertyNames.put(json.trim(), xml.trim());
+        }
     }
 
     /**
@@ -1187,14 +1218,22 @@ public class XMLSerializer {
         Element element = null;
         for (String name : unprocessed) {
             Object value = jsonObject.get(name);
+            String mappedName = name;
+            if (mappedPropertyNames.containsKey(mappedName)) {
+                mappedName = mappedPropertyNames.get(mappedName);
+            }
             if (name.startsWith("@")) {
                 int colon = name.indexOf(':');
+                mappedName = name.substring(1);
+                if (mappedPropertyNames.containsKey(mappedName)) {
+                    mappedName = mappedPropertyNames.get(mappedName);
+                }
                 if (colon == -1) {
-                    root.addAttribute(new Attribute(name.substring(1), String.valueOf(value)));
+                    root.addAttribute(new Attribute(mappedName, String.valueOf(value)));
                 } else {
                     String prefix = name.substring(1, colon);
                     final String namespaceURI = root.getNamespaceURI(prefix);
-                    root.addAttribute(new Attribute(name.substring(1), namespaceURI, String.valueOf(value)));
+                    root.addAttribute(new Attribute(mappedName, namespaceURI, String.valueOf(value)));
                 }
             } else if (name.equals("#text")) {
                 if (value instanceof JSONArray) {
@@ -1203,12 +1242,14 @@ public class XMLSerializer {
                     root.appendChild(String.valueOf(value));
                 }
             } else if (value instanceof JSONArray
-                && (((JSONArray) value).isExpandElements() || ArrayUtils.contains(
-                expandableProperties, name) || (performAutoExpansion && canAutoExpand((JSONArray) value)))) {
+                && (((JSONArray) value).isExpandElements() ||
+                ArrayUtils.contains(expandableProperties, name) ||
+                ArrayUtils.contains(expandableProperties, mappedName) ||
+                (performAutoExpansion && canAutoExpand((JSONArray) value)))) {
                 JSONArray array = (JSONArray) value;
                 int l = array.size();
                 for (Object item : array) {
-                    element = newElement(name);
+                    element = newElement(mappedName);
                     root.appendChild(element);
                     if (item instanceof JSONObject) {
                         element = processJSONValue((JSONObject) item, root, element,
@@ -1221,7 +1262,7 @@ public class XMLSerializer {
                     addNameSpaceToElement(element);
                 }
             } else {
-                element = newElement(name);
+                element = newElement(mappedName);
                 root.appendChild(element);
                 element = processJSONValue(value, root, element, expandableProperties);
                 addNameSpaceToElement(element);
