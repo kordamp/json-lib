@@ -22,6 +22,10 @@ on:
   push:
     branches: [ master ]
 
+env:
+  JAVA_VERSION: '8'
+  JAVA_DISTRO: 'zulu'
+  
 jobs:
   earlyaccess:
     name: EarlyAccess
@@ -37,11 +41,11 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Java
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          java-version: 8
-          distribution: 'zulu'
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
 
       - uses: actions/cache@v3
         with:

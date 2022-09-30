@@ -25,9 +25,35 @@ on:
         description: "Release version"
         required: true
 
+env:
+  JAVA_VERSION: '11'
+  JAVA_DISTRO: 'zulu'
+
 jobs:
+  precheck:
+    name: Precheck
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.vars.outputs.VERSION }}
+      JAVA_VERSION: ${{ env.JAVA_VERSION }}
+      JAVA_DISTRO: ${{ env.JAVA_DISTRO }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: n1hility/cancel-previous-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Version
+        id: vars
+        shell: bash
+        run: |
+          echo ::set-output name=VERSION::${{ github.event.inputs.version }}
+
   release:
     name: Release
+    needs: [precheck]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
