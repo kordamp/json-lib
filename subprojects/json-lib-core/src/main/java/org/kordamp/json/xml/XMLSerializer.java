@@ -108,7 +108,7 @@ public class XMLSerializer {
     /**
      * Map of namespaces per element
      */
-    private Map namespacesPerElement = new TreeMap();
+    private final Map<String, Map<String, String>> namespacesPerElement = new TreeMap<>();
     /**
      * the name for an JSONObject Element
      */
@@ -124,7 +124,7 @@ public class XMLSerializer {
     /**
      * Map of namespaces for root element
      */
-    private Map rootNamespace = new TreeMap();
+    private final Map<String, String> rootNamespace = new TreeMap<>();
     /**
      * flag for skipping namespaces while reading
      */
@@ -168,7 +168,7 @@ public class XMLSerializer {
     /**
      * set of element names that forces its children elements to be in an Array
      */
-    private Collection<String> forcedArrayElements = new LinkedHashSet<String>();
+    private final Collection<String> forcedArrayElements = new LinkedHashSet<String>();
     /**
      * should JSON literals be parsed or not
      */
@@ -273,11 +273,7 @@ public class XMLSerializer {
         if (StringUtils.isBlank(elementName)) {
             rootNamespace.put(prefix.trim(), uri.trim());
         } else {
-            Map nameSpaces = (Map) namespacesPerElement.get(elementName);
-            if (nameSpaces == null) {
-                nameSpaces = new TreeMap();
-                namespacesPerElement.put(elementName, nameSpaces);
-            }
+            Map<String, String> nameSpaces = namespacesPerElement.computeIfAbsent(elementName, k -> new TreeMap<>());
             nameSpaces.put(prefix, uri);
         }
     }
@@ -285,16 +281,16 @@ public class XMLSerializer {
     /**
      * Returns a read-only view of the root name space.
      */
-    public Map getRootNamespace() {
+    public Map<String, String> getRootNamespace() {
         return Collections.unmodifiableMap(rootNamespace);
     }
 
     /**
      * Returns a read-only view of the particular element name space if found.
      */
-    public Map getElementNamespace(String elementName) {
+    public Map<String, String> getElementNamespace(String elementName) {
         if (!StringUtils.isBlank(elementName)) {
-            Map nameSpaces = (Map) namespacesPerElement.get(elementName);
+            Map<String, String> nameSpaces = namespacesPerElement.get(elementName);
             if (nameSpaces != null) {
                 return Collections.unmodifiableMap(nameSpaces);
             }
@@ -468,7 +464,7 @@ public class XMLSerializer {
     }
 
     /**
-     * Returns whether this serializer will trim leading and trealing whitespace
+     * Returns whether this serializer will trim leading and trailing whitespace
      * from values or not.
      */
     public boolean isTrimSpaces() {
@@ -476,7 +472,7 @@ public class XMLSerializer {
     }
 
     /**
-     * Sets if this serializer will trim leading and trealing whitespace from
+     * Sets if this serializer will trim leading and trailing whitespace from
      * values when reading.
      */
     public void setTrimSpaces(boolean trimSpaces) {
@@ -623,7 +619,7 @@ public class XMLSerializer {
      */
     public JSON readFromStream(InputStream stream) {
         try {
-            StringBuffer xml = new StringBuffer();
+            StringBuilder xml = new StringBuilder();
             BufferedReader in = new BufferedReader(new InputStreamReader(stream));
             String line = null;
             while ((line = in.readLine()) != null) {
@@ -659,7 +655,7 @@ public class XMLSerializer {
         if (StringUtils.isBlank(elementName)) {
             rootNamespace.remove(prefix.trim());
         } else {
-            Map nameSpaces = (Map) namespacesPerElement.get(elementName);
+            Map<String, String> nameSpaces = namespacesPerElement.get(elementName);
             nameSpaces.remove(prefix);
         }
     }
@@ -695,11 +691,7 @@ public class XMLSerializer {
             rootNamespace.clear();
             rootNamespace.put(prefix.trim(), uri.trim());
         } else {
-            Map nameSpaces = (Map) namespacesPerElement.get(elementName);
-            if (nameSpaces == null) {
-                nameSpaces = new TreeMap();
-                namespacesPerElement.put(elementName, nameSpaces);
-            }
+            Map<String, String> nameSpaces = namespacesPerElement.computeIfAbsent(elementName, k -> new TreeMap<>());
             nameSpaces.clear();
             nameSpaces.put(prefix, uri);
         }
@@ -813,14 +805,12 @@ public class XMLSerializer {
         } else {
             elementName = element.getQualifiedName();
         }
-        Map nameSpaces = (Map) namespacesPerElement.get(elementName);
+        Map<String, String> nameSpaces = namespacesPerElement.get(elementName);
         if (nameSpaces != null && !nameSpaces.isEmpty()) {
             setNamespaceLenient(true);
-            for (Iterator entries = nameSpaces.entrySet()
-                .iterator(); entries.hasNext(); ) {
-                Map.Entry entry = (Map.Entry) entries.next();
-                String prefix = (String) entry.getKey();
-                String uri = (String) entry.getValue();
+            for (Map.Entry<String, String> entry : nameSpaces.entrySet()) {
+                String prefix = entry.getKey();
+                String uri = entry.getValue();
                 if (StringUtils.isBlank(prefix)) {
                     element.setNamespaceURI(uri);
                 } else {
@@ -1136,8 +1126,7 @@ public class XMLSerializer {
 
     private Element processJSONArray(JSONArray array, Element root, String[] expandableProperties) {
         int l = array.size();
-        for (int i = 0; i < l; i++) {
-            Object value = array.get(i);
+        for (Object value : array) {
             Element element = processJSONValue(value, root, null, expandableProperties);
             root.appendChild(element);
         }
@@ -1156,11 +1145,9 @@ public class XMLSerializer {
         if (isRoot) {
             if (!rootNamespace.isEmpty()) {
                 setNamespaceLenient(true);
-                for (Iterator entries = rootNamespace.entrySet()
-                    .iterator(); entries.hasNext(); ) {
-                    Map.Entry entry = (Map.Entry) entries.next();
-                    String prefix = (String) entry.getKey();
-                    String uri = (String) entry.getValue();
+                for (Map.Entry<String, String> entry : rootNamespace.entrySet()) {
+                    String prefix = entry.getKey();
+                    String uri = entry.getValue();
                     if (StringUtils.isBlank(prefix)) {
                         root.setNamespaceURI(uri);
                     } else {
@@ -1173,10 +1160,10 @@ public class XMLSerializer {
         addNameSpaceToElement(root);
 
         Object[] names = jsonObject.names().toArray();
-        List unprocessed = new ArrayList();
+        List<String> unprocessed = new ArrayList<>();
         if (isSortPropertyNames()) { Arrays.sort(names); }
-        for (int i = 0; i < names.length; i++) {
-            String name = (String) names[i];
+        for (Object o : names) {
+            String name = (String) o;
             Object value = jsonObject.get(name);
             if (name.startsWith("@xmlns")) {
                 setNamespaceLenient(true);
@@ -1197,8 +1184,7 @@ public class XMLSerializer {
             }
         }
         Element element = null;
-        for (int i = 0; i < unprocessed.size(); i++) {
-            String name = (String) unprocessed.get(i);
+        for (String name : unprocessed) {
             Object value = jsonObject.get(name);
             if (name.startsWith("@")) {
                 int colon = name.indexOf(':');
@@ -1220,8 +1206,7 @@ public class XMLSerializer {
                 expandableProperties, name) || (isPerformAutoExpansion && canAutoExpand((JSONArray) value)))) {
                 JSONArray array = (JSONArray) value;
                 int l = array.size();
-                for (int j = 0; j < l; j++) {
-                    Object item = array.get(j);
+                for (Object item : array) {
                     element = newElement(name);
                     root.appendChild(element);
                     if (item instanceof JSONObject) {
@@ -1252,8 +1237,8 @@ public class XMLSerializer {
      * @return True if all children are objects, false otherwise.
      */
     private boolean canAutoExpand(JSONArray array) {
-        for (int i = 0; i < array.size(); i++) {
-            if (!(array.get(i) instanceof JSONObject)) {
+        for (Object o : array) {
+            if (!(o instanceof JSONObject)) {
                 return false;
             }
         }
@@ -1552,9 +1537,7 @@ public class XMLSerializer {
     private boolean isCData(Element element) {
         if (element.getChildCount() == 1) {
             final Node child = element.getChild(0);
-            if (child.toXML().startsWith("<![CDATA[")) {
-                return true;
-            }
+            return child.toXML().startsWith("<![CDATA[");
         }
         return false;
     }
@@ -1564,8 +1547,7 @@ public class XMLSerializer {
             JSONObject object = (JSONObject) json;
             if (parent != null) {
                 // remove all duplicated @xmlns from child
-                for (Iterator entries = parent.entrySet()
-                    .iterator(); entries.hasNext(); ) {
+                for (Iterator entries = parent.entrySet().iterator(); entries.hasNext(); ) {
                     Map.Entry entry = (Map.Entry) entries.next();
                     String key = (String) entry.getKey();
                     Object value = entry.getValue();
@@ -1609,7 +1591,7 @@ public class XMLSerializer {
     }
 
     private static class CustomElement extends Element {
-        private String prefix;
+        private final String prefix;
 
         public CustomElement(String name) {
             super(CustomElement.getName(name));
@@ -1651,7 +1633,7 @@ public class XMLSerializer {
         }
 
         private String escape(String text) {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             for (int i = 0; i < text.length(); i++) {
                 final char c = text.charAt(i);
                 if (c < ' ') {
