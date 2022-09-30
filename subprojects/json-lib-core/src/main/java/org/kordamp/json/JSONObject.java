@@ -675,6 +675,10 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
                     switch (c) {
                         case 0:
                             throw tokener.syntaxError("A JSONObject text must end with '}'");
+                        case '{':
+                            throw tokener.syntaxError("Object found where key expected");
+                        case '[':
+                            throw tokener.syntaxError("Array found where key expected");
                         case '}':
                             fireObjectEndEvent(jsonConfig);
                             return jsonObject;
