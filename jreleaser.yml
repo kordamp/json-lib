@@ -33,6 +33,8 @@ release:
     overwrite: true
     milestone:
       name: '{{projectVersion}}'
+    issues:
+      enabled: true
     changelog:
       formatted: ALWAYS
       preset: conventional-commits
@@ -56,6 +58,21 @@ release:
           - 'GitHub'
       replacers:
         - search: 'deps: '
+
+signing:
+  active: ALWAYS
+  armored: true
+
+deploy:
+  maven:
+    nexus2:
+      maven-central:
+        active: RELEASE
+        url: https://s01.oss.sonatype.org/service/local
+        closeRepository: true
+        releaseRepository: true
+        stagingRepositories:
+          - build/repos/local/release
 
 announce:
   twitter:
