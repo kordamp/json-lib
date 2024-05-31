@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2006-2022 the original author or authors.
+ * Copyright 2006-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    id 'org.kordamp.gradle.clirr'
-} 
-
 config {
     info {
         name          = 'Json-lib'
@@ -95,16 +91,6 @@ config {
             }
         }
     }
-
-    docs {
-        sourceXref {
-            inputEncoding = 'UTF-8'
-        }
-    }
-	
-	clirr {
-	    baseline = [project.group, project.name, project.previousVersion].join(':')
-	}
 
     coverage {
         jacoco {
