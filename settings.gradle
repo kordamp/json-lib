@@ -35,6 +35,7 @@ buildscript {
     }
     dependencies {
         classpath "org.kordamp.gradle:kordamp-parentbuild:$kordampBuildVersion"
+        classpath "org.cyclonedx:cyclonedx-gradle-plugin:$cyclonedxPluginVersion"
     }
 }
 apply plugin: 'org.kordamp.gradle.kordamp-parentbuild'
@@ -53,6 +54,7 @@ projects {
         }
         dirs(['subprojects']) {
             id 'java-library'
+            id 'org.cyclonedx.bom'
         }
     }
 }

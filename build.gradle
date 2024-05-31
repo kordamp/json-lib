@@ -106,26 +106,50 @@ allprojects {
     repositories {
         mavenLocal()
     }
+
+    tasks.withType(GenerateModuleMetadata) {
+        enabled = false
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
 }
 
-idea {
-    project {
-        jdkName sourceCompatibility
-        languageLevel sourceCompatibility
+profiles {
+    profile('sbom') {
+        activation {
+            property {
+                key   = 'sbom'
+                value = true
+            }
+        }
+        action {
+            println 'SBOM generation is turned ON'
 
-        ipr {
-            withXml { provider ->
-                def node = provider.asNode()
-                node.component.find { it.'@name' == 'VcsDirectoryMappings' }?.mapping[0].'@vcs' = 'Git'
+            gradleProjects {
+                subprojects {
+                    dirs(['subprojects']) {
+                        cyclonedxBom {
+                            includeConfigs = ['runtimeClasspath']
+                            projectType = 'library'
+                            outputName = "${project.name}-${project.version}-cyclonedx".toString()
+                            destination = file('build/reports/cyclonedx')
+                            includeLicenseText = false
+                        }
 
-                def compilerConfiguration = node.component.find { it.'@name' == 'CompilerConfiguration' }
-                compilerConfiguration.remove(compilerConfiguration.annotationProcessing)
-                compilerConfiguration.append(new XmlParser().parseText("""
-    <annotationProcessing>
-      <profile default="true" name="Default" enabled="true">
-        <processorPath useClasspath="true" />
-      </profile>
-    </annotationProcessing>"""))
+                        publishing {
+                            publications {
+                                main(MavenPublication) {
+                                    artifact classifier: 'cyclonedx', source: new File(cyclonedxBom.destination.get(), cyclonedxBom.outputName.get() + '.xml')
+                                    artifact classifier: 'cyclonedx', source: new File(cyclonedxBom.destination.get(), cyclonedxBom.outputName.get() + '.json')
+                                }
+                            }
+                        }
+
+                        project.generatePomFileForMainPublication.dependsOn(cyclonedxBom)
+                    }
+                }
             }
         }
     }
