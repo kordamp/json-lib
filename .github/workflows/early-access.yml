@@ -54,7 +54,7 @@ jobs:
 
       - name: Version
         id: vars
-        run: echo ::set-output name=version::$(cat VERSION)
+        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
 
       - name: Release
         uses: jreleaser/release-action@v2
