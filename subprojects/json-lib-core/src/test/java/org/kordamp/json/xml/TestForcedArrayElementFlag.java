@@ -17,13 +17,14 @@
  */
 package org.kordamp.json.xml;
 
-import com.google.common.collect.ImmutableList;
+import org.slf4j.event.Level;
+import com.github.valfirst.slf4jtest.LoggingEvent;
+import com.github.valfirst.slf4jtest.TestLogger;
+import com.github.valfirst.slf4jtest.TestLoggerFactory;
 import junit.framework.TestCase;
 import org.kordamp.json.JSONObject;
-import uk.org.lidalia.slf4jext.Level;
-import uk.org.lidalia.slf4jtest.LoggingEvent;
-import uk.org.lidalia.slf4jtest.TestLogger;
-import uk.org.lidalia.slf4jtest.TestLoggerFactory;
+
+import java.util.List;
 
 import static java.util.Arrays.asList;
 
@@ -87,7 +88,7 @@ public class TestForcedArrayElementFlag extends TestCase {
         // Check if warning appears in log
         String expectedWarningMessage = "Child elements [GaijiRefMaps,ForcedArrayElement] of forced array element [Properties] are not from the same type";
         boolean expectedWarningFound = false;
-        ImmutableList<LoggingEvent> loggingEvents = logger.getLoggingEvents();
+        List<LoggingEvent> loggingEvents = logger.getLoggingEvents();
         for (LoggingEvent le : loggingEvents) {
             if (le.getLevel() == Level.WARN) { expectedWarningFound = le.getMessage().equals(expectedWarningMessage); }
         }

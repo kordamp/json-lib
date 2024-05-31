@@ -29,5 +29,5 @@ dependencies {
     api("org.kordamp.ezmorph:ezmorph-core:$ezmorphVersion")
 
     testImplementation("xmlunit:xmlunit:$xmlunitVersion")
-    testImplementation("uk.org.lidalia:slf4j-test:$slf4jTestVersion")
+    testImplementation("com.github.valfirst:slf4j-test:$slf4jTestVersion")
 }
