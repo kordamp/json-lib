@@ -100,9 +100,6 @@ config {
 }
 
 allprojects {
-    apply plugin: 'base'
-    apply plugin: 'idea'
-
     repositories {
         mavenLocal()
     }

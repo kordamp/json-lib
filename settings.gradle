@@ -47,6 +47,7 @@ projects {
 
     plugins {
         all {
+            id 'base'
             id 'idea'
         }
         path(':') {
