@@ -28,6 +28,6 @@ dependencies {
     api("xom:xom:$xomVersion")
     api("org.kordamp.ezmorph:ezmorph-core:$ezmorphVersion")
 
-    testImplementation("xmlunit:xmlunit:$xmlunitVersion")
+    testImplementation("org.xmlunit:xmlunit-legacy:$xmlunitVersion")
     testImplementation("com.github.valfirst:slf4j-test:$slf4jTestVersion")
 }
