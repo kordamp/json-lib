@@ -76,4 +76,4 @@ deploy:
 
 announce:
   twitter:
-    active: release
+    active: RELEASE
