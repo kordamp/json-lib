@@ -221,16 +221,24 @@ public class TestUserSubmitted extends TestCase {
         Assertions.assertEquals(expected, actual);
     }
 
+    public void testEmptyStringWithHints() {
+        String testXML = "<o><test1 type=\"string\" /></o>";
+
+        JSON expected = JSONSerializer.toJSON("{\"o\": {\"test1\": \"\"}}");
+
+        JSONObject actual = convertXML(testXML);
+        assertNotNull(actual);
+        Assertions.assertEquals(expected, actual);
+    }
+
     private JSONObject convertXML(String testXML) {
-        JSON jsonElement = getSerializer().read(testXML);
-        return (JSONObject) jsonElement;
+        return (JSONObject) getSerializer().read(testXML);
     }
 
     private JSONObject convertXML(String testXML, String arrayName) {
         final XMLSerializer xmlSerializer = getSerializer();
         xmlSerializer.setArrayName(arrayName);
-        JSON jsonElement = xmlSerializer.read(testXML);
-        return (JSONObject) jsonElement;
+        return (JSONObject) xmlSerializer.read(testXML);
     }
 
     private XMLSerializer getSerializer() {
