@@ -79,7 +79,7 @@ class MyBean{
   private String func1 = "function(i){ return this.options[i]; }";
   private JSONFunction func2 = new JSONFunction(new String[]{"i"},"return this.options[i];");
 
-// getters &amp; setters
+// getters, setters
 ...
 }
 
@@ -87,7 +87,7 @@ JSONObject jsonObject = JSONObject.fromObject( new MyBean() );
 System.out.println( jsonObject );
 /* prints
   {"name":"json","pojoId":1,"options":["a","f"],
-  "func1":function(i){ return this.options[i];},
+  "func1":"function(i){ return this.options[i];}",
   "func2":function(i){ return this.options[i];}}
 */
 ----
@@ -153,12 +153,12 @@ Example:
 ----
 class MyBean{
   private List data;
-  // getters &amp; setters
+  // getters, setters
 }
 
 class Person{
   private String name;
-  // getters &amp; setters
+  // getters, setters
 }
 
 ...
@@ -206,7 +206,7 @@ with '@' will be treated as an attribute, any property named '#text' will be tre
 
 Please review the javadoc for XMLSerializer to know more about the configurable options.
 
-[cols="l,l"]
+[cols="1,1"]
 |===
 |*Code* | *XML output*
 
@@ -246,7 +246,7 @@ JSONFunction needs an additional parameter that specifies that function's params
 All xml attributes will have the prefix '@' and text nodes will have the property name '#text'. XMLSerializer supports
 the rules outlined at http://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html[Converting Between XML and JSON]
 
-[cols="l,l"]
+[cols="1,1"]
 |===
 |*XML input* | *Code*
 

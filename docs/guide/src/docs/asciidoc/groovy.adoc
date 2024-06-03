@@ -12,7 +12,7 @@ in the same manner as you do now with POJOs. There are other features as well:
 
 [source,groovy]
 ----
-def fromList = [1,true,'json'] as JSONarray
+def fromList = [1,true,'json'] as JSONArray
 def fromMap = [integer:1, bool: true] as JSONObject
 def strAsJson1 = "{integer:1, bool: true}" as JSON
 def strAsJson2 = "[1,2,3]" as JSON
@@ -31,7 +31,7 @@ def strAsFunc = "function(param){ this.param = param; }" as JSONFunction
      ll create a JSONArray because it is a List).
   ** Any other type will be discarded, the object will not be affected nor
      an exception will be thrown.
-* JSONObject and JSONarray implement java.util.Comparable, which enables the use of
+* JSONObject and JSONArray implement java.util.Comparable, which enables the use of
   the comparison operators with them (including the spaceship operator).
 * JSONObject implements java.util.Map and JSONArray implements java.util.List,
   anything you can do with Maps and List can be done with JSONObject and JSONArray.
