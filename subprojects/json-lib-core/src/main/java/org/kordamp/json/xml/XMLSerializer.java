@@ -59,6 +59,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static org.kordamp.json.util.JSONUtils.isBlank;
+
 /**
  * Utility class for transforming JSON to XML an back.<br>
  * When transforming JSONObject and JSONArray instances to XML, this class will
@@ -560,9 +562,7 @@ public class XMLSerializer {
      * Creates a JSON value from a XML string.
      *
      * @param xml A well-formed xml document in a String
-     *
      * @return a JSONNull, JSONObject or JSONArray
-     *
      * @throws JSONException if the conversion from XML to JSON can't be made for
      *                       I/O or format reasons.
      */
@@ -600,9 +600,7 @@ public class XMLSerializer {
      * Creates a JSON value from a File.
      *
      * @param file
-     *
      * @return a JSONNull, JSONObject or JSONArray
-     *
      * @throws JSONException if the conversion from XML to JSON can't be made for
      *                       I/O or format reasons.
      */
@@ -627,9 +625,7 @@ public class XMLSerializer {
      * Creates a JSON value from a File.
      *
      * @param path
-     *
      * @return a JSONNull, JSONObject or JSONArray
-     *
      * @throws JSONException if the conversion from XML to JSON can't be made for
      *                       I/O or format reasons.
      */
@@ -643,9 +639,7 @@ public class XMLSerializer {
      * Creates a JSON value from an input stream.
      *
      * @param stream
-     *
      * @return a JSONNull, JSONObject or JSONArray
-     *
      * @throws JSONException if the conversion from XML to JSON can't be made for
      *                       I/O or format reasons.
      */
@@ -767,9 +761,7 @@ public class XMLSerializer {
      * Writes a JSON value into a XML string with UTF-8 encoding.<br>
      *
      * @param json The JSON value to transform
-     *
      * @return a String representation of a well-formed xml document.
-     *
      * @throws JSONException if the conversion from JSON to XML can't be made for
      *                       I/O reasons.
      */
@@ -783,9 +775,7 @@ public class XMLSerializer {
      *
      * @param json     The JSON value to transform
      * @param encoding The xml encoding to use
-     *
      * @return a String representation of a well-formed xml document.
-     *
      * @throws JSONException if the conversion from JSON to XML can't be made for
      *                       I/O reasons or the encoding is not supported.
      */
@@ -1193,7 +1183,9 @@ public class XMLSerializer {
 
         Object[] names = jsonObject.names().toArray();
         List<String> unprocessed = new ArrayList<>();
-        if (isSortPropertyNames()) { Arrays.sort(names); }
+        if (isSortPropertyNames()) {
+            Arrays.sort(names);
+        }
         for (Object o : names) {
             String name = (String) o;
             Object value = jsonObject.get(name);
@@ -1275,7 +1267,6 @@ public class XMLSerializer {
      * Only perform auto expansion if all children are objects.
      *
      * @param array The array to check
-     *
      * @return True if all children are objects, false otherwise.
      */
     private boolean canAutoExpand(JSONArray array) {
@@ -1557,7 +1548,11 @@ public class XMLSerializer {
                     params = StringUtils.split(paramsAttribute.getValue(), ",");
                     setOrAccumulate(jsonObject, key, new JSONFunction(params, text));
                 } else {
-                    if (isArray(element, false)) {
+                    Attribute typeAttr = element.getAttribute(addJsonPrefix("type"));
+                    if (typeAttr != null && isBlank(element.getValue()) &&
+                        element.getChildCount() == 0 && element.getChildElements().size() == 0) {
+                        setOrAccumulate(jsonObject, key, "");
+                    } else if (isArray(element, false)) {
                         setOrAccumulate(jsonObject, key, processArrayElement(element, defaultType));
                     } else if (isObject(element, false)) {
                         setOrAccumulate(jsonObject, key, simplifyValue(jsonObject,
