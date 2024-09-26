@@ -203,6 +203,8 @@ public class JSONTokener {
                             if (c == '*') {
                                 if (next() == '/') {
                                     break;
+                                } else if (!more()) {
+                                    return 0;
                                 }
                                 back();
                             }

@@ -144,6 +144,15 @@ public class TestJSONSerializer extends TestCase {
         assertEquals(beanB.getValue(), ((ValueBean) bb).getValue());
     }
 
+    public void testToJava_JSONObject_5() throws Exception {
+        try {
+            JSONObject.fromObject("/**");
+            fail("Should have thrown a JSONException");
+        } catch (JSONException expected) {
+            // ok
+        }
+    }
+
     public void testToJava_JSONObject_and_reset() throws Exception {
         String json = "{bool:true,integer:1,string:\"json\"}";
         JSONObject jsonObject = JSONObject.fromObject(json);
