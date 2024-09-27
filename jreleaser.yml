@@ -84,3 +84,6 @@ deploy:
 announce:
   twitter:
     active: RELEASE
+  mastodon:
+    active: RELEASE
+    host: https://mastodon.social
