@@ -75,6 +75,20 @@ public class TestJSONTokener extends TestCase {
         }
     }
 
+    public void testStartsWith() {
+        assertFalse(new JSONTokener("").startsWith("null"));
+        assertFalse(new JSONTokener("n").startsWith("null"));
+        assertFalse(new JSONTokener("nu").startsWith("null"));
+        assertFalse(new JSONTokener("nul").startsWith("null"));
+        assertTrue(new JSONTokener("null").startsWith("null"));
+        assertTrue(new JSONTokener("nulll").startsWith("null"));
+        assertFalse(new JSONTokener("nn").startsWith("null"));
+        assertFalse(new JSONTokener("nnu").startsWith("null"));
+        assertFalse(new JSONTokener("nnul").startsWith("null"));
+        assertFalse(new JSONTokener("nnull").startsWith("null"));
+        assertFalse(new JSONTokener("nnulll").startsWith("null"));
+    }
+
     public void testReset() {
         JSONTokener tok = new JSONTokener("abc");
         tok.next();

@@ -656,7 +656,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
                 String key;
                 Object value;
 
-                if (tokener.matches("null.*")) {
+                if (tokener.startsWith("null")) {
                     fireObjectStartEvent(jsonConfig);
                     fireObjectEndEvent(jsonConfig);
                     return new JSONObject(true);
