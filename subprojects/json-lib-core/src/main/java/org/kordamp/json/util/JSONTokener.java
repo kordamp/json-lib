@@ -114,6 +114,10 @@ public class JSONTokener {
             .matches(str);
     }
 
+    public boolean startsWith(String prefix) {
+        return this.mySource.startsWith(prefix, this.myIndex);
+    }
+
     /**
      * Determine if the source string still contains characters that next() can
      * consume.
