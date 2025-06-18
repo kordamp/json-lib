@@ -21,25 +21,9 @@ name: Build
 on:
   pull_request:
 
-env:
-  JAVA_VERSION: '11'
-  JAVA_DISTRO: 'zulu'
-
 jobs:
   build:
-    name: Build
-    runs-on: ubuntu-latest
     if: startsWith(github.event.head_commit.message, 'Releasing version') != true
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_DISTRO }}
-          cache: gradle
-
-      - name: Build
-        run: ./gradlew build -S
+    uses: kordamp/kordamp-workflows/.github/workflows/gradle-build.yml@main
+    with:
+      java-version: 11
