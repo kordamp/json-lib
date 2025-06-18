@@ -28,7 +28,7 @@ import java.util.Map;
  * Defines a custom setter to be used when setting object values.<br>
  * Specify with JsonConfig.setJsonPropertySetter().
  *
- * @author Gino Miceli <ginomiceli@users.sourceforge.net>
+ * @author Gino Miceli &lt;ginomiceli@users.sourceforge.net&gt;
  * @author Andres Almiray
  */
 public abstract class PropertySetStrategy {

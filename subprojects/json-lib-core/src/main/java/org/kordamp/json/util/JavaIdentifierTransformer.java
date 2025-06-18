@@ -37,23 +37,23 @@ import org.kordamp.json.JSONException;
  */
 public abstract class JavaIdentifierTransformer {
     /**
-     * CamelCase transformer 'camel case' => 'camelCase'
+     * CamelCase transformer 'camel case' =&gt; 'camelCase'
      */
     public static final JavaIdentifierTransformer CAMEL_CASE = new CamelCaseJavaIdentifierTransformer();
     /**
-     * Noop transformer '@invalid' => '@invalid'
+     * Noop transformer '@invalid' =&gt; '@invalid'
      */
     public static final JavaIdentifierTransformer NOOP = new NoopJavaIdentifierTransformer();
     /**
-     * Strict transformer '@invalid' => JSONException
+     * Strict transformer '@invalid' =&gt; JSONException
      */
     public static final JavaIdentifierTransformer STRICT = new StrictJavaIdentifierTransformer();
     /**
-     * Underscore transformer 'under score' => 'under_score'
+     * Underscore transformer 'under score' =&gt; 'under_score'
      */
     public static final JavaIdentifierTransformer UNDERSCORE = new UnderscoreJavaIdentifierTransformer();
     /**
-     * Whitespace transformer 'white space' => 'whitespace'
+     * Whitespace transformer 'white space' =&gt; 'whitespace'
      */
     public static final JavaIdentifierTransformer WHITESPACE = new WhiteSpaceJavaIdentifierTransformer();
 

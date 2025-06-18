@@ -103,7 +103,7 @@ import java.util.Set;
  * <code>{ } [ ] / \ : , = ; #</code> and if they do not look like numbers and
  * if they are not the reserved words <code>true</code>, <code>false</code>,
  * or <code>null</code>.</li>
- * <li>Keys can be followed by <code>=</code> or <code>=></code> as well as
+ * <li>Keys can be followed by <code>=</code> or <code>=&gt;</code> as well as
  * by <code>:</code>.</li>
  * <li>Values can be followed by <code>;</code> <small>(semicolon)</small>
  * as well as by <code>,</code> <small>(comma)</small>.</li>
