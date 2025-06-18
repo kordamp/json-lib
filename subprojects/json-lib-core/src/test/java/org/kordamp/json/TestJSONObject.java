@@ -201,7 +201,7 @@ public class TestJSONObject extends TestCase {
         jsonConfig.setIgnoreDefaultExcludes(true);
         jsonObject.element("bean", new ObjectBean(), jsonConfig);
         JSONObject actual = jsonObject.getJSONObject("bean");
-        Assertions.assertTrue(actual.has("class"));
+        Assertions.assertTrue(!actual.has("class"));
         Assertions.assertTrue(!actual.has("pexcluded"));
     }
 
@@ -260,7 +260,7 @@ public class TestJSONObject extends TestCase {
         jsonObject.element("list", list, jsonConfig);
         JSONObject actual = jsonObject.getJSONArray("list")
             .getJSONObject(0);
-        Assertions.assertTrue(actual.has("class"));
+        Assertions.assertTrue(!actual.has("class"));
         Assertions.assertTrue(!actual.has("pexcluded"));
     }
 

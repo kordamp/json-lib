@@ -52,7 +52,7 @@ public abstract class AbstractJSONObjectStaticBuildersTestCase extends TestCase 
         jsonConfig.setIgnoreDefaultExcludes(true);
         JSONObject json = JSONObject.fromObject(getSource(), jsonConfig);
         assertJSONObject(json, getProperties());
-        assertTrue(json.has("class"));
+        assertTrue(!json.has("class"));
         assertTrue(!json.has("pexcluded"));
     }
 

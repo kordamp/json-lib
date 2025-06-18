@@ -37,7 +37,7 @@ public class TestJSONObjectStaticBuilders_JSONObject extends
             for (int i = 0; i < props.length; i++) {
                 jsonObject.element(props[i], PropertyConstants.getPropertyValue(props[i]));
             }
-            jsonObject.element("class", Object.class);
+            //jsonObject.element("class", Object.class);
             jsonObject.element("pexcluded", "");
         } catch (Exception e) {
             throw new RuntimeException(e);

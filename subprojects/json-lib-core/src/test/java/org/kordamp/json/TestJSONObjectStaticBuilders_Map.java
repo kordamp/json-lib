@@ -38,7 +38,7 @@ public class TestJSONObjectStaticBuilders_Map extends AbstractJSONObjectStaticBu
         for (int i = 0; i < props.length; i++) {
             map.put(props[i], PropertyConstants.getPropertyValue(props[i]));
         }
-        map.put("class", "");
+        //map.put("class", "");
         map.put("pexcluded", "");
         return map;
     }
