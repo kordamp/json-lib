@@ -24,15 +24,15 @@ Examples:
 
 [source,java]
 ----
-boolean[] boolArray = new boolean[]{true,false,true};
-JSONArray jsonArray = JSONArray.fromObject( boolArray );
+var boolArray = new boolean[]{true,false,true};
+var jsonArray = JSONArray.fromObject( boolArray );
 System.out.println( jsonArray );
 // prints [true,false,true]
 ----
 
 [source,java]
 ----
-List list = new ArrayList();
+var list = new ArrayList<String>();
 list.add( "first" );
 list.add( "second" );
 JSONArray jsonArray = JSONArray.fromObject( list );
@@ -58,7 +58,7 @@ Examples:
 
 [source,java]
 ----
-Map map = new HashMap();
+var map = new HashMap<String, Object>();
 map.put( "name", "json" );
 map.put( "bool", Boolean.TRUE );
 map.put( "int", new Integer(1) );
@@ -83,7 +83,7 @@ class MyBean{
 ...
 }
 
-JSONObject jsonObject = JSONObject.fromObject( new MyBean() );
+var jsonObject = JSONObject.fromObject( new MyBean() );
 System.out.println( jsonObject );
 /* prints
   {"name":"json","pojoId":1,"options":["a","f"],
@@ -105,24 +105,24 @@ Convert to DynaBean:
 
 [source,java]
 ----
-String json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
-JSONObject jsonObject = JSONObject.fromObject( json );
-Object bean = JSONObject.toBean( jsonObject );
+var json = "{name=\"json\",bool:true,int:1,double:2.2,func:function(a){ return a; },array:[1,2]}";
+var jsonObject = JSONObject.fromObject( json );
+var bean = JSONObject.toBean( jsonObject );
 assertEquals( jsonObject.get( "name" ), PropertyUtils.getProperty( bean, "name" ) );
 assertEquals( jsonObject.get( "bool" ), PropertyUtils.getProperty( bean, "bool" ) );
 assertEquals( jsonObject.get( "int" ), PropertyUtils.getProperty( bean, "int" ) );
 assertEquals( jsonObject.get( "double" ), PropertyUtils.getProperty( bean, "double" ) );
 assertEquals( jsonObject.get( "func" ), PropertyUtils.getProperty( bean, "func" ) );
-List expected = JSONArray.toList( jsonObject.getJSONArray( "array" ) );
+var expected = JSONArray.toList( jsonObject.getJSONArray( "array" ) );
 Assertions.assertListEquals( expected, (List) PropertyUtils.getProperty( bean, "array" ) );
 ----
 
 Convert to Bean:
 [source,java]
 ----
-String json = "{bool:true,integer:1,string:\"json\"}";
-JSONObject jsonObject = JSONObject.fromObject( json );
-BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
+var json = "{bool:true,integer:1,string:\"json\"}";
+var jsonObject = JSONObject.fromObject( json );
+var bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
 assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
 assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
 assertEquals( jsonObject.get( "string" ), bean.getString() );                    
@@ -152,7 +152,7 @@ Example:
 [source,java]
 ----
 class MyBean{
-  private List data;
+  private List<Person> data;
   // getters, setters
 }
 
@@ -163,8 +163,8 @@ class Person{
 
 ...
 
-String json = "{'data':[{'name':'Wallace'},{'name':'Grommit'}]}";
-Map classMap = new HashMap();
+var json = "{'data':[{'name':'Wallace'},{'name':'Grommit'}]}";
+var classMap = new HashMap<String, Class<?>>();
 classMap.put( "data", Person.class );
 MyBean bean = JSONObject.toBean( JSONObject.fromObject(json), MyBean.class, classMap );
 ----
@@ -176,9 +176,9 @@ Example:
 
 [source,java]
 ----
-Morpher dynaMorpher = new BeanMorpher( Person.class, JSONUtils.getMorpherRegistry() );
+var dynaMorpher = new BeanMorpher( Person.class, JSONUtils.getMorpherRegistry() );
 morpherRegistry.registerMorpher( dynaMorpher );
-List output = new ArrayList();
+var output = new ArrayList<Person>();
 for( Iterator i = bean.getData().iterator(); i.hasNext(); ){
   output.add( morpherRegistry.morph( Person.class, i.next() ) );
 }
