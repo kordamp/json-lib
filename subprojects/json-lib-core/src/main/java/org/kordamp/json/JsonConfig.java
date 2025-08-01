@@ -733,7 +733,7 @@ public class JsonConfig {
      * [Java -&gt; JSON]
      */
     public PropertyNameProcessorMatcher getJsonPropertyNameProcessorMatcher() {
-        return javaPropertyNameProcessorMatcher;
+        return jsonPropertyNameProcessorMatcher;
     }
 
     /**
