@@ -547,7 +547,7 @@ public class JsonConfig {
             }
             this.collectionType = collectionType;
         } else {
-            collectionType = DEFAULT_COLLECTION_TYPE;
+            this.collectionType = DEFAULT_COLLECTION_TYPE;
         }
     }
 
