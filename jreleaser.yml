@@ -27,9 +27,10 @@ project:
   inceptionYear: 2006
   stereotype: NONE
   vendor: Kordamp
-  java:
-    groupId: org.kordamp.json
-    version: 8
+  languages:
+    java:
+      groupId: org.kordamp.json
+      version: 8
   tags:
     - 'json'
     - 'xml'
@@ -80,6 +81,10 @@ deploy:
           - build/repos/local/release
 
 announce:
+  bluesky:
+    active: RELEASE
+    status: 🚀 Json-lib {{projectVersion}} has been released! {{releaseNotesUrl}}
   mastodon:
     active: RELEASE
     host: https://mastodon.social
+    status: 🚀 Json-lib {{projectVersion}} has been released! {{releaseNotesUrl}}

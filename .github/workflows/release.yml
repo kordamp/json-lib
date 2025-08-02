@@ -46,3 +46,6 @@ jobs:
       maven-username: ${{ secrets.SONATYPE_USERNAME }}
       maven-password: ${{ secrets.SONATYPE_PASSWORD }}
       mastodon-access-token: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+      bluesky-host: ${{ secrets.BLUESKY_HOST }}
+      bluesky-handle: ${{ secrets.BLUESKY_HANDLE }}
+      bluesky-password: ${{ secrets.BLUESKY_PASSWORD }}
