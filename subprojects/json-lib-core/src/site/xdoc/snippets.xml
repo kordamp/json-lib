@@ -284,8 +284,8 @@
                     JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON( str );
                     DynaBean bean = (DynaBean) JSONSerializer.toJava( jsonObject );
                     assertEquals( "JSON", bean.get("string") );
-                    assertEquals( new Integer(1), bean.get("integer") );
-                    assertEquals( new Double(2.0), bean.get("double") );
+                    assertEquals( Integer.valueOf(1), bean.get("integer") );
+                    assertEquals( Double.valueOf(2.0), bean.get("double") );
                     assertEquals( Boolean.TRUE, bean.get("boolean") );
                 </textarea>[<a href="#Snippets">Index</a>|<a href="#JSONJava">From JSON to Java</a>]
             </subsection>

@@ -76,7 +76,7 @@
                         Map map = new HashMap();
                         map.put( "name", "json" );
                         map.put( "bool", Boolean.TRUE );
-                        map.put( "int", new Integer(1) );
+                        map.put( "int", Integer.valueOf(1) );
                         map.put( "arr", new String[]{"a","b"} );
                         map.put( "func", "function(i){ return this.arr[i]; }" );
 
@@ -154,7 +154,7 @@
                         JSONObject jsonObject = JSONObject.fromObject( json );
                         BeanA bean = (BeanA) JSONObject.toBean( jsonObject, BeanA.class );
                         assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
-                        assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
+                        assertEquals( jsonObject.get( "integer" ), Integer.valueOf( bean.getInteger() ) );
                         assertEquals( jsonObject.get( "string" ), bean.getString() );
                     </textarea>
 

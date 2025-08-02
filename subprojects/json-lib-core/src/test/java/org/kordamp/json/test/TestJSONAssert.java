@@ -155,9 +155,9 @@ public class TestJSONAssert extends TestCase {
     }
 
     public void testAssertEquals_JSONArray_JSONArray() {
-        Object[] values = new Object[]{Boolean.valueOf(true), new Integer(Integer.MAX_VALUE),
-            new Long(Long.MAX_VALUE), new Float(Float.MAX_VALUE),
-            new Double(Double.MAX_VALUE), "json", new JSONArray(), new JSONObject(true),
+        Object[] values = new Object[]{Boolean.valueOf(true), Integer.valueOf(Integer.MAX_VALUE),
+            Long.valueOf(Long.MAX_VALUE), Float.valueOf(Float.MAX_VALUE),
+            Double.valueOf(Double.MAX_VALUE), "json", new JSONArray(), new JSONObject(true),
             new JSONObject(), new JSONObject().element("str", "json"), "function(){ return this; }",
             new JSONFunction("return that;"), new int[]{1, 2}};
         JSONArray expected = JSONArray.fromObject(values);
@@ -306,8 +306,8 @@ public class TestJSONAssert extends TestCase {
             String[] names = new String[]{"b", "i", "l", "f", "d", "s", "a1", "o1", "o2", "o3",
                 "u1", "u2"};
             Object[] values = new Object[]{Boolean.valueOf(true),
-                new Integer(Integer.MAX_VALUE), new Long(Long.MAX_VALUE),
-                new Float(Float.MAX_VALUE), new Double(Double.MAX_VALUE), "json",
+                Integer.valueOf(Integer.MAX_VALUE), Long.valueOf(Long.MAX_VALUE),
+                Float.valueOf(Float.MAX_VALUE), Double.valueOf(Double.MAX_VALUE), "json",
                 new JSONArray(), new JSONObject(true), new JSONObject(),
                 new JSONObject().element("str", "json"), "function(){ return this; }",
                 new JSONFunction("return that;")};

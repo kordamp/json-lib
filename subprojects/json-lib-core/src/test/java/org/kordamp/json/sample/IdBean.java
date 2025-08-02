@@ -78,7 +78,7 @@ public class IdBean {
                 if (value instanceof Number) {
                     return new IdBean.Id(((Number) value).longValue());
                 } else if (value instanceof String) {
-                    return new IdBean.Id(new Long((String) value).longValue());
+                    return new IdBean.Id(Long.valueOf((String) value).longValue());
                 }
             }
             return null;

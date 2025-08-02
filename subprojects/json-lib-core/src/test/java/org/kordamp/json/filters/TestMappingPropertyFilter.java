@@ -42,7 +42,7 @@ public class TestMappingPropertyFilter extends TestCase {
         MappingPropertyFilter filter = new SampleMappingPropertyFilter(filters);
 
         assertFalse(filter.apply("String", null, null));
-        assertTrue(filter.apply(new Long(1L), null, null));
+        assertTrue(filter.apply(Long.valueOf(1L), null, null));
     }
 
     public void testApply() {
@@ -52,7 +52,7 @@ public class TestMappingPropertyFilter extends TestCase {
         filter.addPropertyFilter(Long.class, new TruePropertyFilter());
 
         assertFalse(filter.apply("String", null, null));
-        assertTrue(filter.apply(new Long(1L), null, null));
+        assertTrue(filter.apply(Long.valueOf(1L), null, null));
     }
 
     public void testRemove() {
@@ -63,7 +63,7 @@ public class TestMappingPropertyFilter extends TestCase {
         filter.removePropertyFilter(null);
 
         assertFalse(filter.apply("String", null, null));
-        assertFalse(filter.apply(new Long(1L), null, null));
+        assertFalse(filter.apply(Long.valueOf(1L), null, null));
     }
 
     public static class SampleMappingPropertyFilter extends MappingPropertyFilter {

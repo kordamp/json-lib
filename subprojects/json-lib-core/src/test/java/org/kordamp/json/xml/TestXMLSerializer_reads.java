@@ -373,9 +373,9 @@ public class TestXMLSerializer_reads extends TestCase {
             + "<string>json</string>" + "<func type=\"function\" params=\"a\" ><![CDATA[return a;]]></func></o>";
         JSONObject actual = (JSONObject) xmlSerializer.read(xml);
         JSONObject expected = JSONObject.fromObject("{func:function(a){ return a; }}");
-        expected.element("int", new Integer(1));
-        expected.element("decimal", new Double(2.0));
-        expected.element("number", new Double(3.1416));
+        expected.element("int", Integer.valueOf(1));
+        expected.element("decimal", Double.valueOf(2.0));
+        expected.element("number", Double.valueOf(3.1416));
         expected.element("bool", Boolean.TRUE);
         expected.element("string", "json");
         Assertions.assertEquals(expected, actual);

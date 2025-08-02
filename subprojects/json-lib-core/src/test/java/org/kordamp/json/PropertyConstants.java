@@ -46,14 +46,14 @@ public final class PropertyConstants {
     private static Map values = new HashMap();
 
     static {
-        values.put(BYTE, new Byte(Byte.MAX_VALUE));
-        values.put(SHORT, new Short(Short.MAX_VALUE));
-        values.put(INT, new Integer(Integer.MAX_VALUE));
-        values.put(LONG, new Long(Long.MAX_VALUE));
-        values.put(FLOAT, new Float(Float.MAX_VALUE));
-        values.put(DOUBLE, new Double(Double.MAX_VALUE));
+        values.put(BYTE, Byte.valueOf(Byte.MAX_VALUE));
+        values.put(SHORT, Short.valueOf(Short.MAX_VALUE));
+        values.put(INT, Integer.valueOf(Integer.MAX_VALUE));
+        values.put(LONG, Long.valueOf(Long.MAX_VALUE));
+        values.put(FLOAT, Float.valueOf(Float.MAX_VALUE));
+        values.put(DOUBLE, Double.valueOf(Double.MAX_VALUE));
         values.put(BOOLEAN, Boolean.TRUE);
-        values.put(CHAR, new Character('J'));
+        values.put(CHAR, Character.valueOf('J'));
         values.put(STRING, "json");
         values.put(FUNCTION, new JSONFunction("this;"));
         values.put(ARRAY, new int[]{1, 2});

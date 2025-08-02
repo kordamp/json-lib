@@ -1601,7 +1601,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      */
     public JSONObject element(String key, double value) {
         verifyIsNull();
-        Double d = new Double(value);
+        Double d = Double.valueOf(value);
         JSONUtils.testValidity(d);
         return element(key, d);
     }
@@ -1618,7 +1618,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      */
     public JSONObject element(String key, int value) {
         verifyIsNull();
-        return element(key, new Integer(value));
+        return element(key, Integer.valueOf(value));
     }
 
     /**
@@ -1633,7 +1633,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map<String, 
      */
     public JSONObject element(String key, long value) {
         verifyIsNull();
-        return element(key, new Long(value));
+        return element(key, Long.valueOf(value));
     }
 
     /**

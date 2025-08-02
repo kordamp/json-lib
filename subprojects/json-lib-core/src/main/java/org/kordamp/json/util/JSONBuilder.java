@@ -307,7 +307,7 @@ public class JSONBuilder {
      * @throws JSONException If the number is not finite.
      */
     public JSONBuilder value(double d) {
-        return this.value(new Double(d));
+        return this.value(Double.valueOf(d));
     }
 
     /**

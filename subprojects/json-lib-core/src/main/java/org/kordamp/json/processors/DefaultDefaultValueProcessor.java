@@ -32,9 +32,9 @@ public class DefaultDefaultValueProcessor implements DefaultValueProcessor {
             return new JSONArray();
         } else if (JSONUtils.isNumber(type)) {
             if (JSONUtils.isDouble(type)) {
-                return new Double(0);
+                return Double.valueOf(0);
             } else {
-                return new Integer(0);
+                return Integer.valueOf(0);
             }
         } else if (JSONUtils.isBoolean(type)) {
             return Boolean.FALSE;

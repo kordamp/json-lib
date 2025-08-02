@@ -109,7 +109,7 @@ public class TestJSONSerializer extends TestCase {
         assertTrue(java instanceof BeanA);
         BeanA bean = (BeanA) java;
         assertEquals(jsonObject.get("bool"), Boolean.valueOf(bean.isBool()));
-        assertEquals(jsonObject.get("integer"), new Integer(bean.getInteger()));
+        assertEquals(jsonObject.get("integer"), Integer.valueOf(bean.getInteger()));
         assertEquals(jsonObject.get("string"), bean.getString());
     }
 
@@ -162,7 +162,7 @@ public class TestJSONSerializer extends TestCase {
         assertTrue(java instanceof BeanA);
         BeanA bean = (BeanA) java;
         assertEquals(jsonObject.get("bool"), Boolean.valueOf(bean.isBool()));
-        assertEquals(jsonObject.get("integer"), new Integer(bean.getInteger()));
+        assertEquals(jsonObject.get("integer"), Integer.valueOf(bean.getInteger()));
         assertEquals(jsonObject.get("string"), bean.getString());
         jsonConfig.reset();
         java = JSONSerializer.toJava(jsonObject, jsonConfig);

@@ -147,7 +147,7 @@ public class TestJSONUtils extends TestCase {
 
     public void testValidity_infiniteDouble() {
         try {
-            JSONUtils.testValidity(new Double(Double.POSITIVE_INFINITY));
+            JSONUtils.testValidity(Double.valueOf(Double.POSITIVE_INFINITY));
             fail("Should have thrown a JSONException");
         } catch (JSONException expected) {
             // ok
@@ -156,7 +156,7 @@ public class TestJSONUtils extends TestCase {
 
     public void testValidity_infiniteFloat() {
         try {
-            JSONUtils.testValidity(new Float(Float.POSITIVE_INFINITY));
+            JSONUtils.testValidity(Float.valueOf(Float.POSITIVE_INFINITY));
             fail("Should have thrown a JSONException");
         } catch (JSONException expected) {
             // ok
@@ -165,7 +165,7 @@ public class TestJSONUtils extends TestCase {
 
     public void testValidity_nanDouble() {
         try {
-            JSONUtils.testValidity(new Double(Double.NaN));
+            JSONUtils.testValidity(Double.valueOf(Double.NaN));
             fail("Should have thrown a JSONException");
         } catch (JSONException expected) {
             // ok
@@ -174,7 +174,7 @@ public class TestJSONUtils extends TestCase {
 
     public void testValidity_nanFloat() {
         try {
-            JSONUtils.testValidity(new Float(Float.NaN));
+            JSONUtils.testValidity(Float.valueOf(Float.NaN));
             fail("Should have thrown a JSONException");
         } catch (JSONException expected) {
             // ok

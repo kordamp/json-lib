@@ -126,20 +126,20 @@ public class TestJSONObjectWithProcessors extends TestCase {
 
     public void testNumericValueWithProcessor_Byte() {
         Map bean = new HashMap();
-        bean.put("value", new Byte(Byte.MAX_VALUE));
+        bean.put("value", Byte.valueOf(Byte.MAX_VALUE));
         jsonConfig.registerJsonValueProcessor("value", new IdentityJsonValueProcessor());
         JSONObject jsonObject = JSONObject.fromObject(bean, jsonConfig);
         assertNotNull(jsonObject);
-        assertEquals(new Integer(Byte.MAX_VALUE), jsonObject.get("value"));
+        assertEquals(Integer.valueOf(Byte.MAX_VALUE), jsonObject.get("value"));
     }
 
     public void testNumericValueWithProcessor_Short() {
         Map bean = new HashMap();
-        bean.put("value", new Short(Short.MAX_VALUE));
+        bean.put("value", Short.valueOf(Short.MAX_VALUE));
         jsonConfig.registerJsonValueProcessor("value", new IdentityJsonValueProcessor());
         JSONObject jsonObject = JSONObject.fromObject(bean, jsonConfig);
         assertNotNull(jsonObject);
-        assertEquals(new Integer(Short.MAX_VALUE), jsonObject.get("value"));
+        assertEquals(Integer.valueOf(Short.MAX_VALUE), jsonObject.get("value"));
     }
 
     protected void setUp() throws Exception {
