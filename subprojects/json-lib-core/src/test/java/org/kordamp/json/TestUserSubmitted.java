@@ -743,7 +743,7 @@ public class TestUserSubmitted extends TestCase {
         jsonConfig.setIgnorePublicFields(false);
         FieldBean bean2 = (FieldBean) JSONObject.toBean(jsonObject, jsonConfig);
         assertNotNull(bean2);
-        assertEquals(42, bean1.getValue());
+        assertEquals(42, bean2.getValue());
         assertEquals("stringy", bean2.string);
     }
 
